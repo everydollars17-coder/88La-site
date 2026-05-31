@@ -93,6 +93,10 @@ async function fbSet(key, value) {
   try { await setDoc(doc(db, "site", key), { value }); } catch {}
 }
 
+// 清除所有舊的 localStorage
+const OLD_KEYS = ["ed_art","ed_prod","ed_ig","ed_goods","ed_about","ed_title","ed_tags"];
+OLD_KEYS.forEach(k => { try { localStorage.removeItem(k); } catch {} });
+
 function useFirestore(key, def) {
   const [v, setV] = useState(def);
   const [loaded, setLoaded] = useState(false);
