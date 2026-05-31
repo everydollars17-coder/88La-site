@@ -62,6 +62,12 @@ const DEFAULT_TAGS = ["理財觀念","信用卡","記帳","投資","讀書筆記
 
 const DEFAULTS = {
   siteTitle: "理財觀點與讀書筆記",
+  links: {
+    lineCommunity: "https://line.me/R/ti/p/@367xhgyr",
+    lineOfficial: "https://line.me/R/ti/p/@367xhgyr",
+    instagram: "https://www.instagram.com/every_dollars/",
+    email: "everydollars17@gmail.com"
+  },
   about: {
     intro: "嗨，我是 88La。\n\n我從信封分類法開始認識理財——不是從書本，是從自己每個月真實的薪水開始。\n\n我相信理財不是讓自己活得緊繃，而是讓你對生活有更多掌控感和自由度。\n\n這裡是我寫給自己、也寫給你的地方。有時候是讀書心得，有時候是想通了某個關於錢的事，有時候只是一個小觀察。",
     img: ""
@@ -188,7 +194,8 @@ function Nav({ page, setPage, isAdmin, setIsAdmin }) {
   );
 }
 
-function Footer() {
+function Footer({ links }) {
+  const l = links || DEFAULTS.links;
   return (
     <footer style={{ borderTop:`1px solid ${BDR}`, marginTop:80, padding:"40px 20px", background:WHITE }}>
       <div style={{ maxWidth:1020, margin:"0 auto", display:"flex", justifyContent:"space-between", alignItems:"flex-start", flexWrap:"wrap", gap:24 }}>
@@ -197,9 +204,9 @@ function Footer() {
           <p style={{ fontSize:12, color:LIGHT, lineHeight:1.9 }}>理財，是為了讓生活更自由。</p>
         </div>
         <div style={{ display:"flex", gap:20, flexWrap:"wrap" }}>
-          {[["https://line.me/R/ti/p/@367xhgyr","LINE 官方帳號"],["https://www.instagram.com/every_dollars/","Instagram"],["mailto:everydollars17@gmail.com","合作信箱"]].map(([h,l]) => (
-            <a key={l} href={h} target="_blank" rel="noopener noreferrer" style={{ fontSize:12, color:MID, borderBottom:`1px solid ${BDR}`, paddingBottom:2 }}>{l}</a>
-          ))}
+          <a href={l.lineOfficial} target="_blank" rel="noopener noreferrer" style={{ fontSize:12, color:MID, borderBottom:`1px solid ${BDR}`, paddingBottom:2 }}>LINE 官方帳號</a>
+          <a href={l.instagram} target="_blank" rel="noopener noreferrer" style={{ fontSize:12, color:MID, borderBottom:`1px solid ${BDR}`, paddingBottom:2 }}>Instagram</a>
+          <a href={"mailto:"+l.email} style={{ fontSize:12, color:MID, borderBottom:`1px solid ${BDR}`, paddingBottom:2 }}>合作信箱</a>
         </div>
       </div>
       <div style={{ maxWidth:1020, margin:"16px auto 0", paddingTop:16, borderTop:`1px solid ${BDR}` }}>
@@ -293,7 +300,7 @@ function Home({ articles, setPage, setId, setArticles, isAdmin, siteTitle, setSi
   );
 }
 
-function Article({ article, onBack, setArticles, isAdmin, tags }) {
+function Article({ article, onBack, setArticles, isAdmin, tags, links }) {
   const [name, setName] = useState("");
   const [text, setText] = useState("");
   const [copied, setCopied] = useState(false);
@@ -342,8 +349,8 @@ function Article({ article, onBack, setArticles, isAdmin, tags }) {
         <p style={{ fontSize:13, fontWeight:400, marginBottom:6 }}>加入 8友 社群</p>
         <p style={{ fontSize:12, color:MID, marginBottom:16, lineHeight:1.8 }}>一起聊聊關於錢的事，不說教，只分享。</p>
         <div style={{ display:"flex", gap:10, flexWrap:"wrap" }}>
-          <a href="https://line.me/R/ti/p/@367xhgyr" target="_blank" rel="noopener noreferrer"><button className="pb" style={{ fontSize:12, padding:"8px 18px" }}>LINE 社群</button></a>
-          <a href="https://www.instagram.com/every_dollars/" target="_blank" rel="noopener noreferrer"><button className="pg" style={{ fontSize:12 }}>Instagram</button></a>
+          <a href={(links||DEFAULTS.links).lineCommunity} target="_blank" rel="noopener noreferrer"><button className="pb" style={{ fontSize:12, padding:"8px 18px" }}>LINE 社群</button></a>
+          <a href={(links||DEFAULTS.links).instagram} target="_blank" rel="noopener noreferrer"><button className="pg" style={{ fontSize:12 }}>Instagram</button></a>
         </div>
       </div>
       <p style={{ fontSize:12, letterSpacing:"1.5px", marginBottom:20, color:MID }}>COMMENTS ({article.comments.length})</p>
@@ -387,10 +394,14 @@ function Write({ onSave, onBack, tags }) {
   );
 }
 
-function About({ about, setAbout, isAdmin }) {
+function About({ about, setAbout, isAdmin, links, setLinks }) {
   const [editing, setEditing] = useState(false);
+  const [editLinks, setEditLinks] = useState(false);
   const [tmp, setTmp] = useState(about);
+  const [tmpL, setTmpL] = useState(links || DEFAULTS.links);
+  const l = links || DEFAULTS.links;
   const save = () => { setAbout(tmp); setEditing(false); };
+  const saveLinks = () => { setLinks(tmpL); setEditLinks(false); };
   if (editing) return (
     <div style={{ maxWidth:860, margin:"0 auto", padding:"48px 20px" }} className="page-pad">
       <p style={{ fontSize:11, letterSpacing:"3px", color:O, marginBottom:32 }}>ABOUT</p>
@@ -409,11 +420,43 @@ function About({ about, setAbout, isAdmin }) {
       </div>
     </div>
   );
+  if (editLinks) return (
+    <div style={{ maxWidth:860, margin:"0 auto", padding:"48px 20px" }} className="page-pad">
+      <p style={{ fontSize:11, letterSpacing:"3px", color:O, marginBottom:32 }}>連結設定</p>
+      <div style={{ display:"flex", flexDirection:"column", gap:12, maxWidth:500 }}>
+        <div>
+          <p style={{ fontSize:12, color:MID, marginBottom:6 }}>LINE 社群連結</p>
+          <input placeholder="https://line.me/..." value={tmpL.lineCommunity} onChange={e => setTmpL(p => ({...p,lineCommunity:e.target.value}))} />
+        </div>
+        <div>
+          <p style={{ fontSize:12, color:MID, marginBottom:6 }}>LINE 官方帳號連結</p>
+          <input placeholder="https://line.me/..." value={tmpL.lineOfficial} onChange={e => setTmpL(p => ({...p,lineOfficial:e.target.value}))} />
+        </div>
+        <div>
+          <p style={{ fontSize:12, color:MID, marginBottom:6 }}>Instagram 連結</p>
+          <input placeholder="https://www.instagram.com/..." value={tmpL.instagram} onChange={e => setTmpL(p => ({...p,instagram:e.target.value}))} />
+        </div>
+        <div>
+          <p style={{ fontSize:12, color:MID, marginBottom:6 }}>合作信箱</p>
+          <input placeholder="yourname@gmail.com" value={tmpL.email} onChange={e => setTmpL(p => ({...p,email:e.target.value}))} />
+        </div>
+      </div>
+      <div style={{ display:"flex", gap:10, marginTop:20 }}>
+        <button className="pb" onClick={saveLinks}>儲存</button>
+        <button className="pg" onClick={() => setEditLinks(false)}>取消</button>
+      </div>
+    </div>
+  );
   return (
     <div style={{ maxWidth:860, margin:"0 auto", padding:"48px 20px" }} className="page-pad">
       <div style={{ display:"flex", justifyContent:"space-between", alignItems:"flex-start", marginBottom:44 }}>
         <p style={{ fontSize:11, letterSpacing:"3px", color:O }}>ABOUT</p>
-        {isAdmin && <button className="pg" style={{ fontSize:12 }} onClick={() => { setTmp(about); setEditing(true); }}>編輯頁面</button>}
+        {isAdmin && (
+          <div style={{ display:"flex", gap:10 }}>
+            <button className="pg" style={{ fontSize:12 }} onClick={() => { setTmpL(l); setEditLinks(true); }}>連結設定</button>
+            <button className="pg" style={{ fontSize:12 }} onClick={() => { setTmp(about); setEditing(true); }}>編輯頁面</button>
+          </div>
+        )}
       </div>
       <div style={{ display:"grid", gridTemplateColumns:"1fr 1fr", gap:44, marginBottom:52, alignItems:"start" }} className="about-grid">
         <div style={{ background:"#EDE8E2", aspectRatio:"3/4", overflow:"hidden", display:"flex", alignItems:"center", justifyContent:"center" }} className="about-img">
@@ -429,10 +472,10 @@ function About({ about, setAbout, isAdmin }) {
       </div>
       <hr className="divider" style={{ marginBottom:28 }} />
       <div style={{ display:"flex", gap:12, flexWrap:"wrap" }}>
-        <a href="https://line.me/R/ti/p/@367xhgyr" target="_blank" rel="noopener noreferrer"><button className="pb">LINE 社群</button></a>
-        <a href="https://line.me/R/ti/p/@367xhgyr" target="_blank" rel="noopener noreferrer"><button className="pg">LINE 官方帳號</button></a>
-        <a href="https://www.instagram.com/every_dollars/" target="_blank" rel="noopener noreferrer"><button className="pg">Instagram</button></a>
-        <a href="mailto:everydollars17@gmail.com"><button className="pg">合作信箱</button></a>
+        <a href={l.lineCommunity} target="_blank" rel="noopener noreferrer"><button className="pb">LINE 社群</button></a>
+        <a href={l.lineOfficial} target="_blank" rel="noopener noreferrer"><button className="pg">LINE 官方帳號</button></a>
+        <a href={l.instagram} target="_blank" rel="noopener noreferrer"><button className="pg">Instagram</button></a>
+        <a href={"mailto:"+l.email}><button className="pg">合作信箱</button></a>
       </div>
     </div>
   );
@@ -631,11 +674,12 @@ export default function App() {
   const [about, setAbout, abLoaded] = useFirestore("about", DEFAULTS.about);
   const [siteTitle, setSiteTitle, tLoaded] = useFirestore("siteTitle", DEFAULTS.siteTitle);
   const [tags, setTags, taLoaded] = useFirestore("tags", DEFAULTS.tags);
+  const [links, setLinks, lLoaded] = useFirestore("links", DEFAULTS.links);
   const [page, setPage] = useState("about");
   const [id, setId] = useState(null);
   const [isAdmin, setIsAdmin] = useState(false);
 
-  const loaded = aLoaded && pLoaded && iLoaded && gLoaded && abLoaded && tLoaded && taLoaded;
+  const loaded = aLoaded && pLoaded && iLoaded && gLoaded && abLoaded && tLoaded && taLoaded && lLoaded;
   const article = articles.find(a => a.id===id);
   const nav = p => { setPage(p); setId(null); };
   const saveArticle = d => {
@@ -656,14 +700,14 @@ export default function App() {
   return (
     <div style={{ minHeight:"100vh", background:WHITE }}>
       <Nav page={page} setPage={nav} isAdmin={isAdmin} setIsAdmin={setIsAdmin} />
-      {page==="about" && <About about={about} setAbout={setAbout} isAdmin={isAdmin} />}
-      {page==="ig" && <IG igPosts={igPosts} setIgPosts={setIgPosts} isAdmin={isAdmin} />}
+      {page==="about" && <About about={about} setAbout={setAbout} isAdmin={isAdmin} links={links} setLinks={setLinks} />}
+      {page==="ig" && <IG igPosts={igPosts} setIgPosts={setIgPosts} isAdmin={isAdmin} links={links} />}
       {page==="shop" && <Shop products={products} setProducts={setProducts} isAdmin={isAdmin} />}
       {page==="home" && <Home articles={articles} setPage={setPage} setId={setId} setArticles={setArticles} isAdmin={isAdmin} siteTitle={siteTitle} setSiteTitle={setSiteTitle} tags={tags} setTags={setTags} />}
-      {page==="article" && article && <Article article={article} onBack={() => setPage("home")} setArticles={setArticles} isAdmin={isAdmin} tags={tags} />}
+      {page==="article" && article && <Article article={article} onBack={() => setPage("home")} setArticles={setArticles} isAdmin={isAdmin} tags={tags} links={links} />}
       {page==="write" && isAdmin && <Write onSave={saveArticle} onBack={() => setPage("home")} tags={tags} />}
       {page==="goods" && <Goods goods={goods} setGoods={setGoods} isAdmin={isAdmin} />}
-      <Footer />
+      <Footer links={links} />
     </div>
   );
 }
