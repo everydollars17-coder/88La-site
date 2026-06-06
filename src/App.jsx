@@ -19,8 +19,8 @@ const ADMIN_PW = "everydollars88";
 // 配色
 const O = "#C85A14";
 const O2 = "#FDF0E8";
-const NAVY = "#F7BC9E";
-const NAVY2 = "#F4A57A";
+const NAVY = "#F19483";
+const NAVY2 = "#E8806E";
 const NAV_TEXT = "#3D1A0A";
 const NAV_TEXT_SUB = "rgba(61,26,10,.55)";
 const WHITE = "#FFFFFF";
@@ -28,6 +28,7 @@ const GRAY = "#F8F8F8";
 const CHAR = "#1A1A1A";
 const MID = "#6B6B6B";
 const LIGHT = "#ADADAD";
+const TITLE_COLOR = "#F05E1C";
 
 const GF = `@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@300;400;500;700&family=Inter:ital,wght@0,300;0,400;0,500;0,700;1,300&display=swap');`;
 
@@ -309,7 +310,7 @@ function Home({articles,setPage,setId,setArticles,isAdmin,siteTitle,setSiteTitle
               </div>
             ):(
               <div style={{display:"flex",gap:16,alignItems:"baseline",flexWrap:"wrap"}}>
-                <h2 style={{fontSize:32,fontWeight:700,color:NAVY}}>{siteTitle}</h2>
+                <h2 style={{fontSize:32,fontWeight:700,color:TITLE_COLOR}}>{siteTitle}</h2>
                 {isAdmin&&<span style={{fontSize:12,color:O,cursor:"pointer"}} onClick={()=>{setTmpTitle(siteTitle);setEditTitle(true);}}>編輯</span>}
               </div>
             )}
@@ -348,7 +349,7 @@ function Home({articles,setPage,setId,setArticles,isAdmin,siteTitle,setSiteTitle
                 <span className="tag">{a.tag}</span>
                 <span style={{fontSize:11,color:LIGHT}}>{a.date}</span>
               </div>
-              <h3 style={{fontSize:18,fontWeight:500,lineHeight:1.5,marginBottom:12,color:NAVY}}>{a.title}</h3>
+              <h3 style={{fontSize:18,fontWeight:500,lineHeight:1.5,marginBottom:12,color:TITLE_COLOR}}>{a.title}</h3>
               <p style={{fontSize:14,color:MID,lineHeight:1.9,marginBottom:20}}>{a.excerpt}</p>
               <div style={{display:"flex",justifyContent:"space-between",alignItems:"center"}}>
                 <span style={{fontSize:12,color:O,fontWeight:500}}>閱讀全文 →</span>
