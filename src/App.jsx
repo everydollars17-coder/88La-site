@@ -231,8 +231,12 @@ function Footer({links,footerTagline,setFooterTagline,isAdmin}) {
           ))}
         </div>
       </div>
-      <div style={{maxWidth:1100,margin:"10px auto 0",paddingTop:12,borderTop:`1px solid rgba(61,26,10,.15)`}}>
+      <div style={{maxWidth:1100,margin:"10px auto 0",paddingTop:12,borderTop:`1px solid rgba(61,26,10,.15)`,display:"flex",justifyContent:"space-between",alignItems:"center",flexWrap:"wrap",gap:8}}>
         <p style={{fontSize:11,color:NAV_TEXT_SUB}}>© 2026 88La · every_dollars</p>
+        <div style={{display:"flex",gap:20,flexWrap:"wrap"}}>
+          <span style={{fontSize:11,color:NAV_TEXT}}>LINE：@367xhgyr</span>
+          <span style={{fontSize:11,color:NAV_TEXT}}>everydollars17@gmail.com</span>
+        </div>
       </div>
     </footer>
   );
