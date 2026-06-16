@@ -1,0 +1,298 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>用黃金圈，找到你真正的存錢理由 — 88La 理財觀點站</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700&display=swap');
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  font-family: 'Noto Sans TC', sans-serif;
+  background: #fdf7f2;
+  color: #1a1a1a;
+  padding: 28px 20px 48px;
+  max-width: 480px;
+  margin: 0 auto;
+}
+
+.brand {
+  font-size: 11px;
+  letter-spacing: 0.12em;
+  color: #c96b2f;
+  font-weight: 500;
+  margin-bottom: 6px;
+}
+h1 {
+  font-size: 20px;
+  font-weight: 700;
+  line-height: 1.4;
+  margin-bottom: 6px;
+}
+.subtitle {
+  font-size: 13px;
+  color: #999;
+  line-height: 1.7;
+  margin-bottom: 20px;
+}
+
+.save-btn-wrap {
+  position: sticky;
+  top: 12px;
+  z-index: 10;
+  margin-bottom: 20px;
+}
+.save-btn {
+  width: 100%;
+  background: #c96b2f;
+  color: #fff;
+  border: none;
+  padding: 13px 0;
+  font-size: 14px;
+  font-weight: 700;
+  font-family: inherit;
+  letter-spacing: 0.04em;
+  cursor: pointer;
+  box-shadow: 0 4px 14px rgba(201,107,47,0.3);
+}
+.save-btn:active { background: #b35f29; }
+
+.circle-area {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 28px;
+}
+
+.block {
+  background: #fff;
+  padding: 20px 18px;
+  margin-bottom: 12px;
+  border-top: 3px solid #c96b2f;
+}
+.block.mid { border-top-color: #e8a06a; }
+.block.outer { border-top-color: #f3ccaa; }
+
+.block-tag {
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  color: #c96b2f;
+  margin-bottom: 4px;
+}
+.block.mid .block-tag { color: #c97a3a; }
+.block.outer .block-tag { color: #b07050; }
+
+.block-title {
+  font-size: 16px;
+  font-weight: 700;
+  margin-bottom: 4px;
+  line-height: 1.4;
+}
+.block-hint {
+  font-size: 12px;
+  color: #aaa;
+  margin-bottom: 16px;
+  line-height: 1.6;
+}
+
+.q-block { margin-bottom: 16px; }
+.q-block:last-child { margin-bottom: 0; }
+
+.q-label {
+  font-size: 13px;
+  font-weight: 600;
+  color: #333;
+  margin-bottom: 6px;
+  line-height: 1.5;
+}
+.example {
+  font-size: 11.5px;
+  color: #c96b2f;
+  background: #fde8d6;
+  padding: 6px 10px;
+  margin-bottom: 10px;
+  line-height: 1.6;
+}
+.block.mid .example { background: #fef0e4; color: #c97a3a; }
+.block.outer .example { background: #fff5ee; color: #b07050; }
+
+.write-row {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-bottom: 8px;
+}
+.write-row-label {
+  font-size: 12px;
+  color: #bbb;
+  white-space: nowrap;
+}
+.fill-input {
+  flex: 1;
+  border: none;
+  border-bottom: 1px solid #e0d8d0;
+  height: 28px;
+  font-size: 13px;
+  font-family: 'Noto Sans TC', sans-serif;
+  color: #333;
+  background: transparent;
+  padding: 0 2px;
+  outline: none;
+  min-width: 0;
+}
+.fill-input:focus { border-bottom-color: #c96b2f; }
+.fill-textarea {
+  width: 100%;
+  border: none;
+  border-bottom: 1px solid #e0d8d0;
+  font-size: 13px;
+  font-family: 'Noto Sans TC', sans-serif;
+  color: #333;
+  background: transparent;
+  padding: 4px 2px;
+  outline: none;
+  resize: none;
+  line-height: 1.7;
+  min-height: 28px;
+  margin-bottom: 8px;
+  display: block;
+}
+.fill-textarea:focus { border-bottom-color: #c96b2f; }
+
+.cta {
+  background: #c96b2f;
+  padding: 20px 18px;
+  margin-top: 8px;
+}
+.cta-title {
+  font-size: 14px;
+  font-weight: 700;
+  color: #fff;
+  margin-bottom: 6px;
+  line-height: 1.4;
+}
+.cta-text {
+  font-size: 12px;
+  color: #fde8d6;
+  line-height: 1.7;
+}
+.footer {
+  text-align: center;
+  font-size: 11px;
+  color: #ccc;
+  letter-spacing: 0.08em;
+  margin-top: 20px;
+}
+
+@media print {
+  body { background: #fff; max-width: 100%; padding: 12mm; }
+  .save-btn-wrap { display: none; }
+  .block { box-shadow: none; }
+  .fill-input, .fill-textarea { border-bottom: 1px solid #ccc; }
+  @page { size: A4; margin: 0; }
+}
+</style>
+</head>
+<body>
+
+<div class="save-btn-wrap">
+  <button class="save-btn" onclick="window.print()">✓ 填好了，存成 PDF</button>
+</div>
+
+<div class="brand">88La 理財觀點站</div>
+<h1>用黃金圈，找到你真正的存錢理由</h1>
+<p class="subtitle">不是意志力不夠，是還沒想清楚「為什麼」。<br>花 5 分鐘填寫以下問題，讓存錢變得有方向。</p>
+
+<div class="circle-area">
+  <svg width="140" height="140" viewBox="0 0 140 140" xmlns="http://www.w3.org/2000/svg">
+    <circle cx="70" cy="70" r="68" fill="#fffcf9" stroke="#f3ccaa" stroke-width="1.5"/>
+    <circle cx="70" cy="70" r="46" fill="#fef9f5" stroke="#e8a06a" stroke-width="1.5"/>
+    <circle cx="70" cy="70" r="24" fill="#c96b2f"/>
+    <text x="70" y="74" text-anchor="middle" font-size="9" font-weight="700" fill="#fff" font-family="'Noto Sans TC',sans-serif" letter-spacing="1">WHY</text>
+    <text x="70" y="34" text-anchor="middle" font-size="8" font-weight="600" fill="#c96b2f" font-family="'Noto Sans TC',sans-serif" letter-spacing="1">HOW</text>
+    <text x="70" y="11" text-anchor="middle" font-size="8" font-weight="600" fill="#c9906a" font-family="'Noto Sans TC',sans-serif" letter-spacing="1">WHAT</text>
+  </svg>
+</div>
+
+<!-- WHY -->
+<div class="block">
+  <div class="block-tag">WHY — 核心動力</div>
+  <div class="block-title">你為什麼要存錢？</div>
+  <div class="block-hint">這是最核心的動力，誘惑來了才不會破功</div>
+
+  <div class="q-block">
+    <div class="q-label">現在的你，最不想被什麼事困住？</div>
+    <div class="example">我不想再被錢追著跑，每個月都在等發薪日</div>
+    <textarea class="fill-textarea" rows="2" placeholder="在這裡輸入你的答案..."></textarea>
+  </div>
+
+  <div class="q-block">
+    <div class="q-label">存到錢之後，你的生活會有什麼不一樣？</div>
+    <textarea class="fill-textarea" rows="2" placeholder="在這裡輸入你的答案..."></textarea>
+  </div>
+</div>
+
+<!-- HOW -->
+<div class="block mid">
+  <div class="block-tag">HOW — 具體計畫</div>
+  <div class="block-title">你要存多少？存多久？</div>
+  <div class="block-hint">把目標變成數字，模糊感消失，行動才開始</div>
+
+  <div class="q-block">
+    <div class="q-label">你的第一個存錢目標是什麼？</div>
+    <div class="example">先存到 1 個月生活費緊急備用金，約 21,000 元</div>
+    <div class="write-row">
+      <span class="write-row-label">目標金額</span>
+      <input type="text" class="fill-input" placeholder="0000">
+      <span class="write-row-label">元</span>
+    </div>
+    <div class="write-row">
+      <span class="write-row-label">希望在</span>
+      <input type="text" class="fill-input" placeholder="0">
+      <span class="write-row-label">個月內達到</span>
+    </div>
+  </div>
+
+  <div class="q-block">
+    <div class="q-label">每個月至少要存多少？</div>
+    <div class="example">目標金額 ÷ 月數 ＝ 每月最少存 ＿＿＿ 元</div>
+    <div class="write-row">
+      <span class="write-row-label">每月至少存</span>
+      <input type="text" class="fill-input" placeholder="0000">
+      <span class="write-row-label">元</span>
+    </div>
+  </div>
+</div>
+
+<!-- WHAT -->
+<div class="block outer">
+  <div class="block-tag">WHAT — 具體行動</div>
+  <div class="block-title">你願意做什麼改變？</div>
+  <div class="block-hint">哪些花費其實可以不要</div>
+
+  <div class="q-block">
+    <div class="q-label">列出 3 筆「花了但有點後悔」的支出</div>
+    <div class="example">團購零食、買了沒看的課程、外送手續費</div>
+    <div class="write-row"><span class="write-row-label">1.</span><input type="text" class="fill-input"></div>
+    <div class="write-row"><span class="write-row-label">2.</span><input type="text" class="fill-input"></div>
+    <div class="write-row"><span class="write-row-label">3.</span><input type="text" class="fill-input"></div>
+  </div>
+
+  <div class="q-block">
+    <div class="q-label">結帳前，你願意問自己什麼問題？</div>
+    <div class="example">這筆錢，跟我的存錢目標對齊嗎？</div>
+    <textarea class="fill-textarea" rows="2" placeholder="在這裡輸入你的答案..."></textarea>
+  </div>
+</div>
+
+<div class="cta">
+  <div class="cta-title">填完了？恭喜你，已經比 90% 的人更靠近目標</div>
+  <div class="cta-text">存錢不靠意志力，靠的是一個清晰的理由。<br>截圖存起來，貼在你最常看到的地方。</div>
+</div>
+
+<div class="footer">88La @every_dollars</div>
+
+</body>
+</html>
