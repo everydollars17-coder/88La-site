@@ -437,6 +437,13 @@ function Nav({ page, setPage, isAdmin, setIsAdmin }) {
   const [pw, setPw] = useState(""); const [err, setErr] = useState(false);
   const [mob, setMob] = useState(false);
   const login = () => { if (pw === ADMIN_PW) { setIsAdmin(true); setShowL(false); setPw(""); setErr(false); } else setErr(true); };
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    if (params.get("admin") === "true") {
+      setShowL(true);
+      window.history.replaceState({}, "", window.location.pathname);
+    }
+  }, []);
   const go = p => { setPage(p); setMob(false); };
   return (
     <>
@@ -448,10 +455,7 @@ function Nav({ page, setPage, isAdmin, setIsAdmin }) {
             {NAV.map(([k, l]) => (
               <span key={k} onClick={() => go(k)} style={{ fontSize: 12, letterSpacing: ".8px", color: page === k ? WHITE : "rgba(255,255,255,.7)", cursor: "pointer", fontWeight: page === k ? "700" : "400", borderBottom: page === k ? `2px solid ${WHITE}` : "2px solid transparent", paddingBottom: 2, transition: "color .15s" }}>{l}</span>
             ))}
-            {isAdmin
-              ? <><span onClick={() => go("write")} style={{ fontSize: 12, color: WHITE, cursor: "pointer", letterSpacing: ".5px" }}>＋ 撰文</span><span onClick={() => setIsAdmin(false)} style={{ fontSize: 11, color: "rgba(255,255,255,.5)", cursor: "pointer", marginLeft: 6 }}>登出</span></>
-              : <span onClick={() => setShowL(true)} style={{ fontSize: 11, color: "rgba(255,255,255,.5)", cursor: "pointer" }}>後台</span>
-            }
+            {isAdmin && <><span onClick={() => go("write")} style={{ fontSize: 12, color: WHITE, cursor: "pointer", letterSpacing: ".5px" }}>＋ 撰文</span><span onClick={() => setIsAdmin(false)} style={{ fontSize: 11, color: "rgba(255,255,255,.5)", cursor: "pointer", marginLeft: 6 }}>登出</span></>}
           </nav>
           <button className="mob-menu" onClick={() => setMob(p => !p)} style={{ background: "none", border: "none", color: WHITE, fontSize: 22, cursor: "pointer", display: "flex", alignItems: "center" }}>
             {mob ? "✕" : "☰"}
@@ -462,10 +466,7 @@ function Nav({ page, setPage, isAdmin, setIsAdmin }) {
             {NAV.map(([k, l]) => (
               <span key={k} onClick={() => go(k)} style={{ fontSize: 15, padding: "15px 24px", borderBottom: `1px solid rgba(255,255,255,.08)`, color: page === k ? O : "rgba(255,255,255,.85)", cursor: "pointer", fontWeight: page === k ? "600" : "400" }}>{l}</span>
             ))}
-            {isAdmin
-              ? <><span onClick={() => go("write")} style={{ fontSize: 15, padding: "15px 24px", borderBottom: `1px solid rgba(255,255,255,.08)`, color: O, cursor: "pointer" }}>＋ 撰文</span><span onClick={() => { setIsAdmin(false); setMob(false); }} style={{ fontSize: 13, padding: "13px 24px", color: "rgba(255,255,255,.4)", cursor: "pointer" }}>登出</span></>
-              : <span onClick={() => { setShowL(true); setMob(false); }} style={{ fontSize: 13, padding: "13px 24px", color: "rgba(255,255,255,.4)", cursor: "pointer" }}>後台登入</span>
-            }
+            {isAdmin && <><span onClick={() => go("write")} style={{ fontSize: 15, padding: "15px 24px", borderBottom: `1px solid rgba(255,255,255,.08)`, color: O, cursor: "pointer" }}>＋ 撰文</span><span onClick={() => { setIsAdmin(false); setMob(false); }} style={{ fontSize: 13, padding: "13px 24px", color: "rgba(255,255,255,.4)", cursor: "pointer" }}>登出</span></>}
           </div>
         )}
       </header>
