@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { initializeApp } from "firebase/app";
 import { getFirestore, doc, getDoc, setDoc } from "firebase/firestore";
 
@@ -14,7 +14,7 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 
-const ADMIN_PW = "everydollars88";
+const ADMIN_PW = import.meta.env.VITE_ADMIN_PW;
 const APP_URL = "https://88la-finance.vercel.app";
 
 const O = "#C85A14";
@@ -103,6 +103,14 @@ button{font-family:inherit;cursor:pointer;border:none;border-radius:8px;}
   .mob-menu{display:none!important;}
   .mob-panel{display:none!important;}
 }
+.article-content h2{font-size:22px;font-weight:700;color:#1A1A1A;margin:32px 0 12px;line-height:1.4;}
+.article-content h3{font-size:18px;font-weight:600;color:#1A1A1A;margin:24px 0 10px;line-height:1.4;}
+.article-content p{margin-bottom:16px;line-height:2.1;}
+.article-content ul,.article-content ol{padding-left:24px;margin-bottom:16px;}
+.article-content li{margin-bottom:6px;line-height:1.9;}
+.article-content strong{font-weight:700;}
+.article-content em{font-style:italic;}
+.article-content u{text-decoration:underline;}
 `;
 
 const DEFAULT_TAGS = ["理財觀念", "信用卡", "記帳", "投資", "讀書筆記", "生活財務", "其他"];
@@ -143,7 +151,7 @@ const DEFAULTS = {
     heroTitle: "記帳 App，讓你真的",
     heroHighlight: "存到錢",
     heroSub: "雲端同步 Google Sheets，智慧診斷消費模式，支援家庭記帳。不只記帳，更幫你看懂錢的流向。",
-    pricingNote: "選擇適合你的方案，開始掌握每一筆錢",
+    pricingNote: "所有方案皆包含桌面快速記帳功能，選擇最適合你的方案",
     features: [
       { id: 1, n: "01", title: "即時記帳", desc: "一秒記下每筆花費，情緒、類別、帳戶、分期全部記錄。", img: "" },
       { id: 2, n: "02", title: "雲端同步", desc: "資料存在你自己的 Google Sheets，永遠不鎖在 App 裡。", img: "" },
@@ -153,9 +161,50 @@ const DEFAULTS = {
       { id: 6, n: "06", title: "PWA 支援", desc: "加到主畫面，iOS / Android 體驗接近原生 App。", img: "" },
     ],
     plans: [
-      { id: 1, name: "1 年方案", price: "NT$ 999", period: "/年", highlight: false, badge: "", features: ["全功能存取", "Google Sheets 同步", "CSV/PDF 匯出", "智慧診斷分析"], detailTitle: "", detailImg: "", detailContent: "" },
-      { id: 2, name: "3 年方案", price: "NT$ 2,199", period: "/3年", highlight: true, badge: "最超值", features: ["全功能存取", "Google Sheets 同步", "CSV/PDF 匯出", "智慧診斷分析", "平均每年省下更多"], detailTitle: "", detailImg: "", detailContent: "" },
+      { id: 1, name: "月訂閱", price: "NT$129", period: "/月", highlight: false, badge: "", features: ["88La 理財導航器完整功能", "桌面快速記帳", "隨時可取消"], detailTitle: "", detailImg: "", detailContent: "" },
+      { id: 2, name: "年方案", price: "NT$999", period: "/年", highlight: true, badge: "最多人選擇", features: ["88La 理財導航器完整功能", "桌面快速記帳", "省下約 35%", "相當於 NT$83/月"], detailTitle: "", detailImg: "", detailContent: "" },
+      { id: 3, name: "兩年方案", price: "NT$1,899", period: "/兩年", highlight: false, badge: "", features: ["88La 理財導航器完整功能", "桌面快速記帳", "最划算方案", "相當於 NT$79/月"], detailTitle: "", detailImg: "", detailContent: "" },
     ],
+    guideTitle: "88La 理財自動導航器 — 使用說明",
+    guideData: {
+      phases: [
+        { id: 0, label: "初次設定", sub: "開始使用，設定一次即可", isSetup: true, steps: [
+          { id: 1, num: "01", title: "帳戶設定", body: "打開網銀 App，盤點所有帳戶，輸入帳戶名稱與當前餘額。之後每次記帳時直接選取帳戶付款，餘額自動更新，不用再手動計算。", bullets: [] },
+          { id: 2, num: "02", title: "信用卡設定", body: "輸入卡別名稱、結帳日、繳費日，系統便能自動提醒卡費時程與預留金額，避免到期才發現現金不夠。", bullets: [] },
+          { id: 3, num: "03", title: "負債追蹤設定（選用）", body: "有貸款或分期的話，填入債務名稱、性質、月繳金額、期數。系統自動計算剩餘期數並追蹤還款進度，也可一鍵繳款直接完成記帳。", bullets: [] },
+        ]},
+        { id: 1, label: "月初", sub: "盤點與規劃", steps: [
+          { id: 11, num: "01", title: "收入盤點", body: "領到薪水的那一刻，先把所有收入來源都列出來，每一塊錢都好好安頓。你可以自由決定哪些收入要列入當期預算，哪些想另作運用。", bullets: [] },
+          { id: 12, num: "02", title: "設定儲蓄目標", body: "填寫這個月想存下的目標金額，養成「先存後花」的習慣，再進入下一步的預算分配。", bullets: [] },
+          { id: 13, num: "03", title: "智慧預算建議", body: "系統根據你的薪水與儲蓄目標，自動推算出適合的分配比例，涵蓋變動支出（含預存支出）、固定支出、儲蓄三大類。", bullets: [] },
+          { id: 14, num: "04", title: "實際分配對比", body: "分配完預算後，系統將「你的實際分配比例」與「系統建議比例」並列對比，幫你看清楚儲蓄空間與固定支出占比。", bullets: [] },
+          { id: 15, num: "05", title: "公費 / 家庭模式（選用）", body: "如果你和伴侶有公費分帳或家庭合併收支的需求，系統會引導你一步步抓準金額。", bullets: ["公費制：每人提撥固定金額，用於共同支出", "家庭制：雙方薪水合併使用，共同規劃預算"] },
+        ]},
+        { id: 2, label: "月中", sub: "日常記帳", steps: [
+          { id: 21, num: "06", title: "快速記帳", body: "桌面快速記帳介面，降低記帳阻力，實現無痛記帳。記帳時可設定歸屬、支付方式與消費情緒。", bullets: ["歸屬：個人 / 公費 / 家庭", "支付方式：自由調整", "消費情緒：檢視衝動消費頻率"] },
+          { id: 22, num: "07", title: "信用卡管理", body: "依卡別設定結帳日、繳費日，系統自動提醒卡費與預留金額，避免惡性循環。", bullets: ["何時繳、繳多少", "下個月卡費預留提醒", "刷卡頻率偵測與建議"] },
+          { id: 23, num: "08", title: "帳戶管理", body: "自由設定帳戶名稱、金額、icon，支援帳戶間轉帳（含手續費），並可連動記帳直接用帳戶支付。", bullets: [] },
+          { id: 24, num: "09", title: "儲蓄管理", body: "月初編列的儲蓄、投資、預存項目可設定具體目標，透過動態進度條隨時掌握累積進度。", bullets: [] },
+          { id: 25, num: "10", title: "負債追蹤", body: "輸入貸款金額、已還金額、期數，追蹤還款進度，並可一鍵繳款直接完成記帳。", bullets: [] },
+          { id: 26, num: "11", title: "預存管理", body: "建立一個專屬帳戶來存放預存款項，每次存入時用轉帳功能記錄，要動用時再從帳戶扣款，餘額隨時清楚。習慣用現金預存的人，也可以建立「現金預存帳戶」，操作邏輯一樣。", bullets: [] },
+        ]},
+        { id: 3, label: "月底", sub: "診斷與調整", steps: [
+          { id: 31, num: "12", title: "月度診斷", body: "系統全面分析本月收支，找出調整方向。", bullets: ["固定 / 變動支出狀況、儲蓄是否達標", "支出類別占比、支付方式、情緒消費分析", "偵測未列入預算的支出與未計畫儲蓄", "給出下個月具體調整方向與深度建議"] },
+          { id: 32, num: "13", title: "最新快訊", body: "首頁一目瞭然：預算進度條、信用卡費提醒、近期消費紀錄、本月還款倒數。", bullets: [] },
+          { id: 33, num: "14", title: "筆記與匯出", body: "可在筆記區記錄調整方向，月底整合匯出 PDF 或 CSV 檔，也支援加購一對一診斷討論。", bullets: [] },
+        ]},
+      ],
+      dataNote: "登入 Google 帳號後，系統會自動建立專屬試算表，所有輸入資料都會同步保存在你自己的雲端空間，僅你本人可見。",
+      faqs: [
+        { id: 1, q: "我的資料會被誰看到？", a: "不會被任何人看到。所有記帳資料都儲存在你登入後自動建立的個人 Google 試算表中，屬於你自己的雲端空間。" },
+        { id: 2, q: "公費制和家庭制有什麼不同？", a: "公費制是每人提撥固定金額到共同帳戶用於共同支出；家庭制則是兩人薪水完全合併使用。記帳時可選擇歸屬為個人、公費或家庭。" },
+        { id: 3, q: "系統推薦的預算比例可以自己調整嗎？", a: "可以。系統先給出建議比例，你可以自由分配每一項預算，並看到「實際分配」與「系統建議」的對比，幫助你調整。" },
+        { id: 4, q: "信用卡的「預留金額」是什麼意思？", a: "指當期信用卡刷卡金額，系統提醒你預留這筆現金，避免月底現金花光又用下個月薪水繳帳單，形成惡性循環。" },
+        { id: 5, q: "月底診斷會告訴我什麼？", a: "分析固定/變動支出比例、儲蓄達標狀況、各類別支出占比、情緒消費頻率，並抓出未列入預算的支出，給出下個月具體調整建議。" },
+        { id: 6, q: "可以匯出資料嗎？", a: "可以。月底可匯出整合診斷、筆記、消費情形的 PDF，或匯出記帳明細 CSV 檔。" },
+        { id: 7, q: "想要更深入的調整建議怎麼辦？", a: "可加購 88La 一對一診斷討論服務。" },
+      ],
+    },
   },
   contactContent: {
     intro: "如果你是品牌方、媒體、或想和 88La 合作，歡迎透過以下方式聯絡。我通常會在 3 個工作天內回覆。",
@@ -197,6 +246,177 @@ function OrdBtns({ idx, total, onMove, style = {} }) {
     <div style={{ display: "flex", flexDirection: "column", gap: 2, ...style }}>
       <button className="ordbtn" onClick={e => { e.stopPropagation(); onMove(idx, -1); }} disabled={idx === 0}>▲</button>
       <button className="ordbtn" onClick={e => { e.stopPropagation(); onMove(idx, 1); }} disabled={idx === total - 1}>▼</button>
+    </div>
+  );
+}
+
+// ── Crop Modal ──
+function CropModal({ src, aspect = "16/9", onConfirm, onCancel }) {
+  const [aW, aH] = aspect.split("/").map(Number);
+  const CROPW = 360, CROPH = Math.round(CROPW * aH / aW);
+  const imgRef = useRef();
+  const [pos, setPos] = useState({ x: 0, y: 0 });
+  const [scale, setScale] = useState(1);
+  const [minScale, setMinScale] = useState(0.5);
+  const [dragging, setDragging] = useState(false);
+  const [start, setStart] = useState({ x: 0, y: 0 });
+  const [uploading, setUploading] = useState(false);
+  const [cropError, setCropError] = useState("");
+
+  const clamp = (p, s) => {
+    if (!imgRef.current) return p;
+    const iW = imgRef.current.naturalWidth * s, iH = imgRef.current.naturalHeight * s;
+    return { x: Math.min(0, Math.max(CROPW - iW, p.x)), y: Math.min(0, Math.max(CROPH - iH, p.y)) };
+  };
+
+  const onImgLoad = () => {
+    const img = imgRef.current; if (!img) return;
+    const s = Math.max(CROPW / img.naturalWidth, CROPH / img.naturalHeight);
+    setScale(s); setMinScale(s);
+    setPos({ x: (CROPW - img.naturalWidth * s) / 2, y: (CROPH - img.naturalHeight * s) / 2 });
+  };
+
+  const onDown = (x, y) => { setDragging(true); setStart({ x: x - pos.x, y: y - pos.y }); };
+  const onMove = (x, y) => { if (!dragging) return; setPos(clamp({ x: x - start.x, y: y - start.y }, scale)); };
+  const onUp = () => setDragging(false);
+  const onZoom = (s) => { setScale(s); setPos(p => clamp(p, s)); };
+
+  const confirm = async () => {
+    const img = imgRef.current; if (!img) return;
+    setUploading(true); setCropError("");
+    try {
+      const OUT = 1200, OUTH = Math.round(OUT * aH / aW);
+      const canvas = document.createElement("canvas");
+      canvas.width = OUT; canvas.height = OUTH;
+      canvas.getContext("2d").drawImage(img, -pos.x / scale, -pos.y / scale, CROPW / scale, CROPH / scale, 0, 0, OUT, OUTH);
+      await new Promise((res, rej) => canvas.toBlob(async blob => {
+        const fd = new FormData();
+        fd.append("file", blob, "cropped.jpg");
+        fd.append("upload_preset", "88la-site");
+        const r = await fetch("https://api.cloudinary.com/v1_1/daiboggpp/image/upload", { method: "POST", body: fd });
+        const d = await r.json();
+        if (d.secure_url) { onConfirm(d.secure_url); res(); } else rej();
+      }, "image/jpeg", 0.92));
+    } catch { setCropError("裁剪失敗（圖片可能不支援跨來源），請用上傳的圖片再試"); }
+    setUploading(false);
+  };
+
+  return (
+    <div style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,.8)", zIndex: 2000, display: "flex", alignItems: "center", justifyContent: "center", padding: 20 }}>
+      <div style={{ background: WHITE, borderRadius: 12, padding: 24, width: Math.min(CROPW + 48, 420) }}>
+        <p style={{ fontSize: 14, fontWeight: 500, color: CHAR, marginBottom: 4 }}>裁剪 / 調整位置</p>
+        <p style={{ fontSize: 12, color: MID, marginBottom: 14 }}>拖曳移動 · 下方滑桿縮放</p>
+        <div style={{ width: CROPW, height: CROPH, overflow: "hidden", cursor: dragging ? "grabbing" : "grab", position: "relative", background: "#111", borderRadius: 4, touchAction: "none", outline: `2px solid ${O}` }}
+          onMouseDown={e => onDown(e.clientX, e.clientY)} onMouseMove={e => onMove(e.clientX, e.clientY)} onMouseUp={onUp} onMouseLeave={onUp}
+          onTouchStart={e => onDown(e.touches[0].clientX, e.touches[0].clientY)}
+          onTouchMove={e => { e.preventDefault(); onMove(e.touches[0].clientX, e.touches[0].clientY); }} onTouchEnd={onUp}>
+          <img ref={imgRef} src={src} alt="" crossOrigin="anonymous" draggable={false} onLoad={onImgLoad}
+            style={{ position: "absolute", transformOrigin: "0 0", transform: `translate(${pos.x}px,${pos.y}px) scale(${scale})`, userSelect: "none", maxWidth: "none" }} />
+        </div>
+        <div style={{ display: "flex", alignItems: "center", gap: 10, marginTop: 10 }}>
+          <span style={{ fontSize: 12, color: MID, flexShrink: 0 }}>縮放</span>
+          <input type="range" min={minScale} max={minScale * 4} step={minScale * 0.005} value={scale}
+            onChange={e => onZoom(parseFloat(e.target.value))} style={{ flex: 1, width: "auto" }} />
+        </div>
+        {cropError && <p style={{ fontSize: 12, color: "#C0392B", marginTop: 8 }}>{cropError}</p>}
+        <div style={{ display: "flex", gap: 10, marginTop: 18, justifyContent: "flex-end" }}>
+          <button className="pg" onClick={onCancel}>取消</button>
+          <button className="pb" onClick={confirm} disabled={uploading}>{uploading ? "上傳中..." : "確認裁剪"}</button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// ── Image Uploader ──
+function ImgUploader({ value, onChange, label = "圖片", aspect = "16/9" }) {
+  const inputRef = useRef();
+  const [progress, setProgress] = useState(null);
+  const [error, setError] = useState("");
+  const [showCrop, setShowCrop] = useState(false);
+
+  const upload = (file) => {
+    if (!file) return;
+    if (!file.type.startsWith("image/")) { setError("請選擇圖片檔案"); return; }
+    if (file.size > 5 * 1024 * 1024) { setError("檔案不能超過 5MB"); return; }
+    setError("");
+    const fd = new FormData();
+    fd.append("file", file);
+    fd.append("upload_preset", "88la-site");
+    const xhr = new XMLHttpRequest();
+    xhr.open("POST", "https://api.cloudinary.com/v1_1/daiboggpp/image/upload");
+    xhr.upload.onprogress = e => { if (e.lengthComputable) setProgress(Math.round(e.loaded / e.total * 100)); };
+    xhr.onload = () => {
+      if (xhr.status === 200) { onChange(JSON.parse(xhr.responseText).secure_url); setProgress(null); }
+      else { setError("上傳失敗，請重試"); setProgress(null); }
+    };
+    xhr.onerror = () => { setError("上傳失敗，請重試"); setProgress(null); };
+    setProgress(0);
+    xhr.send(fd);
+  };
+
+  return (
+    <div>
+      <p style={{ fontSize: 12, color: MID, marginBottom: 8 }}>{label}</p>
+      <div style={{ aspectRatio: aspect, background: GRAY, overflow: "hidden", display: "flex", alignItems: "center", justifyContent: "center", marginBottom: 10, maxHeight: 200 }}>
+        {value
+          ? <img src={value} alt="preview" style={{ width: "100%", height: "100%", objectFit: "cover" }} />
+          : <span style={{ fontSize: 12, color: LIGHT }}>尚無圖片</span>}
+      </div>
+      <div style={{ display: "flex", gap: 8, alignItems: "center", flexWrap: "wrap" }}>
+        <button type="button" className="pg" onClick={() => inputRef.current.click()} style={{ fontSize: 13, padding: "8px 16px" }} disabled={progress !== null}>
+          {progress !== null ? `上傳中 ${progress}%` : "選擇圖片"}
+        </button>
+        {value && <button type="button" className="pg" onClick={() => setShowCrop(true)} style={{ fontSize: 13, padding: "8px 16px" }}>裁剪</button>}
+        <input ref={inputRef} type="file" accept="image/*" style={{ display: "none" }} onChange={e => upload(e.target.files[0])} />
+        <input placeholder="或貼上圖片網址" value={value} onChange={e => onChange(e.target.value)} style={{ flex: 1, minWidth: 0, fontSize: 13 }} />
+      </div>
+      {error && <p style={{ fontSize: 12, color: "#C0392B", marginTop: 6 }}>{error}</p>}
+      {showCrop && <CropModal src={value} aspect={aspect} onConfirm={url => { onChange(url); setShowCrop(false); }} onCancel={() => setShowCrop(false)} />}
+    </div>
+  );
+}
+
+// ── Rich Text Editor ──
+function RichEditor({ value, onChange }) {
+  const ref = useRef();
+  const init = useRef(false);
+  useEffect(() => {
+    if (!init.current && ref.current) {
+      const html = /<[a-z][\s\S]*>/i.test(value || "") ? (value || "") : (value || "").replace(/\n/g, "<br>");
+      ref.current.innerHTML = html;
+      init.current = true;
+    }
+  }, []);
+  const exec = (cmd, val = null) => { ref.current.focus(); document.execCommand(cmd, false, val); };
+  const btn = { padding: "4px 9px", fontSize: 13, background: WHITE, border: `1px solid ${BORDER}`, cursor: "pointer", fontFamily: "inherit", borderRadius: 4, lineHeight: 1.4 };
+  const COLORS = ["#1A1A1A", "#C85A14", "#E8806E", "#6B6B6B", "#2563EB", "#DC2626", "#16A34A", "#9333EA"];
+  return (
+    <div style={{ border: "1px solid #D0D5DA" }}>
+      <div style={{ display: "flex", gap: 4, flexWrap: "wrap", padding: "8px 10px", background: "#F5F5F5", borderBottom: "1px solid #D0D5DA" }}>
+        <button type="button" style={{ ...btn, fontWeight: 700 }} onMouseDown={e => { e.preventDefault(); exec("bold"); }}>B</button>
+        <button type="button" style={{ ...btn, fontStyle: "italic" }} onMouseDown={e => { e.preventDefault(); exec("italic"); }}>I</button>
+        <button type="button" style={{ ...btn, textDecoration: "underline" }} onMouseDown={e => { e.preventDefault(); exec("underline"); }}>U</button>
+        <span style={{ width: 1, background: "#D0D5DA", margin: "0 4px", display: "inline-block" }} />
+        <button type="button" style={btn} onMouseDown={e => { e.preventDefault(); exec("formatBlock", "h2"); }}>H2</button>
+        <button type="button" style={btn} onMouseDown={e => { e.preventDefault(); exec("formatBlock", "h3"); }}>H3</button>
+        <button type="button" style={btn} onMouseDown={e => { e.preventDefault(); exec("formatBlock", "p"); }}>¶</button>
+        <span style={{ width: 1, background: "#D0D5DA", margin: "0 4px", display: "inline-block" }} />
+        <button type="button" style={btn} onMouseDown={e => { e.preventDefault(); exec("insertUnorderedList"); }}>• 列表</button>
+        <button type="button" style={btn} onMouseDown={e => { e.preventDefault(); exec("insertOrderedList"); }}>1. 編號</button>
+        <span style={{ width: 1, background: "#D0D5DA", margin: "0 4px", display: "inline-block" }} />
+        {[["小","2"],["正常","3"],["大","5"]].map(([l,s]) => (
+          <button key={s} type="button" style={btn} onMouseDown={e => { e.preventDefault(); exec("fontSize", s); }}>{l}</button>
+        ))}
+        <span style={{ width: 1, background: "#D0D5DA", margin: "0 4px", display: "inline-block" }} />
+        {COLORS.map(c => (
+          <button key={c} type="button" style={{ width: 22, height: 22, background: c, border: "2px solid rgba(0,0,0,.15)", borderRadius: 4, cursor: "pointer", padding: 0, flexShrink: 0 }}
+            title={c} onMouseDown={e => { e.preventDefault(); exec("foreColor", c); }} />
+        ))}
+      </div>
+      <div ref={ref} contentEditable suppressContentEditableWarning
+        onInput={() => onChange(ref.current.innerHTML)}
+        style={{ minHeight: 360, padding: "16px", outline: "none", fontSize: 16, lineHeight: 2, color: CHAR }} />
     </div>
   );
 }
@@ -285,7 +505,7 @@ function Footer({ links, footerTagline, setFooterTagline, isAdmin, setPage }) {
     <footer style={{ background: CHAR, padding: "40px 32px 32px" }}>
       <div style={{ maxWidth: 1100, margin: "0 auto", display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: 16 }}>
         <div style={{ display: "flex", alignItems: "center", gap: 24, flexWrap: "wrap" }}>
-          <p style={{ fontFamily: "Inter", fontWeight: 700, fontSize: 14, letterSpacing: "2px", color: WHITE }}>88La</p>
+          <p style={{ fontFamily: "Inter", fontWeight: 700, fontSize: 14, letterSpacing: "1.5px", color: WHITE }}>88La 理財導航器</p>
           {editing ? (
             <div style={{ display: "flex", gap: 8, alignItems: "center" }}>
               <input value={tmp} onChange={e => setTmp(e.target.value)} style={{ fontSize: 12, color: WHITE, borderBottom: `1px solid rgba(255,255,255,.3)`, background: "transparent", width: 240, padding: "2px 0" }} />
@@ -303,14 +523,14 @@ function Footer({ links, footerTagline, setFooterTagline, isAdmin, setPage }) {
           {[[l.lineOfficial, "LINE"], [l.instagram, "Instagram"], ["mailto:" + l.email, "Email"]].map(([h, label]) => (
             <a key={label} href={h} target="_blank" rel="noopener noreferrer" style={{ fontSize: 12, color: "rgba(255,255,255,.6)", fontWeight: 400, transition: "color .15s" }} onMouseEnter={e => e.currentTarget.style.color = WHITE} onMouseLeave={e => e.currentTarget.style.color = "rgba(255,255,255,.6)"}>{label}</a>
           ))}
-          {setPage && <><span onClick={() => setPage("newsletter")} style={{ fontSize: 12, color: "rgba(255,255,255,.6)", cursor: "pointer", transition: "color .15s" }} onMouseEnter={e => e.currentTarget.style.color = WHITE} onMouseLeave={e => e.currentTarget.style.color = "rgba(255,255,255,.6)"}>電子報</span><span onClick={() => setPage("contact")} style={{ fontSize: 12, color: "rgba(255,255,255,.6)", cursor: "pointer", transition: "color .15s" }} onMouseEnter={e => e.currentTarget.style.color = WHITE} onMouseLeave={e => e.currentTarget.style.color = "rgba(255,255,255,.6)"}>合作洽談</span></>}
+          {setPage && <><span onClick={() => setPage("newsletter")} style={{ fontSize: 12, color: "rgba(255,255,255,.6)", cursor: "pointer", transition: "color .15s" }} onMouseEnter={e => e.currentTarget.style.color = WHITE} onMouseLeave={e => e.currentTarget.style.color = "rgba(255,255,255,.6)"}>電子報</span><span onClick={() => setPage("contact")} style={{ fontSize: 12, color: "rgba(255,255,255,.6)", cursor: "pointer", transition: "color .15s" }} onMouseEnter={e => e.currentTarget.style.color = WHITE} onMouseLeave={e => e.currentTarget.style.color = "rgba(255,255,255,.6)"}>合作洽談</span><span onClick={() => setPage("pricing")} style={{ fontSize: 12, color: "rgba(255,255,255,.6)", cursor: "pointer", transition: "color .15s" }} onMouseEnter={e => e.currentTarget.style.color = WHITE} onMouseLeave={e => e.currentTarget.style.color = "rgba(255,255,255,.6)"}>訂閱方案</span></>}
         </div>
       </div>
       <div style={{ maxWidth: 1100, margin: "12px auto 0", paddingTop: 14, borderTop: `1px solid rgba(255,255,255,.1)`, display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: 8 }}>
-        <p style={{ fontSize: 11, color: "rgba(255,255,255,.3)" }}>© 2026 88La · every_dollars</p>
-        <div style={{ display: "flex", gap: 20, flexWrap: "wrap" }}>
-          <span style={{ fontSize: 11, color: "rgba(255,255,255,.3)" }}>LINE：@367xhgyr</span>
-          <span style={{ fontSize: 11, color: "rgba(255,255,255,.3)" }}>{l.email}</span>
+        <p style={{ fontSize: 11, color: "rgba(255,255,255,.3)" }}>© 2026 88La 版權所有</p>
+        <div style={{ display: "flex", gap: 20, flexWrap: "wrap", alignItems: "center" }}>
+          <a href={`mailto:${l.email}`} style={{ fontSize: 11, color: "rgba(255,255,255,.3)", transition: "color .15s" }} onMouseEnter={e => e.currentTarget.style.color = "rgba(255,255,255,.6)"} onMouseLeave={e => e.currentTarget.style.color = "rgba(255,255,255,.3)"}>{l.email}</a>
+          {setPage && <span onClick={() => setPage("terms")} style={{ fontSize: 11, color: "rgba(255,255,255,.3)", cursor: "pointer", transition: "color .15s" }} onMouseEnter={e => e.currentTarget.style.color = "rgba(255,255,255,.6)"} onMouseLeave={e => e.currentTarget.style.color = "rgba(255,255,255,.3)"}>服務條款</span>}
         </div>
       </div>
     </footer>
@@ -327,7 +547,8 @@ function Hero({ about, isAdmin, setAbout, links }) {
     <div style={{ padding: "48px 32px", maxWidth: 600, margin: "0 auto" }}>
       <p style={{ fontSize: 11, letterSpacing: "2px", color: O, marginBottom: 24 }}>編輯 Banner</p>
       <div style={{ display: "flex", flexDirection: "column", gap: 20 }}>
-        {[["背景圖片網址","bannerImg","https://..."],["大標題","bannerTitle",""],["副標題","bannerSub",""],["按鈕一文字","bannerBtn1","加入 LINE 社群"],["按鈕一連結","bannerLink1","https://line.me/..."],["按鈕二文字","bannerBtn2","追蹤 Instagram"],["按鈕二連結","bannerLink2","https://www.instagram.com/..."]].map(([label,key,ph]) => (
+        <ImgUploader label="背景圖片" value={tmp.bannerImg || ""} onChange={v => setTmp(p => ({ ...p, bannerImg: v }))} aspect="16/9" />
+        {[["大標題","bannerTitle",""],["副標題","bannerSub",""],["按鈕一文字","bannerBtn1","加入 LINE 社群"],["按鈕一連結","bannerLink1","https://line.me/..."],["按鈕二文字","bannerBtn2","追蹤 Instagram"],["按鈕二連結","bannerLink2","https://www.instagram.com/..."]].map(([label,key,ph]) => (
           <div key={key}><p style={{ fontSize: 12, color: MID, marginBottom: 8 }}>{label}</p><input placeholder={ph} value={tmp[key] || ""} onChange={e => setTmp(p => ({ ...p, [key]: e.target.value }))} /></div>
         ))}
       </div>
@@ -477,7 +698,7 @@ function RelatedLinkEditor({ relatedLinks, onChange, products, resources }) {
       <div style={{ display: "grid", gridTemplateColumns: "auto 1fr auto", gap: 8, marginTop: 12, alignItems: "end" }}>
         <div>
           <p style={{ fontSize: 11, color: MID, marginBottom: 4 }}>類型</p>
-          <select value={type} onChange={e => { setType(e.target.value); setKey(e.target.value === "page" ? "app" : ""); }} style={{ border: `1px solid #D0D5DA`, padding: "8px 10px", background: WHITE, fontSize: 12 }}>
+          <select value={type} onChange={e => { const t = e.target.value; setType(t); setKey(t === "page" ? "app" : t === "product" ? String((products||[])[0]?.id||"") : String(((resources||[]).filter(r=>r.active))[0]?.id||"")); }} style={{ border: `1px solid #D0D5DA`, padding: "8px 10px", background: WHITE, fontSize: 12 }}>
             <option value="page">頁面</option>
             <option value="product">商品</option>
             <option value="resource">資源</option>
@@ -501,9 +722,10 @@ function Article({ article, onBack, setArticles, isAdmin, tags, links, setPage, 
   const [editing, setEditing] = useState(false);
   const [ed, setEd] = useState({ title: article.title, tag: article.tag, excerpt: article.excerpt, content: article.content, img: article.img || "", relatedLinks: article.relatedLinks || [] });
   const l = links || DEFAULTS.links;
+  const sanitize = (s) => s.replace(/[<>]/g, "");
   const submit = () => {
     if (!text.trim()) return;
-    const c = { name: name.trim() || "匿名", text: text.trim(), date: new Date().toISOString().slice(0, 10) };
+    const c = { name: sanitize(name.trim() || "匿名").slice(0, 50), text: sanitize(text.trim()).slice(0, 500), date: new Date().toISOString().slice(0, 10) };
     setArticles(prev => prev.map(a => a.id === article.id ? { ...a, comments: [...a.comments, c] } : a));
     setName(""); setText("");
   };
@@ -522,9 +744,9 @@ function Article({ article, onBack, setArticles, isAdmin, tags, links, setPage, 
       <div style={{ display: "flex", flexDirection: "column", gap: 20 }}>
         <textarea placeholder="標題" value={ed.title} onChange={e => setEd(p => ({ ...p, title: e.target.value }))} style={{ fontSize: 20, fontWeight: 500, minHeight: 64, resize: "none", border: "none", borderBottom: "1px solid #D0D5DA", lineHeight: 1.4 }} />
         <select value={ed.tag} onChange={e => setEd(p => ({ ...p, tag: e.target.value }))} style={{ border: "1px solid #D0D5DA", padding: "10px 12px", background: WHITE }}>{tags.map(t => <option key={t}>{t}</option>)}</select>
-        <div><p style={{ fontSize: 12, color: MID, marginBottom: 8 }}>封面圖片網址（選填）</p><input placeholder="https://..." value={ed.img} onChange={e => setEd(p => ({ ...p, img: e.target.value }))} /></div>
+        <ImgUploader label="封面圖片（選填）" value={ed.img} onChange={v => setEd(p => ({ ...p, img: v }))} aspect="16/9" />
         <textarea placeholder="摘要" value={ed.excerpt} onChange={e => setEd(p => ({ ...p, excerpt: e.target.value }))} style={{ minHeight: 72, resize: "vertical" }} />
-        <textarea placeholder="內文" value={ed.content} onChange={e => setEd(p => ({ ...p, content: e.target.value }))} style={{ minHeight: 360, border: "1px solid #D0D5DA", padding: "12px", background: WHITE }} />
+        <RichEditor value={ed.content} onChange={v => setEd(p => ({ ...p, content: v }))} />
         <RelatedLinkEditor relatedLinks={ed.relatedLinks} onChange={v => setEd(p => ({ ...p, relatedLinks: v }))} products={products} resources={resources} />
         <div style={{ display: "flex", gap: 10 }}><button className="pb" onClick={saveEdit}>儲存</button><button className="pg" onClick={() => setEditing(false)}>取消</button></div>
       </div>
@@ -550,7 +772,8 @@ function Article({ article, onBack, setArticles, isAdmin, tags, links, setPage, 
         </div>
       )}
       <div style={{ maxWidth: 740, margin: "0 auto", padding: "52px 32px" }} className="page-wrap">
-        <div style={{ fontSize: 16, lineHeight: 2.1, color: CHAR, whiteSpace: "pre-wrap", marginBottom: 56 }}>{article.content}</div>
+        <div className="article-content" style={{ fontSize: 16, lineHeight: 2.1, color: CHAR, marginBottom: 56 }}
+          dangerouslySetInnerHTML={{ __html: /<[a-z][\s\S]*>/i.test(article.content || "") ? article.content : (article.content || "").replace(/\n/g, "<br>") }} />
         {relLinks.length > 0 && (
           <div style={{ marginBottom: 48 }}>
             <p style={{ fontSize: 11, letterSpacing: "2px", color: MID, marginBottom: 16 }}>相關內容</p>
@@ -608,8 +831,8 @@ function Article({ article, onBack, setArticles, isAdmin, tags, links, setPage, 
         </div>
         <div style={{ background: GRAY, padding: "28px 28px" }}>
           <p style={{ fontSize: 12, letterSpacing: "1px", color: MID, marginBottom: 18 }}>留下你的想法</p>
-          <input placeholder="暱稱（選填）" value={name} onChange={e => setName(e.target.value)} style={{ marginBottom: 14 }} />
-          <textarea placeholder="你的留言⋯" value={text} onChange={e => setText(e.target.value)} style={{ marginBottom: 18, border: "none", background: "transparent", borderBottom: "1px solid #D0D5DA" }} />
+          <input placeholder="暱稱（選填）" value={name} onChange={e => setName(e.target.value)} maxLength={50} style={{ marginBottom: 14 }} />
+          <textarea placeholder="你的留言⋯" value={text} onChange={e => setText(e.target.value)} maxLength={500} style={{ marginBottom: 18, border: "none", background: "transparent", borderBottom: "1px solid #D0D5DA" }} />
           <button className="pb" onClick={submit} disabled={!text.trim()}>送出留言</button>
         </div>
       </div>
@@ -628,10 +851,9 @@ function Write({ onSave, onBack, tags, products, resources }) {
       <div style={{ display: "flex", flexDirection: "column", gap: 20 }}>
         <textarea placeholder="文章標題" value={d.title} onChange={e => setD(p => ({ ...p, title: e.target.value }))} style={{ fontSize: 22, fontWeight: 500, minHeight: 64, resize: "none", border: "none", borderBottom: "1px solid #D0D5DA", lineHeight: 1.4 }} />
         <select value={d.tag} onChange={e => setD(p => ({ ...p, tag: e.target.value }))} style={{ border: "1px solid #D0D5DA", padding: "10px 12px", background: WHITE }}>{tags.map(t => <option key={t}>{t}</option>)}</select>
-        <div><p style={{ fontSize: 12, color: MID, marginBottom: 8 }}>封面圖片網址（選填）</p><input placeholder="https://..." value={d.img} onChange={e => setD(p => ({ ...p, img: e.target.value }))} /></div>
-        {d.img && <div style={{ height: 180, overflow: "hidden", background: GRAY }}><img src={d.img} alt="preview" style={{ width: "100%", height: "100%", objectFit: "cover" }} /></div>}
+        <ImgUploader label="封面圖片（選填）" value={d.img} onChange={v => setD(p => ({ ...p, img: v }))} aspect="16/9" />
         <textarea placeholder="摘要（顯示在列表，選填）" value={d.excerpt} onChange={e => setD(p => ({ ...p, excerpt: e.target.value }))} style={{ minHeight: 72, resize: "vertical" }} />
-        <textarea placeholder="文章內文（支援換行）" value={d.content} onChange={e => setD(p => ({ ...p, content: e.target.value }))} style={{ minHeight: 360, border: "1px solid #D0D5DA", padding: "12px", background: WHITE }} />
+        <RichEditor value={d.content} onChange={v => setD(p => ({ ...p, content: v }))} />
         <RelatedLinkEditor relatedLinks={d.relatedLinks} onChange={v => setD(p => ({ ...p, relatedLinks: v }))} products={products} resources={resources} />
         <div style={{ display: "flex", gap: 10 }}><button className="pb" disabled={!ok} onClick={() => onSave(d)}>發布</button><button className="pg" onClick={onBack}>取消</button></div>
       </div>
@@ -657,7 +879,7 @@ function About({ about, setAbout, isAdmin, links, setLinks }) {
           {tmp.img ? <img src={tmp.img} style={{ width: "100%", height: "100%", objectFit: "cover" }} alt="about" /> : <span style={{ fontSize: 12, color: LIGHT }}>封面圖片</span>}
         </div>
         <div style={{ display: "flex", flexDirection: "column", gap: 20 }}>
-          <div><p style={{ fontSize: 12, color: MID, marginBottom: 8 }}>封面圖片網址</p><input placeholder="https://..." value={tmp.img} onChange={e => setTmp(p => ({ ...p, img: e.target.value }))} /></div>
+          <ImgUploader label="封面圖片" value={tmp.img} onChange={v => setTmp(p => ({ ...p, img: v }))} aspect="3/4" />
           <div><p style={{ fontSize: 12, color: MID, marginBottom: 8 }}>自我介紹</p><textarea value={tmp.intro} onChange={e => setTmp(p => ({ ...p, intro: e.target.value }))} style={{ minHeight: 200 }} /></div>
         </div>
       </div>
@@ -743,7 +965,7 @@ function Shop({ products, setProducts, isAdmin }) {
               <div><p style={{ fontSize: 12, color: MID, marginBottom: 8 }}>購買連結</p><input value={form.url} onChange={sf("url")} /></div>
             </div>
             <div style={{ marginBottom: 20 }}><p style={{ fontSize: 12, color: MID, marginBottom: 8 }}>商品說明</p><textarea value={form.desc} onChange={sf("desc")} style={{ minHeight: 80, border: "1px solid #D0D5DA", padding: "10px", background: WHITE }} /></div>
-            <div style={{ marginBottom: 24 }}><p style={{ fontSize: 12, color: MID, marginBottom: 8 }}>圖片網址（選填）</p><input value={form.img} onChange={sf("img")} /></div>
+            <div style={{ marginBottom: 24 }}><ImgUploader label="圖片（選填）" value={form.img} onChange={v => setForm(p => ({ ...p, img: v }))} aspect="4/3" /></div>
             <div style={{ display: "flex", gap: 10 }}><button className="pb" onClick={save} disabled={!form.name.trim()}>儲存</button><button className="pg" onClick={() => setEditing(null)}>取消</button></div>
           </div>
         )}
@@ -818,7 +1040,7 @@ function IG({ igPosts, setIgPosts, isAdmin, links }) {
               </div>
               <div><p style={{ fontSize: 12, color: MID, marginBottom: 8 }}>標題 / 說明</p><input value={form.title} onChange={sf("title")} /></div>
               <div><p style={{ fontSize: 12, color: MID, marginBottom: 8 }}>連結（Instagram / YouTube）</p><input value={form.url} onChange={sf("url")} placeholder="https://..." /></div>
-              <div><p style={{ fontSize: 12, color: MID, marginBottom: 8 }}>縮圖網址（選填）</p><input value={form.thumb} onChange={sf("thumb")} placeholder="https://..." /></div>
+              <ImgUploader label="縮圖（選填）" value={form.thumb} onChange={v => setForm(p => ({ ...p, thumb: v }))} aspect="1/1" />
             </div>
             <div style={{ display: "flex", gap: 10 }}><button className="pb" onClick={save} disabled={!form.title.trim()}>儲存</button><button className="pg" onClick={() => setEditing(null)}>取消</button></div>
           </div>
@@ -895,8 +1117,8 @@ function Goods({ goods, setGoods, isAdmin }) {
               <div><p style={{ fontSize: 12, color: MID, marginBottom: 8 }}>商品名稱</p><input value={form.name} onChange={sf("name")} /></div>
               <div><p style={{ fontSize: 12, color: MID, marginBottom: 8 }}>品牌 / 來源</p><input value={form.brand} onChange={sf("brand")} /></div>
               <div><p style={{ fontSize: 12, color: MID, marginBottom: 8 }}>連結</p><input value={form.url} onChange={sf("url")} /></div>
-              <div><p style={{ fontSize: 12, color: MID, marginBottom: 8 }}>圖片網址（選填）</p><input value={form.img} onChange={sf("img")} /></div>
             </div>
+            <div style={{ marginBottom: 20 }}><ImgUploader label="圖片（選填）" value={form.img} onChange={v => setForm(p => ({ ...p, img: v }))} aspect="4/3" /></div>
             <div style={{ marginBottom: 16 }}><p style={{ fontSize: 12, color: MID, marginBottom: 8 }}>推薦說明</p><textarea value={form.desc} onChange={sf("desc")} style={{ minHeight: 80, border: "1px solid #D0D5DA", padding: "10px", background: WHITE }} /></div>
             <label style={{ fontSize: 12, color: MID, display: "flex", gap: 8, alignItems: "center", marginBottom: 24, cursor: "pointer" }}>
               <input type="checkbox" checked={form.active} onChange={e => setForm(p => ({ ...p, active: e.target.checked }))} style={{ width: "auto" }} />上架顯示
@@ -951,8 +1173,8 @@ function Goods({ goods, setGoods, isAdmin }) {
 
 // ── NEW: App 介紹頁 ──
 function AppPage({ appContent, setAppContent, isAdmin }) {
-  const c = appContent || DEFAULTS.appContent;
-  const upd = patch => setAppContent(prev => ({ ...(prev || DEFAULTS.appContent), ...patch }));
+  const c = { ...DEFAULTS.appContent, ...(appContent || {}) };
+  const upd = patch => setAppContent(prev => ({ ...DEFAULTS.appContent, ...(prev || {}), ...patch }));
   const [detailPlan, setDetailPlan] = useState(null);
   const [editHero, setEditHero] = useState(false);
   const [tmpHero, setTmpHero] = useState({ heroTitle: c.heroTitle, heroHighlight: c.heroHighlight, heroSub: c.heroSub });
@@ -962,6 +1184,8 @@ function AppPage({ appContent, setAppContent, isAdmin }) {
   const [planForm, setPlanForm] = useState({ name: "", price: "", period: "", highlight: false, badge: "", features: [], detailTitle: "", detailImg: "", detailContent: "" });
   const [editNote, setEditNote] = useState(false);
   const [tmpNote, setTmpNote] = useState(c.pricingNote);
+  const [editGuide, setEditGuide] = useState(false);
+  const [tmpGuide, setTmpGuide] = useState({ title: "", json: "" });
   const saveFeat = () => {
     if (editingFeat === "new") upd({ features: [...c.features, { id: Date.now(), n: String(c.features.length + 1).padStart(2, "0"), ...featForm }] });
     else upd({ features: c.features.map(f => f.id === editingFeat ? { ...f, ...featForm } : f) });
@@ -1019,7 +1243,7 @@ function AppPage({ appContent, setAppContent, isAdmin }) {
               <p style={{ fontSize: 11, color: MID, marginBottom: 14, letterSpacing: "1px" }}>編輯詳情頁</p>
               <div style={{ display: "flex", flexDirection: "column", gap: 14 }}>
                 <div><p style={{ fontSize: 12, color: MID, marginBottom: 6 }}>詳情頁標題（選填，預設用方案名）</p><input value={plan.detailTitle || ""} onChange={e => upd({ plans: c.plans.map(p => p.id === plan.id ? { ...p, detailTitle: e.target.value } : p) })} /></div>
-                <div><p style={{ fontSize: 12, color: MID, marginBottom: 6 }}>圖片網址</p><input value={plan.detailImg || ""} onChange={e => upd({ plans: c.plans.map(p => p.id === plan.id ? { ...p, detailImg: e.target.value } : p) })} /></div>
+                <ImgUploader label="圖片" value={plan.detailImg || ""} onChange={v => upd({ plans: c.plans.map(p => p.id === plan.id ? { ...p, detailImg: v } : p) })} aspect="16/9" />
                 <div><p style={{ fontSize: 12, color: MID, marginBottom: 6 }}>詳情說明</p><textarea value={plan.detailContent || ""} onChange={e => upd({ plans: c.plans.map(p => p.id === plan.id ? { ...p, detailContent: e.target.value } : p) })} style={{ minHeight: 120 }} /></div>
               </div>
             </div>
@@ -1073,8 +1297,7 @@ function AppPage({ appContent, setAppContent, isAdmin }) {
               <div><p style={{ fontSize: 12, color: MID, marginBottom: 6 }}>標題</p><input value={featForm.title} onChange={e => setFeatForm(p => ({ ...p, title: e.target.value }))} /></div>
             </div>
             <div style={{ marginBottom: 12 }}><p style={{ fontSize: 12, color: MID, marginBottom: 6 }}>說明</p><textarea value={featForm.desc} onChange={e => setFeatForm(p => ({ ...p, desc: e.target.value }))} style={{ minHeight: 70 }} /></div>
-            <div style={{ marginBottom: 16 }}><p style={{ fontSize: 12, color: MID, marginBottom: 6 }}>圖片網址（選填）</p><input value={featForm.img} onChange={e => setFeatForm(p => ({ ...p, img: e.target.value }))} placeholder="https://..." /></div>
-            {featForm.img && <div style={{ height: 120, overflow: "hidden", background: GRAY, marginBottom: 16 }}><img src={featForm.img} alt="preview" style={{ width: "100%", height: "100%", objectFit: "cover" }} /></div>}
+            <div style={{ marginBottom: 16 }}><ImgUploader label="圖片（選填）" value={featForm.img} onChange={v => setFeatForm(p => ({ ...p, img: v }))} aspect="16/9" /></div>
             <div style={{ display: "flex", gap: 10 }}><button className="pb" onClick={saveFeat} disabled={!featForm.title.trim()}>儲存</button><button className="pg" onClick={() => setEditingFeat(null)}>取消</button></div>
           </div>
         )}
@@ -1099,8 +1322,81 @@ function AppPage({ appContent, setAppContent, isAdmin }) {
           ))}
         </div>
       </div>
+      {/* Guide */}
+      <div style={{ background: "#FAFAFA", padding: "72px 32px", borderTop: `1px solid ${BORDER}` }}>
+        <div style={{ maxWidth: 1100, margin: "0 auto" }}>
+          <div style={{ textAlign: "center", marginBottom: 56 }}>
+            <p className="section-label" style={{ marginBottom: 12 }}>HOW IT WORKS</p>
+            <h2 style={{ fontSize: 28, fontWeight: 700, color: CHAR }}>{c.guideTitle || "使用說明"}</h2>
+          </div>
+          {(c.guideData?.phases || DEFAULTS.appContent.guideData.phases).map(phase => (
+            <div key={phase.id} style={{ marginBottom: 52 }}>
+              <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 20, paddingBottom: 14, borderBottom: `2px solid ${phase.isSetup ? BORDER : O2}` }}>
+                <span style={{ background: phase.isSetup ? CHAR : O, color: WHITE, fontSize: 11, fontWeight: 700, padding: "3px 12px", letterSpacing: "0.5px" }}>{phase.label}</span>
+                <span style={{ fontSize: 16, fontWeight: 600, color: CHAR }}>{phase.sub}</span>
+                {phase.isSetup && <span style={{ fontSize: 11, color: LIGHT, background: GRAY, padding: "2px 10px", borderRadius: 20 }}>設定一次，長期沿用</span>}
+              </div>
+              <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill,minmax(240px,1fr))", gap: 14 }}>
+                {phase.steps.map(step => (
+                  <div key={step.id} style={{ background: phase.isSetup ? O2 : WHITE, border: `1px solid ${phase.isSetup ? "rgba(200,90,20,.18)" : BORDER}`, borderRadius: 10, padding: "20px 20px 22px", boxShadow: "0 2px 8px rgba(0,0,0,.05)", transition: "box-shadow .2s,transform .2s" }}
+                    onMouseEnter={e => { e.currentTarget.style.boxShadow = "0 8px 28px rgba(200,90,20,.11)"; e.currentTarget.style.transform = "translateY(-3px)"; }}
+                    onMouseLeave={e => { e.currentTarget.style.boxShadow = "0 2px 8px rgba(0,0,0,.05)"; e.currentTarget.style.transform = "translateY(0)"; }}
+                  >
+                    <p style={{ fontSize: 10, color: O, fontWeight: 700, letterSpacing: "2px", marginBottom: 8 }}>STEP {step.num}</p>
+                    <h4 style={{ fontSize: 14, fontWeight: 600, color: CHAR, marginBottom: 7, lineHeight: 1.45 }}>{step.title}</h4>
+                    <p style={{ fontSize: 12, color: MID, lineHeight: 1.8 }}>{step.body}</p>
+                    {step.bullets?.length > 0 && (
+                      <ul style={{ marginTop: 8, paddingLeft: 0, listStyle: "none", display: "flex", flexDirection: "column", gap: 4 }}>
+                        {step.bullets.map((b, bi) => (
+                          <li key={bi} style={{ fontSize: 12, color: MID, display: "flex", alignItems: "flex-start", gap: 6, lineHeight: 1.7 }}>
+                            <span style={{ color: O, fontWeight: 700, flexShrink: 0 }}>·</span><span>{b}</span>
+                          </li>
+                        ))}
+                      </ul>
+                    )}
+                  </div>
+                ))}
+              </div>
+            </div>
+          ))}
+          <div style={{ background: O2, borderLeft: `3px solid ${O}`, borderRadius: "0 10px 10px 0", padding: "18px 22px", marginBottom: 52 }}>
+            <p style={{ fontSize: 11, fontWeight: 700, color: O, letterSpacing: "1px", marginBottom: 5 }}>資料保存</p>
+            <p style={{ fontSize: 13, color: CHAR, lineHeight: 1.85 }}>{c.guideData?.dataNote || DEFAULTS.appContent.guideData.dataNote}</p>
+          </div>
+          <div style={{ textAlign: "center", marginBottom: 28 }}>
+            <p className="section-label" style={{ marginBottom: 10 }}>FAQ</p>
+            <h3 style={{ fontSize: 20, fontWeight: 700, color: CHAR }}>常見問題</h3>
+          </div>
+          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill,minmax(300px,1fr))", gap: 14 }}>
+            {(c.guideData?.faqs || DEFAULTS.appContent.guideData.faqs).map(faq => (
+              <div key={faq.id} style={{ background: WHITE, border: `1px solid ${BORDER}`, borderRadius: 10, padding: "18px 20px" }}>
+                <p style={{ fontSize: 13, fontWeight: 600, color: CHAR, marginBottom: 7, lineHeight: 1.5 }}>Q：{faq.q}</p>
+                <p style={{ fontSize: 12, color: MID, lineHeight: 1.85 }}>A：{faq.a}</p>
+              </div>
+            ))}
+          </div>
+          {isAdmin && (
+            <div style={{ marginTop: 36, textAlign: "right" }}>
+              {!editGuide && <button className="pg" style={{ fontSize: 12, padding: "6px 14px" }} onClick={() => { setTmpGuide({ title: c.guideTitle || "", json: JSON.stringify(c.guideData || DEFAULTS.appContent.guideData, null, 2) }); setEditGuide(true); }}>編輯使用說明</button>}
+              {editGuide && (
+                <div style={{ background: GRAY, padding: 24, border: `1px solid ${BORDER}`, textAlign: "left", marginTop: 16 }}>
+                  <p style={{ fontSize: 11, color: MID, marginBottom: 16, letterSpacing: "1px" }}>編輯使用說明</p>
+                  <div style={{ display: "flex", flexDirection: "column", gap: 14 }}>
+                    <div><p style={{ fontSize: 12, color: MID, marginBottom: 6 }}>標題</p><input value={tmpGuide.title} onChange={e => setTmpGuide(p => ({ ...p, title: e.target.value }))} /></div>
+                    <div><p style={{ fontSize: 12, color: MID, marginBottom: 6 }}>內容資料（JSON）</p><textarea value={tmpGuide.json} onChange={e => setTmpGuide(p => ({ ...p, json: e.target.value }))} style={{ minHeight: 360, fontFamily: "monospace", fontSize: 11 }} /></div>
+                  </div>
+                  <div style={{ display: "flex", gap: 10, marginTop: 16 }}>
+                    <button className="pb" onClick={() => { try { upd({ guideTitle: tmpGuide.title, guideData: JSON.parse(tmpGuide.json) }); setEditGuide(false); } catch { alert("JSON 格式有誤，請確認後再儲存"); } }}>儲存</button>
+                    <button className="pg" onClick={() => setEditGuide(false)}>取消</button>
+                  </div>
+                </div>
+              )}
+            </div>
+          )}
+        </div>
+      </div>
       {/* Pricing */}
-      <div id="app-pricing" style={{ background: GRAY, padding: "72px 32px" }}>
+      <div id="app-pricing" style={{ background: GRAY, padding: "72px 32px", position: "relative" }}>
         <div style={{ maxWidth: 680, margin: "0 auto" }}>
           <div style={{ textAlign: "center", marginBottom: 48 }}>
             <p className="section-label" style={{ marginBottom: 12 }}>PRICING</p>
@@ -1134,7 +1430,7 @@ function AppPage({ appContent, setAppContent, isAdmin }) {
               <p style={{ fontSize: 11, color: MID, marginBottom: 12, marginTop: 4, letterSpacing: ".5px" }}>── 詳情頁內容 ──</p>
               <div style={{ display: "flex", flexDirection: "column", gap: 12, marginBottom: 16 }}>
                 <div><p style={{ fontSize: 12, color: MID, marginBottom: 6 }}>詳情頁標題（選填）</p><input value={planForm.detailTitle} onChange={e => setPlanForm(p => ({ ...p, detailTitle: e.target.value }))} /></div>
-                <div><p style={{ fontSize: 12, color: MID, marginBottom: 6 }}>詳情頁圖片網址</p><input value={planForm.detailImg} onChange={e => setPlanForm(p => ({ ...p, detailImg: e.target.value }))} placeholder="https://..." /></div>
+                <ImgUploader label="詳情頁圖片" value={planForm.detailImg} onChange={v => setPlanForm(p => ({ ...p, detailImg: v }))} aspect="16/9" />
                 <div><p style={{ fontSize: 12, color: MID, marginBottom: 6 }}>詳情說明文字</p><textarea value={planForm.detailContent} onChange={e => setPlanForm(p => ({ ...p, detailContent: e.target.value }))} style={{ minHeight: 100 }} /></div>
               </div>
               <div style={{ display: "flex", gap: 10 }}><button className="pb" onClick={savePlan} disabled={!planForm.name.trim()}>儲存</button><button className="pg" onClick={() => setEditingPlan(null)}>取消</button></div>
@@ -1153,9 +1449,9 @@ function AppPage({ appContent, setAppContent, isAdmin }) {
                   <button className="pg" style={{ fontSize: 10, padding: "3px 8px", color: "#E74C3C", borderColor: "#E74C3C" }} onClick={() => delPlan(p.id)}>✕</button>
                 </div>}
                 <p style={{ fontSize: 12, color: p.highlight ? "rgba(255,255,255,.65)" : MID, letterSpacing: "1px", marginBottom: 10, marginTop: isAdmin ? 24 : 0 }}>{p.name}</p>
-                <div style={{ display: "flex", alignItems: "baseline", gap: 4, marginBottom: 24 }}>
-                  <span style={{ fontSize: 34, fontWeight: 700, color: p.highlight ? WHITE : CHAR }}>{p.price}</span>
-                  <span style={{ fontSize: 12, color: p.highlight ? "rgba(255,255,255,.55)" : LIGHT }}>{p.period}</span>
+                <div style={{ display: "flex", alignItems: "baseline", gap: 4, marginBottom: 24, flexWrap: "nowrap" }}>
+                  <span style={{ fontSize: 28, fontWeight: 700, color: p.highlight ? WHITE : CHAR, whiteSpace: "nowrap" }}>{p.price}</span>
+                  <span style={{ fontSize: 12, color: p.highlight ? "rgba(255,255,255,.55)" : LIGHT, whiteSpace: "nowrap" }}>{p.period}</span>
                 </div>
                 <ul style={{ listStyle: "none", display: "flex", flexDirection: "column", gap: 9, marginBottom: 28 }}>
                   {(p.features || []).filter(Boolean).map((f, j) => (
@@ -1172,6 +1468,13 @@ function AppPage({ appContent, setAppContent, isAdmin }) {
           </div>
           <p style={{ textAlign: "center", fontSize: 12, color: LIGHT, marginTop: 20 }}>已有帳號？<a href={APP_URL} target="_blank" rel="noopener noreferrer" style={{ color: O }}>直接登入</a></p>
         </div>
+        {!isAdmin && (
+          <div style={{ position: "absolute", inset: 0, backdropFilter: "blur(6px)", WebkitBackdropFilter: "blur(6px)", background: "rgba(248,248,248,0.75)", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", gap: 14 }}>
+            <p style={{ fontSize: 11, fontWeight: 700, letterSpacing: "0.18em", color: O }}>COMING SOON</p>
+            <p style={{ fontSize: 28, fontWeight: 700, color: CHAR, lineHeight: 1.3 }}>訂閱方案即將開放</p>
+            <p style={{ fontSize: 14, color: MID }}>預計 7 月下旬上市，敬請期待</p>
+          </div>
+        )}
       </div>
     </div>
   );
@@ -1210,8 +1513,8 @@ function Resources({ resources, setResources, isAdmin }) {
               <div><p style={{ fontSize: 12, color: MID, marginBottom: 8 }}>名稱</p><input value={form.name} onChange={sf("name")} /></div>
               <div><p style={{ fontSize: 12, color: MID, marginBottom: 8 }}>類型</p><select value={form.type} onChange={sf("type")} style={{ border: "1px solid #D0D5DA", padding: "10px 12px", background: WHITE, width: "100%" }}>{["模板","教學","工具","其他"].map(t => <option key={t}>{t}</option>)}</select></div>
               <div><p style={{ fontSize: 12, color: MID, marginBottom: 8 }}>連結</p><input value={form.url} onChange={sf("url")} /></div>
-              <div><p style={{ fontSize: 12, color: MID, marginBottom: 8 }}>圖片網址（選填）</p><input value={form.img} onChange={sf("img")} /></div>
             </div>
+            <div style={{ marginBottom: 20 }}><ImgUploader label="圖片（選填）" value={form.img} onChange={v => setForm(p => ({ ...p, img: v }))} aspect="16/9" /></div>
             <div style={{ marginBottom: 16 }}><p style={{ fontSize: 12, color: MID, marginBottom: 8 }}>說明</p><textarea value={form.desc} onChange={sf("desc")} style={{ minHeight: 80, border: "1px solid #D0D5DA", padding: "10px", background: WHITE }} /></div>
             <label style={{ fontSize: 12, color: MID, display: "flex", gap: 8, alignItems: "center", marginBottom: 24, cursor: "pointer" }}>
               <input type="checkbox" checked={form.active} onChange={e => setForm(p => ({ ...p, active: e.target.checked }))} style={{ width: "auto" }} />上架顯示
@@ -1435,6 +1738,284 @@ function Contact({ links, contactContent, setContactContent, isAdmin }) {
   );
 }
 
+// ── 方案說明 ──
+function PricingPage({ appContent, setPage }) {
+  const c = appContent || DEFAULTS.appContent;
+  const plans = c.plans || [];
+
+  const ALL_FEATURES = [
+    "即時記帳（情緒、類別、分期）",
+    "Google Sheets 雲端同步，資料永遠屬於你",
+    "CSV / PDF 匯出",
+    "月度智慧診斷分析",
+    "信用卡帳單與分期追蹤",
+    "負債還款進度視覺化",
+    "個人 / 公費 / 家庭三種模式",
+    "PWA 主畫面安裝，接近原生 App",
+    "持續功能更新",
+  ];
+
+  return (
+    <div>
+      <div style={{ background: GRAD, padding: "72px 32px 56px", borderBottom: `1px solid ${BORDER}` }}>
+        <div style={{ maxWidth: 860, margin: "0 auto" }}>
+          <p className="section-label" style={{ marginBottom: 10 }}>PRICING</p>
+          <h1 style={{ fontSize: 36, fontWeight: 700, color: CHAR, lineHeight: 1.3, marginBottom: 14 }}>選擇最適合你的方案</h1>
+          <p style={{ fontSize: 15, color: MID, lineHeight: 1.9, maxWidth: 520 }}>{c.pricingNote || "選擇適合你的方案，開始掌握每一筆錢"}</p>
+        </div>
+      </div>
+      <div style={{ background: GRAY, padding: "72px 32px" }}>
+        <div style={{ maxWidth: 860, margin: "0 auto" }}>
+          <div style={{ display: "grid", gridTemplateColumns: `repeat(${Math.min(plans.length, 2)}, 1fr)`, gap: 24 }} className="grid2">
+            {plans.map(plan => (
+              <div key={plan.id} style={{ background: plan.highlight ? O : WHITE, border: `2px solid ${plan.highlight ? O : BORDER}`, borderRadius: 16, padding: "40px 32px", position: "relative", boxShadow: plan.highlight ? "0 8px 40px rgba(200,90,20,.22)" : "0 2px 16px rgba(0,0,0,.06)", transition: "transform .24s, box-shadow .24s" }}
+                onMouseEnter={e => { e.currentTarget.style.transform = "translateY(-4px)"; e.currentTarget.style.boxShadow = plan.highlight ? "0 16px 48px rgba(200,90,20,.32)" : "0 12px 40px rgba(0,0,0,.1)"; }}
+                onMouseLeave={e => { e.currentTarget.style.transform = "translateY(0)"; e.currentTarget.style.boxShadow = plan.highlight ? "0 8px 40px rgba(200,90,20,.22)" : "0 2px 16px rgba(0,0,0,.06)"; }}
+              >
+                {plan.badge && <span style={{ position: "absolute", top: -12, left: "50%", transform: "translateX(-50%)", background: CHAR, color: WHITE, fontSize: 11, padding: "4px 14px", borderRadius: 20, letterSpacing: ".5px", fontWeight: 500, whiteSpace: "nowrap" }}>{plan.badge}</span>}
+                <p style={{ fontSize: 12, letterSpacing: "1.5px", color: plan.highlight ? "rgba(255,255,255,.6)" : MID, marginBottom: 12, fontWeight: 500 }}>{(plan.name || "").toUpperCase()}</p>
+                <div style={{ display: "flex", alignItems: "baseline", gap: 4, marginBottom: 32, flexWrap: "nowrap" }}>
+                  <span style={{ fontSize: 28, fontWeight: 700, color: plan.highlight ? WHITE : CHAR, whiteSpace: "nowrap" }}>{plan.price}</span>
+                  <span style={{ fontSize: 13, color: plan.highlight ? "rgba(255,255,255,.55)" : LIGHT, whiteSpace: "nowrap" }}>{plan.period}</span>
+                </div>
+                <ul style={{ listStyle: "none", display: "flex", flexDirection: "column", gap: 12, marginBottom: 36 }}>
+                  {(plan.features || []).filter(Boolean).map((f, i) => (
+                    <li key={i} style={{ fontSize: 14, color: plan.highlight ? "rgba(255,255,255,.88)" : MID, display: "flex", alignItems: "center", gap: 10 }}>
+                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke={plan.highlight ? "rgba(255,255,255,.7)" : O} strokeWidth="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+                      {f}
+                    </li>
+                  ))}
+                </ul>
+                <a href={APP_URL} target="_blank" rel="noopener noreferrer">
+                  <button style={{ width: "100%", background: plan.highlight ? WHITE : O, color: plan.highlight ? O : WHITE, border: "none", padding: "14px 24px", fontSize: 14, fontWeight: 500, cursor: "pointer", fontFamily: "inherit", borderRadius: 8, transition: "opacity .18s" }}
+                    onMouseEnter={e => e.currentTarget.style.opacity = ".85"} onMouseLeave={e => e.currentTarget.style.opacity = "1"}>
+                    立即開始使用 →
+                  </button>
+                </a>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+      <div style={{ padding: "72px 32px" }}>
+        <div style={{ maxWidth: 860, margin: "0 auto" }}>
+          <p className="section-label" style={{ marginBottom: 10 }}>FEATURES</p>
+          <h2 style={{ fontSize: 26, fontWeight: 700, color: CHAR, marginBottom: 40 }}>所有方案都包含</h2>
+          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 14 }} className="grid2">
+            {ALL_FEATURES.map((f, i) => (
+              <div key={i} style={{ display: "flex", alignItems: "center", gap: 14, padding: "16px 20px", background: GRAY, borderRadius: 10 }}>
+                <div style={{ width: 30, height: 30, background: O2, borderRadius: 8, display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
+                  <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke={O} strokeWidth="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+                </div>
+                <span style={{ fontSize: 13, color: CHAR, lineHeight: 1.5 }}>{f}</span>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+      <div style={{ background: O2, padding: "48px 32px", borderTop: `1px solid ${BORDER}` }}>
+        <div style={{ maxWidth: 860, margin: "0 auto", display: "flex", flexDirection: "column", gap: 10 }}>
+          {["訂閱後即可使用全功能，無試用期限制。", "資料完全屬於你：儲存在你自己的 Google Sheets，不受方案到期影響。", "方案到期後仍可查看歷史記帳資料，續訂後立即恢復完整功能。"].map((note, i) => (
+            <p key={i} style={{ fontSize: 13, color: MID, display: "flex", gap: 8, alignItems: "flex-start", lineHeight: 1.8 }}>
+              <span style={{ color: O, fontWeight: 700, flexShrink: 0 }}>·</span>{note}
+            </p>
+          ))}
+          <p style={{ fontSize: 12, color: LIGHT, marginTop: 8 }}>
+            付款相關問題請參閱{" "}
+            <span onClick={() => setPage("terms")} style={{ color: O, cursor: "pointer", textDecoration: "underline" }}>服務條款</span>
+          </p>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// ── 服務條款 ──
+function TermsPage() {
+  const NUMERALS = ["一", "二", "三", "四", "五", "六", "七"];
+  const SECTIONS = [
+    {
+      title: "服務說明",
+      content: `88La 理財導航器（以下簡稱「本服務」）由 88La 提供，為個人理財記帳管理工具，提供收支記錄、預算規劃及桌面快速記帳等功能。本服務以訂閱制提供，訂閱期間內可無限制使用所有功能。`,
+    },
+    {
+      title: "訂閱方案與收費",
+      content: `本服務提供以下訂閱方案：\n\n• 月訂閱：NT$129 / 月\n• 年方案：NT$999 / 年\n• 兩年方案：NT$1,899 / 兩年\n\n所有金額均為新台幣計價。付款由綠界科技股份有限公司代為處理，採信用卡定期定額方式進行。`,
+    },
+    {
+      title: "自動續約",
+      content: `訂閱方案將於到期日自動續約，並依原方案金額扣款。如不希望續約，請於訂閱到期日前至帳戶設定頁面取消。取消後，服務仍可使用至當期訂閱到期日為止。`,
+    },
+    {
+      title: "退款政策",
+      content: `本服務所販售之內容為數位服務，依消費者保護法第 19 條規定，數位內容於開通後不適用七天鑑賞期退換貨規定。\n\n如有特殊情形，請聯繫 everydollars17@gmail.com，由 88La 個案審酌處理。`,
+    },
+    {
+      title: "帳戶與資料",
+      content: `用戶須自行保管帳戶登入資訊。用戶的記帳資料儲存於個人 Google 雲端帳號中，訂閱取消後資料仍保留於用戶自己的 Google 試算表，88La 不持有用戶資料。`,
+    },
+    {
+      title: "服務變更",
+      content: `88La 保留調整訂閱方案定價及功能內容之權利，並將提前 30 天以電子郵件通知用戶。現有訂閱者不受漲價影響，直至當期訂閱到期。`,
+    },
+    {
+      title: "聯絡方式",
+      content: `Email：everydollars17@gmail.com\n官方網站：https://88la-site.vercel.app`,
+    },
+  ];
+
+  return (
+    <div>
+      <div style={{ background: GRAD, padding: "52px 32px", borderBottom: `1px solid ${BORDER}` }}>
+        <div style={{ maxWidth: 800, margin: "0 auto" }}>
+          <p className="section-label" style={{ marginBottom: 10 }}>LEGAL</p>
+          <h1 style={{ fontSize: 24, fontWeight: 700, color: CHAR, lineHeight: 1.45 }}>88La 理財導航器<br />服務條款與退款政策</h1>
+          <p style={{ fontSize: 13, color: MID, marginTop: 10 }}>最後更新：2026 年 7 月</p>
+        </div>
+      </div>
+      <div style={{ maxWidth: 800, margin: "0 auto", padding: "64px 32px" }} className="page-wrap">
+        <div style={{ display: "flex", flexDirection: "column", gap: 48 }}>
+          {SECTIONS.map((s, i) => (
+            <div key={i}>
+              <h2 style={{ fontSize: 15, fontWeight: 700, color: CHAR, marginBottom: 14 }}>{NUMERALS[i]}、{s.title}</h2>
+              <p style={{ fontSize: 14, color: MID, lineHeight: 2.1, whiteSpace: "pre-wrap" }}>{s.content}</p>
+            </div>
+          ))}
+        </div>
+        <div style={{ marginTop: 64, padding: "22px 26px", background: GRAY, border: `1px solid ${BORDER}` }}>
+          <p style={{ fontSize: 12, color: LIGHT, lineHeight: 2 }}>
+            使用本服務即代表你已閱讀並同意以上服務條款。<br />
+            如對條款有任何疑問，請於訂閱前透過 Email 與我們聯繫。
+          </p>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// ── 訂閱方案 ──
+function SubscriptionPage({ setPage }) {
+  const PLANS = [
+    {
+      id: 1,
+      name: "月訂閱",
+      price: "NT$129",
+      period: "/月",
+      equiv: null,
+      badge: null,
+      highlight: false,
+      features: ["88La 理財導航器完整功能", "桌面快速記帳", "隨時可取消"],
+    },
+    {
+      id: 2,
+      name: "年方案",
+      price: "NT$999",
+      period: "/年",
+      equiv: "相當於 NT$83/月",
+      badge: "最多人選擇",
+      highlight: true,
+      features: ["88La 理財導航器完整功能", "桌面快速記帳", "省下約 35%"],
+    },
+    {
+      id: 3,
+      name: "兩年方案",
+      price: "NT$1,899",
+      period: "/兩年",
+      equiv: "相當於 NT$79/月",
+      badge: null,
+      highlight: false,
+      features: ["88La 理財導航器完整功能", "桌面快速記帳", "最划算方案"],
+    },
+  ];
+
+  return (
+    <div>
+      <div style={{ background: GRAD, padding: "72px 32px 56px", borderBottom: `1px solid ${BORDER}` }}>
+        <div style={{ maxWidth: 920, margin: "0 auto" }}>
+          <p className="section-label" style={{ marginBottom: 10 }}>PRICING</p>
+          <h1 style={{ fontSize: 36, fontWeight: 700, color: CHAR, lineHeight: 1.3, marginBottom: 14 }}>選擇你的方案</h1>
+          <p style={{ fontSize: 15, color: MID, lineHeight: 1.9, maxWidth: 540 }}>
+            用 88La 理財導航器，把記帳這件事變成每天兩分鐘的習慣。<br />所有方案皆包含桌面快速記帳功能。
+          </p>
+        </div>
+      </div>
+
+      <div style={{ background: GRAY, padding: "64px 32px 48px" }}>
+        <div style={{ maxWidth: 920, margin: "0 auto" }}>
+          <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 20 }} className="grid3">
+            {PLANS.map(plan => (
+              <div key={plan.id} style={{
+                background: plan.highlight ? O : WHITE,
+                border: `2px solid ${plan.highlight ? O : BORDER}`,
+                borderRadius: 12,
+                padding: "36px 26px 32px",
+                position: "relative",
+                boxShadow: plan.highlight ? "0 8px 32px rgba(200,90,20,.2)" : "0 2px 10px rgba(0,0,0,.05)",
+                transition: "transform .22s, box-shadow .22s",
+              }}
+                onMouseEnter={e => { e.currentTarget.style.transform = "translateY(-4px)"; e.currentTarget.style.boxShadow = plan.highlight ? "0 16px 48px rgba(200,90,20,.28)" : "0 10px 30px rgba(0,0,0,.1)"; }}
+                onMouseLeave={e => { e.currentTarget.style.transform = "translateY(0)"; e.currentTarget.style.boxShadow = plan.highlight ? "0 8px 32px rgba(200,90,20,.2)" : "0 2px 10px rgba(0,0,0,.05)"; }}
+              >
+                {plan.badge && (
+                  <span style={{ position: "absolute", top: -11, left: "50%", transform: "translateX(-50%)", background: CHAR, color: WHITE, fontSize: 11, padding: "3px 14px", borderRadius: 20, letterSpacing: ".5px", fontWeight: 500, whiteSpace: "nowrap" }}>{plan.badge}</span>
+                )}
+                <p style={{ fontSize: 11, letterSpacing: "1.5px", color: plan.highlight ? "rgba(255,255,255,.6)" : MID, marginBottom: 10, fontWeight: 500 }}>{plan.name.toUpperCase()}</p>
+                <div style={{ display: "flex", alignItems: "baseline", gap: 3, marginBottom: plan.equiv ? 6 : 28, flexWrap: "nowrap" }}>
+                  <span style={{ fontSize: 28, fontWeight: 700, color: plan.highlight ? WHITE : CHAR, whiteSpace: "nowrap" }}>{plan.price}</span>
+                  <span style={{ fontSize: 13, color: plan.highlight ? "rgba(255,255,255,.5)" : LIGHT, whiteSpace: "nowrap" }}>{plan.period}</span>
+                </div>
+                {plan.equiv && (
+                  <p style={{ fontSize: 12, color: plan.highlight ? "rgba(255,255,255,.55)" : MID, marginBottom: 24 }}>{plan.equiv}</p>
+                )}
+                <ul style={{ listStyle: "none", display: "flex", flexDirection: "column", gap: 10, marginBottom: 28 }}>
+                  {plan.features.map((f, i) => (
+                    <li key={i} style={{ fontSize: 13, color: plan.highlight ? "rgba(255,255,255,.88)" : MID, display: "flex", alignItems: "center", gap: 9 }}>
+                      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke={plan.highlight ? "rgba(255,255,255,.7)" : O} strokeWidth="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+                      {f}
+                    </li>
+                  ))}
+                </ul>
+                <a href={APP_URL} target="_blank" rel="noopener noreferrer" style={{ display: "block" }}>
+                  <button style={{ width: "100%", background: plan.highlight ? WHITE : O, color: plan.highlight ? O : WHITE, border: "none", padding: "13px 20px", fontSize: 13, fontWeight: 500, cursor: "pointer", fontFamily: "inherit", borderRadius: 8, transition: "opacity .18s" }}
+                    onMouseEnter={e => e.currentTarget.style.opacity = ".85"} onMouseLeave={e => e.currentTarget.style.opacity = "1"}>
+                    立即開始使用 →
+                  </button>
+                </a>
+              </div>
+            ))}
+          </div>
+
+          <div style={{ marginTop: 32, display: "flex", flexDirection: "column", gap: 8 }}>
+            {["所有金額均為新台幣計價，含稅", "訂閱將於到期日自動續約，可於到期前至帳戶設定取消", "付款方式：信用卡定期定額（由綠界科技處理）"].map((n, i) => (
+              <p key={i} style={{ fontSize: 12, color: MID, display: "flex", gap: 8, alignItems: "flex-start" }}>
+                <span style={{ color: O, fontWeight: 700, flexShrink: 0 }}>·</span>{n}
+              </p>
+            ))}
+            <p style={{ fontSize: 12, color: MID, display: "flex", gap: 8, alignItems: "flex-start" }}>
+              <span style={{ color: O, fontWeight: 700, flexShrink: 0 }}>·</span>
+              如有疑問，請聯繫 <a href="mailto:everydollars17@gmail.com" style={{ color: O, textDecoration: "underline" }}>everydollars17@gmail.com</a>
+            </p>
+            <p style={{ fontSize: 12, color: LIGHT, marginTop: 4 }}>
+              訂閱即代表你同意我們的{" "}
+              <span onClick={() => setPage("terms")} style={{ color: O, cursor: "pointer", textDecoration: "underline" }}>服務條款與退款政策</span>
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <div style={{ padding: "32px 32px 48px" }}>
+        <div style={{ maxWidth: 920, margin: "0 auto" }}>
+          <div style={{ padding: "20px 24px", background: GRAY, border: `1px solid ${BORDER}` }}>
+            <p style={{ fontSize: 12, color: LIGHT, lineHeight: 2.1 }}>
+              感謝最早支持 88La 的 90 位創始成員，你們的定價永久保留：月訂閱 NT$109 ／ 年方案 NT$599 ／ 兩年方案 NT$998。此優惠僅適用於已取得創始會員資格之用戶，不開放新申請。
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 // ── App root ──
 export default function App() {
   const [articles, setArticles, aL] = useFS("articles", DEFAULTS.articles);
@@ -1457,6 +2038,19 @@ export default function App() {
   const loaded = aL && pL && iL && gL && abL && tL && taL && lL && ftL && rlL && nlL && acL && ccL;
   const article = articles.find(a => a.id === id);
   const nav = p => { setPage(p); setId(null); window.scrollTo(0, 0); };
+
+  // 一次性遷移：偵測舊方案（1年/3年）並自動更新為新三方案
+  useEffect(() => {
+    if (!acL) return;
+    const oldNames = ["1 年方案", "3 年方案"];
+    if (appContent.plans?.some(p => oldNames.includes(p.name))) {
+      setAppContent(prev => ({
+        ...prev,
+        pricingNote: DEFAULTS.appContent.pricingNote,
+        plans: DEFAULTS.appContent.plans,
+      }));
+    }
+  }, [acL]);
   const saveArticle = d => {
     const nid = Math.max(...articles.map(a => a.id), 0) + 1;
     setArticles(prev => [...prev, { id: nid, ...d, excerpt: d.excerpt || (d.content.slice(0, 80) + "⋯"), views: 0, comments: [], date: new Date().toISOString().slice(0, 10) }]);
@@ -1485,6 +2079,9 @@ export default function App() {
         {page === "resources" && <Resources resources={resources} setResources={setResources} isAdmin={isAdmin} />}
         {page === "newsletter" && <Newsletter newsletter={newsletter} setNewsletter={setNewsletter} isAdmin={isAdmin} articles={articles} setArticles={setArticles} setId={setId} setPage={nav} />}
         {page === "contact" && <Contact links={links} contactContent={contactContent} setContactContent={setContactContent} isAdmin={isAdmin} />}
+        {page === "plans" && <PricingPage appContent={appContent} setPage={nav} />}
+        {page === "pricing" && <SubscriptionPage setPage={nav} />}
+        {page === "terms" && <TermsPage />}
         {page === "article" && article && <Article article={article} onBack={() => nav("home")} setArticles={setArticles} isAdmin={isAdmin} tags={tags} links={links} setPage={nav} products={products} resources={resources} />}
         {page === "write" && isAdmin && <Write onSave={saveArticle} onBack={() => nav("home")} tags={tags} products={products} resources={resources} />}
       </div>
