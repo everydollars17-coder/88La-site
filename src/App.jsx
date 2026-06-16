@@ -1894,7 +1894,14 @@ function TermsPage() {
 }
 
 // ── 訂閱方案 ──
-function SubscriptionPage({ setPage }) {
+function SubscriptionPage({ setPage, isAdmin }) {
+  if (!isAdmin) return (
+    <div style={{ background: GRAD, minHeight: "60vh", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", padding: "80px 32px", textAlign: "center" }}>
+      <p style={{ fontSize: 11, fontWeight: 700, letterSpacing: "0.18em", color: O, marginBottom: 16 }}>COMING SOON</p>
+      <h1 style={{ fontSize: 32, fontWeight: 700, color: CHAR, lineHeight: 1.3, marginBottom: 14 }}>訂閱方案即將開放</h1>
+      <p style={{ fontSize: 15, color: MID, lineHeight: 1.9 }}>預計 7 月下旬上市，敬請期待</p>
+    </div>
+  );
   const PLANS = [
     {
       id: 1,
@@ -2080,7 +2087,7 @@ export default function App() {
         {page === "newsletter" && <Newsletter newsletter={newsletter} setNewsletter={setNewsletter} isAdmin={isAdmin} articles={articles} setArticles={setArticles} setId={setId} setPage={nav} />}
         {page === "contact" && <Contact links={links} contactContent={contactContent} setContactContent={setContactContent} isAdmin={isAdmin} />}
         {page === "plans" && <PricingPage appContent={appContent} setPage={nav} />}
-        {page === "pricing" && <SubscriptionPage setPage={nav} />}
+        {page === "pricing" && <SubscriptionPage setPage={nav} isAdmin={isAdmin} />}
         {page === "terms" && <TermsPage />}
         {page === "article" && article && <Article article={article} onBack={() => nav("home")} setArticles={setArticles} isAdmin={isAdmin} tags={tags} links={links} setPage={nav} products={products} resources={resources} />}
         {page === "write" && isAdmin && <Write onSave={saveArticle} onBack={() => nav("home")} tags={tags} products={products} resources={resources} />}
