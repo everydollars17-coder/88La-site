@@ -105,9 +105,9 @@ button{font-family:inherit;cursor:pointer;border:none;border-radius:8px;}
 }
 .article-content h2{font-size:22px;font-weight:700;color:#1A1A1A;margin:32px 0 12px;line-height:1.4;}
 .article-content h3{font-size:18px;font-weight:600;color:#1A1A1A;margin:24px 0 10px;line-height:1.4;}
-.article-content p{margin-bottom:16px;line-height:2.1;}
+.article-content p{margin-bottom:16px;line-height:1.8;}
 .article-content ul,.article-content ol{padding-left:24px;margin-bottom:16px;}
-.article-content li{margin-bottom:6px;line-height:1.9;}
+.article-content li{margin-bottom:6px;line-height:1.7;}
 .article-content strong{font-weight:700;}
 .article-content em{font-style:italic;}
 .article-content u{text-decoration:underline;}
@@ -245,6 +245,11 @@ function Toast() {
       ✓ {msg}
     </div>
   );
+}
+
+function isValidUrl(s) {
+  if (!s || !s.trim()) return true;
+  try { const u = new URL(s.trim()); return u.protocol === "http:" || u.protocol === "https:" || u.protocol === "mailto:"; } catch { return false; }
 }
 
 function moveItem(arr, idx, dir) {
@@ -410,8 +415,8 @@ function RichEditor({ value, onChange }) {
   const btn = { padding: "4px 9px", fontSize: 13, background: WHITE, border: `1px solid ${BORDER}`, cursor: "pointer", fontFamily: "inherit", borderRadius: 4, lineHeight: 1.4 };
   const COLORS = ["#1A1A1A", "#C85A14", "#E8806E", "#6B6B6B", "#2563EB", "#DC2626", "#16A34A", "#9333EA"];
   return (
-    <div style={{ border: "1px solid #D0D5DA" }}>
-      <div style={{ display: "flex", gap: 4, flexWrap: "wrap", padding: "8px 10px", background: "#F5F5F5", borderBottom: "1px solid #D0D5DA" }}>
+    <div style={{ border: "1px solid #D0D5DA", position: "relative" }}>
+      <div style={{ display: "flex", gap: 4, flexWrap: "wrap", padding: "8px 10px", background: "#F5F5F5", borderBottom: "1px solid #D0D5DA", position: "sticky", top: 60, zIndex: 50 }}>
         <button type="button" style={{ ...btn, fontWeight: 700 }} onMouseDown={e => { e.preventDefault(); exec("bold"); }}>B</button>
         <button type="button" style={{ ...btn, fontStyle: "italic" }} onMouseDown={e => { e.preventDefault(); exec("italic"); }}>I</button>
         <button type="button" style={{ ...btn, textDecoration: "underline" }} onMouseDown={e => { e.preventDefault(); exec("underline"); }}>U</button>
@@ -578,15 +583,21 @@ function Hero({ about, isAdmin, setAbout, links }) {
   const l = links || DEFAULTS.links;
   const [editBanner, setEditBanner] = useState(false);
   const [tmp, setTmp] = useState(about);
-  const save = () => { setAbout(tmp); setEditBanner(false); };
+  const [bannerUrlErr, setBannerUrlErr] = useState("");
+  const save = () => {
+    const l1 = (tmp.bannerLink1 || "").trim(), l2 = (tmp.bannerLink2 || "").trim();
+    if ((l1 && !isValidUrl(l1)) || (l2 && !isValidUrl(l2))) { setBannerUrlErr("連結格式不正確，需以 https:// 開頭"); return; }
+    setBannerUrlErr(""); setAbout(tmp); setEditBanner(false);
+  };
   if (editBanner) return (
     <div style={{ padding: "48px 32px", maxWidth: 600, margin: "0 auto" }}>
       <p style={{ fontSize: 11, letterSpacing: "2px", color: O, marginBottom: 24 }}>編輯 Banner</p>
       <div style={{ display: "flex", flexDirection: "column", gap: 20 }}>
         <ImgUploader label="背景圖片" value={tmp.bannerImg || ""} onChange={v => setTmp(p => ({ ...p, bannerImg: v }))} aspect="16/9" />
         {[["大標題","bannerTitle",""],["副標題","bannerSub",""],["按鈕一文字","bannerBtn1","加入 LINE 社群"],["按鈕一連結","bannerLink1","https://line.me/..."],["按鈕二文字","bannerBtn2","追蹤 Instagram"],["按鈕二連結","bannerLink2","https://www.instagram.com/..."]].map(([label,key,ph]) => (
-          <div key={key}><p style={{ fontSize: 12, color: MID, marginBottom: 8 }}>{label}</p><input placeholder={ph} value={tmp[key] || ""} onChange={e => setTmp(p => ({ ...p, [key]: e.target.value }))} /></div>
+          <div key={key}><p style={{ fontSize: 12, color: MID, marginBottom: 8 }}>{label}</p><input placeholder={ph} value={tmp[key] || ""} onChange={e => { setTmp(p => ({ ...p, [key]: e.target.value })); setBannerUrlErr(""); }} /></div>
         ))}
+        {bannerUrlErr && <p style={{ fontSize: 12, color: "#C0392B" }}>{bannerUrlErr}</p>}
       </div>
       <div style={{ display: "flex", gap: 10, marginTop: 28 }}><button className="pb" onClick={save}>儲存</button><button className="pg" onClick={() => setEditBanner(false)}>取消</button></div>
     </div>
@@ -758,12 +769,17 @@ function Article({ article, onBack, setArticles, isAdmin, tags, links, setPage, 
   const [editing, setEditing] = useState(false);
   const [ed, setEd] = useState({ title: article.title, tag: article.tag, excerpt: article.excerpt, content: article.content, img: article.img || "", relatedLinks: article.relatedLinks || [] });
   const l = links || DEFAULTS.links;
+  const lastSubmit = useRef(0);
+  const [cooldown, setCooldown] = useState(0);
   const sanitize = (s) => s.replace(/[<>]/g, "");
   const submit = () => {
     if (!text.trim()) return;
+    const now = Date.now();
+    const diff = now - lastSubmit.current;
+    if (diff < 15000) { setCooldown(Math.ceil((15000 - diff) / 1000)); return; }
     const c = { name: sanitize(name.trim() || "匿名").slice(0, 50), text: sanitize(text.trim()).slice(0, 500), date: new Date().toISOString().slice(0, 10) };
     setArticles(prev => prev.map(a => a.id === article.id ? { ...a, comments: [...a.comments, c] } : a));
-    setName(""); setText("");
+    setName(""); setText(""); lastSubmit.current = now; setCooldown(0);
   };
   const copy = () => { navigator.clipboard.writeText(window.location.href); setCopied(true); setTimeout(() => setCopied(false), 2000); };
   const del = () => { if (confirm("確定刪除此文章？")) { setArticles(prev => prev.filter(a => a.id !== article.id)); onBack(); } };
@@ -808,7 +824,7 @@ function Article({ article, onBack, setArticles, isAdmin, tags, links, setPage, 
         </div>
       )}
       <div style={{ maxWidth: 740, margin: "0 auto", padding: "52px 32px" }} className="page-wrap">
-        <div className="article-content" style={{ fontSize: 16, lineHeight: 2.1, color: CHAR, marginBottom: 56 }}
+        <div className="article-content" style={{ fontSize: 16, lineHeight: 1.8, color: CHAR, marginBottom: 56 }}
           dangerouslySetInnerHTML={{ __html: /<[a-z][\s\S]*>/i.test(article.content || "") ? article.content : (article.content || "").replace(/\n/g, "<br>") }} />
         {relLinks.length > 0 && (
           <div style={{ marginBottom: 48 }}>
@@ -869,7 +885,10 @@ function Article({ article, onBack, setArticles, isAdmin, tags, links, setPage, 
           <p style={{ fontSize: 12, letterSpacing: "1px", color: MID, marginBottom: 18 }}>留下你的想法</p>
           <input placeholder="暱稱（選填）" value={name} onChange={e => setName(e.target.value)} maxLength={50} style={{ marginBottom: 14 }} />
           <textarea placeholder="你的留言⋯" value={text} onChange={e => setText(e.target.value)} maxLength={500} style={{ marginBottom: 18, border: "none", background: "transparent", borderBottom: "1px solid #D0D5DA" }} />
-          <button className="pb" onClick={submit} disabled={!text.trim()}>送出留言</button>
+          <div style={{ display: "flex", gap: 12, alignItems: "center" }}>
+            <button className="pb" onClick={submit} disabled={!text.trim()}>送出留言</button>
+            {cooldown > 0 && <span style={{ fontSize: 12, color: "#C0392B" }}>請等待 {cooldown} 秒後再送出</span>}
+          </div>
         </div>
       </div>
     </div>
@@ -980,10 +999,12 @@ function Shop({ products, setProducts, isAdmin }) {
   const startAdd = () => { setForm({ name: "", type: "digital", price: "", desc: "", url: "", img: "" }); setEditing("new"); };
   const startEdit = p => { setForm({ ...p }); setEditing(p.id); };
   const [priceErr, setPriceErr] = useState("");
+  const [shopUrlErr, setShopUrlErr] = useState("");
   const save = () => {
     const p = form.price.trim();
     if (p && !/^NT\$\s?\d[\d,]*$/.test(p)) { setPriceErr("格式範例：NT$299 或 NT$ 1,299"); return; }
-    setPriceErr("");
+    if (form.url && !isValidUrl(form.url)) { setShopUrlErr("連結格式不正確，需以 https:// 開頭"); return; }
+    setPriceErr(""); setShopUrlErr("");
     if (editing === "new") setProducts(prev => [...prev, { ...form, id: Date.now() }]); else setProducts(prev => prev.map(p => p.id === editing ? { ...p, ...form } : p)); setEditing(null);
   };
   const del = id => { if (confirm("確定刪除？")) setProducts(prev => prev.filter(p => p.id !== id)); };
@@ -1004,7 +1025,7 @@ function Shop({ products, setProducts, isAdmin }) {
               <div><p style={{ fontSize: 12, color: MID, marginBottom: 8 }}>商品名稱</p><input value={form.name} onChange={sf("name")} /></div>
               <div><p style={{ fontSize: 12, color: MID, marginBottom: 8 }}>類型</p><select value={form.type} onChange={sf("type")} style={{ border: "1px solid #D0D5DA", padding: "10px 12px", background: WHITE, width: "100%" }}><option value="digital">數位商品</option><option value="physical">實體商品</option></select></div>
               <div><p style={{ fontSize: 12, color: MID, marginBottom: 8 }}>價格</p><input placeholder="NT$ 299" value={form.price} onChange={e => { sf("price")(e); setPriceErr(""); }} />{priceErr && <p style={{ fontSize: 11, color: "#C0392B", marginTop: 4 }}>{priceErr}</p>}</div>
-              <div><p style={{ fontSize: 12, color: MID, marginBottom: 8 }}>購買連結</p><input value={form.url} onChange={sf("url")} /></div>
+              <div><p style={{ fontSize: 12, color: MID, marginBottom: 8 }}>購買連結</p><input value={form.url} onChange={e => { sf("url")(e); setShopUrlErr(""); }} placeholder="https://..." />{shopUrlErr && <p style={{ fontSize: 11, color: "#C0392B", marginTop: 4 }}>{shopUrlErr}</p>}</div>
             </div>
             <div style={{ marginBottom: 20 }}><p style={{ fontSize: 12, color: MID, marginBottom: 8 }}>商品說明</p><textarea value={form.desc} onChange={sf("desc")} style={{ minHeight: 80, border: "1px solid #D0D5DA", padding: "10px", background: WHITE }} /></div>
             <div style={{ marginBottom: 24 }}><ImgUploader label="圖片（選填）" value={form.img} onChange={v => setForm(p => ({ ...p, img: v }))} aspect="4/3" /></div>
@@ -1045,10 +1066,15 @@ function Shop({ products, setProducts, isAdmin }) {
 function IG({ igPosts, setIgPosts, isAdmin, links }) {
   const [editing, setEditing] = useState(null);
   const [form, setForm] = useState({ title: "", url: "", thumb: "", type: "post" });
+  const [igUrlErr, setIgUrlErr] = useState("");
   const sf = k => e => setForm(p => ({ ...p, [k]: e.target.value }));
-  const startAdd = () => { setForm({ title: "", url: "", thumb: "", type: "post" }); setEditing("new"); };
-  const startEdit = p => { setForm({ ...p }); setEditing(p.id); };
-  const save = () => { if (editing === "new") setIgPosts(prev => [...prev, { ...form, id: Date.now() }]); else setIgPosts(prev => prev.map(p => p.id === editing ? { ...p, ...form } : p)); setEditing(null); };
+  const startAdd = () => { setForm({ title: "", url: "", thumb: "", type: "post" }); setEditing("new"); setIgUrlErr(""); };
+  const startEdit = p => { setForm({ ...p }); setEditing(p.id); setIgUrlErr(""); };
+  const save = () => {
+    if (form.url && !isValidUrl(form.url)) { setIgUrlErr("連結格式不正確，需以 https:// 開頭"); return; }
+    setIgUrlErr("");
+    if (editing === "new") setIgPosts(prev => [...prev, { ...form, id: Date.now() }]); else setIgPosts(prev => prev.map(p => p.id === editing ? { ...p, ...form } : p)); setEditing(null);
+  };
   const del = id => { if (confirm("確定刪除？")) setIgPosts(prev => prev.filter(p => p.id !== id)); };
   const move = (idx, dir) => setIgPosts(prev => moveItem(prev, idx, dir));
   const l = links || DEFAULTS.links;
@@ -1081,7 +1107,7 @@ function IG({ igPosts, setIgPosts, isAdmin, links }) {
                 </div>
               </div>
               <div><p style={{ fontSize: 12, color: MID, marginBottom: 8 }}>標題 / 說明</p><input value={form.title} onChange={sf("title")} /></div>
-              <div><p style={{ fontSize: 12, color: MID, marginBottom: 8 }}>連結（Instagram / YouTube）</p><input value={form.url} onChange={sf("url")} placeholder="https://..." /></div>
+              <div><p style={{ fontSize: 12, color: MID, marginBottom: 8 }}>連結（Instagram / YouTube）</p><input value={form.url} onChange={e => { sf("url")(e); setIgUrlErr(""); }} placeholder="https://..." />{igUrlErr && <p style={{ fontSize: 11, color: "#C0392B", marginTop: 4 }}>{igUrlErr}</p>}</div>
               <ImgUploader label="縮圖（選填）" value={form.thumb} onChange={v => setForm(p => ({ ...p, thumb: v }))} aspect="1/1" />
             </div>
             <div style={{ display: "flex", gap: 10 }}><button className="pb" onClick={save} disabled={!form.title.trim()}>儲存</button><button className="pg" onClick={() => setEditing(null)}>取消</button></div>
@@ -1137,10 +1163,15 @@ function IG({ igPosts, setIgPosts, isAdmin, links }) {
 function Goods({ goods, setGoods, isAdmin }) {
   const [editing, setEditing] = useState(null);
   const [form, setForm] = useState({ name: "", brand: "", desc: "", url: "", img: "", active: true });
+  const [goodsUrlErr, setGoodsUrlErr] = useState("");
   const sf = k => e => setForm(p => ({ ...p, [k]: e.target.value }));
-  const startAdd = () => { setForm({ name: "", brand: "", desc: "", url: "", img: "", active: true }); setEditing("new"); };
-  const startEdit = p => { setForm({ ...p }); setEditing(p.id); };
-  const save = () => { if (editing === "new") setGoods(prev => [...prev, { ...form, id: Date.now() }]); else setGoods(prev => prev.map(p => p.id === editing ? { ...p, ...form } : p)); setEditing(null); };
+  const startAdd = () => { setForm({ name: "", brand: "", desc: "", url: "", img: "", active: true }); setEditing("new"); setGoodsUrlErr(""); };
+  const startEdit = p => { setForm({ ...p }); setEditing(p.id); setGoodsUrlErr(""); };
+  const save = () => {
+    if (form.url && !isValidUrl(form.url)) { setGoodsUrlErr("連結格式不正確，需以 https:// 開頭"); return; }
+    setGoodsUrlErr("");
+    if (editing === "new") setGoods(prev => [...prev, { ...form, id: Date.now() }]); else setGoods(prev => prev.map(p => p.id === editing ? { ...p, ...form } : p)); setEditing(null);
+  };
   const del = id => { if (confirm("確定刪除？")) setGoods(prev => prev.filter(p => p.id !== id)); };
   const active = (goods || []).filter(g => g.active);
   const move = (idx, dir) => setGoods(prev => { const act = (prev || []).filter(g => g.active); const inact = (prev || []).filter(g => !g.active); return [...moveItem(act, idx, dir), ...inact]; });
@@ -1158,7 +1189,7 @@ function Goods({ goods, setGoods, isAdmin }) {
             <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 20, marginBottom: 20 }} className="grid2">
               <div><p style={{ fontSize: 12, color: MID, marginBottom: 8 }}>商品名稱</p><input value={form.name} onChange={sf("name")} /></div>
               <div><p style={{ fontSize: 12, color: MID, marginBottom: 8 }}>品牌 / 來源</p><input value={form.brand} onChange={sf("brand")} /></div>
-              <div><p style={{ fontSize: 12, color: MID, marginBottom: 8 }}>連結</p><input value={form.url} onChange={sf("url")} /></div>
+              <div><p style={{ fontSize: 12, color: MID, marginBottom: 8 }}>連結</p><input value={form.url} onChange={e => { sf("url")(e); setGoodsUrlErr(""); }} placeholder="https://..." />{goodsUrlErr && <p style={{ fontSize: 11, color: "#C0392B", marginTop: 4 }}>{goodsUrlErr}</p>}</div>
             </div>
             <div style={{ marginBottom: 20 }}><ImgUploader label="圖片（選填）" value={form.img} onChange={v => setForm(p => ({ ...p, img: v }))} aspect="4/3" /></div>
             <div style={{ marginBottom: 16 }}><p style={{ fontSize: 12, color: MID, marginBottom: 8 }}>推薦說明</p><textarea value={form.desc} onChange={sf("desc")} style={{ minHeight: 80, border: "1px solid #D0D5DA", padding: "10px", background: WHITE }} /></div>
@@ -1529,12 +1560,17 @@ function Resources({ resources, setResources, isAdmin }) {
   const [filter, setFilter] = useState("全部");
   const [editing, setEditing] = useState(null);
   const [form, setForm] = useState({ name: "", type: "模板", desc: "", url: "", img: "", active: true });
+  const [resUrlErr, setResUrlErr] = useState("");
   const sf = k => e => setForm(p => ({ ...p, [k]: e.target.value }));
   const items = resources || [];
   const filtered = items.filter(r => r.active && (filter === "全部" || r.type === filter));
-  const startAdd = () => { setForm({ name: "", type: "模板", desc: "", url: "", img: "", active: true }); setEditing("new"); };
-  const startEdit = r => { setForm({ ...r }); setEditing(r.id); };
-  const save = () => { if (editing === "new") setResources(prev => [...(prev || []), { ...form, id: Date.now() }]); else setResources(prev => (prev || []).map(r => r.id === editing ? { ...r, ...form } : r)); setEditing(null); };
+  const startAdd = () => { setForm({ name: "", type: "模板", desc: "", url: "", img: "", active: true }); setEditing("new"); setResUrlErr(""); };
+  const startEdit = r => { setForm({ ...r }); setEditing(r.id); setResUrlErr(""); };
+  const save = () => {
+    if (form.url && !isValidUrl(form.url)) { setResUrlErr("連結格式不正確，需以 https:// 開頭"); return; }
+    setResUrlErr("");
+    if (editing === "new") setResources(prev => [...(prev || []), { ...form, id: Date.now() }]); else setResources(prev => (prev || []).map(r => r.id === editing ? { ...r, ...form } : r)); setEditing(null);
+  };
   const del = id => { if (confirm("確定刪除？")) setResources(prev => (prev || []).filter(r => r.id !== id)); };
   return (
     <div>
@@ -1555,7 +1591,7 @@ function Resources({ resources, setResources, isAdmin }) {
             <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 20, marginBottom: 20 }} className="grid2">
               <div><p style={{ fontSize: 12, color: MID, marginBottom: 8 }}>名稱</p><input value={form.name} onChange={sf("name")} /></div>
               <div><p style={{ fontSize: 12, color: MID, marginBottom: 8 }}>類型</p><select value={form.type} onChange={sf("type")} style={{ border: "1px solid #D0D5DA", padding: "10px 12px", background: WHITE, width: "100%" }}>{["模板","教學","工具","其他"].map(t => <option key={t}>{t}</option>)}</select></div>
-              <div><p style={{ fontSize: 12, color: MID, marginBottom: 8 }}>連結</p><input value={form.url} onChange={sf("url")} /></div>
+              <div><p style={{ fontSize: 12, color: MID, marginBottom: 8 }}>連結</p><input value={form.url} onChange={e => { sf("url")(e); setResUrlErr(""); }} placeholder="https://..." />{resUrlErr && <p style={{ fontSize: 11, color: "#C0392B", marginTop: 4 }}>{resUrlErr}</p>}</div>
             </div>
             <div style={{ marginBottom: 20 }}><ImgUploader label="圖片（選填）" value={form.img} onChange={v => setForm(p => ({ ...p, img: v }))} aspect="16/9" /></div>
             <div style={{ marginBottom: 16 }}><p style={{ fontSize: 12, color: MID, marginBottom: 8 }}>說明</p><textarea value={form.desc} onChange={sf("desc")} style={{ minHeight: 80, border: "1px solid #D0D5DA", padding: "10px", background: WHITE }} /></div>
