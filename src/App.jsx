@@ -143,7 +143,11 @@ const DEFAULTS = {
     { id: 1, title: "假記帳的陷阱你中了嗎？", url: "https://www.instagram.com/every_dollars/", thumb: "", type: "post" },
     { id: 2, title: "存錢袋使用教學｜現金分配法", url: "https://www.instagram.com/every_dollars/", thumb: "", type: "post" }
   ],
-  goods: [],
+  goods: [
+    { id: 1, name: "精臣標籤機 D110", brand: "Niimbot 精臣", desc: "幫信封袋、存錢罐貼上標籤，讓分類理財更有儀式感。", url: "https://www.niimbot-tw.com/one-page-stores/every-dollars", img: "", active: true },
+    { id: 2, name: "《富爸爸，窮爸爸》", brand: "羅勃特．乙．清崎", desc: "理財入門必讀經典，重新理解金錢、資產與負債的關係。", url: "", img: "", active: true },
+    { id: 3, name: "A4 透明拉鏈袋（10入）", brand: "", desc: "搭配信封分類法使用，用透明袋分裝現金一目瞭然。", url: "", img: "", active: true },
+  ],
   tags: DEFAULT_TAGS,
   resources: [],
   newsletter: { subscriberCount: "1,000+", intro: "每週一篇理財觀念，寫給想讓錢更有意義的你。不說廢話，只寫真實心得。", archiveNote: "隨時取消訂閱，沒有壓力。" },
@@ -225,8 +229,22 @@ function useFS(key, def) {
   const [v, setV] = useState(def);
   const [loaded, setLoaded] = useState(false);
   useEffect(() => { fbGet(key).then(val => { if (val !== null) setV(val); setLoaded(true); }); }, [key]);
-  const set = async fn => { const n = typeof fn === "function" ? fn(v) : fn; setV(n); await fbSet(key, n); };
+  const set = async (fn, opts) => { const n = typeof fn === "function" ? fn(v) : fn; setV(n); await fbSet(key, n); if (!opts?.silent) _showToast("儲存成功"); };
   return [v, set, loaded];
+}
+
+let _showToast = () => {};
+function Toast() {
+  const [msg, setMsg] = useState("");
+  const [show, setShow] = useState(false);
+  const t = useRef();
+  _showToast = (m) => { setMsg(m); setShow(true); clearTimeout(t.current); t.current = setTimeout(() => setShow(false), 2200); };
+  if (!show) return null;
+  return (
+    <div style={{ position: "fixed", bottom: 80, left: "50%", transform: "translateX(-50%)", background: CHAR, color: WHITE, padding: "12px 28px", borderRadius: 8, fontSize: 13, zIndex: 9999, boxShadow: "0 4px 20px rgba(0,0,0,.25)", letterSpacing: ".5px", whiteSpace: "nowrap", pointerEvents: "none" }}>
+      ✓ {msg}
+    </div>
+  );
 }
 
 function moveItem(arr, idx, dir) {
@@ -436,7 +454,23 @@ function Nav({ page, setPage, isAdmin, setIsAdmin }) {
   const [showL, setShowL] = useState(false);
   const [pw, setPw] = useState(""); const [err, setErr] = useState(false);
   const [mob, setMob] = useState(false);
-  const login = () => { if (pw === ADMIN_PW) { setIsAdmin(true); setShowL(false); setPw(""); setErr(false); } else setErr(true); };
+  const [attempts, setAttempts] = useState(0);
+  const [lockUntil, setLockUntil] = useState(0);
+  const [lockMsg, setLockMsg] = useState("");
+  useEffect(() => {
+    if (lockUntil <= Date.now()) return;
+    const iv = setInterval(() => {
+      const left = Math.ceil((lockUntil - Date.now()) / 1000);
+      if (left <= 0) { setLockMsg(""); setAttempts(0); clearInterval(iv); }
+      else setLockMsg(`登入已鎖定，請等待 ${left} 秒`);
+    }, 1000);
+    return () => clearInterval(iv);
+  }, [lockUntil]);
+  const login = () => {
+    if (lockUntil > Date.now()) return;
+    if (pw === ADMIN_PW) { setIsAdmin(true); setShowL(false); setPw(""); setErr(false); setAttempts(0); setLockMsg(""); }
+    else { setErr(true); const n = attempts + 1; setAttempts(n); if (n >= 5) { setLockUntil(Date.now() + 30000); setLockMsg("登入已鎖定，請等待 30 秒"); } }
+  };
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
     if (params.get("admin") === "true") {
@@ -484,9 +518,10 @@ function Nav({ page, setPage, isAdmin, setIsAdmin }) {
           <div style={{ background: WHITE, padding: 40, width: "100%", maxWidth: 360 }}>
             <p style={{ fontSize: 13, letterSpacing: "2px", color: NAVY2, marginBottom: 24, fontWeight: 500 }}>後台登入</p>
             <input type="password" placeholder="密碼" value={pw} onChange={e => { setPw(e.target.value); setErr(false); }} onKeyDown={e => e.key === "Enter" && login()} style={{ marginBottom: 20, fontSize: 15 }} />
-            {err && <p style={{ fontSize: 12, color: "#C0392B", marginBottom: 12 }}>密碼錯誤</p>}
+            {err && !lockMsg && <p style={{ fontSize: 12, color: "#C0392B", marginBottom: 12 }}>密碼錯誤{attempts >= 3 && attempts < 5 ? `（再錯 ${5 - attempts} 次將鎖定）` : ""}</p>}
+            {lockMsg && <p style={{ fontSize: 12, color: "#C0392B", marginBottom: 12 }}>{lockMsg}</p>}
             <div style={{ display: "flex", gap: 10, marginTop: 8 }}>
-              <button className="pb" style={{ flex: 1 }} onClick={login}>登入</button>
+              <button className="pb" style={{ flex: 1 }} onClick={login} disabled={!!lockMsg}>登入</button>
               <button className="pg" onClick={() => { setShowL(false); setPw(""); setErr(false); }}>取消</button>
             </div>
           </div>
@@ -944,7 +979,13 @@ function Shop({ products, setProducts, isAdmin }) {
   const sf = k => e => setForm(p => ({ ...p, [k]: e.target.value }));
   const startAdd = () => { setForm({ name: "", type: "digital", price: "", desc: "", url: "", img: "" }); setEditing("new"); };
   const startEdit = p => { setForm({ ...p }); setEditing(p.id); };
-  const save = () => { if (editing === "new") setProducts(prev => [...prev, { ...form, id: Date.now() }]); else setProducts(prev => prev.map(p => p.id === editing ? { ...p, ...form } : p)); setEditing(null); };
+  const [priceErr, setPriceErr] = useState("");
+  const save = () => {
+    const p = form.price.trim();
+    if (p && !/^NT\$\s?\d[\d,]*$/.test(p)) { setPriceErr("格式範例：NT$299 或 NT$ 1,299"); return; }
+    setPriceErr("");
+    if (editing === "new") setProducts(prev => [...prev, { ...form, id: Date.now() }]); else setProducts(prev => prev.map(p => p.id === editing ? { ...p, ...form } : p)); setEditing(null);
+  };
   const del = id => { if (confirm("確定刪除？")) setProducts(prev => prev.filter(p => p.id !== id)); };
   const move = (idx, dir) => setProducts(prev => moveItem(prev, idx, dir));
   return (
@@ -962,7 +1003,7 @@ function Shop({ products, setProducts, isAdmin }) {
             <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 20, marginBottom: 20 }} className="grid2">
               <div><p style={{ fontSize: 12, color: MID, marginBottom: 8 }}>商品名稱</p><input value={form.name} onChange={sf("name")} /></div>
               <div><p style={{ fontSize: 12, color: MID, marginBottom: 8 }}>類型</p><select value={form.type} onChange={sf("type")} style={{ border: "1px solid #D0D5DA", padding: "10px 12px", background: WHITE, width: "100%" }}><option value="digital">數位商品</option><option value="physical">實體商品</option></select></div>
-              <div><p style={{ fontSize: 12, color: MID, marginBottom: 8 }}>價格</p><input placeholder="NT$ 299" value={form.price} onChange={sf("price")} /></div>
+              <div><p style={{ fontSize: 12, color: MID, marginBottom: 8 }}>價格</p><input placeholder="NT$ 299" value={form.price} onChange={e => { sf("price")(e); setPriceErr(""); }} />{priceErr && <p style={{ fontSize: 11, color: "#C0392B", marginTop: 4 }}>{priceErr}</p>}</div>
               <div><p style={{ fontSize: 12, color: MID, marginBottom: 8 }}>購買連結</p><input value={form.url} onChange={sf("url")} /></div>
             </div>
             <div style={{ marginBottom: 20 }}><p style={{ fontSize: 12, color: MID, marginBottom: 8 }}>商品說明</p><textarea value={form.desc} onChange={sf("desc")} style={{ minHeight: 80, border: "1px solid #D0D5DA", padding: "10px", background: WHITE }} /></div>
@@ -1146,7 +1187,7 @@ function Goods({ goods, setGoods, isAdmin }) {
                   <p style={{ fontSize: 13, color: MID, lineHeight: 1.8, marginBottom: 16, whiteSpace: "pre-wrap" }}>{p.desc}</p>
                   <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: 8 }}>
                     {p.url && <a href={p.url} target="_blank" rel="noopener noreferrer"><button className="pb" style={{ fontSize: 12, padding: "8px 16px" }}>查看 →</button></a>}
-                    {isAdmin && <div style={{ display: "flex", gap: 8 }}><button className="pg" style={{ fontSize: 11, padding: "5px 10px" }} onClick={() => startEdit(p)}>編輯</button><button className="pg" style={{ fontSize: 11, padding: "5px 10px", color: "#E74C3C", borderColor: "#E74C3C" }} onClick={() => del(p.id)}>刪除</button></div>}
+                    {isAdmin && <div style={{ display: "flex", gap: 8 }}><button className="pg" style={{ fontSize: 11, padding: "5px 10px" }} onClick={() => startEdit(p)}>編輯</button><button className="pg" style={{ fontSize: 11, padding: "5px 10px" }} onClick={() => { setGoods(prev => prev.map(g => g.id === p.id ? { ...g, active: false } : g), { silent: true }); _showToast(`「${p.name}」已下架`); }}>下架</button><button className="pg" style={{ fontSize: 11, padding: "5px 10px", color: "#E74C3C", borderColor: "#E74C3C" }} onClick={() => del(p.id)}>刪除</button></div>}
                   </div>
                 </div>
               </div>
@@ -1160,6 +1201,7 @@ function Goods({ goods, setGoods, isAdmin }) {
               <div key={p.id} style={{ display: "flex", justifyContent: "space-between", padding: "12px 0", borderBottom: `1px solid ${BORDER}`, alignItems: "center", flexWrap: "wrap", gap: 8 }}>
                 <span style={{ fontSize: 13, color: LIGHT }}>{p.name}</span>
                 <div style={{ display: "flex", gap: 8 }}>
+                  <button className="pg" style={{ fontSize: 11, padding: "4px 10px" }} onClick={() => { setGoods(prev => prev.map(g => g.id === p.id ? { ...g, active: true } : g), { silent: true }); _showToast(`「${p.name}」已上架`); }}>上架</button>
                   <button className="pg" style={{ fontSize: 11, padding: "4px 10px" }} onClick={() => startEdit(p)}>編輯</button>
                   <button className="pg" style={{ fontSize: 11, padding: "4px 10px", color: "#E74C3C", borderColor: "#E74C3C" }} onClick={() => del(p.id)}>刪除</button>
                 </div>
@@ -2029,7 +2071,7 @@ export default function App() {
   const [articles, setArticles, aL] = useFS("articles", DEFAULTS.articles);
   const [products, setProducts, pL] = useFS("products", DEFAULTS.products);
   const [igPosts, setIgPosts, iL] = useFS("igPosts", DEFAULTS.igPosts);
-  const [goods, setGoods, gL] = useFS("goods", []);
+  const [goods, setGoods, gL] = useFS("goods", DEFAULTS.goods);
   const [about, setAbout, abL] = useFS("about", DEFAULTS.about);
   const [siteTitle, setSiteTitle, tL] = useFS("siteTitle", DEFAULTS.siteTitle);
   const [tags, setTags, taL] = useFS("tags", DEFAULTS.tags);
@@ -2056,9 +2098,15 @@ export default function App() {
         ...prev,
         pricingNote: DEFAULTS.appContent.pricingNote,
         plans: DEFAULTS.appContent.plans,
-      }));
+      }), { silent: true });
     }
   }, [acL]);
+  useEffect(() => {
+    if (!gL) return;
+    if ((!goods || goods.length === 0) && DEFAULTS.goods.length > 0) {
+      setGoods(DEFAULTS.goods, { silent: true });
+    }
+  }, [gL]);
   const saveArticle = d => {
     const nid = Math.max(...articles.map(a => a.id), 0) + 1;
     setArticles(prev => [...prev, { id: nid, ...d, excerpt: d.excerpt || (d.content.slice(0, 80) + "⋯"), views: 0, comments: [], date: new Date().toISOString().slice(0, 10) }]);
@@ -2076,6 +2124,7 @@ export default function App() {
 
   return (
     <div style={{ minHeight: "100vh", background: WHITE }}>
+      <Toast />
       <Nav page={page} setPage={nav} isAdmin={isAdmin} setIsAdmin={setIsAdmin} />
       <div key={page} className="page-anim">
         {page === "home" && <Home articles={articles} setPage={setPage} setId={setId} setArticles={setArticles} isAdmin={isAdmin} siteTitle={siteTitle} setSiteTitle={setSiteTitle} tags={tags} setTags={setTags} about={about} setAbout={setAbout} links={links} />}
