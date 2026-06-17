@@ -571,7 +571,7 @@ function Footer({ links, footerTagline, setFooterTagline, isAdmin, setPage }) {
         <p style={{ fontSize: 11, color: "rgba(255,255,255,.3)" }}>© 2026 88La 版權所有</p>
         <div style={{ display: "flex", gap: 20, flexWrap: "wrap", alignItems: "center" }}>
           <a href={`mailto:${l.email}`} style={{ fontSize: 11, color: "rgba(255,255,255,.3)", transition: "color .15s" }} onMouseEnter={e => e.currentTarget.style.color = "rgba(255,255,255,.6)"} onMouseLeave={e => e.currentTarget.style.color = "rgba(255,255,255,.3)"}>{l.email}</a>
-          {setPage && <span onClick={() => setPage("terms")} style={{ fontSize: 11, color: "rgba(255,255,255,.3)", cursor: "pointer", transition: "color .15s" }} onMouseEnter={e => e.currentTarget.style.color = "rgba(255,255,255,.6)"} onMouseLeave={e => e.currentTarget.style.color = "rgba(255,255,255,.3)"}>服務條款</span>}
+          {setPage && <><span onClick={() => setPage("terms")} style={{ fontSize: 11, color: "rgba(255,255,255,.3)", cursor: "pointer", transition: "color .15s" }} onMouseEnter={e => e.currentTarget.style.color = "rgba(255,255,255,.6)"} onMouseLeave={e => e.currentTarget.style.color = "rgba(255,255,255,.3)"}>服務條款</span><span onClick={() => setPage("privacy")} style={{ fontSize: 11, color: "rgba(255,255,255,.3)", cursor: "pointer", transition: "color .15s" }} onMouseEnter={e => e.currentTarget.style.color = "rgba(255,255,255,.6)"} onMouseLeave={e => e.currentTarget.style.color = "rgba(255,255,255,.3)"}>隱私政策</span></>}
         </div>
       </div>
     </footer>
@@ -1972,6 +1972,159 @@ function TermsPage() {
   );
 }
 
+// ── 隱私政策 ──
+function PrivacyPage() {
+  const NUMERALS = ["一", "二", "三", "四", "五", "六", "七", "八", "九", "十", "十一"];
+  const SECTIONS = [
+    {
+      title: "適用範圍",
+      content: `本隱私政策適用於 88La 理財自動導航器（官網與網頁應用程式），說明本服務如何處理您於使用過程中提供或產生之個人資料。本政策不適用於本服務以外之外部連結網站，亦不適用於非本服務委託或參與管理之第三方。`,
+    },
+    {
+      title: "我們蒐集的資料",
+      content: null,
+      subsections: [
+        { subtitle: "登入時", text: "本服務採用 Google 帳號登入機制，系統將取得您的電子郵件位址，作為識別您帳號身分之唯一依據。您無需另行設定獨立的帳號密碼。" },
+        { subtitle: "使用記帳功能時", text: "您於使用過程中主動輸入之內容，包括每一筆記帳明細（金額、類別、付款方式、備註、消費當下之心情記錄）、月度預算規劃、信用卡與帳戶設定、負債資料，以及理財筆記，皆屬於您所提供之資料範疇。" },
+        { subtitle: "付款時", text: "訂閱費用係由綠界科技股份有限公司代為收取，您的信用卡卡號、有效期限等付款資訊將直接於綠界之付款頁面輸入，88La 不會接觸、亦不會儲存任何與您的付款工具相關之資訊。本服務僅會收到付款是否成功之通知，以憑此開通您的訂閱權限。" },
+        { subtitle: "瀏覽網站時（自動蒐集）", text: "本服務官網使用 Vercel Web Analytics 統計流量，此工具不使用第三方 cookie，而是以傳入請求產生的雜湊值識別訪客，所記錄之資料皆為匿名性質，不會與任何個人、客戶或 IP 位址綁定或關聯，相關瀏覽紀錄亦不會永久保存，將於 24 小時後自動清除。我們僅藉此瞭解整體網站使用狀況（如頁面瀏覽量），不會用來識別您的個人身分。" },
+      ],
+    },
+    {
+      title: "未成年使用者",
+      content: `本服務之受眾可能包含未滿 18 歲之學生族群。若您未滿 18 歲，建議於監護人知悉並同意之情況下使用本服務。若您是未滿 18 歲使用者之監護人，並認為您的子女未經同意提供了個人資料，請透過第七條所列聯絡方式與我們聯繫，我們將協助處理相關資料之刪除或更正事宜。`,
+    },
+    {
+      title: "資料儲存之處所",
+      content: null,
+      table: [
+        ["記帳明細、預算、筆記", "您個人之 Google 試算表", "登入後，系統將自動於您的 Google 雲端硬碟建立專屬檔案，相關資料即時寫入其中"],
+        ["帳號狀態、到期日、帳戶與信用卡及負債設定", "Firebase（本服務之後端資料庫）", "用於驗證您訂閱之有效性，並儲存您的個人化功能設定"],
+        ["最近一次驗證之時間戳記", "您裝置之本機儲存空間（localStorage）", "僅用於判斷離線狀態下之暫時可用性，不含任何記帳內容"],
+        ["匿名瀏覽統計", "Vercel Web Analytics", "不可識別個人身分，24 小時後自動清除"],
+      ],
+      afterTable: `換言之，您的記帳流水帳實際上是存放於「您個人」之 Google 雲端硬碟內，而非本服務之伺服器。即便本服務有朝一日終止運作，該份試算表仍歸屬於您本人，您可隨時開啟、複製或刪除。`,
+    },
+    {
+      title: "資料之存取權限",
+      content: null,
+      bullets: [
+        "您的記帳明細存放於您個人之 Google 試算表中，僅您本人得以查閱，本服務不具備、亦未申請主動讀取或瀏覽該試算表內容之權限",
+        "本服務所申請之 Google 授權範圍，僅限於「本應用程式所建立之檔案」（技術上稱為 drive.file），絕不涉及您 Google 雲端硬碟中既有之其他檔案",
+        "帳號狀態與設定資料存放於 Firebase，僅供系統驗證訂閱狀態之用，本服務不會將其提供、洩露或出售予任何第三方",
+        "金流相關資訊由綠界科技依其自身隱私規範處理，本服務全程不接觸您的付款資料",
+      ],
+      afterBullets: `本服務承諾，絕不將您的資料出售予廣告主，亦不會將您的記帳內容用於任何行銷分析或對外提供。`,
+    },
+    {
+      title: "資料之運用目的",
+      content: null,
+      bullets: [
+        "呈現您的記帳記錄、預算對比分析、月度診斷報告等您主動使用之功能",
+        "驗證您的訂閱是否仍屬有效期間",
+        "於您與客服聯繫時，協助核對您的帳號狀況",
+        "透過匿名流量統計瞭解網站整體使用狀況，藉以優化服務內容",
+      ],
+      afterBullets: `凡未經您同意或非屬您主動使用之功能範疇，本服務絕不擅自運用您的資料，例如分析您的消費習慣以投放廣告。`,
+    },
+    {
+      title: "資料安全與外洩通知",
+      content: `本服務已採取合理之技術與管理措施，保護您的資料免於未經授權之存取、使用或揭露。惟若不幸發生資料安全事件（例如後端系統遭未經授權存取），本服務將於知悉後之合理期限內，透過您註冊時所使用之電子郵件通知您，並說明事件性質、可能受影響之資料範圍，以及本服務已採取或將採取之應變措施。`,
+    },
+    {
+      title: "資料保留期限",
+      content: null,
+      bullets: [
+        "訂閱使用期間，資料持續妥善保存",
+        "訂閱取消或到期後，依本服務之服務條款，資料將保留三十日供您匯出（CSV 或 PDF 格式），逾期後系統可能予以清除",
+        "至於存放於您個人 Google 試算表內之資料，縱使本服務端之紀錄遭清除，惟若您未自行刪除，該份試算表仍將留存於您的 Google 雲端硬碟之中",
+      ],
+    },
+    {
+      title: "您所享有之權利",
+      content: `依個人資料保護法相關規定，您對於本服務所持有之個人資料，得行使下列權利：`,
+      bullets: [
+        "查詢或請求閱覽",
+        "請求製給複製本",
+        "請求補充或更正",
+        "請求停止蒐集、處理或利用",
+        "請求刪除",
+      ],
+      afterBullets: `您可隨時匯出您完整之記帳資料（CSV 或 PDF 格式），亦可隨時開啟您的 Google 試算表自行查閱、複製或備份原始資料。如欲行使上述權利或取消訂閱，敬請致信 everydollars17@gmail.com 提出申請，我們將於合理期限內處理回覆。`,
+    },
+    {
+      title: "政策之修改",
+      content: `本政策內容如有修改，將於本網站公告並更新最後修改日期。重大變更將透過電子郵件另行通知您。`,
+    },
+    {
+      title: "聯絡方式",
+      content: `如有任何關於本隱私政策之疑問，敬請致信 everydollars17@gmail.com，我們將竭誠為您回覆。`,
+    },
+  ];
+
+  return (
+    <div>
+      <div style={{ background: GRAD, padding: "52px 32px", borderBottom: `1px solid ${BORDER}` }}>
+        <div style={{ maxWidth: 800, margin: "0 auto" }}>
+          <p className="section-label" style={{ marginBottom: 10 }}>PRIVACY</p>
+          <h1 style={{ fontSize: 24, fontWeight: 700, color: CHAR, lineHeight: 1.45 }}>88La 理財導航器<br />隱私政策</h1>
+          <p style={{ fontSize: 13, color: MID, marginTop: 10 }}>最後更新：2026 年 7 月</p>
+        </div>
+      </div>
+      <div style={{ maxWidth: 800, margin: "0 auto", padding: "64px 32px" }} className="page-wrap">
+        <p style={{ fontSize: 14, color: MID, lineHeight: 2.1, marginBottom: 48 }}>
+          88La 由個人創作者獨立營運，我們深知理財記帳涉及您最私密的財務細節，因此特別撰寫此份隱私政策，以清楚說明本服務蒐集何種資料、如何運用、儲存於何處，以及哪些人能夠接觸這些資訊。
+        </p>
+        <div style={{ display: "flex", flexDirection: "column", gap: 48 }}>
+          {SECTIONS.map((s, i) => (
+            <div key={i}>
+              <h2 style={{ fontSize: 15, fontWeight: 700, color: CHAR, marginBottom: 14 }}>{NUMERALS[i]}、{s.title}</h2>
+              {s.content && <p style={{ fontSize: 14, color: MID, lineHeight: 2.1, whiteSpace: "pre-wrap" }}>{s.content}</p>}
+              {s.subsections && s.subsections.map((sub, j) => (
+                <div key={j} style={{ marginTop: j === 0 ? 0 : 20, marginBottom: 4 }}>
+                  <p style={{ fontSize: 13, fontWeight: 600, color: CHAR, marginBottom: 6 }}>【{sub.subtitle}】</p>
+                  <p style={{ fontSize: 14, color: MID, lineHeight: 2.1 }}>{sub.text}</p>
+                </div>
+              ))}
+              {s.table && (
+                <div style={{ overflowX: "auto", marginTop: 8, marginBottom: 16 }}>
+                  <table style={{ width: "100%", borderCollapse: "collapse", fontSize: 13, color: MID }}>
+                    <thead>
+                      <tr style={{ background: O2 }}>
+                        {["資料類型", "儲存位置", "說明"].map(h => (
+                          <th key={h} style={{ padding: "10px 14px", textAlign: "left", fontWeight: 600, color: CHAR, borderBottom: `2px solid ${O}`, fontSize: 12 }}>{h}</th>
+                        ))}
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {s.table.map((row, ri) => (
+                        <tr key={ri} style={{ borderBottom: `1px solid ${BORDER}` }}>
+                          {row.map((cell, ci) => (
+                            <td key={ci} style={{ padding: "12px 14px", lineHeight: 1.8, verticalAlign: "top" }}>{cell}</td>
+                          ))}
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              )}
+              {s.afterTable && <p style={{ fontSize: 14, color: MID, lineHeight: 2.1 }}>{s.afterTable}</p>}
+              {s.bullets && (
+                <ul style={{ paddingLeft: 20, margin: s.content ? "12px 0 0" : "0" }}>
+                  {s.bullets.map((b, bi) => (
+                    <li key={bi} style={{ fontSize: 14, color: MID, lineHeight: 2.1, marginBottom: 4 }}>{b}</li>
+                  ))}
+                </ul>
+              )}
+              {s.afterBullets && <p style={{ fontSize: 14, color: MID, lineHeight: 2.1, marginTop: 12 }}>{s.afterBullets}</p>}
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+}
+
 // ── 訂閱方案 ──
 function SubscriptionPage({ setPage, isAdmin }) {
   if (!isAdmin) return (
@@ -2175,6 +2328,7 @@ export default function App() {
         {page === "plans" && <PricingPage appContent={appContent} setPage={nav} />}
         {page === "pricing" && <SubscriptionPage setPage={nav} isAdmin={isAdmin} />}
         {page === "terms" && <TermsPage />}
+        {page === "privacy" && <PrivacyPage />}
         {page === "article" && article && <Article article={article} onBack={() => nav("home")} setArticles={setArticles} isAdmin={isAdmin} tags={tags} links={links} setPage={nav} products={products} resources={resources} />}
         {page === "write" && isAdmin && <Write onSave={saveArticle} onBack={() => nav("home")} tags={tags} products={products} resources={resources} />}
       </div>
