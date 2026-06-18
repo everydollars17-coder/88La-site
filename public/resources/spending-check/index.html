@@ -1,0 +1,413 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>找出你的花錢漏洞｜88La 自我檢視表</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700;900&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --c1:#a8501f;
+    --c2:#c96b2f;
+    --c3:#dd8a52;
+    --c4:#eeab7c;
+    --bg:#faf6f2;
+    --card:#ffffff;
+    --text:#2e2520;
+    --text-light:#8a7d72;
+    --border:#ece3da;
+  }
+  *{box-sizing:border-box;}
+  body{
+    margin:0;
+    background:var(--bg);
+    color:var(--text);
+    font-family:'Noto Sans TC',-apple-system,sans-serif;
+    -webkit-font-smoothing:antialiased;
+  }
+  .topbar{
+    position:sticky;
+    top:0;
+    z-index:10;
+    background:rgba(250,246,242,0.96);
+    backdrop-filter:blur(6px);
+    border-bottom:1px solid var(--border);
+    padding:12px 20px;
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:12px;
+  }
+  .topbar .brand{
+    font-weight:900;
+    font-size:14px;
+    letter-spacing:0.5px;
+    color:var(--c1);
+  }
+  .save-btn{
+    background:var(--c2);
+    color:#fff;
+    border:none;
+    padding:9px 14px;
+    border-radius:7px;
+    font-family:inherit;
+    font-size:13px;
+    font-weight:700;
+    cursor:pointer;
+    white-space:nowrap;
+  }
+  .save-btn:active{ background:var(--c1); }
+  .page{
+    max-width:480px;
+    margin:0 auto;
+    padding:24px 18px 60px;
+  }
+  .intro{
+    margin-bottom:28px;
+  }
+  .intro h1{
+    font-size:22px;
+    line-height:1.4;
+    margin:0 0 10px;
+    font-weight:900;
+  }
+  .intro p{
+    font-size:14px;
+    line-height:1.8;
+    color:var(--text-light);
+    margin:0;
+  }
+  .block{
+    background:var(--card);
+    border-radius:8px;
+    border:1px solid var(--border);
+    margin-bottom:22px;
+    overflow:hidden;
+  }
+  .bar{ height:3px; width:100%; }
+  .bar-1{ background:var(--c1); }
+  .bar-2{ background:var(--c2); }
+  .bar-3{ background:var(--c3); }
+  .bar-4{ background:var(--c4); }
+  .block-inner{ padding:20px; }
+  .eyebrow{
+    font-size:11px;
+    font-weight:700;
+    letter-spacing:1.5px;
+    text-transform:uppercase;
+    margin-bottom:6px;
+  }
+  .eyebrow-1{ color:var(--c1); }
+  .eyebrow-2{ color:var(--c2); }
+  .eyebrow-3{ color:var(--c3); }
+  .eyebrow-4{ color:var(--c4); }
+  .block h2{
+    font-size:17px;
+    margin:0 0 8px;
+    font-weight:700;
+  }
+  .block p.desc{
+    font-size:13px;
+    line-height:1.7;
+    color:var(--text-light);
+    margin:0 0 16px;
+  }
+  label.field-label{
+    font-size:12px;
+    color:var(--text-light);
+    display:block;
+    margin-bottom:5px;
+  }
+  input[type="text"], input[type="number"], select, textarea{
+    width:100%;
+    border:1px solid var(--border);
+    border-radius:6px;
+    padding:10px 12px;
+    font-size:14px;
+    font-family:inherit;
+    color:var(--text);
+    margin-bottom:8px;
+    background:#fff;
+  }
+  textarea{ min-height:64px; resize:vertical; }
+  input:focus, select:focus, textarea:focus{
+    outline:none;
+    border-color:var(--c2);
+  }
+  .row{ display:flex; gap:8px; }
+  .row > *{ flex:1; min-width:0; }
+  .item-card{
+    display:flex;
+    gap:10px;
+    border:1px dashed var(--border);
+    border-radius:6px;
+    padding:12px;
+    margin-bottom:10px;
+    position:relative;
+  }
+  .item-number{
+    flex-shrink:0;
+    width:22px;
+    height:22px;
+    border-radius:4px;
+    background:#fbeadd;
+    color:var(--c1);
+    font-size:12px;
+    font-weight:700;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    margin-top:2px;
+  }
+  .item-fields{
+    flex:1;
+    min-width:0;
+  }
+  .remove-btn{
+    background:none;
+    border:none;
+    color:var(--text-light);
+    font-size:12px;
+    cursor:pointer;
+    padding:2px 0;
+    text-decoration:underline;
+  }
+  .add-btn{
+    width:100%;
+    background:transparent;
+    border:1px dashed var(--c2);
+    color:var(--c2);
+    border-radius:6px;
+    padding:10px;
+    font-size:13px;
+    font-weight:700;
+    font-family:inherit;
+    cursor:pointer;
+    margin-top:4px;
+  }
+  .sum-box{
+    margin-top:14px;
+    padding:14px;
+    border-radius:6px;
+    background:#fbeadd;
+    text-align:center;
+  }
+  .sum-box .label{
+    font-size:12px;
+    color:var(--c1);
+    margin-bottom:2px;
+  }
+  .sum-box .amount{
+    font-size:22px;
+    font-weight:900;
+    color:var(--c1);
+  }
+  .radio-option{
+    display:flex;
+    align-items:flex-start;
+    gap:10px;
+    border:1px solid var(--border);
+    border-radius:6px;
+    padding:12px;
+    margin-bottom:8px;
+    font-size:14px;
+    line-height:1.5;
+    cursor:pointer;
+  }
+  .radio-option input{
+    margin:3px 0 0;
+    width:auto;
+    flex-shrink:0;
+  }
+  footer{
+    text-align:center;
+    font-size:12px;
+    color:var(--text-light);
+    line-height:1.8;
+    padding:0 18px 30px;
+  }
+  @media print{
+    .topbar{ display:none; }
+    .add-btn, .remove-btn{ display:none; }
+    body{ background:#fff; }
+    .block{ border:1px solid #ddd; box-shadow:none; break-inside:avoid; }
+    .page{ max-width:100%; padding:0; }
+    @page{ size:A4; margin:15mm; }
+  }
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <span class="brand">88La</span>
+  <button class="save-btn" onclick="window.print()">📝 填好了，存成 PDF</button>
+</div>
+
+<div class="page">
+
+  <div class="intro">
+    <h1>找出你的花錢漏洞</h1>
+    <p>從月光族到半年存四萬，這套方法我找了 8 年。不是先省錢，是先看見問題——花一點時間，誠實寫完這四步，你會更清楚錢去哪了。</p>
+  </div>
+
+  <!-- STEP 1 -->
+  <div class="block">
+    <div class="bar bar-1"></div>
+    <div class="block-inner">
+      <div class="eyebrow eyebrow-1">STEP 01</div>
+      <h2>盤點這個月的開銷</h2>
+      <p class="desc">把目前已經花掉的錢列出來。每一項都問自己：這個真的「必須」刷卡嗎？還是現金其實也付得起？</p>
+      <div id="step1-list"></div>
+      <button class="add-btn" onclick="addExpenseItem()">+ 新增一筆開銷</button>
+    </div>
+  </div>
+
+  <!-- STEP 2 -->
+  <div class="block">
+    <div class="bar bar-2"></div>
+    <div class="block-inner">
+      <div class="eyebrow eyebrow-2">STEP 02</div>
+      <h2>靈魂拷問：哪些是不必要的開銷？</h2>
+      <p class="desc">誠實寫下「其實可以不花」的項目，金額不論大小，先全部攤開來看。</p>
+      <div id="step2-list"></div>
+      <button class="add-btn" onclick="addSavingItem()">+ 新增一筆</button>
+      <div class="sum-box">
+        <div class="label">每個月可省</div>
+        <div class="amount" id="sum-display">$0</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- STEP 3 -->
+  <div class="block">
+    <div class="bar bar-3"></div>
+    <div class="block-inner">
+      <div class="eyebrow eyebrow-3">STEP 03</div>
+      <h2>回想上一次衝動消費</h2>
+      <p class="desc">情緒會說話，看懂它，下次才不會被它牽著走。</p>
+
+      <label class="field-label">那時候的情緒／心情是？</label>
+      <textarea placeholder="例如：焦慮、委屈、想證明自己過得不錯……"></textarea>
+
+      <label class="field-label">當時的情境是？</label>
+      <textarea placeholder="例如：滑 IG 看到朋友做美甲、半夜覺得很累……"></textarea>
+
+      <label class="field-label">下次可以怎麼避免？有沒有替代方案？</label>
+      <textarea placeholder="例如：壓力大很想吃甜點 → 用超商布丁取代"></textarea>
+    </div>
+  </div>
+
+  <!-- STEP 4 -->
+  <div class="block">
+    <div class="bar bar-4"></div>
+    <div class="block-inner">
+      <div class="eyebrow eyebrow-4">STEP 04</div>
+      <h2>你想先從哪一步開始？</h2>
+      <p class="desc">不用一次到位，先選一個，從今天開始。</p>
+
+      <label class="radio-option">
+        <input type="radio" name="start-step" value="1">
+        <span>先把信用卡停用，花費全部回歸現金</span>
+      </label>
+      <label class="radio-option">
+        <input type="radio" name="start-step" value="2">
+        <span>先盤點不必要的開銷，找出能省下的錢</span>
+      </label>
+      <label class="radio-option">
+        <input type="radio" name="start-step" value="3">
+        <span>先觀察自己的消費情緒與行為，找出衝動消費的開關</span>
+      </label>
+
+      <label class="field-label" style="margin-top:10px;">想多說一點嗎？</label>
+      <textarea placeholder="為什麼選這一步？打算怎麼開始？"></textarea>
+    </div>
+  </div>
+
+</div>
+
+<footer>
+  做完了，記得標記起來。<br>
+  下個月回來比較看看，你已經走了多遠。<br>
+  — 88La @every_dollars
+</footer>
+
+<script>
+  function addExpenseItem(){
+    const div = document.createElement('div');
+    div.className = 'item-card';
+    div.innerHTML =
+      '<div class="item-number"></div>' +
+      '<div class="item-fields">' +
+        '<label class="field-label">開銷種類</label>' +
+        '<input type="text" placeholder="例如：手搖飲、訂閱服務、治裝費">' +
+        '<div class="row">' +
+          '<div>' +
+            '<label class="field-label">金額</label>' +
+            '<input type="number" inputmode="decimal" placeholder="0">' +
+          '</div>' +
+          '<div>' +
+            '<label class="field-label">用什麼付？</label>' +
+            '<select>' +
+              '<option value="">請選擇</option>' +
+              '<option value="cash">現金就可以</option>' +
+              '<option value="credit">一定要刷卡</option>' +
+            '</select>' +
+          '</div>' +
+        '</div>' +
+        '<label class="field-label">為什麼？（尤其是選「一定要刷卡」的）</label>' +
+        '<input type="text" placeholder="例如：機票需要分期付款">' +
+        '<button type="button" class="remove-btn" onclick="this.closest(\'.item-card\').remove(); renumber(\'step1-list\');">刪除這一筆</button>' +
+      '</div>';
+    document.getElementById('step1-list').appendChild(div);
+    renumber('step1-list');
+  }
+
+  function addSavingItem(){
+    const div = document.createElement('div');
+    div.className = 'item-card';
+    div.innerHTML =
+      '<div class="item-number"></div>' +
+      '<div class="item-fields">' +
+        '<div class="row">' +
+          '<div>' +
+            '<label class="field-label">項目</label>' +
+            '<input type="text" placeholder="例如：跟風美甲">' +
+          '</div>' +
+          '<div>' +
+            '<label class="field-label">金額</label>' +
+            '<input type="number" class="saving-amount" inputmode="decimal" placeholder="0" oninput="calcSum()">' +
+          '</div>' +
+        '</div>' +
+        '<button type="button" class="remove-btn" onclick="this.closest(\'.item-card\').remove(); calcSum(); renumber(\'step2-list\');">刪除這一筆</button>' +
+      '</div>';
+    document.getElementById('step2-list').appendChild(div);
+    renumber('step2-list');
+  }
+
+  function renumber(containerId){
+    const items = document.querySelectorAll('#' + containerId + ' .item-card');
+    items.forEach(function(item, idx){
+      const numEl = item.querySelector('.item-number');
+      if(numEl) numEl.textContent = idx + 1;
+    });
+  }
+
+  function calcSum(){
+    const amounts = document.querySelectorAll('.saving-amount');
+    let sum = 0;
+    amounts.forEach(function(el){
+      const v = parseFloat(el.value);
+      if(!isNaN(v)) sum += v;
+    });
+    document.getElementById('sum-display').textContent = '$' + sum.toLocaleString();
+  }
+
+  addExpenseItem();
+  addSavingItem();
+
+</script>
+
+</body>
+</html>
