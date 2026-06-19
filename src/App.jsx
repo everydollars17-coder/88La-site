@@ -103,14 +103,17 @@ button{font-family:inherit;cursor:pointer;border:none;border-radius:8px;}
   .mob-menu{display:none!important;}
   .mob-panel{display:none!important;}
 }
-.article-content h2{font-size:22px;font-weight:700;color:#1A1A1A;margin:32px 0 12px;line-height:1.4;}
-.article-content h3{font-size:18px;font-weight:600;color:#1A1A1A;margin:24px 0 10px;line-height:1.4;}
-.article-content p{margin-bottom:16px;line-height:1.8;}
+.article-content h2,.rich-ed h2{font-size:22px;font-weight:700;color:#1A1A1A;margin:32px 0 12px;line-height:1.4;}
+.article-content h3,.rich-ed h3{font-size:18px;font-weight:600;color:#1A1A1A;margin:24px 0 10px;line-height:1.4;}
+.rich-ed p{margin-bottom:8px;}
+.article-content p{margin-bottom:16px;line-height:1;}
 .article-content ul,.article-content ol{padding-left:24px;margin-bottom:16px;}
 .article-content li{margin-bottom:6px;line-height:1.7;}
 .article-content strong{font-weight:700;}
 .article-content em{font-style:italic;}
 .article-content u{text-decoration:underline;}
+.article-content a{color:${O};text-decoration:underline;}
+.rich-ed a{color:${O};text-decoration:underline;}
 `;
 
 const DEFAULT_TAGS = ["理財觀念", "信用卡", "記帳", "投資", "讀書筆記", "生活財務", "其他"];
@@ -250,6 +253,16 @@ function Toast() {
 function isValidUrl(s) {
   if (!s || !s.trim()) return true;
   try { const u = new URL(s.trim()); return u.protocol === "http:" || u.protocol === "https:" || u.protocol === "mailto:"; } catch { return false; }
+}
+
+function linkify(text) {
+  if (!text) return text;
+  const parts = text.split(/(https?:\/\/[^\s,，。）)]+|[a-zA-Z0-9._%+\-]+@[a-zA-Z0-9.\-]+\.[a-zA-Z]{2,})/g);
+  return parts.map((part, i) => {
+    if (/^https?:\/\//.test(part)) return <a key={i} href={part} target="_blank" rel="noopener noreferrer" style={{ color: O, textDecoration: "underline" }}>{part}</a>;
+    if (/@/.test(part) && /\.[a-zA-Z]{2,}$/.test(part)) return <a key={i} href={`mailto:${part}`} style={{ color: O, textDecoration: "underline" }}>{part}</a>;
+    return part;
+  });
 }
 
 function moveItem(arr, idx, dir) {
@@ -412,6 +425,7 @@ function RichEditor({ value, onChange }) {
     }
   }, []);
   const exec = (cmd, val = null) => { ref.current.focus(); document.execCommand(cmd, false, val); };
+  const insertLink = () => { const url = prompt("輸入連結 URL："); if (url) exec("createLink", url); };
   const btn = { padding: "4px 9px", fontSize: 13, background: WHITE, border: `1px solid ${BORDER}`, cursor: "pointer", fontFamily: "inherit", borderRadius: 4, lineHeight: 1.4 };
   const COLORS = ["#1A1A1A", "#C85A14", "#E8806E", "#6B6B6B", "#2563EB", "#DC2626", "#16A34A", "#9333EA"];
   return (
@@ -427,6 +441,7 @@ function RichEditor({ value, onChange }) {
         <span style={{ width: 1, background: "#D0D5DA", margin: "0 4px", display: "inline-block" }} />
         <button type="button" style={btn} onMouseDown={e => { e.preventDefault(); exec("insertUnorderedList"); }}>• 列表</button>
         <button type="button" style={btn} onMouseDown={e => { e.preventDefault(); exec("insertOrderedList"); }}>1. 編號</button>
+        <button type="button" style={btn} onMouseDown={e => { e.preventDefault(); insertLink(); }}>🔗</button>
         <span style={{ width: 1, background: "#D0D5DA", margin: "0 4px", display: "inline-block" }} />
         {[["小","2"],["正常","3"],["大","5"]].map(([l,s]) => (
           <button key={s} type="button" style={btn} onMouseDown={e => { e.preventDefault(); exec("fontSize", s); }}>{l}</button>
@@ -437,9 +452,10 @@ function RichEditor({ value, onChange }) {
             title={c} onMouseDown={e => { e.preventDefault(); exec("foreColor", c); }} />
         ))}
       </div>
-      <div ref={ref} contentEditable suppressContentEditableWarning
+      <div ref={ref} className="rich-ed" contentEditable suppressContentEditableWarning
         onInput={() => onChange(ref.current.innerHTML)}
-        style={{ minHeight: 360, padding: "16px", outline: "none", fontSize: 16, lineHeight: 2, color: CHAR }} />
+        onKeyDown={e => { if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); document.execCommand("insertLineBreak"); } }}
+        style={{ minHeight: 360, padding: "16px", outline: "none", fontSize: 16, lineHeight: 1, color: CHAR }} />
     </div>
   );
 }
@@ -634,12 +650,18 @@ function Hero({ about, isAdmin, setAbout, links }) {
 // ── Home (article list) ──
 function Home({ articles, setPage, setId, setArticles, isAdmin, siteTitle, setSiteTitle, tags, setTags, about, setAbout, links }) {
   const [filter, setFilter] = useState("全部");
+  const [sort, setSort] = useState("newest");
   const [editTitle, setEditTitle] = useState(false);
   const [tmpTitle, setTmpTitle] = useState(siteTitle);
   const [editTags, setEditTags] = useState(false);
   const [newTag, setNewTag] = useState("");
-  const filtered = articles.filter(a => filter === "全部" || a.tag === filter);
-  const open = id => { setArticles(prev => prev.map(a => a.id === id ? { ...a, views: a.views + 1 } : a)); setId(id); setPage("article"); };
+  const filtered = articles.filter(a => filter === "全部" || a.tag === filter).slice().sort((a, b) => {
+    if (sort === "newest") return (b.date || "").localeCompare(a.date || "");
+    if (sort === "oldest") return (a.date || "").localeCompare(b.date || "");
+    if (sort === "views") return (b.views || 0) - (a.views || 0);
+    return 0;
+  });
+  const open = id => { setArticles(prev => { const next = prev.map(a => a.id === id ? { ...a, views: (a.views || 0) + 1 } : a); fbSet("articles", next); return next; }); setId(id); setPage("article"); };
   const addTag = () => { const t = newTag.trim(); if (t && !tags.includes(t)) setTags(prev => [...prev, t]); setNewTag(""); };
   const delTag = t => { if (confirm("確定刪除標籤「" + t + "」？")) setTags(prev => prev.filter(x => x !== t)); };
   const moveA = (idx, dir) => setArticles(prev => {
@@ -668,11 +690,18 @@ function Home({ articles, setPage, setId, setArticles, isAdmin, siteTitle, setSi
           </div>
           {isAdmin && !editTitle && <button className="pb" onClick={() => setPage("write")}>＋ 新增文章</button>}
         </div>
-        <div style={{ display: "flex", gap: 8, flexWrap: "wrap", marginBottom: 16, alignItems: "center" }}>
-          {["全部", ...tags].map(t => (
-            <span key={t} onClick={() => setFilter(t)} style={{ fontSize: 12, padding: "5px 14px", cursor: "pointer", background: filter === t ? NAVY : GRAY, color: filter === t ? WHITE : MID, fontWeight: filter === t ? "500" : "400", transition: "background .15s" }}>{t}</span>
-          ))}
-          {isAdmin && <span onClick={() => setEditTags(p => !p)} style={{ fontSize: 12, color: O, cursor: "pointer", marginLeft: 8 }}>{editTags ? "關閉" : "管理標籤"}</span>}
+        <div style={{ display: "flex", gap: 8, flexWrap: "wrap", marginBottom: 16, alignItems: "center", justifyContent: "space-between" }}>
+          <div style={{ display: "flex", gap: 8, flexWrap: "wrap", alignItems: "center" }}>
+            {["全部", ...tags].map(t => (
+              <span key={t} onClick={() => setFilter(t)} style={{ fontSize: 12, padding: "5px 14px", cursor: "pointer", background: filter === t ? NAVY : GRAY, color: filter === t ? WHITE : MID, fontWeight: filter === t ? "500" : "400", transition: "background .15s" }}>{t}</span>
+            ))}
+            {isAdmin && <span onClick={() => setEditTags(p => !p)} style={{ fontSize: 12, color: O, cursor: "pointer", marginLeft: 8 }}>{editTags ? "關閉" : "管理標籤"}</span>}
+          </div>
+          <select value={sort} onChange={e => setSort(e.target.value)} style={{ fontSize: 12, color: MID, border: `1px solid #D0D5DA`, borderRadius: 4, padding: "5px 10px", background: WHITE, cursor: "pointer", appearance: "auto", WebkitAppearance: "menulist", width: "auto" }}>
+            <option value="newest">最新文章</option>
+            <option value="oldest">最舊文章</option>
+            <option value="views">最多瀏覽</option>
+          </select>
         </div>
         {isAdmin && editTags && (
           <div style={{ background: O2, padding: "20px 24px", marginBottom: 32 }}>
@@ -767,7 +796,7 @@ function RelatedLinkEditor({ relatedLinks, onChange, products, resources }) {
 function Article({ article, onBack, setArticles, isAdmin, tags, links, setPage, products, resources }) {
   const [name, setName] = useState(""); const [text, setText] = useState(""); const [copied, setCopied] = useState(false);
   const [editing, setEditing] = useState(false);
-  const [ed, setEd] = useState({ title: article.title, tag: article.tag, excerpt: article.excerpt, content: article.content, img: article.img || "", relatedLinks: article.relatedLinks || [] });
+  const [ed, setEd] = useState({ title: article.title, tag: article.tag, excerpt: article.excerpt, content: article.content, img: article.img || "", date: article.date || "", relatedLinks: article.relatedLinks || [] });
   const l = links || DEFAULTS.links;
   const lastSubmit = useRef(0);
   const [cooldown, setCooldown] = useState(0);
@@ -795,7 +824,10 @@ function Article({ article, onBack, setArticles, isAdmin, tags, links, setPage, 
       <button className="pg" onClick={() => setEditing(false)} style={{ marginBottom: 32 }}>← 取消</button>
       <div style={{ display: "flex", flexDirection: "column", gap: 20 }}>
         <textarea placeholder="標題" value={ed.title} onChange={e => setEd(p => ({ ...p, title: e.target.value }))} style={{ fontSize: 20, fontWeight: 500, minHeight: 64, resize: "none", border: "none", borderBottom: "1px solid #D0D5DA", lineHeight: 1.4 }} />
-        <select value={ed.tag} onChange={e => setEd(p => ({ ...p, tag: e.target.value }))} style={{ border: "1px solid #D0D5DA", padding: "10px 12px", background: WHITE }}>{tags.map(t => <option key={t}>{t}</option>)}</select>
+        <div style={{ display: "flex", gap: 16, flexWrap: "wrap" }}>
+          <select value={ed.tag} onChange={e => setEd(p => ({ ...p, tag: e.target.value }))} style={{ border: "1px solid #D0D5DA", padding: "10px 12px", background: WHITE, flex: 1 }}>{tags.map(t => <option key={t}>{t}</option>)}</select>
+          <input type="date" value={ed.date} onChange={e => setEd(p => ({ ...p, date: e.target.value }))} style={{ border: "1px solid #D0D5DA", padding: "10px 12px", background: WHITE, appearance: "auto", WebkitAppearance: "auto", width: "auto" }} />
+        </div>
         <ImgUploader label="封面圖片（選填）" value={ed.img} onChange={v => setEd(p => ({ ...p, img: v }))} aspect="16/9" />
         <textarea placeholder="摘要" value={ed.excerpt} onChange={e => setEd(p => ({ ...p, excerpt: e.target.value }))} style={{ minHeight: 72, resize: "vertical" }} />
         <RichEditor value={ed.content} onChange={v => setEd(p => ({ ...p, content: v }))} />
@@ -824,7 +856,7 @@ function Article({ article, onBack, setArticles, isAdmin, tags, links, setPage, 
         </div>
       )}
       <div style={{ maxWidth: 740, margin: "0 auto", padding: "52px 32px" }} className="page-wrap">
-        <div className="article-content" style={{ fontSize: 16, lineHeight: 1.8, color: CHAR, marginBottom: 56 }}
+        <div className="article-content" style={{ fontSize: 16, lineHeight: 1, color: CHAR, marginBottom: 56 }}
           dangerouslySetInnerHTML={{ __html: /<[a-z][\s\S]*>/i.test(article.content || "") ? article.content : (article.content || "").replace(/\n/g, "<br>") }} />
         {relLinks.length > 0 && (
           <div style={{ marginBottom: 48 }}>
@@ -1660,7 +1692,7 @@ function Newsletter({ newsletter, setNewsletter, isAdmin, articles, setArticles,
   const info = newsletter || DEFAULTS.newsletter;
   const save = () => { setNewsletter(tmp); setEditMode(false); };
   const recent = [...(articles || [])].sort((a, b) => b.date.localeCompare(a.date)).slice(0, 3);
-  const open = id => { setArticles(prev => prev.map(a => a.id === id ? { ...a, views: a.views + 1 } : a)); setId(id); setPage("article"); };
+  const open = id => { setArticles(prev => { const next = prev.map(a => a.id === id ? { ...a, views: (a.views || 0) + 1 } : a); fbSet("articles", next); return next; }); setId(id); setPage("article"); };
   const handleSubscribe = async () => {
     if (!email) return;
     try { await fbSet("subscribers_" + Date.now(), email); } catch { }
@@ -1957,7 +1989,7 @@ function TermsPage() {
           {SECTIONS.map((s, i) => (
             <div key={i}>
               <h2 style={{ fontSize: 15, fontWeight: 700, color: CHAR, marginBottom: 14 }}>{NUMERALS[i]}、{s.title}</h2>
-              <p style={{ fontSize: 14, color: MID, lineHeight: 2.1, whiteSpace: "pre-wrap" }}>{s.content}</p>
+              <p style={{ fontSize: 14, color: MID, lineHeight: 2.1, whiteSpace: "pre-wrap" }}>{linkify(s.content)}</p>
             </div>
           ))}
         </div>
@@ -2079,7 +2111,7 @@ function PrivacyPage() {
           {SECTIONS.map((s, i) => (
             <div key={i}>
               <h2 style={{ fontSize: 15, fontWeight: 700, color: CHAR, marginBottom: 14 }}>{NUMERALS[i]}、{s.title}</h2>
-              {s.content && <p style={{ fontSize: 14, color: MID, lineHeight: 2.1, whiteSpace: "pre-wrap" }}>{s.content}</p>}
+              {s.content && <p style={{ fontSize: 14, color: MID, lineHeight: 2.1, whiteSpace: "pre-wrap" }}>{linkify(s.content)}</p>}
               {s.subsections && s.subsections.map((sub, j) => (
                 <div key={j} style={{ marginTop: j === 0 ? 0 : 20, marginBottom: 4 }}>
                   <p style={{ fontSize: 13, fontWeight: 600, color: CHAR, marginBottom: 6 }}>【{sub.subtitle}】</p>
@@ -2108,7 +2140,7 @@ function PrivacyPage() {
                   </table>
                 </div>
               )}
-              {s.afterTable && <p style={{ fontSize: 14, color: MID, lineHeight: 2.1 }}>{s.afterTable}</p>}
+              {s.afterTable && <p style={{ fontSize: 14, color: MID, lineHeight: 2.1 }}>{linkify(s.afterTable)}</p>}
               {s.bullets && (
                 <ul style={{ paddingLeft: 20, margin: s.content ? "12px 0 0" : "0" }}>
                   {s.bullets.map((b, bi) => (
@@ -2116,7 +2148,7 @@ function PrivacyPage() {
                   ))}
                 </ul>
               )}
-              {s.afterBullets && <p style={{ fontSize: 14, color: MID, lineHeight: 2.1, marginTop: 12 }}>{s.afterBullets}</p>}
+              {s.afterBullets && <p style={{ fontSize: 14, color: MID, lineHeight: 2.1, marginTop: 12 }}>{linkify(s.afterBullets)}</p>}
             </div>
           ))}
         </div>
