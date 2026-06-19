@@ -98,6 +98,7 @@ button{font-family:inherit;cursor:pointer;border:none;border-radius:8px;}
   .banner-h{height:460px!important;}
   .hide-mob{display:none!important;}
   .mob-tab-bar{display:flex!important;}
+  .site-footer{padding-bottom:calc(72px + env(safe-area-inset-bottom,0px))!important;}
 }
 @media(min-width:769px){
   .mob-menu{display:none!important;}
@@ -559,7 +560,7 @@ function Footer({ links, footerTagline, setFooterTagline, isAdmin, setPage }) {
   const [tmp, setTmp] = useState(footerTagline || DEFAULTS.footerTagline);
   const save = () => { setFooterTagline(tmp); setEditing(false); };
   return (
-    <footer style={{ background: CHAR, padding: "40px 32px 32px" }}>
+    <footer style={{ background: CHAR, padding: "40px 32px calc(32px + env(safe-area-inset-bottom, 0px))", paddingBottom: "calc(32px + env(safe-area-inset-bottom, 0px))" }} className="site-footer">
       <div style={{ maxWidth: 1100, margin: "0 auto", display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: 16 }}>
         <div style={{ display: "flex", alignItems: "center", gap: 24, flexWrap: "wrap" }}>
           <p style={{ fontFamily: "Inter", fontWeight: 700, fontSize: 14, letterSpacing: "1.5px", color: WHITE }}>88La 理財導航器</p>
