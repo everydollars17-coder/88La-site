@@ -106,8 +106,8 @@ button{font-family:inherit;cursor:pointer;border:none;border-radius:8px;}
 }
 .article-content h2,.rich-ed h2{font-size:22px;font-weight:700;color:#1A1A1A;margin:32px 0 12px;line-height:1.4;}
 .article-content h3,.rich-ed h3{font-size:18px;font-weight:600;color:#1A1A1A;margin:24px 0 10px;line-height:1.4;}
-.rich-ed p{margin-bottom:8px;}
-.article-content p{margin-bottom:16px;line-height:1;}
+.rich-ed p{margin-bottom:18px;line-height:1.8;}
+.article-content p{margin-bottom:18px;line-height:1.8;}
 .article-content ul,.article-content ol{padding-left:24px;margin-bottom:16px;}
 .article-content li{margin-bottom:6px;line-height:1.7;}
 .article-content strong{font-weight:700;}
@@ -420,6 +420,7 @@ function RichEditor({ value, onChange }) {
   const init = useRef(false);
   useEffect(() => {
     if (!init.current && ref.current) {
+      document.execCommand("defaultParagraphSeparator", false, "p");
       const html = /<[a-z][\s\S]*>/i.test(value || "") ? (value || "") : (value || "").replace(/\n/g, "<br>");
       ref.current.innerHTML = html;
       init.current = true;
@@ -455,8 +456,11 @@ function RichEditor({ value, onChange }) {
       </div>
       <div ref={ref} className="rich-ed" contentEditable suppressContentEditableWarning
         onInput={() => onChange(ref.current.innerHTML)}
-        onKeyDown={e => { if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); document.execCommand("insertLineBreak"); } }}
-        style={{ minHeight: 360, padding: "16px", outline: "none", fontSize: 16, lineHeight: 1, color: CHAR }} />
+        onKeyDown={e => {
+          if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); document.execCommand("insertParagraph"); }
+          else if (e.key === "Enter" && e.shiftKey) { e.preventDefault(); document.execCommand("insertLineBreak"); }
+        }}
+        style={{ minHeight: 360, padding: "16px", outline: "none", fontSize: 16, lineHeight: 1.8, color: CHAR }} />
     </div>
   );
 }
@@ -857,7 +861,7 @@ function Article({ article, onBack, setArticles, isAdmin, tags, links, setPage, 
         </div>
       )}
       <div style={{ maxWidth: 740, margin: "0 auto", padding: "52px 32px" }} className="page-wrap">
-        <div className="article-content" style={{ fontSize: 16, lineHeight: 1, color: CHAR, marginBottom: 56 }}
+        <div className="article-content" style={{ fontSize: 16, lineHeight: 1.8, color: CHAR, marginBottom: 56 }}
           dangerouslySetInnerHTML={{ __html: /<[a-z][\s\S]*>/i.test(article.content || "") ? article.content : (article.content || "").replace(/\n/g, "<br>") }} />
         {relLinks.length > 0 && (
           <div style={{ marginBottom: 48 }}>
