@@ -1654,7 +1654,10 @@ function Resources({ resources, setResources, isAdmin }) {
                   <h3 style={{ fontSize: 16, fontWeight: 500, color: CHAR, marginBottom: 8 }}>{r.name}</h3>
                   <p style={{ fontSize: 13, color: MID, lineHeight: 1.85, marginBottom: 18, whiteSpace: "pre-wrap" }}>{r.desc}</p>
                   <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-                    {r.url && <a href={r.url} target="_blank" rel="noopener noreferrer"><button className="pb" style={{ fontSize: 12, padding: "8px 16px" }}>下載 / 查看 →</button></a>}
+                    <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
+                      {r.url && <a href={r.url} target="_blank" rel="noopener noreferrer" onClick={() => setResources(prev => (prev || []).map(x => x.id === r.id ? { ...x, clicks: (x.clicks || 0) + 1 } : x), { silent: true })}><button className="pb" style={{ fontSize: 12, padding: "8px 16px" }}>下載 / 查看 →</button></a>}
+                      <span style={{ fontSize: 11, color: LIGHT }}>{r.clicks || 0} 次點擊</span>
+                    </div>
                     {isAdmin && <div style={{ display: "flex", gap: 8 }}>
                       <button className="pg" style={{ fontSize: 11, padding: "5px 10px" }} onClick={() => startEdit(r)}>編輯</button>
                       <button className="pg" style={{ fontSize: 11, padding: "5px 10px", color: "#E74C3C", borderColor: "#E74C3C" }} onClick={() => del(r.id)}>刪除</button>
