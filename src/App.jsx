@@ -1,6 +1,8 @@
 import { useState, useEffect, useRef } from "react";
 import { initializeApp } from "firebase/app";
 import { getFirestore, doc, getDoc, setDoc } from "firebase/firestore";
+import { getAuth, GoogleAuthProvider, signInWithPopup, onAuthStateChanged, signOut } from "firebase/auth";
+import DOMPurify from "dompurify";
 
 const firebaseConfig = {
   apiKey: "AIzaSyCW8TU318MtXe50MjjqWmmHDydFXv-zA3E",
@@ -13,8 +15,10 @@ const firebaseConfig = {
 
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
+const auth = getAuth(app);
+const googleProvider = new GoogleAuthProvider();
+const ADMIN_EMAILS = ["everydollars17@gmail.com"];
 
-const ADMIN_PW = import.meta.env.VITE_ADMIN_PW;
 const APP_URL = "https://88la-finance.vercel.app";
 
 const O = "#C85A14";
@@ -476,26 +480,29 @@ const MOBILE_TABS = [["home","文章",IcUser],["ig","最新消息",IcIG],["resou
 const NAV = [["home","文章"],["about","關於我"],["ig","最新消息"],["resources","資源分享"],["app","記帳 Web App"],["shop","商品"],["goods","推薦好物"]];
 
 // ── Nav ──
-function Nav({ page, setPage, isAdmin, setIsAdmin }) {
+function Nav({ page, setPage, isAdmin }) {
   const [showL, setShowL] = useState(false);
-  const [pw, setPw] = useState(""); const [err, setErr] = useState(false);
   const [mob, setMob] = useState(false);
-  const [attempts, setAttempts] = useState(0);
-  const [lockUntil, setLockUntil] = useState(0);
-  const [lockMsg, setLockMsg] = useState("");
-  useEffect(() => {
-    if (lockUntil <= Date.now()) return;
-    const iv = setInterval(() => {
-      const left = Math.ceil((lockUntil - Date.now()) / 1000);
-      if (left <= 0) { setLockMsg(""); setAttempts(0); clearInterval(iv); }
-      else setLockMsg(`登入已鎖定，請等待 ${left} 秒`);
-    }, 1000);
-    return () => clearInterval(iv);
-  }, [lockUntil]);
-  const login = () => {
-    if (lockUntil > Date.now()) return;
-    if (pw === ADMIN_PW) { setIsAdmin(true); setShowL(false); setPw(""); setErr(false); setAttempts(0); setLockMsg(""); }
-    else { setErr(true); const n = attempts + 1; setAttempts(n); if (n >= 5) { setLockUntil(Date.now() + 30000); setLockMsg("登入已鎖定，請等待 30 秒"); } }
+  const [logging, setLogging] = useState(false);
+  const [err, setErr] = useState("");
+  const login = async () => {
+    if (logging) return;
+    setLogging(true); setErr("");
+    try {
+      const result = await signInWithPopup(auth, googleProvider);
+      if (!ADMIN_EMAILS.includes(result.user.email)) {
+        await signOut(auth);
+        setErr("此帳號沒有管理員權限");
+      } else {
+        setShowL(false);
+      }
+    } catch (e) {
+      if (e?.code === "auth/unauthorized-domain") setErr("此網域未授權，請到 Firebase Console 新增");
+      else if (e?.code === "auth/popup-blocked") setErr("彈出視窗被阻擋，請允許後重試");
+      else if (e?.code === "auth/popup-closed-by-user") setErr("登入視窗已關閉，請重試");
+      else setErr("登入失敗：" + (e?.code || "未知錯誤"));
+    }
+    setLogging(false);
   };
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
@@ -515,7 +522,7 @@ function Nav({ page, setPage, isAdmin, setIsAdmin }) {
             {NAV.map(([k, l]) => (
               <span key={k} onClick={() => go(k)} style={{ fontSize: 12, letterSpacing: ".8px", color: page === k ? WHITE : "rgba(255,255,255,.7)", cursor: "pointer", fontWeight: page === k ? "700" : "400", borderBottom: page === k ? `2px solid ${WHITE}` : "2px solid transparent", paddingBottom: 2, transition: "color .15s" }}>{l}</span>
             ))}
-            {isAdmin && <><span onClick={() => go("write")} style={{ fontSize: 12, color: WHITE, cursor: "pointer", letterSpacing: ".5px" }}>＋ 撰文</span><span onClick={() => setIsAdmin(false)} style={{ fontSize: 11, color: "rgba(255,255,255,.5)", cursor: "pointer", marginLeft: 6 }}>登出</span></>}
+            {isAdmin && <><span onClick={() => go("write")} style={{ fontSize: 12, color: WHITE, cursor: "pointer", letterSpacing: ".5px" }}>＋ 撰文</span><span onClick={() => signOut(auth)} style={{ fontSize: 11, color: "rgba(255,255,255,.5)", cursor: "pointer", marginLeft: 6 }}>登出</span></>}
           </nav>
           <button className="mob-menu" onClick={() => setMob(p => !p)} style={{ background: "none", border: "none", color: WHITE, fontSize: 22, cursor: "pointer", display: "flex", alignItems: "center" }}>
             {mob ? "✕" : "☰"}
@@ -526,7 +533,7 @@ function Nav({ page, setPage, isAdmin, setIsAdmin }) {
             {NAV.map(([k, l]) => (
               <span key={k} onClick={() => go(k)} style={{ fontSize: 15, padding: "15px 24px", borderBottom: `1px solid rgba(255,255,255,.08)`, color: page === k ? O : "rgba(255,255,255,.85)", cursor: "pointer", fontWeight: page === k ? "600" : "400" }}>{l}</span>
             ))}
-            {isAdmin && <><span onClick={() => go("write")} style={{ fontSize: 15, padding: "15px 24px", borderBottom: `1px solid rgba(255,255,255,.08)`, color: O, cursor: "pointer" }}>＋ 撰文</span><span onClick={() => { setIsAdmin(false); setMob(false); }} style={{ fontSize: 13, padding: "13px 24px", color: "rgba(255,255,255,.4)", cursor: "pointer" }}>登出</span></>}
+            {isAdmin && <><span onClick={() => go("write")} style={{ fontSize: 15, padding: "15px 24px", borderBottom: `1px solid rgba(255,255,255,.08)`, color: O, cursor: "pointer" }}>＋ 撰文</span><span onClick={() => { signOut(auth); setMob(false); }} style={{ fontSize: 13, padding: "13px 24px", color: "rgba(255,255,255,.4)", cursor: "pointer" }}>登出</span></>}
           </div>
         )}
       </header>
@@ -543,12 +550,14 @@ function Nav({ page, setPage, isAdmin, setIsAdmin }) {
         <div style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,.6)", zIndex: 200, display: "flex", alignItems: "center", justifyContent: "center", padding: "0 20px" }}>
           <div style={{ background: WHITE, padding: 40, width: "100%", maxWidth: 360 }}>
             <p style={{ fontSize: 13, letterSpacing: "2px", color: NAVY2, marginBottom: 24, fontWeight: 500 }}>後台登入</p>
-            <input type="password" placeholder="密碼" value={pw} onChange={e => { setPw(e.target.value); setErr(false); }} onKeyDown={e => e.key === "Enter" && login()} style={{ marginBottom: 20, fontSize: 15 }} />
-            {err && !lockMsg && <p style={{ fontSize: 12, color: "#C0392B", marginBottom: 12 }}>密碼錯誤{attempts >= 3 && attempts < 5 ? `（再錯 ${5 - attempts} 次將鎖定）` : ""}</p>}
-            {lockMsg && <p style={{ fontSize: 12, color: "#C0392B", marginBottom: 12 }}>{lockMsg}</p>}
+            <p style={{ fontSize: 13, color: MID, marginBottom: 20, lineHeight: 1.7 }}>使用管理員 Google 帳號登入</p>
+            {err && <p style={{ fontSize: 12, color: "#C0392B", marginBottom: 12 }}>{err}</p>}
             <div style={{ display: "flex", gap: 10, marginTop: 8 }}>
-              <button className="pb" style={{ flex: 1 }} onClick={login} disabled={!!lockMsg}>登入</button>
-              <button className="pg" onClick={() => { setShowL(false); setPw(""); setErr(false); }}>取消</button>
+              <button className="pb" style={{ flex: 1, display: "flex", alignItems: "center", justifyContent: "center", gap: 8 }} onClick={login} disabled={logging}>
+                <svg width="16" height="16" viewBox="0 0 48 48"><path fill="#4285F4" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/><path fill="#34A853" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/><path fill="#FBBC05" d="M10.53 28.59A14.5 14.5 0 0 1 9.5 24c0-1.59.28-3.14.76-4.59l-7.98-6.19A23.99 23.99 0 0 0 0 24c0 3.77.9 7.35 2.56 10.53l7.97-5.94z"/><path fill="#EA4335" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.15 1.45-4.92 2.3-8.16 2.3-6.26 0-11.57-4.22-13.47-9.91l-7.98 5.94C6.51 42.62 14.62 48 24 48z"/></svg>
+                {logging ? "登入中..." : "Google 登入"}
+              </button>
+              <button className="pg" onClick={() => { setShowL(false); setErr(""); }}>取消</button>
             </div>
           </div>
         </div>
@@ -862,7 +871,7 @@ function Article({ article, onBack, setArticles, isAdmin, tags, links, setPage, 
       )}
       <div style={{ maxWidth: 740, margin: "0 auto", padding: "52px 32px" }} className="page-wrap">
         <div className="article-content" style={{ fontSize: 16, lineHeight: 1.8, color: CHAR, marginBottom: 56 }}
-          dangerouslySetInnerHTML={{ __html: /<[a-z][\s\S]*>/i.test(article.content || "") ? article.content : (article.content || "").replace(/\n/g, "<br>") }} />
+          dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(/<[a-z][\s\S]*>/i.test(article.content || "") ? article.content : (article.content || "").replace(/\n/g, "<br>")) }} />
         {relLinks.length > 0 && (
           <div style={{ marginBottom: 48 }}>
             <p style={{ fontSize: 11, letterSpacing: "2px", color: MID, marginBottom: 16 }}>相關內容</p>
@@ -1086,7 +1095,9 @@ function Shop({ products, setProducts, isAdmin }) {
                 <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: 8 }}>
                   <span style={{ fontSize: 16, fontWeight: 700, color: O }}>{p.price}</span>
                   <div style={{ display: "flex", gap: 8 }}>
-                    {p.url && <a href={p.url} target="_blank" rel="noopener noreferrer"><button className="pb" style={{ fontSize: 12, padding: "8px 16px" }}>購買 →</button></a>}
+                    {p.url
+                      ? <a href={p.url} target="_blank" rel="noopener noreferrer"><button className="pb" style={{ fontSize: 12, padding: "8px 16px" }}>購買 →</button></a>
+                      : <button className="pg" style={{ fontSize: 12, padding: "8px 16px", opacity: .45, cursor: "default" }} disabled>尚未上架</button>}
                     {isAdmin && <><button className="pg" style={{ fontSize: 11, padding: "5px 10px" }} onClick={() => startEdit(p)}>編輯</button><button className="pg" style={{ fontSize: 11, padding: "5px 10px", color: "#E74C3C", borderColor: "#E74C3C" }} onClick={() => del(p.id)}>刪除</button></>}
                   </div>
                 </div>
@@ -2314,6 +2325,8 @@ export default function App() {
   const [id, setId] = useState(null);
   const [isAdmin, setIsAdmin] = useState(false);
 
+  useEffect(() => onAuthStateChanged(auth, (user) => setIsAdmin(!!user && ADMIN_EMAILS.includes(user.email))), []);
+
   const loaded = aL && pL && iL && gL && abL && tL && taL && lL && ftL && rlL && nlL && acL && ccL;
   const article = articles.find(a => a.id === id);
   const nav = p => { setPage(p); setId(null); window.scrollTo(0, 0); };
@@ -2354,7 +2367,7 @@ export default function App() {
   return (
     <div style={{ minHeight: "100vh", background: WHITE }}>
       <Toast />
-      <Nav page={page} setPage={nav} isAdmin={isAdmin} setIsAdmin={setIsAdmin} />
+      <Nav page={page} setPage={nav} isAdmin={isAdmin} />
       <div key={page} className="page-anim">
         {page === "home" && <Home articles={articles} setPage={setPage} setId={setId} setArticles={setArticles} isAdmin={isAdmin} siteTitle={siteTitle} setSiteTitle={setSiteTitle} tags={tags} setTags={setTags} about={about} setAbout={setAbout} links={links} />}
         {page === "about" && <About about={about} setAbout={setAbout} isAdmin={isAdmin} links={links} setLinks={setLinks} />}
