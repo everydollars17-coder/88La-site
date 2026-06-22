@@ -270,6 +270,14 @@ function linkify(text) {
   });
 }
 
+function toSlug(str) {
+  return str.trim().replace(/\s+/g, "-").replace(/[^\w一-鿿-]/g, "").slice(0, 80) || String(Date.now());
+}
+
+function stripHtml(s) {
+  return (s || "").replace(/<[^>]*>/g, "");
+}
+
 function moveItem(arr, idx, dir) {
   const a = [...arr]; const to = idx + dir;
   if (to < 0 || to >= a.length) return a;
@@ -675,7 +683,7 @@ function Home({ articles, setPage, setId, setArticles, isAdmin, siteTitle, setSi
     if (sort === "views") return (b.views || 0) - (a.views || 0);
     return 0;
   });
-  const open = id => { setArticles(prev => { const next = prev.map(a => a.id === id ? { ...a, views: (a.views || 0) + 1 } : a); fbSet("articles", next); return next; }); setId(id); setPage("article"); };
+  const open = id => { setArticles(prev => { const next = prev.map(a => a.id === id ? { ...a, views: (a.views || 0) + 1 } : a); fbSet("articles", next); return next; }); setId(id); setPage("article"); window.scrollTo(0, 0); const a = articles.find(x => x.id === id); history.pushState({}, "", "?article=" + (a?.slug || id)); };
   const addTag = () => { const t = newTag.trim(); if (t && !tags.includes(t)) setTags(prev => [...prev, t]); setNewTag(""); };
   const delTag = t => { if (confirm("確定刪除標籤「" + t + "」？")) setTags(prev => prev.filter(x => x !== t)); };
   const moveA = (idx, dir) => setArticles(prev => {
@@ -814,6 +822,11 @@ function Article({ article, onBack, setArticles, isAdmin, tags, links, setPage, 
   const l = links || DEFAULTS.links;
   const lastSubmit = useRef(0);
   const [cooldown, setCooldown] = useState(0);
+  useEffect(() => {
+    if (cooldown <= 0) return;
+    const t = setTimeout(() => setCooldown(c => c - 1), 1000);
+    return () => clearTimeout(t);
+  }, [cooldown]);
   const sanitize = (s) => s.replace(/[<>]/g, "");
   const submit = () => {
     if (!text.trim()) return;
@@ -824,7 +837,8 @@ function Article({ article, onBack, setArticles, isAdmin, tags, links, setPage, 
     setArticles(prev => prev.map(a => a.id === article.id ? { ...a, comments: [...a.comments, c] } : a));
     setName(""); setText(""); lastSubmit.current = now; setCooldown(0);
   };
-  const copy = () => { navigator.clipboard.writeText(window.location.href); setCopied(true); setTimeout(() => setCopied(false), 2000); };
+  const articleUrl = `${window.location.origin}${window.location.pathname}?article=${article.slug || article.id}`;
+  const copy = () => { navigator.clipboard.writeText(articleUrl); setCopied(true); setTimeout(() => setCopied(false), 2000); };
   const del = () => { if (confirm("確定刪除此文章？")) { setArticles(prev => prev.filter(a => a.id !== article.id)); onBack(); } };
   const saveEdit = () => { setArticles(prev => prev.map(a => a.id === article.id ? { ...a, ...ed } : a)); setEditing(false); };
   const relLinks = article.relatedLinks || [];
@@ -904,7 +918,7 @@ function Article({ article, onBack, setArticles, isAdmin, tags, links, setPage, 
         )}
         <div style={{ display: "flex", gap: 12, marginBottom: 56, flexWrap: "wrap" }}>
           <button className="pg" onClick={copy}>{copied ? "✓ 已複製連結" : "複製連結"}</button>
-          <a href={"https://social-plugins.line.me/lineit/share?url=" + encodeURIComponent(window.location.href)} target="_blank" rel="noopener noreferrer"><button className="pg">分享至 LINE</button></a>
+          <a href={"https://social-plugins.line.me/lineit/share?url=" + encodeURIComponent(articleUrl)} target="_blank" rel="noopener noreferrer"><button className="pg">分享至 LINE</button></a>
         </div>
         <div style={{ background: NAVY, padding: "36px" }}>
           <p style={{ fontSize: 16, fontWeight: 500, color: WHITE, marginBottom: 6 }}>加入 8友 社群</p>
@@ -1711,7 +1725,7 @@ function Newsletter({ newsletter, setNewsletter, isAdmin, articles, setArticles,
   const info = newsletter || DEFAULTS.newsletter;
   const save = () => { setNewsletter(tmp); setEditMode(false); };
   const recent = [...(articles || [])].sort((a, b) => b.date.localeCompare(a.date)).slice(0, 3);
-  const open = id => { setArticles(prev => { const next = prev.map(a => a.id === id ? { ...a, views: (a.views || 0) + 1 } : a); fbSet("articles", next); return next; }); setId(id); setPage("article"); };
+  const open = id => { setArticles(prev => { const next = prev.map(a => a.id === id ? { ...a, views: (a.views || 0) + 1 } : a); fbSet("articles", next); return next; }); setId(id); setPage("article"); window.scrollTo(0, 0); const a = (articles || []).find(x => x.id === id); history.pushState({}, "", "?article=" + (a?.slug || id)); };
   const handleSubscribe = async () => {
     if (!email) return;
     try { await fbSet("subscribers_" + Date.now(), email); } catch { }
@@ -2329,7 +2343,30 @@ export default function App() {
 
   const loaded = aL && pL && iL && gL && abL && tL && taL && lL && ftL && rlL && nlL && acL && ccL;
   const article = articles.find(a => a.id === id);
-  const nav = p => { setPage(p); setId(null); window.scrollTo(0, 0); };
+  const nav = p => { setPage(p); setId(null); window.scrollTo(0, 0); history.pushState({}, "", window.location.pathname); };
+
+  useEffect(() => {
+    if (!loaded) return;
+    const params = new URLSearchParams(window.location.search);
+    const ap = params.get("article");
+    if (ap) {
+      const a = articles.find(x => x.slug === ap || String(x.id) === ap);
+      if (a) { setId(a.id); setPage("article"); }
+    }
+  }, [loaded]);
+
+  useEffect(() => {
+    const onPop = () => {
+      const params = new URLSearchParams(window.location.search);
+      const ap = params.get("article");
+      if (ap) {
+        const a = articles.find(x => x.slug === ap || String(x.id) === ap);
+        if (a) { setId(a.id); setPage("article"); window.scrollTo(0, 0); }
+      } else { setPage("home"); setId(null); window.scrollTo(0, 0); }
+    };
+    window.addEventListener("popstate", onPop);
+    return () => window.removeEventListener("popstate", onPop);
+  }, [articles]);
 
   // 一次性遷移：偵測舊方案（1年/3年）並自動更新為新三方案
   useEffect(() => {
@@ -2351,7 +2388,11 @@ export default function App() {
   }, [gL]);
   const saveArticle = d => {
     const nid = Math.max(...articles.map(a => a.id), 0) + 1;
-    setArticles(prev => [...prev, { id: nid, ...d, excerpt: d.excerpt || (d.content.slice(0, 80) + "⋯"), views: 0, comments: [], date: new Date().toISOString().slice(0, 10) }]);
+    const baseSlug = toSlug(d.title);
+    const taken = new Set(articles.map(a => a.slug).filter(Boolean));
+    let slug = baseSlug, n = 2;
+    while (taken.has(slug)) { slug = baseSlug + "-" + n; n++; }
+    setArticles(prev => [...prev, { id: nid, slug, ...d, excerpt: d.excerpt || (stripHtml(d.content).slice(0, 80) + "⋯"), views: 0, comments: [], date: new Date().toISOString().slice(0, 10) }]);
     setPage("home");
   };
 
