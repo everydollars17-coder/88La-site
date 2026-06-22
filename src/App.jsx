@@ -609,7 +609,7 @@ function Footer({ links, footerTagline, setFooterTagline, isAdmin, setPage }) {
         <p style={{ fontSize: 11, color: "rgba(255,255,255,.3)" }}>© 2026 88La 版權所有</p>
         <div style={{ display: "flex", gap: 20, flexWrap: "wrap", alignItems: "center" }}>
           <a href={`mailto:${l.email}`} style={{ fontSize: 11, color: "rgba(255,255,255,.3)", transition: "color .15s" }} onMouseEnter={e => e.currentTarget.style.color = "rgba(255,255,255,.6)"} onMouseLeave={e => e.currentTarget.style.color = "rgba(255,255,255,.3)"}>{l.email}</a>
-          {setPage && <><span onClick={() => setPage("terms")} style={{ fontSize: 11, color: "rgba(255,255,255,.3)", cursor: "pointer", transition: "color .15s" }} onMouseEnter={e => e.currentTarget.style.color = "rgba(255,255,255,.6)"} onMouseLeave={e => e.currentTarget.style.color = "rgba(255,255,255,.3)"}>服務條款</span><span onClick={() => setPage("privacy")} style={{ fontSize: 11, color: "rgba(255,255,255,.3)", cursor: "pointer", transition: "color .15s" }} onMouseEnter={e => e.currentTarget.style.color = "rgba(255,255,255,.6)"} onMouseLeave={e => e.currentTarget.style.color = "rgba(255,255,255,.3)"}>隱私政策</span></>}
+          {setPage && <><span onClick={() => setPage("terms")} style={{ fontSize: 11, color: "rgba(255,255,255,.3)", cursor: "pointer", transition: "color .15s" }} onMouseEnter={e => e.currentTarget.style.color = "rgba(255,255,255,.6)"} onMouseLeave={e => e.currentTarget.style.color = "rgba(255,255,255,.3)"}>服務條款</span><span onClick={() => setPage("privacy")} style={{ fontSize: 11, color: "rgba(255,255,255,.3)", cursor: "pointer", transition: "color .15s" }} onMouseEnter={e => e.currentTarget.style.color = "rgba(255,255,255,.6)"} onMouseLeave={e => e.currentTarget.style.color = "rgba(255,255,255,.3)"}>隱私政策</span><span onClick={() => setPage("disclaimer")} style={{ fontSize: 11, color: "rgba(255,255,255,.3)", cursor: "pointer", transition: "color .15s" }} onMouseEnter={e => e.currentTarget.style.color = "rgba(255,255,255,.6)"} onMouseLeave={e => e.currentTarget.style.color = "rgba(255,255,255,.3)"}>免責聲明</span></>}
         </div>
       </div>
     </footer>
@@ -2190,6 +2190,68 @@ function PrivacyPage() {
   );
 }
 
+// ── 免責聲明 ──
+function DisclaimerPage() {
+  const NUMERALS = ["一", "二", "三", "四", "五", "六", "七"];
+  const SECTIONS = [
+    {
+      title: "服務性質聲明",
+      content: `88La 理財自動導航器（以下簡稱「本服務」）為個人記帳、支出追蹤與儲蓄習慣建立之輔助工具，其核心功能在於協助使用者記錄日常收支、設定個人預算目標，以及建立規律的儲蓄行為。\n\n本服務所提供之收支診斷報告，係依據使用者自行輸入之數據，結合本服務創作者之個人實務理財經驗所設計之參考框架自動產生。本服務創作者並非持有任何金融相關執照之財務顧問，所有內容均屬個人實務經驗之分享，不構成專業財務顧問服務，亦不涉及任何有價證券、基金、期貨、外匯、加密貨幣或其他金融商品之投資策略建議、推介或勸誘行為。`,
+    },
+    {
+      title: "資訊僅供參考",
+      content: `本服務所提供之預算建議、收支診斷分析、儲蓄目標試算及相關數字呈現，均係依據使用者自行輸入之個人資料，結合創作者個人實務理財經驗所設計之參考框架，由系統自動運算後呈現之參考資訊。\n\n診斷報告中所呈現之支出比例建議、預算配置方向等內容，均源自創作者個人實務經驗之歸納，不同使用者之財務狀況、收入結構、家庭背景與生活條件各異，上述建議未必適用於每一位使用者的個別情況。\n\n上述資訊：\n• 係創作者個人實務經驗之分享，不代表對您財務狀況之專業個人化評估\n• 不構成任何具法律效力之財務建議或投資意見\n• 不保證使用本服務後必然達成特定儲蓄金額或財務目標\n• 如您的財務狀況較為複雜（如負債重組、保險規劃、稅務安排等），建議另行諮詢具有合法執照之專業人士`,
+    },
+    {
+      title: "使用者自行負責原則",
+      content: `使用者在參考本服務所提供之任何資訊、數據或分析結果後，所作出之一切財務決策，均應由使用者本人獨立評估、審慎判斷，並自行承擔相應之後果與責任。\n\n如需專業之財務規劃建議，建議您諮詢具有合法執照之財務顧問或相關專業人士。`,
+    },
+    {
+      title: "系統資料準確性",
+      content: `本服務之所有計算與分析結果，均以使用者自行輸入之資料為基礎。若輸入資料有誤、不完整或未即時更新，系統所呈現之結果可能與您的實際財務狀況有所落差，本服務對此不負任何責任。`,
+    },
+    {
+      title: "服務中斷與資料完整性",
+      content: `本服務係透過網際網路提供，可能因伺服器維護、網路異常、第三方服務（包括 Google、Firebase、綠界科技等）故障，或其他不可抗力因素，導致服務暫時中斷或資料暫時無法存取。本服務對上述情形所造成之不便，不負任何賠償責任，但將盡合理努力維持服務之穩定運行。`,
+    },
+    {
+      title: "本聲明之修改",
+      content: `本服務得隨時修訂本免責聲明，修訂後之內容將公告於本頁面並更新修改日期。繼續使用本服務，即視為接受修訂後之條款。`,
+    },
+    {
+      title: "聯絡方式",
+      content: `如對本聲明有任何疑問，歡迎透過以下方式與我們聯繫：\n\nEmail：everydollars17@gmail.com\nInstagram：@every_dollars`,
+    },
+  ];
+
+  return (
+    <div>
+      <div style={{ background: GRAD, padding: "52px 32px", borderBottom: `1px solid ${BORDER}` }}>
+        <div style={{ maxWidth: 800, margin: "0 auto" }}>
+          <p className="section-label" style={{ marginBottom: 10 }}>DISCLAIMER</p>
+          <h1 style={{ fontSize: 24, fontWeight: 700, color: CHAR, lineHeight: 1.45 }}>88La 理財導航器<br />免責聲明</h1>
+          <p style={{ fontSize: 13, color: MID, marginTop: 10 }}>最後更新：2026 年 7 月</p>
+        </div>
+      </div>
+      <div style={{ maxWidth: 800, margin: "0 auto", padding: "64px 32px" }} className="page-wrap">
+        <div style={{ display: "flex", flexDirection: "column", gap: 48 }}>
+          {SECTIONS.map((s, i) => (
+            <div key={i}>
+              <h2 style={{ fontSize: 15, fontWeight: 700, color: CHAR, marginBottom: 14 }}>{NUMERALS[i]}、{s.title}</h2>
+              <p style={{ fontSize: 14, color: MID, lineHeight: 2.1, whiteSpace: "pre-wrap" }}>{linkify(s.content)}</p>
+            </div>
+          ))}
+        </div>
+        <div style={{ marginTop: 64, padding: "22px 26px", background: GRAY, border: `1px solid ${BORDER}` }}>
+          <p style={{ fontSize: 12, color: LIGHT, lineHeight: 2 }}>
+            本服務為個人記帳與儲蓄習慣建立工具。診斷報告內容係創作者個人實務理財經驗之分享，僅供參考，不構成專業財務顧問服務或投資建議。使用者應依據自身狀況獨立判斷，並自行承擔相應責任。
+          </p>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 // ── 訂閱方案 ──
 function SubscriptionPage({ setPage, isAdmin }) {
   if (!isAdmin) return (
@@ -2423,6 +2485,7 @@ export default function App() {
         {page === "pricing" && <SubscriptionPage setPage={nav} isAdmin={isAdmin} />}
         {page === "terms" && <TermsPage />}
         {page === "privacy" && <PrivacyPage />}
+        {page === "disclaimer" && <DisclaimerPage />}
         {page === "article" && article && <Article article={article} onBack={() => nav("home")} setArticles={setArticles} isAdmin={isAdmin} tags={tags} links={links} setPage={nav} products={products} resources={resources} />}
         {page === "write" && isAdmin && <Write onSave={saveArticle} onBack={() => nav("home")} tags={tags} products={products} resources={resources} />}
       </div>
