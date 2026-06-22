@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useLayoutEffect, useRef } from "react";
 import { initializeApp } from "firebase/app";
 import { getFirestore, doc, getDoc, setDoc } from "firebase/firestore";
 import { getAuth, GoogleAuthProvider, signInWithPopup, onAuthStateChanged, signOut } from "firebase/auth";
@@ -23,15 +23,15 @@ const APP_URL = "https://88la-finance.vercel.app";
 
 const O = "#C85A14";
 const O2 = "#FDF0E8";
-const NAVY = "#F19483";
-const NAVY2 = "#E8806E";
+const CORAL = "#F19483";
+const CORAL2 = "#E8806E";
 const NAV_TEXT = "#3D1A0A";
 const NAV_TEXT_SUB = "rgba(61,26,10,.55)";
 const WHITE = "#FFFFFF";
 const GRAY = "#F8F8F8";
 const CHAR = "#1A1A1A";
 const MID = "#6B6B6B";
-const LIGHT = "#ADADAD";
+const LIGHT = "#767676";
 const TITLE_COLOR = "#F05E1C";
 const BORDER = "rgba(0,0,0,0.07)";
 const GRAD = `linear-gradient(135deg, ${O2} 0%, #FFF7F3 60%, ${WHITE} 100%)`;
@@ -53,12 +53,12 @@ button{font-family:inherit;cursor:pointer;border:none;border-radius:8px;}
 .pb:hover{background:#A04510;box-shadow:0 6px 20px rgba(200,90,20,.36);transform:translateY(-2px);}
 .pb:active{transform:translateY(0);box-shadow:0 2px 8px rgba(200,90,20,.22);}
 .pb:disabled{opacity:.4;cursor:default;box-shadow:none;transform:none;}
-.pbn{background:${NAVY};color:#fff;padding:12px 28px;font-size:13px;font-weight:500;letter-spacing:.5px;border-radius:8px;transition:background .18s,box-shadow .18s;}
-.pbn:hover{background:${NAVY2};box-shadow:0 4px 16px rgba(200,90,20,.2);}
+.pbn{background:${CORAL};color:#fff;padding:12px 28px;font-size:13px;font-weight:500;letter-spacing:.5px;border-radius:8px;transition:background .18s,box-shadow .18s;}
+.pbn:hover{background:${CORAL2};box-shadow:0 4px 16px rgba(200,90,20,.2);}
 .pg{background:transparent;border:1px solid #D0D5DA;padding:11px 24px;font-size:13px;color:${MID};border-radius:8px;transition:border-color .18s,color .18s,box-shadow .18s;cursor:pointer;}
 .pg:hover{border-color:${O};color:${O};box-shadow:0 2px 10px rgba(200,90,20,.1);}
 .tag{display:inline-block;background:${O2};color:${O};font-size:11px;padding:3px 10px;letter-spacing:.5px;font-weight:500;}
-.tagn{display:inline-block;background:${NAVY};color:#fff;font-size:11px;padding:3px 10px;letter-spacing:.5px;font-weight:500;}
+.tagn{display:inline-block;background:${CORAL};color:#fff;font-size:11px;padding:3px 10px;letter-spacing:.5px;font-weight:500;}
 .ordbtn{background:transparent;border:1px solid #D0D5DA;color:${LIGHT};font-size:11px;padding:2px 6px;line-height:1;cursor:pointer;}
 .ordbtn:hover{border-color:${O};color:${O};}
 .card{background:${WHITE};border:1px solid ${BORDER};border-radius:12px;box-shadow:0 2px 10px rgba(0,0,0,.06);transition:box-shadow .24s,transform .24s;cursor:pointer;overflow:hidden;}
@@ -66,7 +66,7 @@ button{font-family:inherit;cursor:pointer;border:none;border-radius:8px;}
 .section-label{font-size:11px;letter-spacing:3px;color:${O};font-weight:500;text-transform:uppercase;}
 .hero-pattern{
   background-color:${O2};
-  background-image:radial-gradient(${NAVY}60 1.5px,transparent 1.5px);
+  background-image:radial-gradient(${CORAL}60 1.5px,transparent 1.5px);
   background-size:28px 28px;
 }
 @keyframes pageEnter {
@@ -74,10 +74,19 @@ button{font-family:inherit;cursor:pointer;border:none;border-radius:8px;}
   to   { opacity: 1; transform: translateY(0); }
 }
 .page-anim { animation: pageEnter 0.32s cubic-bezier(0.16,1,0.3,1); }
+@keyframes heroIn {
+  from { opacity: 0; transform: translateY(20px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+.hero-stagger { opacity: 0; animation: heroIn 0.7s cubic-bezier(0.16,1,0.3,1) forwards; }
+.hs-1 { animation-delay: 0s; }
+.hs-2 { animation-delay: 0.12s; }
+.hs-3 { animation-delay: 0.24s; }
+.hs-4 { animation-delay: 0.36s; }
 .mob-tab-bar{
   display:none;position:fixed;bottom:0;left:0;right:0;
   height:60px;background:${WHITE};border-top:1px solid ${BORDER};
-  z-index:90;align-items:stretch;
+  z-index:40;align-items:stretch;
   padding-bottom:env(safe-area-inset-bottom,0px);
   box-shadow:0 -4px 20px rgba(0,0,0,.06);
 }
@@ -119,6 +128,13 @@ button{font-family:inherit;cursor:pointer;border:none;border-radius:8px;}
 .article-content u{text-decoration:underline;}
 .article-content a{color:${O};text-decoration:underline;}
 .rich-ed a{color:${O};text-decoration:underline;}
+*:focus-visible{outline:2px solid ${O};outline-offset:2px;}
+button:focus-visible{border-radius:4px;}
+@media(prefers-reduced-motion:reduce){
+  *,*::before,*::after{animation-duration:0.01ms!important;animation-iteration-count:1!important;transition-duration:0.01ms!important;}
+  .page-anim{animation:none;}
+  .card:hover{transform:none;}
+}
 `;
 
 const DEFAULT_TAGS = ["理財觀念", "信用卡", "記帳", "投資", "讀書筆記", "生活財務", "其他"];
@@ -249,7 +265,7 @@ function Toast() {
   _showToast = (m) => { setMsg(m); setShow(true); clearTimeout(t.current); t.current = setTimeout(() => setShow(false), 2200); };
   if (!show) return null;
   return (
-    <div style={{ position: "fixed", bottom: 80, left: "50%", transform: "translateX(-50%)", background: CHAR, color: WHITE, padding: "12px 28px", borderRadius: 8, fontSize: 13, zIndex: 9999, boxShadow: "0 4px 20px rgba(0,0,0,.25)", letterSpacing: ".5px", whiteSpace: "nowrap", pointerEvents: "none" }}>
+    <div style={{ position: "fixed", bottom: 80, left: "50%", transform: "translateX(-50%)", background: CHAR, color: WHITE, padding: "12px 28px", borderRadius: 8, fontSize: 13, zIndex: 80, boxShadow: "0 4px 20px rgba(0,0,0,.25)", letterSpacing: ".5px", whiteSpace: "nowrap", pointerEvents: "none" }}>
       ✓ {msg}
     </div>
   );
@@ -276,6 +292,52 @@ function toSlug(str) {
 
 function stripHtml(s) {
   return (s || "").replace(/<[^>]*>/g, "");
+}
+
+function Reveal({ children, delay = 0 }) {
+  const ref = useRef();
+  const [vis, setVis] = useState(false);
+  useEffect(() => {
+    const el = ref.current;
+    if (!el) return;
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) { setVis(true); return; }
+    const obs = new IntersectionObserver(([entry]) => {
+      if (entry.isIntersecting) { setVis(true); obs.unobserve(el); }
+    }, { threshold: 0.08, rootMargin: "0px 0px -40px 0px" });
+    obs.observe(el);
+    return () => obs.disconnect();
+  }, []);
+  return <div ref={ref} style={{ opacity: vis ? 1 : 0, transform: vis ? "none" : "translateY(24px)", transition: `opacity .6s cubic-bezier(.16,1,.3,1) ${delay}ms, transform .6s cubic-bezier(.16,1,.3,1) ${delay}ms` }}>{children}</div>;
+}
+
+function CountUp({ end, duration = 1000 }) {
+  const ref = useRef();
+  const [val, setVal] = useState(0);
+  const done = useRef(false);
+  useEffect(() => {
+    const el = ref.current;
+    if (!el || done.current) return;
+    const n = typeof end === "number" ? end : parseInt(String(end).replace(/[^\d]/g, ""), 10) || 0;
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) { setVal(n); done.current = true; return; }
+    const obs = new IntersectionObserver(([entry]) => {
+      if (entry.isIntersecting && !done.current) {
+        done.current = true;
+        if (n === 0) { setVal(0); obs.unobserve(el); return; }
+        const t0 = performance.now();
+        const frame = (now) => {
+          const p = Math.min((now - t0) / duration, 1);
+          const ease = 1 - Math.pow(1 - p, 3);
+          setVal(Math.round(ease * n));
+          if (p < 1) requestAnimationFrame(frame);
+        };
+        requestAnimationFrame(frame);
+        obs.unobserve(el);
+      }
+    }, { threshold: 0.5 });
+    obs.observe(el);
+    return () => obs.disconnect();
+  }, [end, duration]);
+  return <span ref={ref}>{val}</span>;
 }
 
 function moveItem(arr, idx, dir) {
@@ -351,7 +413,7 @@ function CropModal({ src, aspect = "16/9", onConfirm, onCancel }) {
   };
 
   return (
-    <div style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,.8)", zIndex: 2000, display: "flex", alignItems: "center", justifyContent: "center", padding: 20 }}>
+    <div style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,.8)", zIndex: 70, display: "flex", alignItems: "center", justifyContent: "center", padding: 20 }}>
       <div style={{ background: WHITE, borderRadius: 12, padding: 24, width: Math.min(CROPW + 48, 420) }}>
         <p style={{ fontSize: 14, fontWeight: 500, color: CHAR, marginBottom: 4 }}>裁剪 / 調整位置</p>
         <p style={{ fontSize: 12, color: MID, marginBottom: 14 }}>拖曳移動 · 下方滑桿縮放</p>
@@ -444,7 +506,7 @@ function RichEditor({ value, onChange }) {
   const COLORS = ["#1A1A1A", "#C85A14", "#E8806E", "#6B6B6B", "#2563EB", "#DC2626", "#16A34A", "#9333EA"];
   return (
     <div style={{ border: "1px solid #D0D5DA", position: "relative" }}>
-      <div style={{ display: "flex", gap: 4, flexWrap: "wrap", padding: "8px 10px", background: "#F5F5F5", borderBottom: "1px solid #D0D5DA", position: "sticky", top: 60, zIndex: 50 }}>
+      <div style={{ display: "flex", gap: 4, flexWrap: "wrap", padding: "8px 10px", background: "#F5F5F5", borderBottom: "1px solid #D0D5DA", position: "sticky", top: 60, zIndex: 30 }}>
         <button type="button" style={{ ...btn, fontWeight: 700 }} onMouseDown={e => { e.preventDefault(); exec("bold"); }}>B</button>
         <button type="button" style={{ ...btn, fontStyle: "italic" }} onMouseDown={e => { e.preventDefault(); exec("italic"); }}>I</button>
         <button type="button" style={{ ...btn, textDecoration: "underline" }} onMouseDown={e => { e.preventDefault(); exec("underline"); }}>U</button>
@@ -523,7 +585,7 @@ function Nav({ page, setPage, isAdmin }) {
   return (
     <>
       <style>{css}</style>
-      <header style={{ background: O, position: "sticky", top: 0, zIndex: 100 }}>
+      <header style={{ background: O, position: "sticky", top: 0, zIndex: 50 }}>
         <div style={{ maxWidth: 1100, margin: "0 auto", padding: "0 28px", height: 60, display: "flex", alignItems: "center", justifyContent: "space-between" }}>
           <span onClick={() => go("home")} style={{ fontFamily: "Inter", fontWeight: 700, fontSize: 16, letterSpacing: "2px", color: WHITE, cursor: "pointer", flexShrink: 0 }}>88La</span>
           <nav className="nav-links" style={{ display: "flex", gap: 22, alignItems: "center" }}>
@@ -532,7 +594,7 @@ function Nav({ page, setPage, isAdmin }) {
             ))}
             {isAdmin && <><span onClick={() => go("write")} style={{ fontSize: 12, color: WHITE, cursor: "pointer", letterSpacing: ".5px" }}>＋ 撰文</span><span onClick={() => signOut(auth)} style={{ fontSize: 11, color: "rgba(255,255,255,.5)", cursor: "pointer", marginLeft: 6 }}>登出</span></>}
           </nav>
-          <button className="mob-menu" onClick={() => setMob(p => !p)} style={{ background: "none", border: "none", color: WHITE, fontSize: 22, cursor: "pointer", display: "flex", alignItems: "center" }}>
+          <button className="mob-menu" onClick={() => setMob(p => !p)} aria-label={mob ? "關閉選單" : "開啟選單"} style={{ background: "none", border: "none", color: WHITE, fontSize: 22, cursor: "pointer", display: "flex", alignItems: "center" }}>
             {mob ? "✕" : "☰"}
           </button>
         </div>
@@ -555,9 +617,9 @@ function Nav({ page, setPage, isAdmin }) {
         ))}
       </nav>
       {showL && (
-        <div style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,.6)", zIndex: 200, display: "flex", alignItems: "center", justifyContent: "center", padding: "0 20px" }}>
+        <div style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,.6)", zIndex: 60, display: "flex", alignItems: "center", justifyContent: "center", padding: "0 20px" }}>
           <div style={{ background: WHITE, padding: 40, width: "100%", maxWidth: 360 }}>
-            <p style={{ fontSize: 13, letterSpacing: "2px", color: NAVY2, marginBottom: 24, fontWeight: 500 }}>後台登入</p>
+            <p style={{ fontSize: 13, letterSpacing: "2px", color: CORAL2, marginBottom: 24, fontWeight: 500 }}>後台登入</p>
             <p style={{ fontSize: 13, color: MID, marginBottom: 20, lineHeight: 1.7 }}>使用管理員 Google 帳號登入</p>
             {err && <p style={{ fontSize: 12, color: "#C0392B", marginBottom: 12 }}>{err}</p>}
             <div style={{ display: "flex", gap: 10, marginTop: 8 }}>
@@ -593,7 +655,7 @@ function Footer({ links, footerTagline, setFooterTagline, isAdmin, setPage }) {
             </div>
           ) : (
             <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-              <p style={{ fontSize: 12, color: "rgba(255,255,255,.5)" }}>{footerTagline || DEFAULTS.footerTagline}</p>
+              <p style={{ fontSize: 12, color: "rgba(255,255,255,.65)" }}>{footerTagline || DEFAULTS.footerTagline}</p>
               {isAdmin && <span onClick={() => { setTmp(footerTagline || DEFAULTS.footerTagline); setEditing(true); }} style={{ fontSize: 11, color: "rgba(255,255,255,.35)", cursor: "pointer", textDecoration: "underline" }}>編輯</span>}
             </div>
           )}
@@ -606,10 +668,10 @@ function Footer({ links, footerTagline, setFooterTagline, isAdmin, setPage }) {
         </div>
       </div>
       <div style={{ maxWidth: 1100, margin: "12px auto 0", paddingTop: 14, borderTop: `1px solid rgba(255,255,255,.1)`, display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: 8 }}>
-        <p style={{ fontSize: 11, color: "rgba(255,255,255,.3)" }}>© 2026 88La 版權所有</p>
+        <p style={{ fontSize: 11, color: "rgba(255,255,255,.55)" }}>© 2026 88La 版權所有</p>
         <div style={{ display: "flex", gap: 20, flexWrap: "wrap", alignItems: "center" }}>
-          <a href={`mailto:${l.email}`} style={{ fontSize: 11, color: "rgba(255,255,255,.3)", transition: "color .15s" }} onMouseEnter={e => e.currentTarget.style.color = "rgba(255,255,255,.6)"} onMouseLeave={e => e.currentTarget.style.color = "rgba(255,255,255,.3)"}>{l.email}</a>
-          {setPage && <><span onClick={() => setPage("terms")} style={{ fontSize: 11, color: "rgba(255,255,255,.3)", cursor: "pointer", transition: "color .15s" }} onMouseEnter={e => e.currentTarget.style.color = "rgba(255,255,255,.6)"} onMouseLeave={e => e.currentTarget.style.color = "rgba(255,255,255,.3)"}>服務條款</span><span onClick={() => setPage("privacy")} style={{ fontSize: 11, color: "rgba(255,255,255,.3)", cursor: "pointer", transition: "color .15s" }} onMouseEnter={e => e.currentTarget.style.color = "rgba(255,255,255,.6)"} onMouseLeave={e => e.currentTarget.style.color = "rgba(255,255,255,.3)"}>隱私政策</span><span onClick={() => setPage("disclaimer")} style={{ fontSize: 11, color: "rgba(255,255,255,.3)", cursor: "pointer", transition: "color .15s" }} onMouseEnter={e => e.currentTarget.style.color = "rgba(255,255,255,.6)"} onMouseLeave={e => e.currentTarget.style.color = "rgba(255,255,255,.3)"}>免責聲明</span></>}
+          <a href={`mailto:${l.email}`} style={{ fontSize: 11, color: "rgba(255,255,255,.55)", transition: "color .15s" }} onMouseEnter={e => e.currentTarget.style.color = "rgba(255,255,255,.8)"} onMouseLeave={e => e.currentTarget.style.color = "rgba(255,255,255,.55)"}>{l.email}</a>
+          {setPage && <><span onClick={() => setPage("terms")} style={{ fontSize: 11, color: "rgba(255,255,255,.55)", cursor: "pointer", transition: "color .15s" }} onMouseEnter={e => e.currentTarget.style.color = "rgba(255,255,255,.8)"} onMouseLeave={e => e.currentTarget.style.color = "rgba(255,255,255,.55)"}>服務條款</span><span onClick={() => setPage("privacy")} style={{ fontSize: 11, color: "rgba(255,255,255,.55)", cursor: "pointer", transition: "color .15s" }} onMouseEnter={e => e.currentTarget.style.color = "rgba(255,255,255,.8)"} onMouseLeave={e => e.currentTarget.style.color = "rgba(255,255,255,.55)"}>隱私政策</span><span onClick={() => setPage("disclaimer")} style={{ fontSize: 11, color: "rgba(255,255,255,.55)", cursor: "pointer", transition: "color .15s" }} onMouseEnter={e => e.currentTarget.style.color = "rgba(255,255,255,.8)"} onMouseLeave={e => e.currentTarget.style.color = "rgba(255,255,255,.55)"}>免責聲明</span></>}
         </div>
       </div>
     </footer>
@@ -654,10 +716,10 @@ function Hero({ about, isAdmin, setAbout, links }) {
       display: "flex", alignItems: "center", position: "relative"
     }}>
       <div style={{ maxWidth: 1100, margin: "0 auto", padding: "0 32px", width: "100%" }}>
-        <p style={{ fontSize: 11, letterSpacing: "3px", color: O, marginBottom: 20, fontWeight: 600 }}>88La · PERSONAL FINANCE</p>
-        <h1 className="hero-title" style={{ fontSize: 52, fontWeight: 700, color: bi ? WHITE : CHAR, lineHeight: 1.2, marginBottom: 20, maxWidth: 600 }}>{bt}</h1>
-        <p className="hero-sub" style={{ fontSize: 16, color: bi ? "rgba(255,255,255,.8)" : MID, marginBottom: 36, maxWidth: 480, lineHeight: 1.85 }}>{bs}</p>
-        <div style={{ display: "flex", gap: 12, flexWrap: "wrap" }}>
+        <p className="hero-stagger hs-1" style={{ fontSize: 11, letterSpacing: "3px", color: O, marginBottom: 20, fontWeight: 600 }}>88La · PERSONAL FINANCE</p>
+        <h1 className="hero-title hero-stagger hs-2" style={{ fontSize: 52, fontWeight: 700, color: bi ? WHITE : CHAR, lineHeight: 1.2, marginBottom: 20, maxWidth: 600 }}>{bt}</h1>
+        <p className="hero-sub hero-stagger hs-3" style={{ fontSize: 16, color: bi ? "rgba(255,255,255,.8)" : MID, marginBottom: 36, maxWidth: 480, lineHeight: 1.85 }}>{bs}</p>
+        <div className="hero-stagger hs-4" style={{ display: "flex", gap: 12, flexWrap: "wrap" }}>
           <a href={bl1} target="_blank" rel="noopener noreferrer"><button className="pb">{bb1}</button></a>
           <a href={bl2} target="_blank" rel="noopener noreferrer">
             <button style={{ background: bi ? "rgba(255,255,255,.12)" : "transparent", color: bi ? WHITE : CHAR, border: `1px solid ${bi ? "rgba(255,255,255,.35)" : "#D0D0D0"}`, padding: "11px 24px", fontSize: 13, cursor: "pointer", fontFamily: "inherit", transition: "border-color .18s" }}>{bb2}</button>
@@ -683,7 +745,7 @@ function Home({ articles, setPage, setId, setArticles, isAdmin, siteTitle, setSi
     if (sort === "views") return (b.views || 0) - (a.views || 0);
     return 0;
   });
-  const open = id => { setArticles(prev => { const next = prev.map(a => a.id === id ? { ...a, views: (a.views || 0) + 1 } : a); fbSet("articles", next); return next; }); setId(id); setPage("article"); window.scrollTo(0, 0); const a = articles.find(x => x.id === id); history.pushState({}, "", "?article=" + (a?.slug || id)); };
+  const open = id => { setArticles(prev => { const next = prev.map(a => a.id === id ? { ...a, views: (a.views || 0) + 1 } : a); fbSet("articles", next); return next; }); setId(id); setPage("article"); window.scrollTo({ top: 0, behavior: "instant" }); const a = articles.find(x => x.id === id); history.pushState({}, "", "?article=" + (a?.slug || id)); };
   const addTag = () => { const t = newTag.trim(); if (t && !tags.includes(t)) setTags(prev => [...prev, t]); setNewTag(""); };
   const delTag = t => { if (confirm("確定刪除標籤「" + t + "」？")) setTags(prev => prev.filter(x => x !== t)); };
   const moveA = (idx, dir) => setArticles(prev => {
@@ -715,11 +777,11 @@ function Home({ articles, setPage, setId, setArticles, isAdmin, siteTitle, setSi
         <div style={{ display: "flex", gap: 8, flexWrap: "wrap", marginBottom: 16, alignItems: "center", justifyContent: "space-between" }}>
           <div style={{ display: "flex", gap: 8, flexWrap: "wrap", alignItems: "center" }}>
             {["全部", ...tags].map(t => (
-              <span key={t} onClick={() => setFilter(t)} style={{ fontSize: 12, padding: "5px 14px", cursor: "pointer", background: filter === t ? NAVY : GRAY, color: filter === t ? WHITE : MID, fontWeight: filter === t ? "500" : "400", transition: "background .15s" }}>{t}</span>
+              <span key={t} onClick={() => setFilter(t)} style={{ fontSize: 12, padding: "8px 16px", cursor: "pointer", background: filter === t ? CORAL : GRAY, color: filter === t ? WHITE : MID, fontWeight: filter === t ? "500" : "400", transition: "background .15s" }}>{t}</span>
             ))}
             {isAdmin && <span onClick={() => setEditTags(p => !p)} style={{ fontSize: 12, color: O, cursor: "pointer", marginLeft: 8 }}>{editTags ? "關閉" : "管理標籤"}</span>}
           </div>
-          <select value={sort} onChange={e => setSort(e.target.value)} style={{ fontSize: 12, color: MID, border: `1px solid #D0D5DA`, borderRadius: 4, padding: "5px 10px", background: WHITE, cursor: "pointer", appearance: "auto", WebkitAppearance: "menulist", width: "auto" }}>
+          <select value={sort} onChange={e => setSort(e.target.value)} style={{ fontSize: 12, color: MID, border: `1px solid #D0D5DA`, borderRadius: 4, padding: "8px 12px", background: WHITE, cursor: "pointer", appearance: "auto", WebkitAppearance: "menulist", width: "auto" }}>
             <option value="newest">最新文章</option>
             <option value="oldest">最舊文章</option>
             <option value="views">最多瀏覽</option>
@@ -743,10 +805,11 @@ function Home({ articles, setPage, setId, setArticles, isAdmin, siteTitle, setSi
         )}
         <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill,minmax(320px,1fr))", gap: 20 }} className="grid3">
           {filtered.map((a, idx) => (
-            <div key={a.id} className="card" onClick={() => open(a.id)} style={{ position: "relative" }}>
+            <Reveal key={a.id} delay={Math.min(idx * 80, 400)}>
+            <div className="card" onClick={() => open(a.id)} style={{ position: "relative" }}>
               {a.img
                 ? <div style={{ height: 200, overflow: "hidden", background: GRAY }}><img src={a.img} alt={a.title} style={{ width: "100%", height: "100%", objectFit: "cover", transition: "transform .3s" }} loading="lazy" onMouseEnter={e => e.currentTarget.style.transform = "scale(1.04)"} onMouseLeave={e => e.currentTarget.style.transform = "scale(1)"} /></div>
-                : <div style={{ height: 8, background: `linear-gradient(90deg, ${NAVY} 0%, ${O2} 100%)` }} />
+                : <div style={{ height: 8, background: `linear-gradient(90deg, ${CORAL} 0%, ${O2} 100%)` }} />
               }
               <div style={{ padding: "24px 28px 24px" }}>
                 <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 12, alignItems: "flex-start" }}>
@@ -762,6 +825,7 @@ function Home({ articles, setPage, setId, setArticles, isAdmin, siteTitle, setSi
               </div>
               {isAdmin && <OrdBtns idx={idx} total={filtered.length} onMove={moveA} style={{ position: "absolute", top: 12, right: 12, zIndex: 1 }} />}
             </div>
+            </Reveal>
           ))}
         </div>
       </div>
@@ -873,7 +937,7 @@ function Article({ article, onBack, setArticles, isAdmin, tags, links, setPage, 
           <h1 style={{ fontSize: 30, fontWeight: 700, color: CHAR, lineHeight: 1.45, marginBottom: 14 }}>{article.title}</h1>
           <div style={{ display: "flex", gap: 20, alignItems: "center", flexWrap: "wrap" }}>
             <span style={{ fontSize: 12, color: LIGHT }}>{article.date}</span>
-            <span style={{ fontSize: 12, color: LIGHT }}>瀏覽 {article.views}</span>
+            <span style={{ fontSize: 12, color: LIGHT }}>瀏覽 <CountUp end={article.views} /></span>
             {isAdmin && <><span style={{ fontSize: 12, color: O, cursor: "pointer" }} onClick={() => setEditing(true)}>編輯</span><span style={{ fontSize: 12, color: "#E74C3C", cursor: "pointer" }} onClick={del}>刪除</span></>}
           </div>
         </div>
@@ -920,7 +984,7 @@ function Article({ article, onBack, setArticles, isAdmin, tags, links, setPage, 
           <button className="pg" onClick={copy}>{copied ? "✓ 已複製連結" : "複製連結"}</button>
           <a href={"https://social-plugins.line.me/lineit/share?url=" + encodeURIComponent(articleUrl)} target="_blank" rel="noopener noreferrer"><button className="pg">分享至 LINE</button></a>
         </div>
-        <div style={{ background: NAVY, padding: "36px" }}>
+        <div style={{ background: CORAL, padding: "36px" }}>
           <p style={{ fontSize: 16, fontWeight: 500, color: WHITE, marginBottom: 6 }}>加入 8友 社群</p>
           <p style={{ fontSize: 13, color: "rgba(255,255,255,.6)", marginBottom: 22, lineHeight: 1.8 }}>一起聊聊關於錢的事，不說教，只分享。</p>
           <div style={{ display: "flex", gap: 12, flexWrap: "wrap" }}>
@@ -928,13 +992,13 @@ function Article({ article, onBack, setArticles, isAdmin, tags, links, setPage, 
             <a href={l.instagram} target="_blank" rel="noopener noreferrer"><button style={{ background: "rgba(255,255,255,.15)", color: WHITE, border: "1px solid rgba(255,255,255,.3)", padding: "11px 24px", fontSize: 13, cursor: "pointer", fontFamily: "inherit" }}>Instagram</button></a>
           </div>
         </div>
-        <p style={{ fontSize: 11, letterSpacing: "2px", color: MID, margin: "48px 0 24px" }}>COMMENTS ({article.comments.length})</p>
+        <p style={{ fontSize: 11, letterSpacing: "2px", color: MID, margin: "48px 0 24px" }}>COMMENTS (<CountUp end={article.comments.length} duration={600} />)</p>
         <div style={{ marginBottom: 36 }}>
           {article.comments.length === 0 && <p style={{ fontSize: 14, color: LIGHT, padding: "20px 0" }}>還沒有留言，來說說你的想法吧。</p>}
           {article.comments.map((c, i) => (
             <div key={i} style={{ padding: "18px 0", borderBottom: `1px solid ${BORDER}` }}>
               <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 6, flexWrap: "wrap", gap: 4 }}>
-                <span style={{ fontSize: 14, fontWeight: 500, color: NAVY2 }}>{c.name}</span>
+                <span style={{ fontSize: 14, fontWeight: 500, color: CORAL2 }}>{c.name}</span>
                 <span style={{ fontSize: 11, color: LIGHT }}>{c.date}</span>
               </div>
               <p style={{ fontSize: 14, color: MID, lineHeight: 1.8 }}>{c.text}</p>
@@ -1094,13 +1158,14 @@ function Shop({ products, setProducts, isAdmin }) {
         )}
         <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill,minmax(280px,1fr))", gap: 20 }} className="grid3">
           {products.map((p, idx) => (
-            <div key={p.id} style={{ background: WHITE, borderRadius: 12, boxShadow: "0 2px 10px rgba(0,0,0,.06)", overflow: "hidden", position: "relative", border: `1px solid ${BORDER}`, transition: "box-shadow .24s, transform .24s" }}
+            <Reveal key={p.id} delay={Math.min(idx * 80, 400)}>
+            <div style={{ background: WHITE, borderRadius: 12, boxShadow: "0 2px 10px rgba(0,0,0,.06)", overflow: "hidden", position: "relative", border: `1px solid ${BORDER}`, transition: "box-shadow .24s, transform .24s" }}
               onMouseEnter={e => { e.currentTarget.style.boxShadow = "0 12px 40px rgba(200,90,20,.15)"; e.currentTarget.style.transform = "translateY(-4px)"; }}
               onMouseLeave={e => { e.currentTarget.style.boxShadow = "0 2px 10px rgba(0,0,0,.06)"; e.currentTarget.style.transform = "translateY(0)"; }}
             >
               {isAdmin && <OrdBtns idx={idx} total={products.length} onMove={move} style={{ position: "absolute", top: 12, right: 12, zIndex: 1 }} />}
               <div style={{ height: 200, background: "#E8EAEC", overflow: "hidden", display: "flex", alignItems: "center", justifyContent: "center" }}>
-                {p.img ? <img src={p.img} alt={p.name} style={{ width: "100%", height: "100%", objectFit: "cover" }} /> : <span style={{ fontSize: 12, color: LIGHT, letterSpacing: "1px" }}>{p.type === "digital" ? "DIGITAL" : "PHYSICAL"}</span>}
+                {p.img ? <img src={p.img} alt={p.name} style={{ width: "100%", height: "100%", objectFit: "cover" }} loading="lazy" /> : <span style={{ fontSize: 12, color: LIGHT, letterSpacing: "1px" }}>{p.type === "digital" ? "DIGITAL" : "PHYSICAL"}</span>}
               </div>
               <div style={{ padding: "20px 22px 24px" }}>
                 <span className={p.type === "digital" ? "tag" : "tagn"} style={{ marginBottom: 10, display: "inline-block" }}>{p.type === "digital" ? "數位商品" : "實體商品"}</span>
@@ -1117,6 +1182,7 @@ function Shop({ products, setProducts, isAdmin }) {
                 </div>
               </div>
             </div>
+            </Reveal>
           ))}
         </div>
       </div>
@@ -1179,6 +1245,7 @@ function IG({ igPosts, setIgPosts, isAdmin, links }) {
           {igPosts.map((p, idx) => {
             const ytId = getYouTubeId(p.url || "");
             return (
+              <Reveal key={p.id} delay={Math.min(idx * 80, 400)}>
               <div key={p.id} style={{ background: WHITE, border: `1px solid ${BORDER}`, borderRadius: 12, boxShadow: "0 2px 10px rgba(0,0,0,.06)", overflow: "hidden", position: "relative", transition: "box-shadow .24s, transform .24s" }}
                 onMouseEnter={e => { e.currentTarget.style.boxShadow = "0 12px 40px rgba(200,90,20,.15)"; e.currentTarget.style.transform = "translateY(-4px)"; }}
                 onMouseLeave={e => { e.currentTarget.style.boxShadow = "0 2px 10px rgba(0,0,0,.06)"; e.currentTarget.style.transform = "translateY(0)"; }}
@@ -1213,6 +1280,7 @@ function IG({ igPosts, setIgPosts, isAdmin, links }) {
                   )}
                 </div>
               </div>
+              </Reveal>
             );
           })}
         </div>
@@ -1268,15 +1336,16 @@ function Goods({ goods, setGoods, isAdmin }) {
         ) : (
           <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill,minmax(260px,1fr))", gap: 20 }} className="grid3">
             {active.map((p, idx) => (
-              <div key={p.id} style={{ background: WHITE, borderRadius: 12, boxShadow: "0 2px 10px rgba(0,0,0,.06)", overflow: "hidden", position: "relative", border: `1px solid ${BORDER}`, transition: "box-shadow .24s, transform .24s" }}
+              <Reveal key={p.id} delay={Math.min(idx * 80, 400)}>
+              <div style={{ background: WHITE, borderRadius: 12, boxShadow: "0 2px 10px rgba(0,0,0,.06)", overflow: "hidden", position: "relative", border: `1px solid ${BORDER}`, transition: "box-shadow .24s, transform .24s" }}
                 onMouseEnter={e => { e.currentTarget.style.boxShadow = "0 12px 40px rgba(200,90,20,.15)"; e.currentTarget.style.transform = "translateY(-4px)"; }}
                 onMouseLeave={e => { e.currentTarget.style.boxShadow = "0 2px 10px rgba(0,0,0,.06)"; e.currentTarget.style.transform = "translateY(0)"; }}
               >
                 {isAdmin && <OrdBtns idx={idx} total={active.length} onMove={move} style={{ position: "absolute", top: 12, right: 12, zIndex: 1 }} />}
-                {p.img && <div style={{ height: 180, overflow: "hidden", background: "#E8EAEC" }}><img src={p.img} alt={p.name} style={{ width: "100%", height: "100%", objectFit: "cover" }} /></div>}
+                {p.img && <div style={{ height: 180, overflow: "hidden", background: "#E8EAEC" }}><img src={p.img} alt={p.name} style={{ width: "100%", height: "100%", objectFit: "cover" }} loading="lazy" /></div>}
                 <div style={{ padding: "22px 22px" }}>
                   {p.brand && <p style={{ fontSize: 11, color: O, letterSpacing: ".5px", marginBottom: 6, fontWeight: 500 }}>{p.brand}</p>}
-                  <h3 style={{ fontSize: 15, fontWeight: 500, marginBottom: 8, color: NAVY2 }}>{p.name}</h3>
+                  <h3 style={{ fontSize: 15, fontWeight: 500, marginBottom: 8, color: CORAL2 }}>{p.name}</h3>
                   <p style={{ fontSize: 13, color: MID, lineHeight: 1.8, marginBottom: 16, whiteSpace: "pre-wrap" }}>{p.desc}</p>
                   <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: 8 }}>
                     {p.url && <a href={p.url} target="_blank" rel="noopener noreferrer"><button className="pb" style={{ fontSize: 12, padding: "8px 16px" }}>查看 →</button></a>}
@@ -1284,6 +1353,7 @@ function Goods({ goods, setGoods, isAdmin }) {
                   </div>
                 </div>
               </div>
+              </Reveal>
             ))}
           </div>
         )}
@@ -1354,7 +1424,7 @@ function AppPage({ appContent, setAppContent, isAdmin }) {
         </div>
         {plan.detailImg && (
           <div style={{ maxWidth: 800, margin: "0 auto", overflow: "hidden" }}>
-            <img src={plan.detailImg} alt={plan.name} style={{ width: "100%", maxHeight: 380, objectFit: "cover", display: "block" }} />
+            <img src={plan.detailImg} alt={plan.name} style={{ width: "100%", maxHeight: 380, objectFit: "cover", display: "block" }} loading="lazy" />
           </div>
         )}
         <div style={{ maxWidth: 800, margin: "0 auto", padding: "52px 32px" }} className="page-wrap">
@@ -1406,12 +1476,12 @@ function AppPage({ appContent, setAppContent, isAdmin }) {
             </div>
           ) : (
             <>
-              <p className="section-label" style={{ marginBottom: 16 }}>88LA FINANCE · APP</p>
-              <h1 style={{ fontSize: 48, fontWeight: 700, color: CHAR, lineHeight: 1.2, maxWidth: 580, marginBottom: 20 }}>
+              <p className="section-label hero-stagger hs-1" style={{ marginBottom: 16 }}>88LA FINANCE · APP</p>
+              <h1 className="hero-stagger hs-2" style={{ fontSize: 48, fontWeight: 700, color: CHAR, lineHeight: 1.2, maxWidth: 580, marginBottom: 20 }}>
                 {c.heroTitle}<br /><span style={{ color: O }}>{c.heroHighlight}</span>
               </h1>
-              <p style={{ fontSize: 16, color: MID, lineHeight: 1.9, maxWidth: 480, marginBottom: 36, whiteSpace: "pre-wrap" }}>{c.heroSub}</p>
-              <div style={{ display: "flex", gap: 12, flexWrap: "wrap", alignItems: "center" }}>
+              <p className="hero-stagger hs-3" style={{ fontSize: 16, color: MID, lineHeight: 1.9, maxWidth: 480, marginBottom: 36, whiteSpace: "pre-wrap" }}>{c.heroSub}</p>
+              <div className="hero-stagger hs-4" style={{ display: "flex", gap: 12, flexWrap: "wrap", alignItems: "center" }}>
                 <a href="#pricing" onClick={e => { e.preventDefault(); document.getElementById("app-pricing")?.scrollIntoView({ behavior: "smooth" }); }}><button className="pb" style={{ fontSize: 14, padding: "14px 32px" }}>了解方案 →</button></a>
                 {isAdmin && <button className="pg" style={{ fontSize: 12, padding: "6px 14px" }} onClick={() => { setTmpHero({ heroTitle: c.heroTitle, heroHighlight: c.heroHighlight, heroSub: c.heroSub }); setEditHero(true); }}>編輯標題</button>}
               </div>
@@ -1440,7 +1510,8 @@ function AppPage({ appContent, setAppContent, isAdmin }) {
         {isAdmin && !editingFeat && <div style={{ marginBottom: 24, textAlign: "right" }}><button className="pb" style={{ fontSize: 12 }} onClick={() => { setFeatForm({ n: String(c.features.length + 1).padStart(2, "0"), title: "", desc: "", img: "" }); setEditingFeat("new"); }}>＋ 新增功能</button></div>}
         <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill,minmax(300px,1fr))", gap: 20 }} className="grid3">
           {c.features.map((f, i) => (
-            <div key={f.id || i} style={{ background: WHITE, border: `1px solid ${BORDER}`, borderRadius: 12, boxShadow: "0 2px 10px rgba(0,0,0,.06)", transition: "box-shadow .24s, transform .24s", position: "relative", overflow: "hidden" }}
+            <Reveal key={f.id || i} delay={Math.min(i * 80, 400)}>
+            <div style={{ background: WHITE, border: `1px solid ${BORDER}`, borderRadius: 12, boxShadow: "0 2px 10px rgba(0,0,0,.06)", transition: "box-shadow .24s, transform .24s", position: "relative", overflow: "hidden" }}
               onMouseEnter={e => { e.currentTarget.style.boxShadow = "0 12px 40px rgba(200,90,20,.15)"; e.currentTarget.style.transform = "translateY(-4px)"; }}
               onMouseLeave={e => { e.currentTarget.style.boxShadow = "0 2px 10px rgba(0,0,0,.06)"; e.currentTarget.style.transform = "translateY(0)"; }}
             >
@@ -1455,6 +1526,7 @@ function AppPage({ appContent, setAppContent, isAdmin }) {
                 <p style={{ fontSize: 14, color: MID, lineHeight: 1.85, whiteSpace: "pre-wrap" }}>{f.desc}</p>
               </div>
             </div>
+            </Reveal>
           ))}
         </div>
       </div>
@@ -1473,8 +1545,9 @@ function AppPage({ appContent, setAppContent, isAdmin }) {
                 {phase.isSetup && <span style={{ fontSize: 11, color: LIGHT, background: GRAY, padding: "2px 10px", borderRadius: 20 }}>設定一次，長期沿用</span>}
               </div>
               <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill,minmax(240px,1fr))", gap: 14 }}>
-                {phase.steps.map(step => (
-                  <div key={step.id} style={{ background: phase.isSetup ? O2 : WHITE, border: `1px solid ${phase.isSetup ? "rgba(200,90,20,.18)" : BORDER}`, borderRadius: 10, padding: "20px 20px 22px", boxShadow: "0 2px 8px rgba(0,0,0,.05)", transition: "box-shadow .2s,transform .2s" }}
+                {phase.steps.map((step, si) => (
+                  <Reveal key={step.id} delay={Math.min(si * 80, 400)}>
+                  <div style={{ background: phase.isSetup ? O2 : WHITE, border: `1px solid ${phase.isSetup ? "rgba(200,90,20,.18)" : BORDER}`, borderRadius: 10, padding: "20px 20px 22px", boxShadow: "0 2px 8px rgba(0,0,0,.05)", transition: "box-shadow .2s,transform .2s" }}
                     onMouseEnter={e => { e.currentTarget.style.boxShadow = "0 8px 28px rgba(200,90,20,.11)"; e.currentTarget.style.transform = "translateY(-3px)"; }}
                     onMouseLeave={e => { e.currentTarget.style.boxShadow = "0 2px 8px rgba(0,0,0,.05)"; e.currentTarget.style.transform = "translateY(0)"; }}
                   >
@@ -1491,6 +1564,7 @@ function AppPage({ appContent, setAppContent, isAdmin }) {
                       </ul>
                     )}
                   </div>
+                  </Reveal>
                 ))}
               </div>
             </div>
@@ -1664,7 +1738,7 @@ function Resources({ resources, setResources, isAdmin }) {
           </div>
         )}
         <div style={{ display: "flex", gap: 8, flexWrap: "wrap", marginBottom: 36 }}>
-          {types.map(t => <span key={t} onClick={() => setFilter(t)} style={{ fontSize: 12, padding: "5px 14px", cursor: "pointer", background: filter === t ? NAVY : GRAY, color: filter === t ? WHITE : MID, transition: "background .15s" }}>{t}</span>)}
+          {types.map(t => <span key={t} onClick={() => setFilter(t)} style={{ fontSize: 12, padding: "8px 16px", cursor: "pointer", background: filter === t ? CORAL : GRAY, color: filter === t ? WHITE : MID, transition: "background .15s" }}>{t}</span>)}
         </div>
         {filtered.length === 0 ? (
           <div style={{ textAlign: "center", padding: "80px 0" }}>
@@ -1672,8 +1746,9 @@ function Resources({ resources, setResources, isAdmin }) {
           </div>
         ) : (
           <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill,minmax(300px,1fr))", gap: 20 }} className="grid3">
-            {filtered.map(r => (
-              <div key={r.id} style={{ background: WHITE, border: `1px solid ${BORDER}`, borderRadius: 12, boxShadow: "0 2px 10px rgba(0,0,0,.06)", overflow: "hidden", transition: "box-shadow .24s, transform .24s" }}
+            {filtered.map((r, ri) => (
+              <Reveal key={r.id} delay={Math.min(ri * 80, 400)}>
+              <div style={{ background: WHITE, border: `1px solid ${BORDER}`, borderRadius: 12, boxShadow: "0 2px 10px rgba(0,0,0,.06)", overflow: "hidden", transition: "box-shadow .24s, transform .24s" }}
                 onMouseEnter={e => { e.currentTarget.style.boxShadow = "0 12px 40px rgba(200,90,20,.15)"; e.currentTarget.style.transform = "translateY(-4px)"; }}
                 onMouseLeave={e => { e.currentTarget.style.boxShadow = "0 2px 10px rgba(0,0,0,.06)"; e.currentTarget.style.transform = "translateY(0)"; }}
               >
@@ -1694,6 +1769,7 @@ function Resources({ resources, setResources, isAdmin }) {
                   </div>
                 </div>
               </div>
+              </Reveal>
             ))}
           </div>
         )}
@@ -1725,7 +1801,7 @@ function Newsletter({ newsletter, setNewsletter, isAdmin, articles, setArticles,
   const info = newsletter || DEFAULTS.newsletter;
   const save = () => { setNewsletter(tmp); setEditMode(false); };
   const recent = [...(articles || [])].sort((a, b) => b.date.localeCompare(a.date)).slice(0, 3);
-  const open = id => { setArticles(prev => { const next = prev.map(a => a.id === id ? { ...a, views: (a.views || 0) + 1 } : a); fbSet("articles", next); return next; }); setId(id); setPage("article"); window.scrollTo(0, 0); const a = (articles || []).find(x => x.id === id); history.pushState({}, "", "?article=" + (a?.slug || id)); };
+  const open = id => { setArticles(prev => { const next = prev.map(a => a.id === id ? { ...a, views: (a.views || 0) + 1 } : a); fbSet("articles", next); return next; }); setId(id); setPage("article"); window.scrollTo({ top: 0, behavior: "instant" }); const a = (articles || []).find(x => x.id === id); history.pushState({}, "", "?article=" + (a?.slug || id)); };
   const handleSubscribe = async () => {
     if (!email) return;
     try { await fbSet("subscribers_" + Date.now(), email); } catch { }
@@ -1745,15 +1821,15 @@ function Newsletter({ newsletter, setNewsletter, isAdmin, articles, setArticles,
   return (
     <div>
       <div style={{ background: `linear-gradient(135deg, ${O2} 0%, #FFF 100%)`, padding: "80px 32px 64px", position: "relative", overflow: "hidden" }}>
-        <div style={{ position: "absolute", right: -60, top: -60, width: 360, height: 360, background: `radial-gradient(circle, ${NAVY}30 0%, transparent 65%)`, pointerEvents: "none" }} />
+        <div style={{ position: "absolute", right: -60, top: -60, width: 360, height: 360, background: `radial-gradient(circle, ${CORAL}30 0%, transparent 65%)`, pointerEvents: "none" }} />
         <div style={{ maxWidth: 640, margin: "0 auto", position: "relative" }}>
           {isAdmin && <button onClick={() => { setTmp(info); setEditMode(true); }} style={{ position: "absolute", top: -48, right: 0, background: O, color: WHITE, border: "none", padding: "6px 14px", fontSize: 11, cursor: "pointer", fontFamily: "inherit" }}>編輯</button>}
-          <div style={{ display: "inline-flex", alignItems: "center", gap: 8, background: O2, border: `1px solid ${O}25`, padding: "6px 14px", marginBottom: 24 }}>
+          <div className="hero-stagger hs-1" style={{ display: "inline-flex", alignItems: "center", gap: 8, background: O2, border: `1px solid ${O}25`, padding: "6px 14px", marginBottom: 24 }}>
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke={O} strokeWidth="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
             <span style={{ fontSize: 12, color: O, fontWeight: 500 }}>{info.subscriberCount} 位讀者</span>
           </div>
-          <h1 style={{ fontSize: 42, fontWeight: 700, color: CHAR, lineHeight: 1.25, marginBottom: 16 }}>88La<br /><span style={{ color: O }}>理財週報</span></h1>
-          <p style={{ fontSize: 16, color: MID, lineHeight: 1.9, marginBottom: 32, maxWidth: 460, whiteSpace: "pre-wrap" }}>{info.intro}</p>
+          <h1 className="hero-stagger hs-2" style={{ fontSize: 42, fontWeight: 700, color: CHAR, lineHeight: 1.25, marginBottom: 16 }}>88La<br /><span style={{ color: O }}>理財週報</span></h1>
+          <p className="hero-stagger hs-3" style={{ fontSize: 16, color: MID, lineHeight: 1.9, marginBottom: 32, maxWidth: 460, whiteSpace: "pre-wrap" }}>{info.intro}</p>
           {submitted ? (
             <div style={{ background: O2, border: `1px solid ${O}30`, padding: "20px 24px" }}>
               <p style={{ fontSize: 14, color: O, fontWeight: 500 }}>感謝訂閱！</p>
@@ -2402,10 +2478,11 @@ export default function App() {
   const [isAdmin, setIsAdmin] = useState(false);
 
   useEffect(() => onAuthStateChanged(auth, (user) => setIsAdmin(!!user && ADMIN_EMAILS.includes(user.email))), []);
+  useLayoutEffect(() => { window.scrollTo({ top: 0, behavior: "instant" }); }, [page]);
 
   const loaded = aL && pL && iL && gL && abL && tL && taL && lL && ftL && rlL && nlL && acL && ccL;
   const article = articles.find(a => a.id === id);
-  const nav = p => { setPage(p); setId(null); window.scrollTo(0, 0); history.pushState({}, "", window.location.pathname); };
+  const nav = p => { setPage(p); setId(null); history.pushState({}, "", window.location.pathname); };
 
   useEffect(() => {
     if (!loaded) return;
@@ -2423,8 +2500,8 @@ export default function App() {
       const ap = params.get("article");
       if (ap) {
         const a = articles.find(x => x.slug === ap || String(x.id) === ap);
-        if (a) { setId(a.id); setPage("article"); window.scrollTo(0, 0); }
-      } else { setPage("home"); setId(null); window.scrollTo(0, 0); }
+        if (a) { setId(a.id); setPage("article"); window.scrollTo({ top: 0, behavior: "instant" }); }
+      } else { setPage("home"); setId(null); window.scrollTo({ top: 0, behavior: "instant" }); }
     };
     window.addEventListener("popstate", onPop);
     return () => window.removeEventListener("popstate", onPop);
@@ -2461,7 +2538,7 @@ export default function App() {
   if (!loaded) return (
     <>
       <style>{css}</style>
-      <div style={{ minHeight: "100vh", background: NAVY, display: "flex", alignItems: "center", justifyContent: "center" }}>
+      <div style={{ minHeight: "100vh", background: CORAL, display: "flex", alignItems: "center", justifyContent: "center" }}>
         <p style={{ fontSize: 13, color: "rgba(255,255,255,.4)", letterSpacing: "3px" }}>LOADING</p>
       </div>
     </>
