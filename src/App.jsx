@@ -2063,7 +2063,7 @@ function PricingPage({ appContent, setPage }) {
 
 // ── 服務條款 ──
 function TermsPage() {
-  const NUMERALS = ["一", "二", "三", "四", "五", "六", "七"];
+  const NUMERALS = ["一", "二", "三", "四", "五", "六", "七", "八"];
   const SECTIONS = [
     {
       title: "服務說明",
@@ -2088,6 +2088,10 @@ function TermsPage() {
     {
       title: "服務變更",
       content: `88La 保留調整訂閱方案定價及功能內容之權利，並將提前 30 天以電子郵件通知用戶。現有訂閱者不受漲價影響，直至當期訂閱到期。`,
+    },
+    {
+      title: "帳號到期與資料保留",
+      content: `1. 訂閱方案到期前三天，系統將透過 Email 及 App 推播通知提醒續訂。\n\n2. 方案到期後，帳號進入 7 天緩衝期：\n　• 可瀏覽所有歷史記帳紀錄\n　• 可匯出個人資料\n　• 新增、編輯、刪除等寫入功能暫停使用\n\n3. 緩衝期結束後（到期後第 8 天起），帳號功能將完全停用，但資料不會主動刪除。\n\n4. 如需恢復使用，續訂即可立即解鎖所有功能。`,
     },
     {
       title: "聯絡方式",
@@ -2188,7 +2192,7 @@ function PrivacyPage() {
       content: null,
       bullets: [
         "訂閱使用期間，資料持續妥善保存",
-        "訂閱取消或到期後，依本服務之服務條款，資料將保留三十日供您匯出（CSV 或 PDF 格式），逾期後系統可能予以清除",
+        "訂閱取消或到期後，依本服務之服務條款，資料將保留七日供您匯出（CSV 或 PDF 格式），逾期後系統可能予以清除",
         "至於存放於您個人 Google 試算表內之資料，縱使本服務端之紀錄遭清除，惟若您未自行刪除，該份試算表仍將留存於您的 Google 雲端硬碟之中",
       ],
     },
@@ -2439,7 +2443,7 @@ function SubscriptionPage({ setPage, isAdmin }) {
           </div>
 
           <div style={{ marginTop: 32, display: "flex", flexDirection: "column", gap: 8 }}>
-            {["所有金額均為新台幣計價，含稅", "訂閱將於到期日自動續約，可於到期前至帳戶設定取消", "付款方式：信用卡定期定額（由綠界科技處理）"].map((n, i) => (
+            {["所有金額均為新台幣計價，含稅", "訂閱將於到期日自動續約，可於到期前至帳戶設定取消", "付款方式：信用卡定期定額（由綠界科技處理）", "到期前三天將寄送提醒通知。到期後提供 7 天資料匯出緩衝期，期間可瀏覽歷史紀錄，續訂即可立即恢復完整功能"].map((n, i) => (
               <p key={i} style={{ fontSize: 12, color: MID, display: "flex", gap: 8, alignItems: "flex-start" }}>
                 <span style={{ color: O, fontWeight: 700, flexShrink: 0 }}>·</span>{n}
               </p>
