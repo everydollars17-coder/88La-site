@@ -2530,6 +2530,20 @@ export default function App() {
       setGoods(DEFAULTS.goods, { silent: true });
     }
   }, [gL]);
+  useEffect(() => {
+    if (!aL || !isAdmin) return;
+    const missing = articles.filter(a => !a.slug && a.title);
+    if (missing.length === 0) return;
+    const taken = new Set(articles.map(a => a.slug).filter(Boolean));
+    const updated = articles.map(a => {
+      if (a.slug || !a.title) return a;
+      let slug = toSlug(a.title), n = 2;
+      while (taken.has(slug)) { slug = toSlug(a.title) + "-" + n; n++; }
+      taken.add(slug);
+      return { ...a, slug };
+    });
+    setArticles(updated);
+  }, [aL, isAdmin]);
   const saveArticle = d => {
     const nid = Math.max(...articles.map(a => a.id), 0) + 1;
     const baseSlug = toSlug(d.title);
