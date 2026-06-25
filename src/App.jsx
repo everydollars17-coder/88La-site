@@ -712,7 +712,7 @@ function Hero({ about, isAdmin, setAbout, links }) {
   return (
     <div className={`banner-h${bi ? "" : " hero-pattern"}`} style={{
       height: 560,
-      ...(bi ? { background: `linear-gradient(rgba(40,20,10,.55),rgba(40,20,10,.55)) center/cover, url('${bi}') center/cover no-repeat` } : {}),
+      ...(bi ? { background: `linear-gradient(rgba(40,20,10,.55),rgba(40,20,10,.55)) center/cover, url('${bi.replace(/[\\'()]/g, "\\$&")}') center/cover no-repeat` } : {}),
       display: "flex", alignItems: "center", position: "relative"
     }}>
       <div style={{ maxWidth: 1100, margin: "0 auto", padding: "0 32px", width: "100%" }}>
@@ -749,8 +749,13 @@ function Home({ articles, setPage, setId, setArticles, isAdmin, siteTitle, setSi
   const addTag = () => { const t = newTag.trim(); if (t && !tags.includes(t)) setTags(prev => [...prev, t]); setNewTag(""); };
   const delTag = t => { if (confirm("確定刪除標籤「" + t + "」？")) setTags(prev => prev.filter(x => x !== t)); };
   const moveA = (idx, dir) => setArticles(prev => {
-    const a = [...prev]; const fi = filtered[idx]; const ri = a.findIndex(x => x.id === fi.id); const ni = ri + dir;
-    if (ni < 0 || ni >= a.length) return prev; [a[ri], a[ni]] = [a[ni], a[ri]]; return a;
+    const ti = idx + dir;
+    if (ti < 0 || ti >= filtered.length) return prev;
+    const a = [...prev];
+    const ri = a.findIndex(x => x.id === filtered[idx].id);
+    const ni = a.findIndex(x => x.id === filtered[ti].id);
+    if (ri === -1 || ni === -1) return prev;
+    [a[ri], a[ni]] = [a[ni], a[ri]]; return a;
   });
   return (
     <div>
