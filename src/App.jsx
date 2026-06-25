@@ -206,20 +206,22 @@ const DEFAULTS = {
           { id: 12, num: "02", title: "設定儲蓄目標", body: "填寫這個月想存下的目標金額，養成「先存後花」的習慣，再進入下一步的預算分配。", bullets: [] },
           { id: 13, num: "03", title: "智慧預算建議", body: "系統根據你的薪水與儲蓄目標，自動推算出適合的分配比例，涵蓋變動支出（含預存支出）、固定支出、儲蓄三大類。", bullets: [] },
           { id: 14, num: "04", title: "實際分配對比", body: "分配完預算後，系統將「你的實際分配比例」與「系統建議比例」並列對比，幫你看清楚儲蓄空間與固定支出占比。", bullets: [] },
-          { id: 15, num: "05", title: "公費 / 家庭模式（選用）", body: "如果你和伴侶有公費分帳或家庭合併收支的需求，系統會引導你一步步抓準金額。", bullets: ["公費制：每人提撥固定金額，用於共同支出", "家庭制：雙方薪水合併使用，共同規劃預算"] },
+          { id: 16, num: "05", title: "上月支出對比", body: "編列預算時，系統自動帶入上月各項實際支出數據，讓你在分配當下就能看出哪些項目超支、哪些有節餘空間，不必翻找舊紀錄也能快速調整本月預算方向。", bullets: [] },
+          { id: 15, num: "06", title: "公費 / 家庭模式（選用）", body: "如果你和伴侶有公費分帳或家庭合併收支的需求，系統會引導你一步步抓準金額。", bullets: ["公費制：每人提撥固定金額，用於共同支出", "家庭制：雙方薪水合併使用，共同規劃預算"] },
         ]},
         { id: 2, label: "月中", sub: "日常記帳", steps: [
-          { id: 21, num: "06", title: "快速記帳", body: "桌面快速記帳介面，降低記帳阻力，實現無痛記帳。記帳時可設定歸屬、支付方式與消費情緒。", bullets: ["歸屬：個人 / 公費 / 家庭", "支付方式：自由調整", "消費情緒：檢視衝動消費頻率"] },
-          { id: 22, num: "07", title: "信用卡管理", body: "依卡別設定結帳日、繳費日，系統自動提醒卡費與預留金額，避免惡性循環。", bullets: ["何時繳、繳多少", "下個月卡費預留提醒", "刷卡頻率偵測與建議"] },
-          { id: 23, num: "08", title: "帳戶管理", body: "自由設定帳戶名稱、金額、icon，支援帳戶間轉帳（含手續費），並可連動記帳直接用帳戶支付。", bullets: [] },
-          { id: 24, num: "09", title: "儲蓄管理", body: "月初編列的儲蓄、投資、預存項目可設定具體目標，透過動態進度條隨時掌握累積進度。", bullets: [] },
-          { id: 25, num: "10", title: "負債追蹤", body: "輸入貸款金額、已還金額、期數，追蹤還款進度，並可一鍵繳款直接完成記帳。", bullets: [] },
-          { id: 26, num: "11", title: "預存管理", body: "建立一個專屬帳戶來存放預存款項，每次存入時用轉帳功能記錄，要動用時再從帳戶扣款，餘額隨時清楚。習慣用現金預存的人，也可以建立「現金預存帳戶」，操作邏輯一樣。", bullets: [] },
+          { id: 21, num: "07", title: "快速記帳", body: "桌面快速記帳介面，降低記帳阻力，實現無痛記帳。記帳時可設定歸屬、支付方式與消費情緒。", bullets: ["歸屬：個人 / 公費 / 家庭", "支付方式：自由調整", "消費情緒：檢視衝動消費頻率"] },
+          { id: 27, num: "08", title: "智慧預填", body: "根據你的記帳習慣，系統自動預填常用金額、類別與支付方式。開啟記帳時欄位已幫你填好，確認或微調即可完成，大幅縮短每次記帳時間。", bullets: [] },
+          { id: 22, num: "09", title: "信用卡管理", body: "依卡別設定結帳日、繳費日，系統自動提醒卡費與預留金額，避免惡性循環。", bullets: ["何時繳、繳多少", "下個月卡費預留提醒", "刷卡頻率偵測與建議"] },
+          { id: 23, num: "10", title: "帳戶管理", body: "自由設定帳戶名稱、金額、icon，支援帳戶間轉帳（含手續費），並可連動記帳直接用帳戶支付。", bullets: [] },
+          { id: 24, num: "11", title: "儲蓄管理", body: "月初編列的儲蓄、投資、預存項目可設定具體目標，透過動態進度條隨時掌握累積進度。", bullets: [] },
+          { id: 25, num: "12", title: "負債追蹤", body: "輸入貸款金額、已還金額、期數，追蹤還款進度，並可一鍵繳款直接完成記帳。", bullets: [] },
+          { id: 26, num: "13", title: "預存管理", body: "建立一個專屬帳戶來存放預存款項，每次存入時用轉帳功能記錄，要動用時再從帳戶扣款，餘額隨時清楚。習慣用現金預存的人，也可以建立「現金預存帳戶」，操作邏輯一樣。", bullets: [] },
         ]},
         { id: 3, label: "月底", sub: "診斷與調整", steps: [
-          { id: 31, num: "12", title: "月度診斷", body: "系統全面分析本月收支，找出調整方向。", bullets: ["固定 / 變動支出狀況、儲蓄是否達標", "支出類別占比、支付方式、情緒消費分析", "偵測未列入預算的支出與未計畫儲蓄", "給出下個月具體調整方向與深度建議"] },
-          { id: 32, num: "13", title: "最新快訊", body: "首頁一目瞭然：預算進度條、信用卡費提醒、近期消費紀錄、本月還款倒數。", bullets: [] },
-          { id: 33, num: "14", title: "筆記與匯出", body: "可在筆記區記錄調整方向，月底整合匯出 PDF 或 CSV 檔，也支援加購一對一診斷討論。", bullets: [] },
+          { id: 31, num: "14", title: "月度診斷", body: "系統全面分析本月收支，找出調整方向。", bullets: ["固定 / 變動支出狀況、儲蓄是否達標", "支出類別占比、支付方式、情緒消費分析", "偵測未列入預算的支出與未計畫儲蓄", "給出下個月具體調整方向與深度建議"] },
+          { id: 32, num: "15", title: "最新快訊", body: "首頁一目瞭然：預算進度條、信用卡費提醒、近期消費紀錄、本月還款倒數。", bullets: [] },
+          { id: 33, num: "16", title: "筆記與匯出", body: "可在筆記區記錄調整方向，月底整合匯出 PDF 或 CSV 檔，也支援加購一對一診斷討論。", bullets: [] },
         ]},
       ],
       dataNote: "登入 Google 帳號後，系統會自動建立專屬試算表，所有輸入資料都會同步保存在你自己的雲端空間，僅你本人可見。",
@@ -231,6 +233,7 @@ const DEFAULTS = {
         { id: 5, q: "月底診斷會告訴我什麼？", a: "分析固定/變動支出比例、儲蓄達標狀況、各類別支出占比、情緒消費頻率，並抓出未列入預算的支出，給出下個月具體調整建議。" },
         { id: 6, q: "可以匯出資料嗎？", a: "可以。月底可匯出整合診斷、筆記、消費情形的 PDF，或匯出記帳明細 CSV 檔。" },
         { id: 7, q: "想要更深入的調整建議怎麼辦？", a: "可加購 88La 一對一診斷討論服務。" },
+        { id: 8, q: "幫別人代墊刷卡，對方還現金，該怎麼記？", a: "一樣用信用卡記錄這筆消費，因為會跟著你的帳期出帳，金額比較準確。對方還你現金時，等於你已經把這筆卡費預留起來了。建議在備註欄寫上「代墊」方便辨識。" },
       ],
     },
   },
@@ -531,6 +534,7 @@ function RichEditor({ value, onChange }) {
       <div ref={ref} className="rich-ed" contentEditable suppressContentEditableWarning
         onInput={() => onChange(ref.current.innerHTML)}
         onKeyDown={e => {
+          if (e.nativeEvent.isComposing || e.keyCode === 229) return;
           if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); document.execCommand("insertParagraph"); }
           else if (e.key === "Enter" && e.shiftKey) { e.preventDefault(); document.execCommand("insertLineBreak"); }
         }}
@@ -1403,6 +1407,7 @@ function AppPage({ appContent, setAppContent, isAdmin }) {
     setEditingFeat(null);
   };
   const delFeat = id => { if (confirm("確定刪除？")) upd({ features: c.features.filter(f => f.id !== id) }); };
+  const moveFeat = (idx, dir) => upd({ features: moveItem(c.features, idx, dir) });
   const savePlan = () => {
     if (editingPlan === "new") upd({ plans: [...c.plans, { id: Date.now(), ...planForm }] });
     else upd({ plans: c.plans.map(p => p.id === editingPlan ? { ...p, ...planForm } : p) });
@@ -1522,11 +1527,12 @@ function AppPage({ appContent, setAppContent, isAdmin }) {
             >
               {f.img && <div style={{ height: 160, overflow: "hidden" }}><img src={f.img} alt={f.title} style={{ width: "100%", height: "100%", objectFit: "cover" }} loading="lazy" /></div>}
               <div style={{ padding: "28px 28px 32px" }}>
-                {isAdmin && <div style={{ position: "absolute", top: 10, right: 10, display: "flex", gap: 4, zIndex: 1 }}>
+                {isAdmin && <div style={{ position: "absolute", top: 10, right: 10, display: "flex", gap: 4, alignItems: "center", zIndex: 1 }}>
+                  <OrdBtns idx={i} total={c.features.length} onMove={moveFeat} />
                   <button className="pg" style={{ fontSize: 10, padding: "3px 8px" }} onClick={() => { setFeatForm({ n: f.n, title: f.title, desc: f.desc, img: f.img || "" }); setEditingFeat(f.id); }}>編輯</button>
                   <button className="pg" style={{ fontSize: 10, padding: "3px 8px", color: "#E74C3C", borderColor: "#E74C3C" }} onClick={() => delFeat(f.id)}>✕</button>
                 </div>}
-                <p style={{ fontSize: 11, color: O, fontWeight: 600, letterSpacing: "1px", marginBottom: 14 }}>{f.n}</p>
+                <p style={{ fontSize: 11, color: O, fontWeight: 600, letterSpacing: "1px", marginBottom: 14 }}>{String(i + 1).padStart(2, "0")}</p>
                 <h3 style={{ fontSize: 17, fontWeight: 500, color: CHAR, marginBottom: 10 }}>{f.title}</h3>
                 <p style={{ fontSize: 14, color: MID, lineHeight: 1.85, whiteSpace: "pre-wrap" }}>{f.desc}</p>
               </div>
@@ -2524,6 +2530,36 @@ export default function App() {
       }), { silent: true });
     }
   }, [acL]);
+  useEffect(() => {
+    if (!acL || !isAdmin) return;
+    const gd = appContent.guideData;
+    if (!gd?.phases) return;
+    const allTitles = gd.phases.flatMap(p => p.steps.map(s => s.title));
+    const needsUpdate = !allTitles.includes("智慧預填") || !allTitles.includes("上月支出對比");
+    const needsFaq = !gd.faqs?.some(f => f.q.includes("代墊"));
+    if (!needsUpdate && !needsFaq) return;
+    const updated = { ...gd, phases: gd.phases.map(p => {
+      if (p.id === 1 && !p.steps.some(s => s.title === "上月支出對比")) {
+        const idx = p.steps.findIndex(s => s.title === "實際分配對比");
+        const ins = idx >= 0 ? idx + 1 : p.steps.length;
+        const steps = [...p.steps];
+        steps.splice(ins, 0, { id: 16, num: "05", title: "上月支出對比", body: "編列預算時，系統自動帶入上月各項實際支出數據，讓你在分配當下就能看出哪些項目超支、哪些有節餘空間，不必翻找舊紀錄也能快速調整本月預算方向。", bullets: [] });
+        return { ...p, steps };
+      }
+      if (p.id === 2 && !p.steps.some(s => s.title === "智慧預填")) {
+        const idx = p.steps.findIndex(s => s.title === "快速記帳");
+        const ins = idx >= 0 ? idx + 1 : 0;
+        const steps = [...p.steps];
+        steps.splice(ins, 0, { id: 27, num: "08", title: "智慧預填", body: "根據你的記帳習慣，系統自動預填常用金額、類別與支付方式。開啟記帳時欄位已幫你填好，確認或微調即可完成，大幅縮短每次記帳時間。", bullets: [] });
+        return { ...p, steps };
+      }
+      return p;
+    }) };
+    let stepNum = 1;
+    updated.phases.forEach(p => { if (p.isSetup) { p.steps.forEach((s, i) => { s.num = String(i + 1).padStart(2, "0"); }); } else { p.steps.forEach(s => { s.num = String(stepNum++).padStart(2, "0"); }); } });
+    if (needsFaq) updated.faqs = [...(gd.faqs || []), { id: 8, q: "幫別人代墊刷卡，對方還現金，該怎麼記？", a: "一樣用信用卡記錄這筆消費，因為會跟著你的帳期出帳，金額比較準確。對方還你現金時，等於你已經把這筆卡費預留起來了。建議在備註欄寫上「代墊」方便辨識。" }];
+    setAppContent(prev => ({ ...prev, guideData: updated }), { silent: true });
+  }, [acL, isAdmin]);
   useEffect(() => {
     if (!gL) return;
     if ((!goods || goods.length === 0) && DEFAULTS.goods.length > 0) {
