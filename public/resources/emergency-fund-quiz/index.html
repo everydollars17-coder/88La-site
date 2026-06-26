@@ -1,0 +1,316 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>先存緊急預備金還是邊存邊投？｜88La</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{min-height:100%;background:#fdf6f1}
+body{font-family:'Noto Sans TC',sans-serif;color:#2d1a0e}
+.page{max-width:480px;margin:0 auto;padding:0 0 48px}
+
+.header{background:#c96b2f;padding:28px 24px 22px}
+.header-tag{display:inline-block;background:rgba(255,255,255,0.2);color:#fff;font-size:10px;letter-spacing:1.5px;padding:3px 12px;border-radius:20px;margin-bottom:10px}
+.header-title{color:#fff;font-size:20px;font-weight:700;line-height:1.4;margin-bottom:6px}
+.header-sub{color:rgba(255,255,255,0.8);font-size:12px;line-height:1.6}
+.progress-wrap{margin-top:18px}
+.progress-label{font-size:10px;color:rgba(255,255,255,0.7);margin-bottom:5px}
+.progress-bar{height:4px;background:rgba(255,255,255,0.25);border-radius:2px}
+.progress-fill{height:4px;background:#fff;border-radius:2px;transition:width 0.4s ease;width:0%}
+
+.body{padding:24px 20px 0}
+
+.step{display:none}
+.step.active{display:block}
+
+.q-label{font-size:11px;font-weight:700;color:#c96b2f;letter-spacing:0.8px;margin-bottom:8px}
+.q-text{font-size:16px;font-weight:700;color:#2d1a0e;line-height:1.5;margin-bottom:20px}
+
+.option-btn{
+  width:100%;text-align:left;
+  background:#fff;
+  border:1px solid #e8cfc0;
+  border-radius:10px;
+  padding:13px 16px;
+  margin-bottom:10px;
+  cursor:pointer;
+  font-family:'Noto Sans TC',sans-serif;
+  font-size:13px;color:#2d1a0e;
+  line-height:1.5;
+  transition:all 0.15s;
+  display:flex;align-items:flex-start;gap:10px;
+}
+.option-btn:hover{border-color:#c96b2f;background:#fff6f0}
+.option-btn.selected{border-color:#c96b2f;background:#fff6f0;color:#712B13;font-weight:500}
+.opt-icon{font-size:16px;flex-shrink:0;margin-top:1px}
+
+.answer-box{
+  display:none;
+  background:#fff6f0;
+  border-left:3px solid #c96b2f;
+  border-radius:0 10px 10px 0;
+  padding:14px 16px;
+  margin-bottom:20px;
+}
+.answer-box.show{display:block}
+.answer-title{font-size:12px;font-weight:700;color:#c96b2f;margin-bottom:6px}
+.answer-text{font-size:13px;color:#4a2e1a;line-height:1.7}
+.answer-text strong{color:#c96b2f}
+
+.next-btn{
+  width:100%;background:#c96b2f;color:#fff;
+  border:none;border-radius:10px;
+  padding:14px;
+  font-family:'Noto Sans TC',sans-serif;
+  font-size:14px;font-weight:700;
+  cursor:pointer;margin-top:0;
+  transition:opacity 0.15s;
+  display:none;
+}
+.next-btn.show{display:block}
+.next-btn:hover{opacity:0.88}
+
+.result-box{display:none}
+.result-box.show{display:block}
+
+.result-header{background:#c96b2f;border-radius:12px;padding:22px 20px;text-align:center;margin-bottom:14px}
+.result-type{color:rgba(255,255,255,0.8);font-size:11px;letter-spacing:1px;margin-bottom:5px}
+.result-title{color:#fff;font-size:18px;font-weight:700;line-height:1.4}
+
+.ratio-card{background:#fff;border:0.5px solid #e8cfc0;border-radius:10px;padding:16px;margin-bottom:10px}
+.ratio-card-label{font-size:11px;color:#a07060;margin-bottom:12px}
+.ratio-bar{display:flex;border-radius:6px;overflow:hidden;height:16px;margin-bottom:10px}
+.bar-save{background:#c96b2f;transition:width 0.5s ease}
+.bar-invest{background:#f4c09a;transition:width 0.5s ease}
+.ratio-legend{display:flex;gap:20px}
+.legend-item{display:flex;align-items:center;gap:6px;font-size:12px;color:#4a2e1a;font-weight:500}
+.legend-dot{width:10px;height:10px;border-radius:50%;flex-shrink:0}
+
+.proof-row{display:flex;gap:10px;margin-bottom:10px}
+.proof-card{flex:1;background:#fff6f0;border:0.5px solid #e8cfc0;border-radius:10px;padding:14px;text-align:center}
+.proof-num{font-size:22px;font-weight:700;color:#c96b2f;line-height:1.2}
+.proof-label{font-size:10px;color:#a07060;margin-top:4px;line-height:1.4}
+
+.info-card{background:#fff;border:0.5px solid #e8cfc0;border-radius:10px;padding:14px;margin-bottom:10px}
+.info-label{font-size:11px;color:#a07060;margin-bottom:5px}
+.info-value{font-size:14px;font-weight:700;color:#2d1a0e;line-height:1.5}
+
+.ref-link{
+  display:flex;align-items:center;gap:12px;
+  background:#fff6f0;border:1px solid #e8cfc0;
+  border-radius:10px;padding:14px 16px;
+  text-decoration:none;margin-bottom:12px;
+  transition:border-color 0.15s;
+}
+.ref-link:hover{border-color:#c96b2f}
+.ref-icon-wrap{width:40px;height:40px;background:#c96b2f;border-radius:8px;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:20px}
+.ref-text-wrap{flex:1}
+.ref-label{font-size:10px;color:#a07060;margin-bottom:2px}
+.ref-title{font-size:13px;font-weight:700;color:#712B13}
+.ref-arrow{font-size:18px;color:#c96b2f}
+
+.restart-btn{
+  width:100%;background:#fff;color:#c96b2f;
+  border:1px solid #e8cfc0;border-radius:10px;
+  padding:13px;
+  font-family:'Noto Sans TC',sans-serif;
+  font-size:13px;font-weight:700;cursor:pointer;
+  transition:border-color 0.15s;
+}
+.restart-btn:hover{border-color:#c96b2f}
+
+.brand{text-align:center;font-size:11px;color:#c4a090;letter-spacing:0.5px;margin-top:20px}
+</style>
+</head>
+<body>
+<div class="page">
+  <div class="header">
+    <div class="header-tag">88La 理財測驗</div>
+    <div class="header-title">先存緊急預備金<br>還是邊存邊投？</div>
+    <div class="header-sub">3 個問題，找到你現在最適合的做法</div>
+    <div class="progress-wrap">
+      <div class="progress-label" id="prog-label">0 / 3 完成</div>
+      <div class="progress-bar"><div class="progress-fill" id="prog"></div></div>
+    </div>
+  </div>
+
+  <div class="body">
+
+    <div class="step active" id="s0">
+      <div class="q-label">問題 1 / 3</div>
+      <div class="q-text">你目前有多少緊急預備金？</div>
+      <button class="option-btn" onclick="pick(0,0)"><span class="opt-icon">✕</span><span>完全沒有，從零開始</span></button>
+      <button class="option-btn" onclick="pick(0,1)"><span class="opt-icon">◑</span><span>有一點，但不到 1 個月生活費</span></button>
+      <button class="option-btn" onclick="pick(0,2)"><span class="opt-icon">✓</span><span>有 1–2 個月以上</span></button>
+      <div class="answer-box" id="a0-0">
+        <div class="answer-title">先建立底線</div>
+        <div class="answer-text">完全沒有預備金就投資，遇到急用時只能<strong>被迫賠錢賣出</strong>。建議先暫停投資，把存到 1 個月基本生活費當作第一目標。</div>
+      </div>
+      <div class="answer-box" id="a0-1">
+        <div class="answer-title">有底線了，繼續往下看</div>
+        <div class="answer-text">雖然還不足，但有一點緩衝是好事。繼續回答下一題，看你適合什麼比例。</div>
+      </div>
+      <div class="answer-box" id="a0-2">
+        <div class="answer-title">基本護城河已建立</div>
+        <div class="answer-text">你已經有初步緩衝了。繼續往下，看你的收入狀況適合哪種配置。</div>
+      </div>
+      <button class="next-btn" id="n0" onclick="nextStep(1)">下一題 →</button>
+    </div>
+
+    <div class="step" id="s1">
+      <div class="q-label">問題 2 / 3</div>
+      <div class="q-text">你的收入穩定嗎？</div>
+      <button class="option-btn" onclick="pick(1,0)"><span class="opt-icon">🏦</span><span>穩定——固定薪水、上班族</span></button>
+      <button class="option-btn" onclick="pick(1,1)"><span class="opt-icon">📈</span><span>有點波動——業績制、兼職</span></button>
+      <button class="option-btn" onclick="pick(1,2)"><span class="opt-icon">🌀</span><span>不穩定——接案、自媒體、創業</span></button>
+      <div class="answer-box" id="a1-0">
+        <div class="answer-title">穩定收入，彈性大</div>
+        <div class="answer-text">固定薪水代表每月都有可預測的現金流，<strong>邊存邊投的折衷法最適合你</strong>。</div>
+      </div>
+      <div class="answer-box" id="a1-1">
+        <div class="answer-title">波動收入，要保守一點</div>
+        <div class="answer-text">收入有波動，預備金的緩衝就更重要。建議預備金比例拉高，再搭配小額投資。</div>
+      </div>
+      <div class="answer-box" id="a1-2">
+        <div class="answer-title">不穩定收入，先顧安全</div>
+        <div class="answer-text">自媒體、接案收入起伏大，建議<strong>先把預備金存到 3 個月以上</strong>，再開始投資。</div>
+      </div>
+      <button class="next-btn" id="n1" onclick="nextStep(2)">下一題 →</button>
+    </div>
+
+    <div class="step" id="s2">
+      <div class="q-label">問題 3 / 3</div>
+      <div class="q-text">你現在若突然需要 3 萬元急用，你怎麼辦？</div>
+      <button class="option-btn" onclick="pick(2,0)"><span class="opt-icon">😰</span><span>完全沒有現金或股票可以救急</span></button>
+      <button class="option-btn" onclick="pick(2,1)"><span class="opt-icon">😔</span><span>只能動用投資帳戶，不管賺賠都得賣</span></button>
+      <button class="option-btn" onclick="pick(2,2)"><span class="opt-icon">😐</span><span>手邊有一點現金，但可能不夠</span></button>
+      <button class="option-btn" onclick="pick(2,3)"><span class="opt-icon">😊</span><span>活存夠用，投資完全不需要動</span></button>
+      <div class="answer-box" id="a2-0">
+        <div class="answer-title">財務空白狀態，最需要先動起來</div>
+        <div class="answer-text">連救急的選項都沒有，現在最優先的事只有一件：<strong>立刻開始存緊急預備金</strong>，投資的事之後再說。</div>
+      </div>
+      <div class="answer-box" id="a2-1">
+        <div class="answer-title">這就是預備金最重要的原因</div>
+        <div class="answer-text">被迫在低點賣股，是最傷的理財決策。<strong>先建立預備金</strong>，讓投資可以安心放著不動。</div>
+      </div>
+      <div class="answer-box" id="a2-2">
+        <div class="answer-title">還差一點安全感</div>
+        <div class="answer-text">有緩衝但不夠，這正是「折衷法」最適合你的階段——繼續補充預備金，同時小額投資。</div>
+      </div>
+      <div class="answer-box" id="a2-3">
+        <div class="answer-title">預備金發揮了它的功能</div>
+        <div class="answer-text">這就是預備金的意義——讓投資<strong>不需要因為急用而被打斷</strong>，複利才能真正發揮。</div>
+      </div>
+      <button class="next-btn" id="n2" onclick="showResult()">看我的結果 →</button>
+    </div>
+
+    <div class="result-box" id="result"></div>
+
+    <div class="brand">@every_dollars · 88La</div>
+  </div>
+</div>
+
+<script>
+var answers = [-1,-1,-1];
+
+function pick(step, choice) {
+  answers[step] = choice;
+  document.querySelectorAll('#s'+step+' .option-btn').forEach(function(b){ b.classList.remove('selected'); });
+  document.querySelectorAll('#s'+step+' .option-btn')[choice].classList.add('selected');
+  document.querySelectorAll('#s'+step+' .answer-box').forEach(function(b){ b.classList.remove('show'); });
+  document.getElementById('a'+step+'-'+choice).classList.add('show');
+  document.getElementById('n'+step).classList.add('show');
+}
+
+function nextStep(to) {
+  document.getElementById('s'+(to-1)).classList.remove('active');
+  document.getElementById('s'+to).classList.add('active');
+  var pct = to === 1 ? '33%' : '66%';
+  document.getElementById('prog').style.width = pct;
+  document.getElementById('prog-label').textContent = (to) + ' / 3 完成';
+  window.scrollTo(0,0);
+}
+
+function showResult() {
+  document.getElementById('s2').classList.remove('active');
+  document.getElementById('prog').style.width = '100%';
+  document.getElementById('prog-label').textContent = '3 / 3 完成';
+
+  var a0=answers[0], a1=answers[1], a2=answers[2];
+  var type, title, action, savePct, goal;
+
+  if (a2===0 || a0===0) {
+    type = '你現在最需要';
+    title = '停止投資，全力衝緊急預備金';
+    action = '連救急的選項都沒有，這是財務最脆弱的狀態。現在唯一的任務是把緊急預備金從零開始存起來，投資的事之後再說。';
+    savePct = 100;
+    goal = '先達標 1 個月基本生活費，再重新評估';
+  } else if (a2===1 || a1===2 || (a1===1 && a2===2)) {
+    type = '你現在適合';
+    title = '保守折衷——預備金優先，小額投資為輔';
+    action = '還沒有足夠緊急緩衝，或收入不太穩定。建議把存款大部分放預備金補足安全網，留少部分開始小額投資 ETF。';
+    savePct = 75;
+    goal = '預備金存到 3 個月以上，再調整比例';
+  } else {
+    type = '你現在適合';
+    title = '穩健折衷——邊存預備金邊投資';
+    action = '收入穩定、有緩衝底線，最適合「折衷法」。每月存款分兩部分：多數繼續補充預備金放高利活存，小部分投入 ETF，兩件事同步推進。';
+    savePct = 60;
+    goal = '預備金存滿 6 個月後，可全力投資';
+  }
+
+  var investPct = 100 - savePct;
+  var barInvest = savePct < 100 ? '<div class="bar-invest" style="width:'+investPct+'%"></div>' : '';
+  var legendInvest = savePct < 100 ? '<div class="legend-item"><div class="legend-dot" style="background:#f4c09a"></div>投資 '+investPct+'%</div>' : '';
+
+  var html =
+    '<div class="result-header">'
+    +'<div class="result-type">'+type+'</div>'
+    +'<div class="result-title">'+title+'</div>'
+    +'</div>'
+    +'<div class="ratio-card">'
+    +'<div class="ratio-card-label">你的每月存款建議比例</div>'
+    +'<div class="ratio-bar"><div class="bar-save" style="width:'+savePct+'%"></div>'+barInvest+'</div>'
+    +'<div class="ratio-legend" style="margin-top:10px">'
+    +'<div class="legend-item"><div class="legend-dot" style="background:#c96b2f"></div>預備金 '+savePct+'%</div>'
+    +legendInvest
+    +'</div>'
+    +'</div>'
+    +'<div class="proof-row">'
+    +'<div class="proof-card"><div class="proof-num">6:2</div><div class="proof-label">Barbara 的預備金：投資比例</div></div>'
+    +'<div class="proof-card"><div class="proof-num">+44%</div><div class="proof-label">ETF 目前總報酬</div></div>'
+    +'</div>'
+    +'<div class="info-card"><div class="info-label">建議做法</div><div class="info-value">'+action+'</div></div>'
+    +'<div class="info-card"><div class="info-label">下一個里程碑</div><div class="info-value">'+goal+'</div></div>'
+    +'<a class="ref-link" href="https://www.instagram.com/p/DYHOqeYh2p7/" target="_blank">'
+    +'<div class="ref-icon-wrap">▶</div>'
+    +'<div class="ref-text-wrap"><div class="ref-label">參考影片</div><div class="ref-title">最低生活費到底怎麼算？</div></div>'
+    +'<div class="ref-arrow">→</div>'
+    +'</a>'
+    +'<button class="restart-btn" onclick="restart()">↺ 重新測驗</button>';
+
+  document.getElementById('result').innerHTML = html;
+  document.getElementById('result').classList.add('show');
+  window.scrollTo(0,0);
+}
+
+function restart() {
+  answers = [-1,-1,-1];
+  document.querySelectorAll('.option-btn').forEach(function(b){ b.classList.remove('selected'); });
+  document.querySelectorAll('.answer-box').forEach(function(b){ b.classList.remove('show'); });
+  document.querySelectorAll('.next-btn').forEach(function(b){ b.classList.remove('show'); });
+  document.getElementById('result').classList.remove('show');
+  document.getElementById('result').innerHTML = '';
+  document.querySelectorAll('.step').forEach(function(s){ s.classList.remove('active'); });
+  document.getElementById('s0').classList.add('active');
+  document.getElementById('prog').style.width = '0%';
+  document.getElementById('prog-label').textContent = '0 / 3 完成';
+  window.scrollTo(0,0);
+}
+</script>
+</body>
+</html>
