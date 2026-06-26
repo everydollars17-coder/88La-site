@@ -749,7 +749,7 @@ function Home({ articles, setPage, setId, setArticles, isAdmin, siteTitle, setSi
     if (sort === "views") return (b.views || 0) - (a.views || 0);
     return 0;
   });
-  const open = id => { setArticles(prev => { const next = prev.map(a => a.id === id ? { ...a, views: (a.views || 0) + 1 } : a); fbSet("articles", next); return next; }); setId(id); setPage("article"); window.scrollTo({ top: 0, behavior: "instant" }); const a = articles.find(x => x.id === id); history.pushState({}, "", "?article=" + (a?.slug || id)); };
+  const open = id => { setArticles(prev => prev.map(a => a.id === id ? { ...a, views: (a.views || 0) + 1 } : a), { silent: true }); setId(id); setPage("article"); window.scrollTo({ top: 0, behavior: "instant" }); const a = articles.find(x => x.id === id); history.pushState({}, "", "?article=" + (a?.slug || id)); };
   const addTag = () => { const t = newTag.trim(); if (t && !tags.includes(t)) setTags(prev => [...prev, t]); setNewTag(""); };
   const delTag = t => { if (confirm("確定刪除標籤「" + t + "」？")) setTags(prev => prev.filter(x => x !== t)); };
   const moveA = (idx, dir) => setArticles(prev => {
@@ -1812,7 +1812,7 @@ function Newsletter({ newsletter, setNewsletter, isAdmin, articles, setArticles,
   const info = newsletter || DEFAULTS.newsletter;
   const save = () => { setNewsletter(tmp); setEditMode(false); };
   const recent = [...(articles || [])].sort((a, b) => b.date.localeCompare(a.date)).slice(0, 3);
-  const open = id => { setArticles(prev => { const next = prev.map(a => a.id === id ? { ...a, views: (a.views || 0) + 1 } : a); fbSet("articles", next); return next; }); setId(id); setPage("article"); window.scrollTo({ top: 0, behavior: "instant" }); const a = (articles || []).find(x => x.id === id); history.pushState({}, "", "?article=" + (a?.slug || id)); };
+  const open = id => { setArticles(prev => prev.map(a => a.id === id ? { ...a, views: (a.views || 0) + 1 } : a), { silent: true }); setId(id); setPage("article"); window.scrollTo({ top: 0, behavior: "instant" }); const a = (articles || []).find(x => x.id === id); history.pushState({}, "", "?article=" + (a?.slug || id)); };
   const handleSubscribe = async () => {
     if (!email) return;
     try { await fbSet("subscribers_" + Date.now(), email); } catch { }
@@ -2615,7 +2615,7 @@ export default function App() {
         {page === "goods" && <Goods goods={goods} setGoods={setGoods} isAdmin={isAdmin} />}
         {page === "app" && <AppPage appContent={appContent} setAppContent={setAppContent} isAdmin={isAdmin} />}
         {page === "resources" && <Resources resources={resources} setResources={setResources} isAdmin={isAdmin} />}
-        {page === "newsletter" && <Newsletter newsletter={newsletter} setNewsletter={setNewsletter} isAdmin={isAdmin} articles={articles} setArticles={setArticles} setId={setId} setPage={nav} />}
+        {page === "newsletter" && <Newsletter newsletter={newsletter} setNewsletter={setNewsletter} isAdmin={isAdmin} articles={articles} setArticles={setArticles} setId={setId} setPage={setPage} />}
         {page === "contact" && <Contact links={links} contactContent={contactContent} setContactContent={setContactContent} isAdmin={isAdmin} />}
         {page === "plans" && <PricingPage appContent={appContent} setPage={nav} />}
         {page === "pricing" && <SubscriptionPage setPage={nav} isAdmin={isAdmin} />}
