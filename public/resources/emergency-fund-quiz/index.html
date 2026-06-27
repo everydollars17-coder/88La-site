@@ -191,7 +191,7 @@ body{font-family:'Noto Sans TC',sans-serif;color:#2d1a0e}
       </div>
       <div class="answer-box" id="a1-1">
         <div class="answer-title">波動收入，要保守一點</div>
-        <div class="answer-text">收入有波動，預備金的緩衝就更重要。建議預備金比例拉高，再搭配小額投資。</div>
+        <div class="answer-text">收入有波動，預備金的緩衝就更重要。建議預備金比例拉高，穩固安全網後再考慮其他資金運用。</div>
       </div>
       <div class="answer-box" id="a1-2">
         <div class="answer-title">不穩定收入，先顧安全</div>
@@ -217,7 +217,7 @@ body{font-family:'Noto Sans TC',sans-serif;color:#2d1a0e}
       </div>
       <div class="answer-box" id="a2-2">
         <div class="answer-title">還差一點安全感</div>
-        <div class="answer-text">有緩衝但不夠，這正是「折衷法」最適合你的階段——繼續補充預備金，同時小額投資。</div>
+        <div class="answer-text">有緩衝但不夠，這正是「折衷法」最適合你的階段——繼續補充預備金，同時把剩餘存款做其他規劃。</div>
       </div>
       <div class="answer-box" id="a2-3">
         <div class="answer-title">預備金發揮了它的功能</div>
@@ -228,7 +228,8 @@ body{font-family:'Noto Sans TC',sans-serif;color:#2d1a0e}
 
     <div class="result-box" id="result"></div>
 
-    <div class="brand">@every_dollars · 88La</div>
+    <div style="font-size:10px;color:#c4a090;line-height:1.7;text-align:center;padding:0 20px;margin-top:16px">本網站所有資訊內容僅供使用者作為參考之用途，不構成任何投資建議，使用者應審慎評估後為獨立判斷。</div>
+  <div class="brand">@every_dollars · 88La</div>
   </div>
 </div>
 
@@ -270,16 +271,16 @@ function showResult() {
     goal = '先達標 1 個月基本生活費，再重新評估';
   } else if (a2===1 || a1===2 || (a1===1 && a2===2)) {
     type = '你現在適合';
-    title = '保守折衷——預備金優先，小額投資為輔';
-    action = '還沒有足夠緊急緩衝，或收入不太穩定。建議把存款大部分放預備金補足安全網，留少部分開始小額投資 ETF。';
+    title = '保守折衷——預備金優先，其餘資金為輔';
+    action = '還沒有足夠緊急緩衝，或收入不太穩定。建議把存款大部分放預備金補足安全網，留少部分依個人狀況另行規劃。';
     savePct = 75;
     goal = '預備金存到 3 個月以上，再調整比例';
   } else {
     type = '你現在適合';
     title = '穩健折衷——邊存預備金邊投資';
-    action = '收入穩定、有緩衝底線，最適合「折衷法」。每月存款分兩部分：多數繼續補充預備金放高利活存，小部分投入 ETF，兩件事同步推進。';
+    action = '收入穩定、有緩衝底線，最適合「折衷法」。每月存款分兩部分：多數繼續補充預備金，其餘依個人狀況另行規劃，兩件事同步推進。';
     savePct = 60;
-    goal = '預備金存滿 6 個月後，可全力投資';
+    goal = '預備金存滿 6 個月後，再重新評估資金配置';
   }
 
   currentSavePct = savePct;
