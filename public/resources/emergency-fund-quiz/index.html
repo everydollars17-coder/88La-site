@@ -90,14 +90,32 @@ body{font-family:'Noto Sans TC',sans-serif;color:#2d1a0e}
 .legend-item{display:flex;align-items:center;gap:6px;font-size:12px;color:#4a2e1a;font-weight:500}
 .legend-dot{width:10px;height:10px;border-radius:50%;flex-shrink:0}
 
-.proof-row{display:flex;gap:10px;margin-bottom:10px}
-.proof-card{flex:1;background:#fff6f0;border:0.5px solid #e8cfc0;border-radius:10px;padding:14px;text-align:center}
-.proof-num{font-size:22px;font-weight:700;color:#c96b2f;line-height:1.2}
-.proof-label{font-size:10px;color:#a07060;margin-top:4px;line-height:1.4}
 
 .info-card{background:#fff;border:0.5px solid #e8cfc0;border-radius:10px;padding:14px;margin-bottom:10px}
 .info-label{font-size:11px;color:#a07060;margin-bottom:5px}
 .info-value{font-size:14px;font-weight:700;color:#2d1a0e;line-height:1.5}
+
+.calc-section{background:#fff;border:0.5px solid #e8cfc0;border-radius:10px;padding:16px;margin-bottom:10px}
+.calc-label{font-size:12px;font-weight:700;color:#2d1a0e;margin-bottom:8px}
+.calc-sub{font-size:11px;color:#a07060;margin-bottom:12px;line-height:1.5}
+.calc-input-row{display:flex;align-items:center;gap:8px;border:1.5px solid #c96b2f;border-radius:8px;padding:10px 14px;background:#fff6f0;margin-bottom:12px}
+.calc-prefix{font-size:14px;font-weight:700;color:#c96b2f;flex-shrink:0}
+.calc-input{border:none;background:transparent;font-size:18px;font-weight:700;color:#2d1a0e;width:100%;outline:none;padding:0;-moz-appearance:textfield}
+.calc-input::-webkit-outer-spin-button,.calc-input::-webkit-inner-spin-button{-webkit-appearance:none;margin:0}
+.calc-input::placeholder{color:#d4b5a0;font-weight:400;font-size:14px}
+.split-row{display:flex;gap:10px}
+.split-card{flex:1;border-radius:10px;padding:14px;text-align:center}
+.split-card.save{background:#fff6f0;border:0.5px solid #e8cfc0}
+.split-card.invest{background:#fff;border:0.5px solid #f4c09a}
+.split-num{font-size:18px;font-weight:700;line-height:1.2}
+.split-num.save{color:#c96b2f}
+.split-num.invest{color:#d4915a}
+.split-pct{font-size:11px;font-weight:500;margin-top:2px}
+.split-pct.save{color:#c96b2f}
+.split-pct.invest{color:#d4915a}
+.split-label{font-size:10px;color:#a07060;margin-top:3px;line-height:1.4}
+.calc-hint{font-size:11px;color:#a07060;text-align:center;padding-top:4px;display:none}
+.calc-hint.show{display:block}
 
 .ref-link{
   display:flex;align-items:center;gap:12px;
@@ -216,6 +234,7 @@ body{font-family:'Noto Sans TC',sans-serif;color:#2d1a0e}
 
 <script>
 var answers = [-1,-1,-1];
+var currentSavePct = 100;
 
 function pick(step, choice) {
   answers[step] = choice;
@@ -263,9 +282,21 @@ function showResult() {
     goal = '預備金存滿 6 個月後，可全力投資';
   }
 
+  currentSavePct = savePct;
   var investPct = 100 - savePct;
   var barInvest = savePct < 100 ? '<div class="bar-invest" style="width:'+investPct+'%"></div>' : '';
   var legendInvest = savePct < 100 ? '<div class="legend-item"><div class="legend-dot" style="background:#f4c09a"></div>投資 '+investPct+'%</div>' : '';
+
+  var calcCard = '<div class="calc-section">'
+    +'<div class="calc-label">你每個月可以存多少？</div>'
+    +'<div class="calc-sub">輸入金額，我幫你算出建議的預備金和投資分配</div>'
+    +'<div class="calc-input-row">'
+    +'<span class="calc-prefix">NT$</span>'
+    +'<input class="calc-input" id="monthly-input" type="number" inputmode="numeric" placeholder="例如 5000" oninput="calcSplit()" />'
+    +'</div>'
+    +'<div id="calc-result"></div>'
+    +'<div class="calc-hint" id="calc-hint">存起來才算數，先把錢轉出去再花剩下的 💪</div>'
+    +'</div>';
 
   var html =
     '<div class="result-header">'
@@ -280,10 +311,7 @@ function showResult() {
     +legendInvest
     +'</div>'
     +'</div>'
-    +'<div class="proof-row">'
-    +'<div class="proof-card"><div class="proof-num">6:2</div><div class="proof-label">Barbara 的預備金：投資比例</div></div>'
-    +'<div class="proof-card"><div class="proof-num">+44%</div><div class="proof-label">ETF 目前總報酬</div></div>'
-    +'</div>'
+    +calcCard
     +'<div class="info-card"><div class="info-label">建議做法</div><div class="info-value">'+action+'</div></div>'
     +'<div class="info-card"><div class="info-label">下一個里程碑</div><div class="info-value">'+goal+'</div></div>'
     +'<a class="ref-link" href="https://www.instagram.com/p/DYHOqeYh2p7/" target="_blank">'
@@ -298,8 +326,40 @@ function showResult() {
   window.scrollTo(0,0);
 }
 
+function calcSplit() {
+  var input = document.getElementById('monthly-input');
+  var resultEl = document.getElementById('calc-result');
+  var hintEl = document.getElementById('calc-hint');
+  var val = parseInt((input.value || '').replace(/[^\d]/g, ''), 10);
+  if (!val || val <= 0) {
+    resultEl.innerHTML = '';
+    if (hintEl) hintEl.classList.remove('show');
+    return;
+  }
+  var investPct = 100 - currentSavePct;
+  var saveAmt = Math.round(val * currentSavePct / 100);
+  var investAmt = val - saveAmt;
+  var html = '<div class="split-row">'
+    + '<div class="split-card save">'
+    +   '<div class="split-num save">NT$' + saveAmt.toLocaleString() + '</div>'
+    +   '<div class="split-pct save">預備金 ' + currentSavePct + '%</div>'
+    +   '<div class="split-label">存入高利活存帳戶</div>'
+    + '</div>';
+  if (investAmt > 0) {
+    html += '<div class="split-card invest">'
+      +   '<div class="split-num invest">NT$' + investAmt.toLocaleString() + '</div>'
+      +   '<div class="split-pct invest">投資 ' + investPct + '%</div>'
+      +   '<div class="split-label">每月定期定額 ETF</div>'
+      + '</div>';
+  }
+  html += '</div>';
+  resultEl.innerHTML = html;
+  if (hintEl) hintEl.classList.add('show');
+}
+
 function restart() {
   answers = [-1,-1,-1];
+  currentSavePct = 100;
   document.querySelectorAll('.option-btn').forEach(function(b){ b.classList.remove('selected'); });
   document.querySelectorAll('.answer-box').forEach(function(b){ b.classList.remove('show'); });
   document.querySelectorAll('.next-btn').forEach(function(b){ b.classList.remove('show'); });
