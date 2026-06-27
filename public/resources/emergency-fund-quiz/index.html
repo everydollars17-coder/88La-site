@@ -295,7 +295,7 @@ function showResult() {
     +'<input class="calc-input" id="monthly-input" type="number" inputmode="numeric" placeholder="例如 5000" oninput="calcSplit()" />'
     +'</div>'
     +'<div id="calc-result"></div>'
-    +'<div class="calc-hint" id="calc-hint">存起來才算數，先把錢轉出去再花剩下的 💪</div>'
+    +'<div class="calc-hint" id="calc-hint">以上建議金額僅供參考，實際仍以用戶真實情況為主。</div>'
     +'</div>';
 
   var html =
@@ -343,13 +343,11 @@ function calcSplit() {
     + '<div class="split-card save">'
     +   '<div class="split-num save">NT$' + saveAmt.toLocaleString() + '</div>'
     +   '<div class="split-pct save">預備金 ' + currentSavePct + '%</div>'
-    +   '<div class="split-label">存入高利活存帳戶</div>'
     + '</div>';
   if (investAmt > 0) {
     html += '<div class="split-card invest">'
       +   '<div class="split-num invest">NT$' + investAmt.toLocaleString() + '</div>'
       +   '<div class="split-pct invest">投資 ' + investPct + '%</div>'
-      +   '<div class="split-label">每月定期定額 ETF</div>'
       + '</div>';
   }
   html += '</div>';
