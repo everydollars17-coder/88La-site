@@ -20,6 +20,7 @@ const googleProvider = new GoogleAuthProvider();
 const ADMIN_EMAILS = ["everydollars17@gmail.com"];
 
 const APP_URL = "https://88la-finance.vercel.app";
+const QUIZ_URL = "https://88la-site.vercel.app/resources/savings-bag-quiz/";
 
 const O = "#C85A14";
 const O2 = "#FDF0E8";
@@ -1181,6 +1182,12 @@ function Shop({ products, setProducts, isAdmin }) {
             <div style={{ display: "flex", gap: 10 }}><button className="pb" onClick={save} disabled={!form.name.trim()}>儲存</button><button className="pg" onClick={() => setEditing(null)}>取消</button></div>
           </div>
         )}
+        <div style={{ background:"#FFF8F3", border:`1px solid ${BORDER}`, borderRadius:12, padding:"40px 48px", marginBottom:40 }}>
+          <p style={{ fontSize:11, color:O, fontWeight:700, letterSpacing:"1.5px", marginBottom:14 }}>88LA QUIZ • 互動工具</p>
+          <h2 style={{ fontSize:28, fontWeight:800, color:CHAR, marginBottom:12, lineHeight:1.3 }}>找到最適合你的存錢工具</h2>
+          <p style={{ fontSize:14, color:MID, lineHeight:1.85, marginBottom:28 }}>做完 7 題，直接告訴你哪款存錢工具最適合你。</p>
+          <a href={QUIZ_URL} target="_blank" rel="noopener noreferrer"><button className="pb">開始測驗 →</button></a>
+        </div>
         <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill,minmax(280px,1fr))", gap: 20 }} className="grid3">
           {products.map((p, idx) => (
             <Reveal key={p.id} delay={Math.min(idx * 80, 400)}>
@@ -1787,7 +1794,7 @@ function Resources({ resources, setResources, isAdmin }) {
                   <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
                     <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
                       {r.url && <a href={r.url} target="_blank" rel="noopener noreferrer" onClick={() => setResources(prev => (prev || []).map(x => x.id === r.id ? { ...x, clicks: (x.clicks || 0) + 1 } : x), { silent: true })}><button className="pb" style={{ fontSize: 12, padding: "8px 16px" }}>下載 / 查看 →</button></a>}
-                      <span style={{ fontSize: 11, color: LIGHT }}>{r.clicks || 0} 次點擊</span>
+                      {isAdmin && <span style={{ fontSize: 11, color: LIGHT }}>{r.clicks || 0} 次點擊</span>}
                     </div>
                     {isAdmin && <div style={{ display: "flex", gap: 8 }}>
                       <button className="pg" style={{ fontSize: 11, padding: "5px 10px" }} onClick={() => startEdit(r)}>編輯</button>
@@ -2649,6 +2656,8 @@ export default function App() {
       const a = articles.find(x => x.slug === ap || String(x.id) === ap);
       if (a) { setId(a.id); setPage("article"); }
     }
+    const pg = params.get("page");
+    if (pg) { setPage(pg); }
   }, [loaded]);
 
   useEffect(() => {

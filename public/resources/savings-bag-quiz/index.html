@@ -250,6 +250,8 @@
       <div class="p-5 space-y-4" id="res-steps"></div>
     </div>
 
+    <div id="res-webapp-callout" class="quiz-section slide-up" style="display:none;"></div>
+
     <div class="text-center py-6 text-xs leading-loose" style="color:#c09070;">
       本測驗由 88La 提供<br>IG：@every_dollars<br>更多理財資源，歡迎追蹤 88La ✨
     </div>
@@ -580,6 +582,8 @@ function goSlide(uid, idx) {
   _updDots(wrap, idx);
 }
 
+const WEBAPP_URL = 'https://88la-site.vercel.app/?page=app';
+
 // ── 選答案 ──
 const ans = {};
 const TOTAL = 7;
@@ -630,6 +634,28 @@ function showResult() {
     </div>`;
   });
 
+  const calloutEl = document.getElementById('res-webapp-callout');
+  if (ans.q6 === 'B' || ans.q7 === 'C') {
+    var highlight = '收支預算、目標追蹤、消費診斷報告';
+    if (ans.q3 === 'B') highlight = '預算 vs 實際花費，每月對帳一目瞭然';
+    else if (ans.q7 === 'C') highlight = '信用卡帳單、分期付款全部追蹤不漏算';
+    else if (ans.q3 === 'D') highlight = '多個儲蓄目標，各自獨立存不混帳';
+    calloutEl.innerHTML =
+      '<div style="margin:0 0 4px;font-size:11px;color:#a06040;font-weight:600;letter-spacing:.05em;">💡 也在考慮數位工具？</div>' +
+      '<div style="font-size:15px;font-weight:800;color:#2d1a0e;margin-bottom:6px;">88La 理財導航器</div>' +
+      '<div style="font-size:13px;color:#6b3d1e;margin-bottom:12px;line-height:1.6;">' + highlight + '</div>' +
+      '<div style="display:flex;align-items:center;justify-content:space-between;gap:8px;">' +
+      '<span style="font-size:11px;color:#a06040;">NT$129 / 月起 ｜ 資料存在你的 Google Drive</span>' +
+      '<a href="' + WEBAPP_URL + '" target="_blank" rel="noopener" ' +
+         'style="display:inline-block;background:#c96b2f;color:#fff;font-size:13px;font-weight:700;' +
+         'padding:8px 18px;border-radius:8px;text-decoration:none;white-space:nowrap;flex-shrink:0;">' +
+         '了解方案 →</a>' +
+      '</div>';
+    calloutEl.style.cssText = 'display:block;background:#fff3ea;border:1.5px solid #ead5c0;border-radius:14px;padding:18px 20px;margin-bottom:16px;';
+  } else {
+    calloutEl.style.display = 'none';
+  }
+
   document.getElementById('quiz').style.display          = 'none';
   document.getElementById('result').style.display        = 'block';
   document.getElementById('sticky-quiz').style.display   = 'none';
@@ -645,6 +671,7 @@ function resetQuiz() {
   document.getElementById('progress-fill').style.width = '0%';
   document.getElementById('progress-label').textContent = '尚未開始作答';
   document.getElementById('btn-submit').disabled = true;
+  document.getElementById('res-webapp-callout').style.display = 'none';
   document.getElementById('quiz').style.display          = 'block';
   document.getElementById('result').style.display        = 'none';
   document.getElementById('sticky-quiz').style.display   = 'block';
