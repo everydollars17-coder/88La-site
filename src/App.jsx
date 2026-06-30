@@ -240,6 +240,22 @@ const DEFAULTS = {
   contactContent: {
     intro: "如果你是品牌方、媒體、或想和 88La 合作，歡迎透過以下方式聯絡。我通常會在 3 個工作天內回覆。",
   },
+  savingsBagQuiz: {
+    showSeasonal: false,
+    products: {
+      daily_budget:     { icon: "📅", name: "每日預算記錄組",          scene: "如果你常常月底才發現錢不夠用 → 這個讓你每天出門前就知道今天的上限，不用等到月底才後悔。",                                                           howto: ["決定你的每日經常性預算，例如餐費上限 $200","出門前從錢包數好 $200，帶著這筆錢出門","晚上回家翻開錢包：剩多少，就是今天的結餘，填進當天欄位","一週結束，把七天金額加總，就是這週的實際花費","第五週結束，翻看月卡，一個月的經常性支出一目瞭然"], url: "https://myship.7-11.com.tw/general/detail/GM2510287339100", img: "" },
+      spending_tracker: { icon: "📊", name: "極簡收支分配表",          scene: "如果你有收入但總搞不清楚錢要怎麼分配 → 這個讓你在月初就把錢「分好位置」，每類支出都有自己的格子。",                                             howto: ["月初填入本月稅後收入","依序填入固定支出（房租、交通、訂閱費）","計算剩餘金額，分配給日常變動支出與儲蓄","每週確認各項目是否在預算內","月底對帳，超支的項目下個月調整分配比例"],                     url: "https://myship.7-11.com.tw/general/detail/GM2510287339100", img: "" },
+      dream_fund:       { icon: "💭", name: "夢想變現儲蓄套組",        scene: "如果你有一個很想達成的目標但不知道要存多少 → 這個幫你把大夢想拆成每月可執行的小數字。",                                                          howto: ["填入目標名稱與目標金額（例：埃及旅遊 $100,000）","填入預計達成日期，計算距今幾個月","目標金額 ÷ 月數 = 每月需存金額，填入月目標欄","每月存錢後，填入實際儲蓄金額","月月對照目標與實際，沒達標的月份下個月補齊"],       url: "https://myship.7-11.com.tw/general/detail/GM2510287339100", img: "" },
+      world_advance:    { icon: "🌍", name: "環遊世界存錢袋（進階版）", scene: "如果你想存旅遊基金但需要動力撐過漫長的存錢期 → 每張的國家風景設計讓你每次放錢都更期待那個目的地。",                                           howto: ["選一個你最想去的國家存錢袋開始","填入這趟旅遊的目標預算","計算每月需存金額，設定為每月固定轉入","每次放錢進去，在存錢袋上記錄累計金額","存滿當月目標，翻到下一格繼續累積"],                                  url: "https://myship.7-11.com.tw/general/detail/GM2510287339100", img: "" },
+      world_challenge:  { icon: "✈️", name: "環遊世界挑戰卡",          scene: "如果你還沒確定去哪但就是想為旅遊存錢 → 封面機票讓你自己填入目的地與時間，隨時可以換目標。",                                                      howto: ["在封面機票填入你的夢想目的地與預計出發年月","估算旅遊預算並填入目標金額欄","回推每月需存金額","每月存入後在對應格子記錄","達成後換一張，繼續下一個旅遊目標"],                                          url: "https://myship.7-11.com.tw/general/detail/GM2510287339100", img: "" },
+      game_challenge:   { icon: "🎮", name: "闖關打怪存錢袋",          scene: "如果你還沒有明確的存錢目標，但就是想先養成存錢習慣 → 把存錢變成打怪遊戲，完成關卡比想「為什麼存」更容易開始。",                                  howto: ["打開存錢袋，從第一關開始","每一關有對應的存錢金額，完成就算打倒這關的怪","存入金額後在關卡上打勾或蓋章","連續完成三關就解鎖下一個區域","全部關卡完成，就是你的第一桶存款"],                         url: "https://myship.7-11.com.tw/general/detail/GM2510287339100", img: "" },
+      daily_allocation: { icon: "🏠", name: "日常分配項目存錢袋",      scene: "如果你每個月花錢的項目很多、很雜，難以掌握 → 這個把常見開銷分門別類，每類有自己的格子，不讓任何一項超支。",                                      howto: ["月初填入本月收入","逐一填入各項目的預算金額（房租、伙食、交通、雜支等）","實際花費時更新各項目的剩餘金額","某項目快花完時，你會自然知道需要節制","月底統計各項目，找出下個月要調整的地方"],       url: "https://myship.7-11.com.tw/general/detail/GM2510287339100", img: "" },
+    },
+    seasonal: {
+      red_packet: { icon: "🧧", name: "紅包預存備戰卡",   scene: "如果你每年過年包紅包都讓荷包很痛 → 從現在開始每月預存一點，讓紅包錢提前就位，不再一次失血。", howto: ["選擇目標版本：存滿 $8,000 或 $16,000","計算距過年還有幾個月，推算每月需存金額","每月存入後在對應格子記錄","過年前取出，不再因為紅包而臨時缺錢"],      url: "https://myship.7-11.com.tw/general/detail/GM2510287339100", img: "" },
+      christmas:  { icon: "🎄", name: "聖誕節限定存錢袋", scene: "如果你每次交換禮物都在最後一刻才煩惱預算 → 提早準備，讓聖誕禮物的錢有自己的位置。",                howto: ["決定今年聖誕禮物或交際的預算上限","計算距聖誕節還有幾個月，推算每月要存多少","每月存入後記錄進度","聖誕節前取出，從容準備禮物"],                                url: "https://myship.7-11.com.tw/general/detail/GM2510287339100", img: "" },
+    },
+  },
 };
 
 const OLD_KEYS = ["ed_art", "ed_prod", "ed_ig", "ed_goods", "ed_about", "ed_title", "ed_tags"];
@@ -596,7 +612,7 @@ function Nav({ page, setPage, isAdmin }) {
             {NAV.map(([k, l]) => (
               <span key={k} onClick={() => go(k)} style={{ fontSize: 12, letterSpacing: ".8px", color: page === k ? WHITE : "rgba(255,255,255,.7)", cursor: "pointer", fontWeight: page === k ? "700" : "400", borderBottom: page === k ? `2px solid ${WHITE}` : "2px solid transparent", paddingBottom: 2, transition: "color .15s" }}>{l}</span>
             ))}
-            {isAdmin && <><span onClick={() => go("write")} style={{ fontSize: 12, color: WHITE, cursor: "pointer", letterSpacing: ".5px" }}>＋ 撰文</span><span onClick={() => signOut(auth)} style={{ fontSize: 11, color: "rgba(255,255,255,.5)", cursor: "pointer", marginLeft: 6 }}>登出</span></>}
+            {isAdmin && <><span onClick={() => go("write")} style={{ fontSize: 12, color: WHITE, cursor: "pointer", letterSpacing: ".5px" }}>＋ 撰文</span><span onClick={() => go("savings-quiz")} style={{ fontSize: 12, color: "rgba(255,255,255,.7)", cursor: "pointer", letterSpacing: ".5px", marginLeft: 6 }}>存錢袋測驗</span><span onClick={() => signOut(auth)} style={{ fontSize: 11, color: "rgba(255,255,255,.5)", cursor: "pointer", marginLeft: 6 }}>登出</span></>}
           </nav>
           <button className="mob-menu" onClick={() => setMob(p => !p)} aria-label={mob ? "關閉選單" : "開啟選單"} style={{ background: "none", border: "none", color: WHITE, fontSize: 22, cursor: "pointer", display: "flex", alignItems: "center" }}>
             {mob ? "✕" : "☰"}
@@ -607,7 +623,7 @@ function Nav({ page, setPage, isAdmin }) {
             {NAV.map(([k, l]) => (
               <span key={k} onClick={() => go(k)} style={{ fontSize: 15, padding: "15px 24px", borderBottom: `1px solid rgba(255,255,255,.08)`, color: page === k ? O : "rgba(255,255,255,.85)", cursor: "pointer", fontWeight: page === k ? "600" : "400" }}>{l}</span>
             ))}
-            {isAdmin && <><span onClick={() => go("write")} style={{ fontSize: 15, padding: "15px 24px", borderBottom: `1px solid rgba(255,255,255,.08)`, color: O, cursor: "pointer" }}>＋ 撰文</span><span onClick={() => { signOut(auth); setMob(false); }} style={{ fontSize: 13, padding: "13px 24px", color: "rgba(255,255,255,.4)", cursor: "pointer" }}>登出</span></>}
+            {isAdmin && <><span onClick={() => go("write")} style={{ fontSize: 15, padding: "15px 24px", borderBottom: `1px solid rgba(255,255,255,.08)`, color: O, cursor: "pointer" }}>＋ 撰文</span><span onClick={() => go("savings-quiz")} style={{ fontSize: 15, padding: "15px 24px", borderBottom: `1px solid rgba(255,255,255,.08)`, color: "rgba(255,255,255,.7)", cursor: "pointer" }}>存錢袋測驗</span><span onClick={() => { signOut(auth); setMob(false); }} style={{ fontSize: 13, padding: "13px 24px", color: "rgba(255,255,255,.4)", cursor: "pointer" }}>登出</span></>}
           </div>
         )}
       </header>
@@ -1969,6 +1985,131 @@ function Contact({ links, contactContent, setContactContent, isAdmin }) {
   );
 }
 
+// ── 存錢袋測驗管理 ──
+function SavingsBagQuizAdmin({ savingsBagQuiz, setSavingsBagQuiz }) {
+  const data = savingsBagQuiz || DEFAULTS.savingsBagQuiz;
+  const [editingKey, setEditingKey] = useState(null);
+  const [form, setForm] = useState({});
+
+  const PRODUCT_LABELS = {
+    daily_budget: "每日預算記錄組", spending_tracker: "極簡收支分配表",
+    dream_fund: "夢想變現儲蓄套組", world_advance: "環遊世界存錢袋（進階版）",
+    world_challenge: "環遊世界挑戰卡", game_challenge: "闖關打怪存錢袋",
+    daily_allocation: "日常分配項目存錢袋",
+  };
+  const SEASONAL_LABELS = { red_packet: "紅包預存備戰卡", christmas: "聖誕節限定存錢袋" };
+
+  const startEdit = (section, key) => {
+    const item = data[section][key];
+    const imgs = (item.imgs && item.imgs.length) ? item.imgs : (item.img ? [item.img] : []);
+    setForm({ ...item, howtoText: (item.howto || []).join("\n"), imgs });
+    setEditingKey(`${section}__${key}`);
+  };
+
+  const save = (section, key) => {
+    const { howtoText, img, ...rest } = form;
+    const newItem = { ...rest, howto: howtoText.split("\n").filter(s => s.trim()), imgs: form.imgs || [] };
+    const newData = { ...data, [section]: { ...data[section], [key]: newItem } };
+    setSavingsBagQuiz(newData);
+    setEditingKey(null);
+  };
+
+  const toggleSeasonal = () => setSavingsBagQuiz({ ...data, showSeasonal: !data.showSeasonal });
+
+  const sf = k => e => setForm(p => ({ ...p, [k]: e.target.value }));
+
+  const renderEditForm = (section, key) => (
+    <div style={{ background: GRAY, padding: 24, border: `1px solid ${BORDER}`, marginTop: 12, marginBottom: 20 }}>
+      <p style={{ fontSize: 11, color: MID, marginBottom: 16, letterSpacing: "1px" }}>編輯：{PRODUCT_LABELS[key] || SEASONAL_LABELS[key]}</p>
+      <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
+        <div style={{ display: "flex", gap: 12 }}>
+          <div style={{ width: 80 }}><p style={{ fontSize: 12, color: MID, marginBottom: 6 }}>Icon</p><input value={form.icon || ""} onChange={sf("icon")} style={{ width: "100%" }} /></div>
+          <div style={{ flex: 1 }}><p style={{ fontSize: 12, color: MID, marginBottom: 6 }}>名稱</p><input value={form.name || ""} onChange={sf("name")} /></div>
+        </div>
+        <div><p style={{ fontSize: 12, color: MID, marginBottom: 6 }}>使用場景（「如果你…→ 這個幫你…」格式）</p><textarea value={form.scene || ""} onChange={sf("scene")} style={{ minHeight: 60 }} /></div>
+        <div><p style={{ fontSize: 12, color: MID, marginBottom: 6 }}>第一週步驟（每行一個步驟）</p><textarea value={form.howtoText || ""} onChange={sf("howtoText")} style={{ minHeight: 100 }} /></div>
+        <div><p style={{ fontSize: 12, color: MID, marginBottom: 6 }}>購買連結</p><input value={form.url || ""} onChange={sf("url")} placeholder="https://..." /></div>
+        <div>
+          <p style={{ fontSize: 12, color: MID, marginBottom: 10 }}>產品圖片（可多張）</p>
+          {(form.imgs || []).map((url, idx) => (
+            <div key={idx} style={{ marginBottom: 16, paddingBottom: 16, borderBottom: `1px solid ${BORDER}` }}>
+              <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 6 }}>
+                <span style={{ fontSize: 11, color: MID }}>圖片 {idx + 1}</span>
+                <button type="button" onClick={() => setForm(p => ({ ...p, imgs: (p.imgs || []).filter((_, i) => i !== idx) }))}
+                        style={{ fontSize: 11, color: "#c96b2f", background: "none", border: "none", cursor: "pointer", padding: 0 }}>刪除</button>
+              </div>
+              <ImgUploader label="" value={url} onChange={v => setForm(p => ({ ...p, imgs: (p.imgs || []).map((u, i) => i === idx ? v : u) }))} aspect="4/3" />
+            </div>
+          ))}
+          <ImgUploader label="＋ 新增圖片" value="" onChange={v => { if (v) setForm(p => ({ ...p, imgs: [...(p.imgs || []), v] })); }} aspect="4/3" />
+        </div>
+      </div>
+      <div style={{ display: "flex", gap: 10, marginTop: 16 }}>
+        <button className="pb" onClick={() => save(section, key)} disabled={!form.name?.trim()}>儲存</button>
+        <button className="pg" onClick={() => setEditingKey(null)}>取消</button>
+      </div>
+    </div>
+  );
+
+  return (
+    <div style={{ maxWidth: 860, margin: "0 auto", padding: "60px 28px" }} className="page-wrap">
+      <h2 style={{ fontSize: 22, fontWeight: 700, color: CHAR, marginBottom: 8 }}>存錢袋測驗管理</h2>
+      <p style={{ fontSize: 13, color: MID, marginBottom: 32 }}>編輯各款存錢袋的圖片、說明與連結，前台測驗頁會即時更新。</p>
+
+      {/* 節慶開關 */}
+      <div style={{ background: WHITE, border: `1px solid ${BORDER}`, borderRadius: 10, padding: "16px 20px", marginBottom: 32, display: "flex", alignItems: "center", gap: 16 }}>
+        <div style={{ flex: 1 }}>
+          <p style={{ fontSize: 14, fontWeight: 600, color: CHAR, marginBottom: 2 }}>節慶限定款顯示</p>
+          <p style={{ fontSize: 12, color: MID }}>開啟後，測驗結果頁會顯示節慶限定款區塊（目前：{data.showSeasonal ? "顯示中" : "已隱藏"}）</p>
+        </div>
+        <button className={data.showSeasonal ? "pb" : "pg"} style={{ fontSize: 12, padding: "6px 16px", flexShrink: 0 }} onClick={toggleSeasonal}>
+          {data.showSeasonal ? "關閉節慶款" : "開啟節慶款"}
+        </button>
+      </div>
+
+      {/* 一般產品 */}
+      <h3 style={{ fontSize: 15, fontWeight: 700, color: CHAR, marginBottom: 16, paddingBottom: 8, borderBottom: `1px solid ${BORDER}` }}>一般產品（7 款）</h3>
+      {Object.keys(PRODUCT_LABELS).map(key => {
+        const item = data.products?.[key] || {};
+        const isEditing = editingKey === `products__${key}`;
+        return (
+          <div key={key} style={{ marginBottom: 4 }}>
+            <div style={{ background: WHITE, border: `1px solid ${BORDER}`, borderRadius: 8, padding: "12px 16px", display: "flex", alignItems: "center", gap: 12 }}>
+              {(item.imgs?.[0] || item.img) ? <img src={item.imgs?.[0] || item.img} alt={item.name} style={{ width: 44, height: 44, objectFit: "cover", borderRadius: 6, flexShrink: 0 }} /> : <span style={{ fontSize: 26, flexShrink: 0, width: 44, textAlign: "center" }}>{item.icon}</span>}
+              <div style={{ flex: 1, minWidth: 0 }}>
+                <p style={{ fontSize: 14, fontWeight: 600, color: CHAR }}>{item.name || PRODUCT_LABELS[key]}</p>
+                <p style={{ fontSize: 11, color: MID, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{item.scene || "—"}</p>
+              </div>
+              <button className="pg" style={{ fontSize: 11, padding: "4px 12px", flexShrink: 0 }} onClick={() => isEditing ? setEditingKey(null) : startEdit("products", key)}>{isEditing ? "收起" : "編輯"}</button>
+            </div>
+            {isEditing && renderEditForm("products", key)}
+          </div>
+        );
+      })}
+
+      {/* 節慶產品 */}
+      <h3 style={{ fontSize: 15, fontWeight: 700, color: CHAR, margin: "32px 0 16px", paddingBottom: 8, borderBottom: `1px solid ${BORDER}` }}>節慶限定款（2 款）</h3>
+      {Object.keys(SEASONAL_LABELS).map(key => {
+        const item = data.seasonal?.[key] || {};
+        const isEditing = editingKey === `seasonal__${key}`;
+        return (
+          <div key={key} style={{ marginBottom: 4 }}>
+            <div style={{ background: WHITE, border: `1px solid ${BORDER}`, borderRadius: 8, padding: "12px 16px", display: "flex", alignItems: "center", gap: 12 }}>
+              {(item.imgs?.[0] || item.img) ? <img src={item.imgs?.[0] || item.img} alt={item.name} style={{ width: 44, height: 44, objectFit: "cover", borderRadius: 6, flexShrink: 0 }} /> : <span style={{ fontSize: 26, flexShrink: 0, width: 44, textAlign: "center" }}>{item.icon}</span>}
+              <div style={{ flex: 1, minWidth: 0 }}>
+                <p style={{ fontSize: 14, fontWeight: 600, color: CHAR }}>{item.name || SEASONAL_LABELS[key]}</p>
+                <p style={{ fontSize: 11, color: MID, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{item.scene || "—"}</p>
+              </div>
+              <button className="pg" style={{ fontSize: 11, padding: "4px 12px", flexShrink: 0 }} onClick={() => isEditing ? setEditingKey(null) : startEdit("seasonal", key)}>{isEditing ? "收起" : "編輯"}</button>
+            </div>
+            {isEditing && renderEditForm("seasonal", key)}
+          </div>
+        );
+      })}
+    </div>
+  );
+}
+
 // ── 方案說明 ──
 function PricingPage({ appContent, setPage }) {
   const c = appContent || DEFAULTS.appContent;
@@ -2488,6 +2629,7 @@ export default function App() {
   const [newsletter, setNewsletter, nlL] = useFS("newsletter", DEFAULTS.newsletter);
   const [appContent, setAppContent, acL] = useFS("appContent", DEFAULTS.appContent);
   const [contactContent, setContactContent, ccL] = useFS("contactContent", DEFAULTS.contactContent);
+  const [savingsBagQuiz, setSavingsBagQuiz, sbqL] = useFS("savingsBagQuiz", DEFAULTS.savingsBagQuiz);
   const [page, setPage] = useState("home");
   const [id, setId] = useState(null);
   const [isAdmin, setIsAdmin] = useState(false);
@@ -2495,7 +2637,7 @@ export default function App() {
   useEffect(() => onAuthStateChanged(auth, (user) => setIsAdmin(!!user && ADMIN_EMAILS.includes(user.email))), []);
   useLayoutEffect(() => { window.scrollTo({ top: 0, behavior: "instant" }); }, [page]);
 
-  const loaded = aL && pL && iL && gL && abL && tL && taL && lL && ftL && rlL && nlL && acL && ccL;
+  const loaded = aL && pL && iL && gL && abL && tL && taL && lL && ftL && rlL && nlL && acL && ccL && sbqL;
   const article = articles.find(a => a.id === id);
   const nav = p => { setPage(p); setId(null); history.pushState({}, "", window.location.pathname); };
 
@@ -2617,6 +2759,7 @@ export default function App() {
         {page === "resources" && <Resources resources={resources} setResources={setResources} isAdmin={isAdmin} />}
         {page === "newsletter" && <Newsletter newsletter={newsletter} setNewsletter={setNewsletter} isAdmin={isAdmin} articles={articles} setArticles={setArticles} setId={setId} setPage={setPage} />}
         {page === "contact" && <Contact links={links} contactContent={contactContent} setContactContent={setContactContent} isAdmin={isAdmin} />}
+        {page === "savings-quiz" && isAdmin && <SavingsBagQuizAdmin savingsBagQuiz={savingsBagQuiz} setSavingsBagQuiz={setSavingsBagQuiz} />}
         {page === "plans" && <PricingPage appContent={appContent} setPage={nav} />}
         {page === "pricing" && <SubscriptionPage setPage={nav} isAdmin={isAdmin} />}
         {page === "terms" && <TermsPage />}

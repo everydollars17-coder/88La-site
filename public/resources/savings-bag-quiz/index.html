@@ -1,0 +1,654 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>88La｜看看你適合哪種存錢方式</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700;900&display=swap" rel="stylesheet">
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
+<style>
+  * { font-family: 'Noto Sans TC', sans-serif; }
+
+  .slide-up { animation: slideUp 0.7s ease-out forwards; opacity:0; transform:translateY(24px); }
+  @keyframes slideUp { to { opacity:1; transform:translateY(0); } }
+  .scale-in { animation: scaleIn 0.55s ease-out forwards; opacity:0; transform:scale(0.92); }
+  @keyframes scaleIn { to { opacity:1; transform:scale(1); } }
+  .stagger-1 { animation-delay:.08s; }
+  .stagger-2 { animation-delay:.16s; }
+  .stagger-3 { animation-delay:.24s; }
+
+  @keyframes float {
+    0%,100% { transform:translateY(0); }
+    50%      { transform:translateY(-10px); }
+  }
+  .floating { animation:float 3s ease-in-out infinite; }
+
+  .option-card {
+    display:flex; align-items:flex-start; gap:12px;
+    padding:13px 15px; border:1.5px solid #ead5c0; border-radius:10px;
+    cursor:pointer; transition:border-color .18s,background .18s,transform .18s;
+    background:#ffffff; color:#4a2810;
+  }
+  .option-card:hover { border-color:#c96b2f; background:#fff8f3; transform:translateX(3px); }
+  .option-card.selected { border-color:#c96b2f; background:#fff3ea; color:#2d1a0e; }
+  .option-dot {
+    width:18px; height:18px; border-radius:50%;
+    border:2px solid #ddc0a8; flex-shrink:0; margin-top:2px;
+    transition:all .18s; display:flex; align-items:center; justify-content:center;
+  }
+  .option-card.selected .option-dot { border-color:#c96b2f; background:#c96b2f; }
+  .option-card.selected .option-dot::after {
+    content:''; width:6px; height:6px; background:white; border-radius:50%; display:block;
+  }
+
+  .progress-track { background:#ead5c0; border-radius:4px; height:3px; overflow:hidden; }
+  .progress-fill { height:100%; background:#c96b2f; border-radius:4px; transition:width .35s ease; }
+
+  .quiz-section {
+    background:#ffffff; border:1px solid #ead5c0; border-radius:14px;
+    overflow:hidden; margin-bottom:12px; box-shadow:0 1px 6px rgba(201,107,47,.06);
+  }
+  .section-bar {
+    padding:11px 18px; font-size:11px; font-weight:700;
+    letter-spacing:.1em; text-transform:uppercase;
+    color:#c96b2f; background:#fff3ea; border-bottom:1px solid #ead5c0;
+  }
+
+  .how-step {
+    display:flex; gap:10px; align-items:flex-start; padding:8px 0;
+    border-bottom:1px solid #f5e8d8;
+  }
+  .how-step:last-child { border-bottom:none; padding-bottom:0; }
+  .how-num {
+    width:22px; height:22px; border-radius:50%; background:#c96b2f;
+    color:white; font-size:11px; font-weight:700;
+    display:flex; align-items:center; justify-content:center; flex-shrink:0; margin-top:1px;
+  }
+  .how-text { font-size:13px; color:#5a3015; line-height:1.6; }
+
+  .product-card {
+    border:1.5px solid #ead5c0; border-radius:12px; padding:16px;
+    background:#ffffff; margin-bottom:10px; overflow:hidden;
+    transition:border-color .2s,box-shadow .2s,transform .2s;
+  }
+  .product-card:hover { border-color:#c96b2f; box-shadow:0 4px 16px rgba(201,107,47,.1); transform:translateY(-2px); }
+  .product-card:last-child { margin-bottom:0; }
+
+  .step-dot {
+    width:26px; height:26px; background:#c96b2f; border-radius:50%;
+    color:white; font-size:12px; font-weight:700;
+    display:flex; align-items:center; justify-content:center; flex-shrink:0;
+  }
+
+  .sticky-bar {
+    position:fixed; bottom:0; left:0; right:0; z-index:50;
+    padding:12px 16px;
+    background:rgba(253,248,244,.97);
+    border-top:1px solid #ead5c0;
+    backdrop-filter:blur(10px);
+  }
+
+  @media print {
+    nav,.sticky-bar { display:none !important; }
+    #quiz { display:none !important; }
+    #result { display:block !important; }
+    .container { padding-bottom:20px; }
+  }
+</style>
+</head>
+<body style="background:#fdf8f4; color:#2d1a0e; min-height:100vh;">
+
+<!-- NAV -->
+<nav class="fixed top-3 left-3 right-3 z-50 rounded-xl"
+     style="background:rgba(255,252,249,.95); border:1px solid #ead5c0; backdrop-filter:blur(10px); box-shadow:0 1px 8px rgba(201,107,47,.07);">
+  <div class="max-w-xl mx-auto px-5 py-3 flex justify-between items-center">
+    <span style="color:#c96b2f; font-size:13px; font-weight:700;">88La</span>
+    <span style="font-weight:700; font-size:13px; color:#3d1a08;">看看你適合哪種存錢方式</span>
+    <span style="color:#c09070; font-size:12px;">@every_dollars</span>
+  </div>
+</nav>
+
+<!-- HERO -->
+<section class="pt-28 pb-12 px-5 text-center">
+  <div class="max-w-xl mx-auto">
+    <div class="inline-block text-xs font-bold tracking-widest uppercase mb-5 slide-up px-3 py-1 rounded-full"
+         style="color:#c96b2f; border:1px solid #ead5c0; background:#fff3ea;">88La 免費測驗</div>
+    <h1 class="text-4xl font-black mb-4 slide-up stagger-1 leading-tight" style="color:#2d1a0e;">
+      看看你適合<br>哪種存錢方式
+    </h1>
+    <p class="text-sm leading-relaxed mb-10 slide-up stagger-2" style="color:#a06040;">
+      7 個問題，2 分鐘<br>幫你找到最適合自己財務習慣的存錢袋配置
+    </p>
+    <div class="relative h-24 mb-2">
+      <div class="absolute floating rounded-full" style="left:22%;top:0;width:52px;height:52px;background:#f0c090;opacity:.6;animation-delay:0s;"></div>
+      <div class="absolute floating rounded-full" style="left:50%;top:18px;width:38px;height:38px;background:#e8894d;opacity:.5;animation-delay:.6s;"></div>
+      <div class="absolute floating rounded-full" style="right:22%;top:6px;width:44px;height:44px;background:#c96b2f;opacity:.45;animation-delay:1.1s;"></div>
+    </div>
+  </div>
+</section>
+
+<div class="max-w-xl mx-auto px-4 pb-32">
+
+  <!-- 載入中 -->
+  <div id="loading" class="text-center py-16" style="color:#c09070;">載入中…</div>
+
+  <!-- ══ QUIZ ══ -->
+  <div id="quiz" style="display:none;">
+    <div class="mb-5">
+      <div class="progress-track"><div class="progress-fill" id="progress-fill" style="width:0%"></div></div>
+      <div class="text-right text-xs mt-2" style="color:#c09070;" id="progress-label">尚未開始作答</div>
+    </div>
+
+    <!-- S1 財務現況 -->
+    <div class="quiz-section scale-in">
+      <div class="section-bar">📊 第一部分：財務現況</div>
+      <div class="p-5 space-y-6">
+        <div>
+          <div class="font-bold mb-3 text-[15px]" style="color:#3d1a08;">Q1 你目前每個月大概能存下多少錢？</div>
+          <div class="space-y-2" id="q1">
+            <label class="option-card" onclick="pick(this,'q1','A')"><input type="radio" name="q1" value="A" class="hidden"><span class="option-dot"></span><span class="text-sm">幾乎存不下來，月月清光</span></label>
+            <label class="option-card" onclick="pick(this,'q1','B')"><input type="radio" name="q1" value="B" class="hidden"><span class="option-dot"></span><span class="text-sm">偶爾能存一點，但不穩定（不到 3,000）</span></label>
+            <label class="option-card" onclick="pick(this,'q1','C')"><input type="radio" name="q1" value="C" class="hidden"><span class="option-dot"></span><span class="text-sm">有固定存，大約 3,000–10,000</span></label>
+            <label class="option-card" onclick="pick(this,'q1','D')"><input type="radio" name="q1" value="D" class="hidden"><span class="option-dot"></span><span class="text-sm">存款穩定，超過 10,000</span></label>
+          </div>
+        </div>
+        <div>
+          <div class="font-bold mb-3 text-[15px]" style="color:#3d1a08;">Q2 你目前有記帳習慣嗎？</div>
+          <div class="space-y-2" id="q2">
+            <label class="option-card" onclick="pick(this,'q2','A')"><input type="radio" name="q2" value="A" class="hidden"><span class="option-dot"></span><span class="text-sm">沒有，錢不知道去哪了</span></label>
+            <label class="option-card" onclick="pick(this,'q2','B')"><input type="radio" name="q2" value="B" class="hidden"><span class="option-dot"></span><span class="text-sm">試過但常三分鐘熱度，記不下去</span></label>
+            <label class="option-card" onclick="pick(this,'q2','C')"><input type="radio" name="q2" value="C" class="hidden"><span class="option-dot"></span><span class="text-sm">大致掌握，知道錢大概怎麼花的</span></label>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- S2 存錢目標 + 卡點 -->
+    <div class="quiz-section scale-in stagger-1">
+      <div class="section-bar">🎯 第二部分：存錢目標</div>
+      <div class="p-5 space-y-6">
+        <div>
+          <div class="font-bold mb-3 text-[15px]" style="color:#3d1a08;">Q3 你最想先解決哪個問題？</div>
+          <div class="space-y-2" id="q3">
+            <label class="option-card" onclick="pick(this,'q3','A')"><input type="radio" name="q3" value="A" class="hidden"><span class="option-dot"></span><span class="text-sm">先把月光問題解決，讓自己能存到錢</span></label>
+            <label class="option-card" onclick="pick(this,'q3','B')"><input type="radio" name="q3" value="B" class="hidden"><span class="option-dot"></span><span class="text-sm">我有在存，但想更系統地管理每月收支</span></label>
+            <label class="option-card" onclick="pick(this,'q3','C')"><input type="radio" name="q3" value="C" class="hidden"><span class="option-dot"></span><span class="text-sm">為了一個明確目標存錢（旅遊、大型消費）</span></label>
+            <label class="option-card" onclick="pick(this,'q3','D')"><input type="radio" name="q3" value="D" class="hidden"><span class="option-dot"></span><span class="text-sm">想同時進行多個存錢目標</span></label>
+          </div>
+        </div>
+        <div>
+          <div class="font-bold mb-3 text-[15px]" style="color:#3d1a08;">Q4 你有沒有緊急備用金？</div>
+          <div class="text-xs mb-3" style="color:#c09070;">建議為 3–6 個月的生活支出</div>
+          <div class="space-y-2" id="q4">
+            <label class="option-card" onclick="pick(this,'q4','A')"><input type="radio" name="q4" value="A" class="hidden"><span class="option-dot"></span><span class="text-sm">完全沒有，出事了就刷卡</span></label>
+            <label class="option-card" onclick="pick(this,'q4','B')"><input type="radio" name="q4" value="B" class="hidden"><span class="option-dot"></span><span class="text-sm">有一點，但不到 3 個月支出</span></label>
+            <label class="option-card" onclick="pick(this,'q4','C')"><input type="radio" name="q4" value="C" class="hidden"><span class="option-dot"></span><span class="text-sm">有，超過 3 個月支出</span></label>
+          </div>
+        </div>
+        <div>
+          <div class="font-bold mb-1 text-[15px]" style="color:#3d1a08;">Q5 存錢這件事，你最卡關在哪？</div>
+          <div class="text-xs mb-3" style="color:#c09070;">這題幫助我們給你更精準的建議</div>
+          <div class="space-y-2" id="q5">
+            <label class="option-card" onclick="pick(this,'q5','A')"><input type="radio" name="q5" value="A" class="hidden"><span class="option-dot"></span><span class="text-sm">根本不知道從哪裡開始</span></label>
+            <label class="option-card" onclick="pick(this,'q5','B')"><input type="radio" name="q5" value="B" class="hidden"><span class="option-dot"></span><span class="text-sm">知道要存但執行不了幾天就放棄</span></label>
+            <label class="option-card" onclick="pick(this,'q5','C')"><input type="radio" name="q5" value="C" class="hidden"><span class="option-dot"></span><span class="text-sm">有在存，但不知道這樣夠不夠用</span></label>
+            <label class="option-card" onclick="pick(this,'q5','D')"><input type="radio" name="q5" value="D" class="hidden"><span class="option-dot"></span><span class="text-sm">有多個目標，不知道怎麼分配</span></label>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- S3 使用偏好 -->
+    <div class="quiz-section scale-in stagger-2">
+      <div class="section-bar">💡 第三部分：使用偏好</div>
+      <div class="p-5 space-y-6">
+        <div>
+          <div class="font-bold mb-3 text-[15px]" style="color:#3d1a08;">Q6 你對「實體感」、「儀式感」有興趣嗎？</div>
+          <div class="space-y-2" id="q6">
+            <label class="option-card" onclick="pick(this,'q6','A')"><input type="radio" name="q6" value="A" class="hidden"><span class="option-dot"></span><span class="text-sm">很有興趣！看得到摸得到的錢才有感</span></label>
+            <label class="option-card" onclick="pick(this,'q6','B')"><input type="radio" name="q6" value="B" class="hidden"><span class="option-dot"></span><span class="text-sm">還好，我更在意功能實不實用</span></label>
+          </div>
+        </div>
+        <div>
+          <div class="font-bold mb-3 text-[15px]" style="color:#3d1a08;">Q7 你平常怎麼支付日常花費？</div>
+          <div class="space-y-2" id="q7">
+            <label class="option-card" onclick="pick(this,'q7','A')"><input type="radio" name="q7" value="A" class="hidden"><span class="option-dot"></span><span class="text-sm">幾乎全現金</span></label>
+            <label class="option-card" onclick="pick(this,'q7','B')"><input type="radio" name="q7" value="B" class="hidden"><span class="option-dot"></span><span class="text-sm">現金＋信用卡混用</span></label>
+            <label class="option-card" onclick="pick(this,'q7','C')"><input type="radio" name="q7" value="C" class="hidden"><span class="option-dot"></span><span class="text-sm">幾乎全刷卡或行動支付</span></label>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- /quiz -->
+
+  <!-- ══ RESULT ══ -->
+  <div id="result" style="display:none;">
+
+    <div class="rounded-2xl p-6 text-center mb-4 slide-up"
+         style="background:#fff3ea; border:1px solid #ead5c0;">
+      <div class="text-xs font-bold tracking-widest uppercase mb-2" style="color:#c96b2f;">你的存錢人格</div>
+      <div class="text-2xl font-black mb-3" style="color:#2d1a0e;" id="res-persona">—</div>
+      <div class="text-sm leading-relaxed mb-3" style="color:#6b3d1e;" id="res-desc">—</div>
+      <div class="text-xs px-4 py-3 rounded-xl" style="background:#fff8f3; color:#a06040; border:1px solid #ead5c0;" id="res-block-msg"></div>
+    </div>
+
+    <div class="quiz-section slide-up stagger-1">
+      <div class="section-bar">🛍️ 最適合你的存錢袋</div>
+      <div class="p-5" id="res-products"></div>
+    </div>
+
+    <div class="quiz-section slide-up stagger-2" id="res-seasonal-section" style="display:none;">
+      <div class="section-bar" style="color:#b07800;">🧧 近期限定，限時收藏</div>
+      <div class="p-5" id="res-seasonal"></div>
+    </div>
+
+    <div class="quiz-section slide-up stagger-3">
+      <div class="section-bar">🚀 你的下一步行動</div>
+      <div class="p-5 space-y-4" id="res-steps"></div>
+    </div>
+
+    <div class="text-center py-6 text-xs leading-loose" style="color:#c09070;">
+      本測驗由 88La 提供<br>IG：@every_dollars<br>更多理財資源，歡迎追蹤 88La ✨
+    </div>
+
+  </div><!-- /result -->
+</div>
+
+<!-- STICKY 測驗 -->
+<div id="sticky-quiz" class="sticky-bar">
+  <div class="flex justify-center">
+    <button id="btn-submit" onclick="showResult()" disabled
+            class="py-3 px-12 rounded-xl font-bold text-base tracking-wide text-white transition-all duration-200 disabled:opacity-30 disabled:cursor-not-allowed"
+            style="background:#c96b2f;">
+      結果出爐 →
+    </button>
+  </div>
+</div>
+
+<!-- STICKY 結果 -->
+<div id="sticky-result" class="sticky-bar" style="display:none;">
+  <div class="flex gap-3 justify-center">
+    <button onclick="window.print()" class="py-3 px-8 rounded-xl font-bold text-sm"
+            style="background:transparent; border:1.5px solid #c96b2f; color:#c96b2f;">存成 PDF</button>
+    <button onclick="resetQuiz()" class="py-3 px-8 rounded-xl font-bold text-sm"
+            style="background:#fff3ea; border:1.5px solid #ead5c0; color:#a06040;">重新測驗</button>
+  </div>
+</div>
+
+<script>
+// ── Firebase ──
+let db = null;
+try {
+  firebase.initializeApp({
+    apiKey: "AIzaSyCW8TU318MtXe50MjjqWmmHDydFXv-zA3E",
+    authDomain: "barbara-760bb.firebaseapp.com",
+    projectId: "barbara-760bb",
+    storageBucket: "barbara-760bb.firebasestorage.app",
+    messagingSenderId: "1039136998822",
+    appId: "1:1039136998822:web:bde7ca93e95e149d4dfb67"
+  });
+  db = firebase.firestore();
+} catch(e) { /* Firebase SDK 未載入，使用預設資料 */ }
+
+// ── 預設產品資料（Firebase 無資料時 fallback） ──
+let SHOW_SEASONAL = false;
+
+let PRODUCTS = {
+  daily_budget: {
+    icon: '📅',
+    name: '每日預算記錄組',
+    scene: '如果你常常月底才發現錢不夠用 → 這個讓你每天出門前就知道今天的上限，不用等到月底才後悔。',
+    howto: [
+      '決定你的每日經常性預算，例如餐費上限 $200',
+      '出門前從錢包數好 $200，帶著這筆錢出門',
+      '晚上回家翻開錢包：剩多少，就是今天的結餘，填進當天欄位',
+      '一週結束，把七天金額加總，就是這週的實際花費',
+      '第五週結束，翻看月卡，一個月的經常性支出一目瞭然',
+    ],
+    url: 'https://myship.7-11.com.tw/general/detail/GM2510287339100',
+    img: '',
+  },
+  spending_tracker: {
+    icon: '📊',
+    name: '極簡收支分配表',
+    scene: '如果你有收入但總搞不清楚錢要怎麼分配 → 這個讓你在月初就把錢「分好位置」，每類支出都有自己的格子。',
+    howto: [
+      '月初填入本月稅後收入',
+      '依序填入固定支出（房租、交通、訂閱費）',
+      '計算剩餘金額，分配給日常變動支出與儲蓄',
+      '每週確認各項目是否在預算內',
+      '月底對帳，超支的項目下個月調整分配比例',
+    ],
+    url: 'https://myship.7-11.com.tw/general/detail/GM2510287339100',
+    img: '',
+  },
+  dream_fund: {
+    icon: '💭',
+    name: '夢想變現儲蓄套組',
+    scene: '如果你有一個很想達成的目標但不知道要存多少 → 這個幫你把大夢想拆成每月可執行的小數字。',
+    howto: [
+      '填入目標名稱與目標金額（例：埃及旅遊 $100,000）',
+      '填入預計達成日期，計算距今幾個月',
+      '目標金額 ÷ 月數 = 每月需存金額，填入月目標欄',
+      '每月存錢後，填入實際儲蓄金額',
+      '月月對照目標與實際，沒達標的月份下個月補齊',
+    ],
+    url: 'https://myship.7-11.com.tw/general/detail/GM2510287339100',
+    img: '',
+  },
+  world_advance: {
+    icon: '🌍',
+    name: '環遊世界存錢袋（進階版）',
+    scene: '如果你想存旅遊基金但需要動力撐過漫長的存錢期 → 每張的國家風景設計讓你每次放錢都更期待那個目的地。',
+    howto: [
+      '選一個你最想去的國家存錢袋開始',
+      '填入這趟旅遊的目標預算',
+      '計算每月需存金額，設定為每月固定轉入',
+      '每次放錢進去，在存錢袋上記錄累計金額',
+      '存滿當月目標，翻到下一格繼續累積',
+    ],
+    url: 'https://myship.7-11.com.tw/general/detail/GM2510287339100',
+    img: '',
+  },
+  world_challenge: {
+    icon: '✈️',
+    name: '環遊世界挑戰卡',
+    scene: '如果你還沒確定去哪但就是想為旅遊存錢 → 封面機票讓你自己填入目的地與時間，隨時可以換目標。',
+    howto: [
+      '在封面機票填入你的夢想目的地與預計出發年月',
+      '估算旅遊預算並填入目標金額欄',
+      '回推每月需存金額',
+      '每月存入後在對應格子記錄',
+      '達成後換一張，繼續下一個旅遊目標',
+    ],
+    url: 'https://myship.7-11.com.tw/general/detail/GM2510287339100',
+    img: '',
+  },
+  game_challenge: {
+    icon: '🎮',
+    name: '闖關打怪存錢袋',
+    scene: '如果你還沒有明確的存錢目標，但就是想先養成存錢習慣 → 把存錢變成打怪遊戲，完成關卡比想「為什麼存」更容易開始。',
+    howto: [
+      '打開存錢袋，從第一關開始',
+      '每一關有對應的存錢金額，完成就算打倒這關的怪',
+      '存入金額後在關卡上打勾或蓋章',
+      '連續完成三關就解鎖下一個區域',
+      '全部關卡完成，就是你的第一桶存款',
+    ],
+    url: 'https://myship.7-11.com.tw/general/detail/GM2510287339100',
+    img: '',
+  },
+  daily_allocation: {
+    icon: '🏠',
+    name: '日常分配項目存錢袋',
+    scene: '如果你每個月花錢的項目很多、很雜，難以掌握 → 這個把常見開銷分門別類，每類有自己的格子，不讓任何一項超支。',
+    howto: [
+      '月初填入本月收入',
+      '逐一填入各項目的預算金額（房租、伙食、交通、雜支等）',
+      '實際花費時更新各項目的剩餘金額',
+      '某項目快花完時，你會自然知道需要節制',
+      '月底統計各項目，找出下個月要調整的地方',
+    ],
+    url: 'https://myship.7-11.com.tw/general/detail/GM2510287339100',
+    img: '',
+  },
+};
+
+let SEASONAL = {
+  red_packet: {
+    icon: '🧧',
+    name: '紅包預存備戰卡',
+    scene: '如果你每年過年包紅包都讓荷包很痛 → 從現在開始每月預存一點，讓紅包錢提前就位，不再一次失血。',
+    howto: [
+      '選擇目標版本：存滿 $8,000 或 $16,000',
+      '計算距過年還有幾個月，推算每月需存金額',
+      '每月存入後在對應格子記錄',
+      '過年前取出，不再因為紅包而臨時缺錢',
+    ],
+    url: 'https://myship.7-11.com.tw/general/detail/GM2510287339100',
+    img: '',
+  },
+  christmas: {
+    icon: '🎄',
+    name: '聖誕節限定存錢袋',
+    scene: '如果你每次交換禮物都在最後一刻才煩惱預算 → 提早準備，讓聖誕禮物的錢有自己的位置。',
+    howto: [
+      '決定今年聖誕禮物或交際的預算上限',
+      '計算距聖誕節還有幾個月，推算每月要存多少',
+      '每月存入後記錄進度',
+      '聖誕節前取出，從容準備禮物',
+    ],
+    url: 'https://myship.7-11.com.tw/general/detail/GM2510287339100',
+    img: '',
+  },
+};
+
+// ── Firebase 載入 ──
+async function loadData() {
+  if (db) {
+    try {
+      const snap = await Promise.race([
+        db.collection('site').doc('savingsBagQuiz').get(),
+        new Promise((_, rej) => setTimeout(() => rej('timeout'), 5000))
+      ]);
+      if (snap.exists) {
+        const data = snap.data().value;
+        if (data.products)  PRODUCTS  = { ...PRODUCTS,  ...data.products  };
+        if (data.seasonal)  SEASONAL  = { ...SEASONAL,  ...data.seasonal  };
+        if (typeof data.showSeasonal === 'boolean') SHOW_SEASONAL = data.showSeasonal;
+      }
+    } catch(e) { /* fallback to defaults */ }
+  }
+  document.getElementById('loading').style.display = 'none';
+  document.getElementById('quiz').style.display    = 'block';
+}
+loadData();
+
+// ── 卡點訊息 ──
+const BLOCK_MSG = {
+  A: '💡 不知道從哪開始？沒關係，下面推薦的存錢袋每一款都附有「第一週怎麼開始」的詳細說明，照著做就好。',
+  B: '💡 執行沒幾天就放棄？通常是因為方法太複雜。下面推薦的都是設計上「懶人也能持續」的工具，步驟很少、每天只要幾秒鐘。',
+  C: '💡 不確定存得夠不夠？存錢袋的設計讓你可以同時看到「目標」和「實際」，每個月一對照就知道進度。',
+  D: '💡 目標太多不知道怎麼分？每個存錢袋代表一個目標，把錢分開放就不會混在一起，看一眼就知道每個目標的進度。',
+};
+
+// ── 推薦邏輯 ──
+function getRec({ q1, q2, q3, q6 }) {
+  if (q1==='A' || (q1==='B' && q2==='A'))
+    return {
+      persona: '🌱 月光族轉型期',
+      desc: '你很清楚自己需要改變，但記帳對你來說太麻煩、很難持久。別擔心，從最小的行動開始——先控制每天帶出去的現金，就是最簡單的第一步。',
+      products: ['daily_budget','game_challenge'],
+      steps: ['先從「每日預算」開始，今天就決定明天帶多少現金出門','一週後翻開存錢袋算算這週花了多少，找到最常超支的項目','穩定兩週後，再考慮加入收支分配'],
+    };
+  if (q3==='B' || (q1==='C' && q2==='B'))
+    return {
+      persona: '📊 收支管理進化中',
+      desc: '你有存錢的習慣，但錢的去向不夠清晰，想要更系統地掌握每個月的分配。接下來就是把錢「放對地方」。',
+      products: ['spending_tracker','daily_allocation','daily_budget'],
+      steps: ['列出每月固定支出（房租、交通、訂閱），先從固定的分起','用收支分配表把這個月的預算填好，再開始花','月底對帳，看看哪個項目最容易超支'],
+    };
+  if (q3==='C' && q6==='A')
+    return {
+      persona: '✈️ 夢想實踐者',
+      desc: '你知道自己為什麼存錢，只差一個讓你每天都想打開看看的存錢容器。有儀式感的工具，會讓夢想感覺越來越近。',
+      products: ['dream_fund','world_advance','world_challenge'],
+      steps: ['先確定目標金額與時間（例：10萬 ÷ 12個月 ≈ 每月存 8,300）','回推每月要存多少，填入存錢袋的目標欄','每月放錢時在上面打勾或紀錄，視覺化進度讓你更有動力'],
+    };
+  if (q3==='C' && q6==='B')
+    return {
+      persona: '🎯 目標導向型',
+      desc: '你有明確目標，而且偏好功能實用。清楚回推每月要存多少，再搭配簡單的記錄工具，讓存款穩定累積。',
+      products: ['world_challenge','dream_fund','spending_tracker'],
+      steps: ['先算清楚：目標金額 ÷ 月數 = 每月要存多少','把這個數字填進存錢袋，月月確認是否達標','沒達標的月份，下個月提早補齊'],
+    };
+  if (q3==='D')
+    return {
+      persona: '🗂️ 多目標理財人',
+      desc: '你需要同時管理多個存錢目標，最重要的是不要把錢混在一起。分配清楚，每個袋子代表一個目標，就不會亂。',
+      products: ['spending_tracker','dream_fund','daily_allocation'],
+      steps: ['先列出所有目標，排出優先順序','用收支分配表算清楚每月收入分配給每個目標多少','每個目標獨立一個存錢袋，不混用'],
+    };
+  return {
+    persona: '💰 理財新手起步',
+    desc: '存錢沒有標準答案，找到一個讓你能持續下去的方式最重要。從最簡單的開始，慢慢建立屬於你的財務習慣。',
+    products: ['daily_budget','game_challenge','spending_tracker'],
+    steps: ['今天就決定第一個要挑戰的存錢袋','設定一個小目標，先讓自己成功一次','有感受到改變後，再慢慢擴大'],
+  };
+}
+
+// ── 產品卡 HTML ──
+function productCardHTML(p, badge, badgeStyle) {
+  const imgs = (p.imgs && p.imgs.length) ? p.imgs : (p.img ? [p.img] : []);
+  const uid = 'c_' + Math.random().toString(36).slice(2, 8);
+
+  let mediaEl = '';
+  if (imgs.length > 0) {
+    const slides = imgs.map(src =>
+      `<div style="min-width:100%;flex-shrink:0;aspect-ratio:1/1;overflow:hidden;"><img src="${src}" alt="${p.name}" style="width:100%;height:100%;object-fit:cover;display:block;"></div>`
+    ).join('');
+    const arrows = imgs.length > 1 ? `
+      <button onclick="prevSlide('${uid}',${imgs.length})" style="position:absolute;left:8px;top:50%;transform:translateY(-50%);width:32px;height:32px;border-radius:50%;background:rgba(255,255,255,.88);border:none;cursor:pointer;font-size:20px;line-height:1;z-index:2;display:flex;align-items:center;justify-content:center;">‹</button>
+      <button onclick="nextSlide('${uid}',${imgs.length})" style="position:absolute;right:8px;top:50%;transform:translateY(-50%);width:32px;height:32px;border-radius:50%;background:rgba(255,255,255,.88);border:none;cursor:pointer;font-size:20px;line-height:1;z-index:2;display:flex;align-items:center;justify-content:center;">›</button>` : '';
+    const dots = imgs.length > 1
+      ? `<div style="position:absolute;bottom:8px;left:0;right:0;display:flex;justify-content:center;gap:5px;">` +
+        imgs.map(function(_, i) {
+          var bg = i === 0 ? '#c96b2f' : 'rgba(255,255,255,.6)';
+          return '<span data-uid="' + uid + '" onclick="goSlide(\'' + uid + '\',' + i + ')" style="display:inline-block;width:7px;height:7px;border-radius:50%;cursor:pointer;background:' + bg + ';"></span>';
+        }).join('') +
+        `</div>` : '';
+    mediaEl = `<div id="${uid}" style="position:relative;overflow:hidden;width:calc(100% + 32px);margin:-16px -16px 16px;">
+      <div id="${uid}_track" style="display:flex;transition:transform .3s ease;">${slides}</div>
+      ${arrows}${dots}
+    </div>`;
+  } else {
+    mediaEl = `<div style="font-size:40px;text-align:center;margin-bottom:14px;">${p.icon}</div>`;
+  }
+
+  const howHTML = (p.howto || []).map((s,i) =>
+    `<div class="how-step"><div class="how-num">${i+1}</div><div class="how-text">${s}</div></div>`
+  ).join('');
+
+  return `<div class="product-card">
+    ${mediaEl}
+    <div style="margin-bottom:10px;">
+      <span class="inline-block text-xs font-bold px-2 py-0.5 rounded mb-1" style="${badgeStyle}">${badge}</span>
+      <div class="font-bold text-[15px]" style="color:#3d1a08;">${p.name}</div>
+    </div>
+    <div class="text-xs leading-relaxed px-3 py-2 rounded-lg mb-3" style="background:#fff8f3; color:#8a4020; border-left:3px solid #c96b2f;">
+      ${p.scene || ''}
+    </div>
+    <div class="mb-3">
+      <div class="text-xs font-bold mb-2" style="color:#c96b2f; letter-spacing:.06em;">▸ 第一週這樣開始</div>
+      ${howHTML}
+    </div>
+    <a href="${p.url}" target="_blank"
+       class="inline-block text-xs font-bold px-4 py-2 rounded-lg text-white"
+       style="background:#c96b2f;">前往 7-11 賣場 →</a>
+  </div>`;
+}
+
+// ── 輪播控制 ──
+function _updDots(wrap, cur) {
+  wrap.querySelectorAll('[data-uid="' + wrap.id + '"]').forEach(function(d, i) {
+    d.style.background = i === cur ? '#c96b2f' : 'rgba(255,255,255,.6)';
+  });
+}
+function prevSlide(uid, total) {
+  var wrap = document.getElementById(uid);
+  var cur = (parseInt(wrap.dataset.cur || '0') - 1 + total) % total;
+  wrap.dataset.cur = cur;
+  document.getElementById(uid + '_track').style.transform = 'translateX(-' + (cur * 100) + '%)';
+  _updDots(wrap, cur);
+}
+function nextSlide(uid, total) {
+  var wrap = document.getElementById(uid);
+  var cur = (parseInt(wrap.dataset.cur || '0') + 1) % total;
+  wrap.dataset.cur = cur;
+  document.getElementById(uid + '_track').style.transform = 'translateX(-' + (cur * 100) + '%)';
+  _updDots(wrap, cur);
+}
+function goSlide(uid, idx) {
+  var wrap = document.getElementById(uid);
+  wrap.dataset.cur = idx;
+  document.getElementById(uid + '_track').style.transform = 'translateX(-' + (idx * 100) + '%)';
+  _updDots(wrap, idx);
+}
+
+// ── 選答案 ──
+const ans = {};
+const TOTAL = 7;
+function pick(el, q, v) {
+  document.getElementById(q).querySelectorAll('.option-card').forEach(o => o.classList.remove('selected'));
+  el.classList.add('selected');
+  ans[q] = v;
+  const done = Object.keys(ans).length;
+  document.getElementById('progress-fill').style.width = (done/TOTAL*100)+'%';
+  document.getElementById('progress-label').textContent = done===TOTAL ? '全部完成！' : `已完成 ${done} / ${TOTAL} 題`;
+  document.getElementById('btn-submit').disabled = done < TOTAL;
+}
+
+// ── 顯示結果 ──
+function showResult() {
+  const rec = getRec(ans);
+  document.getElementById('res-persona').textContent = rec.persona;
+  document.getElementById('res-desc').textContent = rec.desc;
+
+  const blockEl = document.getElementById('res-block-msg');
+  const msg = BLOCK_MSG[ans.q5];
+  if (msg) { blockEl.textContent = msg; blockEl.style.display = 'block'; }
+  else { blockEl.style.display = 'none'; }
+
+  const pe = document.getElementById('res-products');
+  pe.innerHTML = '';
+  rec.products.forEach((k,i) => {
+    const p = PRODUCTS[k]; if(!p) return;
+    const badge = i===0 ? '✦ 最推薦' : '也適合你';
+    const bStyle = i===0
+      ? 'background:#fff3ea; color:#c96b2f; border:1px solid #ead5c0;'
+      : 'background:#f5f0eb; color:#a06040; border:1px solid #e0d0c0;';
+    pe.innerHTML += productCardHTML(p, badge, bStyle);
+  });
+
+  const se = document.getElementById('res-seasonal');
+  se.innerHTML = '';
+  Object.values(SEASONAL).forEach(s => {
+    se.innerHTML += productCardHTML(s, '近期限定', 'background:#fffbe8; color:#b07800; border:1px solid #f0d888;');
+  });
+
+  const ste = document.getElementById('res-steps');
+  ste.innerHTML = '';
+  rec.steps.forEach((s,i) => {
+    ste.innerHTML += `<div class="flex gap-3 items-start">
+      <div class="step-dot">${i+1}</div>
+      <div class="text-sm leading-relaxed pt-0.5" style="color:#6b3d1e;">${s}</div>
+    </div>`;
+  });
+
+  document.getElementById('quiz').style.display          = 'none';
+  document.getElementById('result').style.display        = 'block';
+  document.getElementById('sticky-quiz').style.display   = 'none';
+  document.getElementById('sticky-result').style.display = 'block';
+  document.getElementById('res-seasonal-section').style.display = SHOW_SEASONAL ? 'block' : 'none';
+  window.scrollTo({ top:0, behavior:'smooth' });
+}
+
+// ── 重置 ──
+function resetQuiz() {
+  Object.keys(ans).forEach(k => delete ans[k]);
+  document.querySelectorAll('.option-card').forEach(o => o.classList.remove('selected'));
+  document.getElementById('progress-fill').style.width = '0%';
+  document.getElementById('progress-label').textContent = '尚未開始作答';
+  document.getElementById('btn-submit').disabled = true;
+  document.getElementById('quiz').style.display          = 'block';
+  document.getElementById('result').style.display        = 'none';
+  document.getElementById('sticky-quiz').style.display   = 'block';
+  document.getElementById('sticky-result').style.display = 'none';
+  window.scrollTo({ top:0, behavior:'smooth' });
+}
+</script>
+</body>
+</html>
