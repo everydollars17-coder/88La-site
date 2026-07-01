@@ -1522,6 +1522,51 @@ function AppPage({ appContent, setAppContent, isAdmin }) {
           )}
         </div>
       </div>
+      {/* Demo */}
+      <div style={{ background: "#FFF8F4", borderTop: `1px solid ${BORDER}`, borderBottom: `1px solid ${BORDER}`, padding: "72px 32px" }}>
+        <div style={{ maxWidth: 1100, margin: "0 auto" }}>
+          <div style={{ textAlign: "center", marginBottom: 48 }}>
+            <p className="section-label" style={{ marginBottom: 12 }}>LIVE DEMO</p>
+            <h2 style={{ fontSize: 28, fontWeight: 700, color: CHAR, marginBottom: 16 }}>真實帳戶長這樣</h2>
+            <p style={{ fontSize: 15, color: MID, lineHeight: 1.8, maxWidth: 480, margin: "0 auto" }}>
+              以下是示範帳戶「小琳」的完整記帳紀錄，和你未來使用的畫面一模一樣。
+            </p>
+          </div>
+          <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 20 }}>
+            <div style={{
+              width: "100%", maxWidth: 390,
+              background: "#1A1A1A", borderRadius: 40,
+              padding: "14px 12px",
+              boxShadow: "0 24px 80px rgba(0,0,0,0.28)",
+            }}>
+              <div style={{ height: 28, display: "flex", justifyContent: "center", alignItems: "center", marginBottom: 4 }}>
+                <div style={{ width: 100, height: 22, background: "#111", borderRadius: 12 }} />
+              </div>
+              <div style={{ borderRadius: 28, overflow: "hidden", height: 680 }}>
+                <iframe
+                  src={`${APP_URL}?demo=true`}
+                  style={{ width: "100%", height: "100%", border: "none", display: "block" }}
+                  title="88La 理財導航器示範"
+                  loading="lazy"
+                />
+              </div>
+              <div style={{ height: 24, display: "flex", justifyContent: "center", alignItems: "center" }}>
+                <div style={{ width: 100, height: 4, background: "#444", borderRadius: 2 }} />
+              </div>
+            </div>
+            <div style={{ maxWidth: 390, width: "100%", textAlign: "left" }}>
+              <p style={{ fontSize: 11, color: MID, letterSpacing: "0.08em", textTransform: "uppercase", marginBottom: 12 }}>示範帳戶人設</p>
+              <p style={{ fontSize: 15, fontWeight: 700, color: CHAR, marginBottom: 12 }}>小琳，28 歲，行銷企劃</p>
+              <ul style={{ listStyle: "none", padding: 0, margin: 0, display: "flex", flexDirection: "column", gap: 8 }}>
+                <li style={{ fontSize: 13, color: MID, display: "flex", gap: 8, lineHeight: 1.6 }}><span style={{ color: O, flexShrink: 0 }}>—</span><span>月薪 NT$42,000，台北租屋，每月房租 NT$13,000</span></li>
+                <li style={{ fontSize: 13, color: MID, display: "flex", gap: 8, lineHeight: 1.6 }}><span style={{ color: O, flexShrink: 0 }}>—</span><span>兩張信用卡：日常消費卡 ＋ 網購回饋卡</span></li>
+                <li style={{ fontSize: 13, color: MID, display: "flex", gap: 8, lineHeight: 1.6 }}><span style={{ color: O, flexShrink: 0 }}>—</span><span>目標：一年內存到 NT$150,000 頭期款基金</span></li>
+                <li style={{ fontSize: 13, color: MID, display: "flex", gap: 8, lineHeight: 1.6 }}><span style={{ color: O, flexShrink: 0 }}>—</span><span>有記帳習慣但常常「記了，然後呢？」月初信心滿滿，月中容易失控（聚餐、網購），月底發現目標又落後</span></li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
       {/* Features */}
       <div style={{ maxWidth: 1100, margin: "0 auto", padding: "72px 32px" }} className="page-wrap">
         <div style={{ textAlign: "center", marginBottom: 52 }}>
