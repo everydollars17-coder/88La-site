@@ -1,0 +1,428 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>保險公司倒閉，保障怎麼辦？</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@500;700;900&display=swap');
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'Noto Sans TC', sans-serif;
+    background: #fdf8f3;
+    color: #2b2b2b;
+    display: flex;
+    justify-content: center;
+    padding: 24px 0 70px;
+  }
+
+  .card {
+    width: 420px;
+    max-width: 94vw;
+    background: #fff;
+    border-radius: 4px;
+    overflow: hidden;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.06);
+  }
+
+  .header {
+    background: #c96b2f;
+    color: #fff;
+    padding: 22px 20px;
+    text-align: center;
+  }
+  .header .tag {
+    font-size: 13px;
+    font-weight: 700;
+    letter-spacing: 2px;
+    opacity: 0.85;
+    margin-bottom: 6px;
+  }
+  .header h1 {
+    font-size: 22px;
+    font-weight: 900;
+    line-height: 1.4;
+  }
+
+  .page { display: none; }
+  .page.active-page { display: block; }
+
+  /* ---------- 第一頁：SVG 流程圖 ---------- */
+  .flow-svg-wrap {
+    padding: 24px 14px 18px;
+    background: #fff7ef;
+  }
+  .flow-svg-wrap svg .step {
+    opacity: 0;
+    transition: opacity 0.5s ease;
+  }
+  .flow-svg-wrap svg .step.show-el {
+    opacity: 1;
+  }
+
+  /* ---------- 第二、三頁：條列頁面 ---------- */
+  .section {
+    border-top: 3px solid #c96b2f;
+  }
+  .section.light {
+    border-top: 3px solid #e3a866;
+  }
+  .section-title {
+    padding: 18px 20px 8px;
+    font-size: 17px;
+    font-weight: 900;
+    color: #c96b2f;
+  }
+  .section.light .section-title {
+    color: #b97a35;
+  }
+  .item-list {
+    padding: 6px 20px 22px;
+  }
+  .item {
+    display: flex;
+    gap: 10px;
+    font-size: 14px;
+    line-height: 1.6;
+    padding: 8px 0;
+    border-bottom: 1px solid #f1e7da;
+  }
+  .item:last-child { border-bottom: none; }
+  .num {
+    flex: 0 0 22px;
+    height: 22px;
+    border-radius: 50%;
+    background: #c96b2f;
+    color: #fff;
+    font-size: 12px;
+    font-weight: 900;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-top: 1px;
+  }
+  .section.light .num { background: #e3a866; }
+  .item-text strong { color: #c96b2f; }
+
+  .source {
+    padding: 14px 20px 20px;
+    font-size: 11.5px;
+    color: #999;
+    line-height: 1.6;
+    border-top: 1px solid #f1e7da;
+  }
+
+  .table-wrap {
+    padding: 0 16px 20px;
+    overflow-x: auto;
+  }
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 13px;
+  }
+  thead tr {
+    background: #c96b2f;
+    color: #fff;
+  }
+  .section.light thead tr {
+    background: #e3a866;
+  }
+  th, td {
+    padding: 9px 8px;
+    text-align: center;
+    border-bottom: 1px solid #f1e7da;
+    line-height: 1.5;
+  }
+  td:first-child { text-align: left; }
+  th.col-event { text-align: left; width: 50%; }
+  th.col-rate, th.col-limit { width: 25%; }
+  tbody tr:nth-child(even) { background: #fdf5ee; }
+  tbody tr:last-child td { border-bottom: none; }
+  td strong { color: #c96b2f; }
+  .fade-group {
+    opacity: 0;
+    transform: translateY(14px);
+    transition: opacity 0.5s ease, transform 0.5s ease;
+  }
+  .fade-group.show-el {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  /* ---------- 控制列 ---------- */
+  .controls {
+    position: fixed;
+    bottom: 18px;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+  }
+  .controls-row {
+    display: flex;
+    gap: 10px;
+    background: rgba(255,255,255,0.95);
+    padding: 8px 10px;
+    border-radius: 30px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.12);
+  }
+  .controls button {
+    border: none;
+    background: #c96b2f;
+    color: #fff;
+    font-family: 'Noto Sans TC', sans-serif;
+    font-weight: 700;
+    font-size: 13px;
+    padding: 8px 16px;
+    border-radius: 20px;
+    cursor: pointer;
+  }
+  .controls button.secondary {
+    background: #f1e0cf;
+    color: #a04a1d;
+  }
+  .controls button:disabled {
+    opacity: 0.4;
+    cursor: default;
+  }
+  .page-dots {
+    display: flex;
+    gap: 6px;
+  }
+  .page-dots span {
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: #e3cdb5;
+  }
+  .page-dots span.active-dot {
+    background: #c96b2f;
+  }
+
+  .progress {
+    position: fixed;
+    top: 0;
+    left: 0;
+    height: 4px;
+    background: #c96b2f;
+    transition: width 0.4s ease;
+    z-index: 10;
+  }
+
+  @media print {
+    .controls, .progress { display: none; }
+  }
+</style>
+</head>
+<body>
+  <div class="progress" id="progress"></div>
+
+  <div class="card">
+    <div class="header">
+      <div class="tag">保險小知識</div>
+      <h1>保險公司倒閉，<br>保障怎麼辦？</h1>
+    </div>
+
+    <!-- 第一頁：流程圖（含提撥資金／監督機制弧形箭頭） -->
+    <div class="page active-page" data-page="0">
+      <div class="flow-svg-wrap">
+        <svg viewBox="0 0 400 370" xmlns="http://www.w3.org/2000/svg" font-family="'Noto Sans TC', sans-serif">
+          <defs>
+            <marker id="arrowhead" markerWidth="9" markerHeight="9" refX="6" refY="3" orient="auto" markerUnits="strokeWidth">
+              <path d="M0,0 L7,3 L0,6 Z" fill="#c96b2f"/>
+            </marker>
+          </defs>
+
+          <!-- 節點圓圈 -->
+          <g class="node step" data-step="1">
+            <circle cx="50" cy="170" r="34" fill="#f0c9a5"/>
+            <text x="50" y="180" text-anchor="middle" font-size="26">🙋</text>
+            <text x="50" y="234" text-anchor="middle" font-size="15" font-weight="700" fill="#2b2b2b">民眾</text>
+          </g>
+
+          <g class="node step" data-step="2">
+            <circle cx="195" cy="170" r="34" fill="#f0c9a5"/>
+            <text x="195" y="180" text-anchor="middle" font-size="26">🏢</text>
+            <text x="195" y="234" text-anchor="middle" font-size="15" font-weight="700" fill="#2b2b2b">保險公司</text>
+          </g>
+
+          <g class="node step" data-step="3">
+            <circle cx="345" cy="170" r="34" fill="#f0c9a5"/>
+            <text x="345" y="180" text-anchor="middle" font-size="26">🏦</text>
+            <text x="345" y="234" text-anchor="middle" font-size="15" font-weight="700" fill="#2b2b2b">保險安定基金</text>
+          </g>
+
+          <!-- 民眾 → 保險公司 -->
+          <g class="step" data-step="2">
+            <line x1="88" y1="170" x2="157" y2="170" stroke="#c96b2f" stroke-width="4" marker-end="url(#arrowhead)"/>
+            <text x="108" y="158" text-anchor="middle" font-size="12" font-weight="700" fill="#a04a1d">投保</text>
+          </g>
+
+          <!-- 保險公司 → 安定基金（上方弧線，提撥資金，遠離主體並貼近箭頭頂點） -->
+          <g class="step" data-step="3">
+            <path d="M 223 147 Q 270 52 317 147" fill="none" stroke="#c96b2f" stroke-width="4" marker-end="url(#arrowhead)"/>
+            <text x="270" y="80" text-anchor="middle" font-size="12" font-weight="700" fill="#a04a1d">從保費收入</text>
+            <text x="270" y="95" text-anchor="middle" font-size="12" font-weight="700" fill="#a04a1d">定期提撥比例</text>
+          </g>
+
+          <!-- 安定基金 → 保險公司（下方弧線，監督機制，遠離主體並貼近箭頭頂點） -->
+          <g class="step" data-step="4">
+            <path d="M 317 193 Q 270 288 223 193" fill="none" stroke="#c96b2f" stroke-width="4" marker-end="url(#arrowhead)"/>
+            <text x="270" y="255" text-anchor="middle" font-size="12" font-weight="700" fill="#a04a1d">監督業務、財務狀況</text>
+            <text x="270" y="270" text-anchor="middle" font-size="12" font-weight="700" fill="#a04a1d">控管風險</text>
+          </g>
+
+          <!-- 經營不善說明 -->
+          <text class="step" data-step="5" x="195" y="356" text-anchor="middle" font-size="13" font-weight="700" fill="#a04a1d">保險公司經營不善 → 由安定基金墊付保險金</text>
+        </svg>
+      </div>
+    </div>
+
+    <!-- 第二頁：壽險限額 -->
+    <div class="page" data-page="1">
+      <div class="section">
+        <div class="section-title fade-group step" data-step="6">壽險保單墊付比率及限額</div>
+        <div class="table-wrap fade-group step" data-step="6">
+          <table>
+            <thead>
+              <tr>
+                <th class="col-event">事件</th>
+                <th class="col-rate">墊付比率</th>
+                <th class="col-limit">墊付限額</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr><td>身故、失能、滿期、重大傷病保險金</td><td>90%</td><td>300萬</td></tr>
+              <tr><td>年金（含壽險之生存給付）</td><td>90%</td><td>20萬／年</td></tr>
+              <tr><td>醫療給付</td><td>100%</td><td>30萬／年</td></tr>
+              <tr><td>長期照護給付</td><td>100%</td><td>24萬／年</td></tr>
+              <tr><td>解約金給付</td><td>20%</td><td>100萬</td></tr>
+              <tr><td>未滿期保險費</td><td>40%</td><td>－</td></tr>
+              <tr><td>紅利給付</td><td>90%</td><td>10萬</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- 第三頁：產險限額 -->
+    <div class="page" data-page="2">
+      <div class="section light">
+        <div class="section-title fade-group step" data-step="7">產險保單墊付比率及限額</div>
+        <div class="table-wrap fade-group step" data-step="7">
+          <table>
+            <thead>
+              <tr>
+                <th class="col-event">事件</th>
+                <th class="col-rate">墊付比率</th>
+                <th class="col-limit">墊付限額</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr><td>強制汽車責任保險</td><td>100%</td><td>220萬</td></tr>
+              <tr><td>住宅地震保險</td><td>100%</td><td>170萬</td></tr>
+              <tr><td>傷害保險及健康保險有關之醫療給付</td><td>比照壽險辦理</td><td>比照壽險辦理</td></tr>
+              <tr><td>前三種以外的保險契約合計</td><td>90%</td><td>300萬</td></tr>
+              <tr><td>未滿期保險費</td><td>40%</td><td>－</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+      <div class="source fade-group step" data-step="7">
+        資料來源：財團法人保險安定基金對人身保險業／財產保險業動用範圍及限額規定
+      </div>
+    </div>
+  </div>
+
+  <div class="controls">
+    <div class="page-dots" id="pageDots">
+      <span data-dot="0"></span>
+      <span data-dot="1"></span>
+      <span data-dot="2"></span>
+    </div>
+    <div class="controls-row">
+      <button id="prevBtn" class="secondary">上一步</button>
+      <button id="nextBtn">下一步</button>
+      <button id="resetBtn" class="secondary">重來</button>
+    </div>
+  </div>
+
+  <script>
+    // 每頁對應的最大 step（也就是該頁完全展開時的 step 值）
+    const pages = [
+      { page: 0, maxStep: 5 },
+      { page: 1, maxStep: 6 },
+      { page: 2, maxStep: 7 }
+    ];
+    const totalSteps = pages[pages.length - 1].maxStep;
+
+    const steps = Array.from(document.querySelectorAll('.step'));
+    const pageEls = Array.from(document.querySelectorAll('.page'));
+    const dots = Array.from(document.querySelectorAll('.page-dots span'));
+
+    let current = 1;
+
+    const progressBar = document.getElementById('progress');
+    const prevBtn = document.getElementById('prevBtn');
+    const nextBtn = document.getElementById('nextBtn');
+    const resetBtn = document.getElementById('resetBtn');
+
+    function getActivePage(stepValue) {
+      const found = pages.find(p => stepValue <= p.maxStep);
+      return found ? found.page : pages[pages.length - 1].page;
+    }
+
+    function render() {
+      const activePage = getActivePage(current);
+
+      pageEls.forEach(el => {
+        const p = parseInt(el.dataset.page);
+        el.classList.toggle('active-page', p === activePage);
+      });
+
+      dots.forEach(d => {
+        d.classList.toggle('active-dot', parseInt(d.dataset.dot) === activePage);
+      });
+
+      steps.forEach(el => {
+        const s = parseInt(el.dataset.step);
+        el.classList.toggle('show-el', s <= current);
+      });
+
+      progressBar.style.width = (current / totalSteps * 100) + '%';
+      prevBtn.disabled = current === 0;
+      nextBtn.disabled = current === totalSteps;
+    }
+
+    function next() {
+      if (current < totalSteps) { current++; render(); }
+    }
+    function prev() {
+      if (current > 0) { current--; render(); }
+    }
+    function reset() {
+      current = 1; render();
+    }
+
+    nextBtn.addEventListener('click', next);
+    prevBtn.addEventListener('click', prev);
+    resetBtn.addEventListener('click', reset);
+
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'ArrowRight' || e.key === ' ') next();
+      if (e.key === 'ArrowLeft') prev();
+    });
+    document.querySelector('.card').addEventListener('click', (e) => {
+      if (e.target.closest('.controls')) return;
+      next();
+    });
+
+    render();
+  </script>
+</body>
+</html>
