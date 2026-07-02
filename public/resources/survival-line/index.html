@@ -1,0 +1,979 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>最低生存線試算工具｜88La</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@500;700;900&family=Noto+Sans+TC:wght@400;500;700&family=IBM+Plex+Mono:wght@500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#F6F3EC;
+    --card:#FFFFFF;
+    --line:#E7E0D2;
+    --ink:#2B2620;
+    --muted:#928C7C;
+    --orange:#E8551E;
+    --orange-deep:#C23F13;
+    --red:#D2321B;
+    --sand:#EDE6D4;
+    --sand-deep:#D8CFB6;
+    --radius:14px;
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{
+    background:var(--bg);
+    color:var(--ink);
+    font-family:'Noto Sans TC', sans-serif;
+    line-height:1.7;
+    -webkit-font-smoothing:antialiased;
+  }
+  .wrap{max-width:720px;margin:0 auto;padding:0 24px;}
+
+  header.top{
+    padding:28px 0 8px;
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+  }
+  .brand{
+    font-family:'Noto Serif TC', serif;
+    font-weight:900;
+    font-size:20px;
+    letter-spacing:0.04em;
+    color:var(--ink);
+  }
+  .brand span{color:var(--orange);}
+  .tag{
+    font-size:12px;
+    color:var(--muted);
+    border:1px solid var(--line);
+    padding:4px 10px;
+    border-radius:100px;
+    letter-spacing:0.05em;
+    background:var(--card);
+  }
+
+  .hero{padding:56px 0 40px;}
+  .eyebrow{
+    font-size:13px;
+    color:var(--red);
+    font-weight:700;
+    letter-spacing:0.12em;
+    margin-bottom:14px;
+  }
+  h1{
+    font-family:'Noto Serif TC', serif;
+    font-weight:900;
+    font-size:clamp(28px, 6vw, 40px);
+    line-height:1.45;
+    margin:0 0 20px;
+    color:var(--ink);
+  }
+  h1 em{
+    font-style:normal;
+    color:var(--orange);
+    position:relative;
+  }
+  .hero p{
+    color:#6B6455;
+    font-size:16px;
+    max-width:52ch;
+    margin:0 0 8px;
+  }
+
+  .line-motif{
+    display:flex;
+    align-items:center;
+    gap:12px;
+    margin:32px 0 4px;
+  }
+  .line-motif .seg{height:3px;background:var(--sand-deep);flex:2;border-radius:2px;}
+  .line-motif .seg.gold{background:var(--orange);flex:3;}
+  .line-motif .dot{
+    width:9px;height:9px;border-radius:50%;background:var(--red);
+    box-shadow:0 0 0 4px var(--bg), 0 0 0 5px var(--line);
+  }
+  .line-caption{
+    display:flex;justify-content:space-between;
+    font-size:12px;color:var(--muted);letter-spacing:0.03em;margin-top:6px;
+  }
+
+  .calc{
+    background:var(--card);
+    border:1px solid var(--line);
+    border-radius:var(--radius);
+    padding:28px 24px 32px;
+    margin:36px 0;
+    box-shadow:0 2px 14px rgba(43,38,32,0.04);
+  }
+  .calc h2{
+    font-family:'Noto Serif TC', serif;
+    font-size:20px;
+    margin:0 0 4px;
+    color:var(--ink);
+  }
+  .calc .sub{
+    font-size:13px;color:var(--muted);margin-bottom:24px;
+  }
+  .note-text{
+    font-size:12px;
+    color:var(--orange-deep);
+    font-style:italic;
+    margin-bottom:16px;
+  }
+
+  .ratio-block{
+    margin-top:32px;
+    padding:24px 22px;
+    background:linear-gradient(135deg, #FDEDE4 0%, var(--bg) 100%);
+    border:1px solid #F3CBB3;
+    border-radius:14px;
+  }
+  .ratio-title{
+    font-family:'Noto Serif TC', serif;
+    font-size:18px;
+    font-weight:900;
+    color:var(--orange-deep);
+    margin-bottom:4px;
+  }
+  .ratio-sub{
+    font-size:12.5px;
+    color:var(--muted);
+    margin-bottom:18px;
+  }
+  .ratio-bar-outer{
+    display:flex;
+    height:14px;
+    border-radius:7px;
+    overflow:hidden;
+    background:var(--sand);
+  }
+  .ratio-seg{
+    height:100%;
+    width:0%;
+    transition:width 0.45s ease;
+  }
+  .ratio-survival{background:var(--sand-deep);}
+  .ratio-save{background:var(--orange);}
+  .ratio-flex{background:var(--red);}
+  .ratio-legend{
+    display:flex;
+    justify-content:space-between;
+    gap:8px;
+    margin-top:16px;
+    flex-wrap:wrap;
+  }
+  .ratio-item{
+    display:flex;
+    align-items:center;
+    gap:6px;
+    font-size:12.5px;
+    color:var(--ink);
+  }
+  .ratio-dot{
+    width:9px;height:9px;border-radius:2px;flex-shrink:0;
+  }
+  .ratio-dot.l1{background:var(--sand-deep);}
+  .ratio-dot.l2{background:var(--orange);}
+  .ratio-dot.l3{background:var(--red);}
+  .ratio-label{color:var(--muted);}
+  .ratio-pct{
+    font-family:'IBM Plex Mono', monospace;
+    font-weight:700;
+    color:var(--ink);
+  }
+
+  .group-label{
+    font-size:12px;
+    color:var(--orange-deep);
+    font-weight:700;
+    letter-spacing:0.08em;
+    margin:22px 0 10px;
+    text-transform:uppercase;
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+  }
+  .section-label{
+    font-size:17px;
+    color:var(--orange-deep);
+    font-weight:900;
+    letter-spacing:0.02em;
+    margin:36px 0 6px;
+  }
+  .group-label:first-of-type{margin-top:0;}
+
+  .item-row{
+    display:flex;
+    align-items:center;
+    gap:10px;
+    padding:8px 0;
+    border-bottom:1px solid var(--line);
+  }
+  .item-row input.item-label{
+    flex:1;
+    background:transparent;
+    border:none;
+    outline:none;
+    color:var(--ink);
+    font-family:'Noto Sans TC', sans-serif;
+    font-size:14px;
+    padding:6px 2px;
+    border-bottom:1px dashed transparent;
+  }
+  .item-row input.item-label:focus{
+    border-bottom:1px dashed var(--sand-deep);
+  }
+  .item-row .input-box{
+    display:flex;
+    align-items:center;
+    background:var(--bg);
+    border:1px solid var(--line);
+    border-radius:8px;
+    padding:6px 10px;
+    width:122px;
+    flex-shrink:0;
+  }
+  .item-row .input-box span{
+    font-size:13px;color:var(--muted);margin-right:4px;
+  }
+  .item-row input.amount-input{
+    width:100%;
+    background:transparent;
+    border:none;
+    outline:none;
+    color:var(--ink);
+    font-family:'IBM Plex Mono', monospace;
+    font-size:15px;
+    text-align:right;
+  }
+  .item-row input::placeholder{color:#C7C0AE;}
+  .remove-btn{
+    width:26px;height:26px;
+    flex-shrink:0;
+    border:1px solid var(--line);
+    background:var(--card);
+    color:var(--muted);
+    border-radius:50%;
+    font-size:15px;
+    line-height:1;
+    cursor:pointer;
+    display:flex;align-items:center;justify-content:center;
+    transition:all 0.15s ease;
+  }
+  .remove-btn:hover{
+    background:#FDEDE4;
+    border-color:#F3CBB3;
+    color:var(--red);
+  }
+  .add-btn{
+    margin-top:12px;
+    display:inline-flex;
+    align-items:center;
+    gap:6px;
+    background:none;
+    border:1px dashed var(--sand-deep);
+    color:var(--orange-deep);
+    font-size:13px;
+    font-weight:700;
+    padding:9px 16px;
+    border-radius:8px;
+    cursor:pointer;
+    font-family:'Noto Sans TC', sans-serif;
+    transition:all 0.15s ease;
+  }
+  .add-btn:hover{
+    background:#FDEDE4;
+    border-color:var(--orange);
+  }
+
+  .subtotal-row{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    margin-top:18px;
+    padding:14px 16px;
+    background:#FDEDE4;
+    border:1px solid #F3CBB3;
+    border-radius:10px;
+  }
+  .subtotal-row span:first-child{
+    font-size:13.5px;
+    font-weight:700;
+    color:var(--orange-deep);
+  }
+  .subtotal-row span:last-child{
+    font-family:'IBM Plex Mono', monospace;
+    font-size:19px;
+    font-weight:700;
+    color:var(--orange-deep);
+  }
+  .subtotal-row.over{
+    background:#FBE2DD;
+    border-color:var(--red);
+  }
+  .subtotal-row.over span:first-child,
+  .subtotal-row.over span:last-child{
+    color:var(--red);
+  }
+
+  .field-row{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:14px;
+    padding:9px 0;
+    border-bottom:1px solid var(--line);
+  }
+  .field-row:last-child{border-bottom:none;}
+  .field-row label{
+    font-size:14px;
+    color:var(--ink);
+    flex:1;
+  }
+  .field-row .hint{
+    display:block;
+    font-size:11px;
+    color:var(--muted);
+    margin-top:2px;
+  }
+  .field-row .input-box{
+    display:flex;
+    align-items:center;
+    background:var(--bg);
+    border:1px solid var(--line);
+    border-radius:8px;
+    padding:6px 10px;
+    width:132px;
+  }
+  .field-row .input-box span{
+    font-size:13px;color:var(--muted);margin-right:4px;
+  }
+  .field-row input{
+    width:100%;
+    background:transparent;
+    border:none;
+    outline:none;
+    color:var(--ink);
+    font-family:'IBM Plex Mono', monospace;
+    font-size:15px;
+    text-align:right;
+  }
+  .field-row input::placeholder{color:#C7C0AE;}
+
+  .bar-block{margin-top:32px;}
+  .bar-title{
+    font-size:13px;color:var(--muted);margin-bottom:12px;
+    display:flex;justify-content:space-between;align-items:baseline;
+  }
+  .bar-title strong{color:var(--ink);font-weight:700;}
+  .bar-outer{
+    position:relative;
+    height:52px;
+    background:var(--bg);
+    border-radius:10px;
+    overflow:hidden;
+    border:1px solid var(--line);
+  }
+  .bar-seg{
+    position:absolute;
+    top:0;bottom:0;left:0;
+    width:0%;
+    display:flex;align-items:center;
+    transition:width 0.45s ease;
+    font-family:'IBM Plex Mono', monospace;
+    font-size:12px;
+    font-weight:600;
+    white-space:nowrap;
+    overflow:hidden;
+  }
+  .bar-seg span{padding-left:10px;}
+  .seg-survival{background:var(--sand-deep);color:var(--ink);z-index:1;}
+  .seg-save{background:var(--orange);color:#FFFFFF;z-index:2;}
+  .seg-flex{background:var(--red);color:#FFFFFF;z-index:2;opacity:0.88;}
+  .bar-line{
+    position:absolute;
+    top:-6px;bottom:-6px;
+    width:2px;
+    background:var(--ink);
+    z-index:3;
+    transition:left 0.45s ease;
+  }
+  .bar-line::after{
+    content:'生存線';
+    position:absolute;
+    top:-22px;
+    left:50%;
+    transform:translateX(-50%);
+    font-size:10px;
+    color:var(--ink);
+    font-weight:700;
+    white-space:nowrap;
+  }
+  .legend{
+    display:flex;
+    gap:18px;
+    margin-top:16px;
+    flex-wrap:wrap;
+    font-size:12px;
+    color:var(--muted);
+  }
+  .legend .dotc{
+    display:inline-block;width:9px;height:9px;border-radius:2px;margin-right:6px;
+  }
+  .legend .l1{background:var(--sand-deep);}
+  .legend .l2{background:var(--orange);}
+  .legend .l3{background:var(--red);}
+
+  .results{
+    margin-top:28px;
+    display:flex;
+    flex-direction:column;
+    gap:0;
+  }
+  .result-card.full{width:100%;}
+  .flow-arrow{
+    text-align:center;
+    font-size:12px;
+    color:var(--muted);
+    padding:8px 0;
+  }
+  .results-secondary{
+    margin-top:14px;
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:12px;
+  }
+  .result-card{
+    background:var(--bg);
+    border:1px solid var(--line);
+    border-radius:10px;
+    padding:16px 14px;
+  }
+  .result-card .rlabel{
+    font-size:11px;color:var(--muted);letter-spacing:0.04em;margin-bottom:6px;
+  }
+  .result-card .rsub{
+    display:block;
+    font-size:11px;
+    color:var(--muted);
+    font-weight:400;
+    letter-spacing:0;
+    margin-top:3px;
+    line-height:1.5;
+  }
+  .result-card.highlight .rsub{color:var(--orange-deep);opacity:0.75;}
+  .result-card .rvalue{
+    font-family:'IBM Plex Mono', monospace;
+    font-size:20px;
+    font-weight:600;
+    color:var(--ink);
+  }
+  .result-card.highlight{background:#FDEDE4;border-color:#F3CBB3;}
+  .result-card.highlight .rvalue{color:var(--orange-deep);}
+  .result-card.warn .rvalue{color:var(--red);}
+
+  .save-input-row{
+    margin-top:24px;
+    background:var(--bg);
+    border:1px dashed var(--sand-deep);
+    border-radius:10px;
+    padding:16px;
+  }
+  .save-input-row .field-row{border-bottom:none;padding:0;}
+
+  .steps{margin:52px 0;}
+  .steps h2{
+    font-family:'Noto Serif TC', serif;
+    font-size:22px;
+    margin:0 0 24px;
+    color:var(--ink);
+  }
+  .step{
+    display:flex;
+    gap:16px;
+    padding:16px 0;
+    border-top:1px solid var(--line);
+  }
+  .step:last-child{border-bottom:1px solid var(--line);}
+  .step .num{
+    font-family:'IBM Plex Mono', monospace;
+    font-size:14px;
+    color:var(--orange);
+    font-weight:600;
+    padding-top:2px;
+  }
+  .step .txt strong{
+    display:block;font-size:15px;color:var(--ink);margin-bottom:4px;
+  }
+  .step .txt p{
+    margin:0;font-size:13.5px;color:var(--muted);
+  }
+
+  .quote{
+    font-family:'Noto Serif TC', serif;
+    font-size:18px;
+    line-height:1.9;
+    color:var(--ink);
+    border-left:3px solid var(--orange);
+    padding:4px 0 4px 20px;
+    margin:40px 0;
+  }
+  .quote span{color:var(--muted);font-size:13px;display:block;margin-top:10px;font-family:'Noto Sans TC',sans-serif;}
+
+  footer{
+    padding:40px 0 60px;
+    text-align:center;
+    border-top:1px solid var(--line);
+    margin-top:20px;
+  }
+  footer .cta-title{
+    font-family:'Noto Serif TC', serif;
+    font-size:18px;
+    margin-bottom:8px;
+    color:var(--ink);
+  }
+  footer .cta-sub{
+    font-size:13px;color:var(--muted);margin-bottom:20px;
+  }
+  .ig-btn{
+    display:inline-block;
+    background:var(--orange);
+    color:#FFFFFF;
+    text-decoration:none;
+    font-size:14px;
+    font-weight:700;
+    padding:12px 28px;
+    border-radius:100px;
+    transition:background 0.2s ease;
+  }
+  .ig-btn:hover{background:var(--orange-deep);}
+  .fineprint{margin-top:24px;font-size:11px;color:#B3AC9B;}
+  .account-tag{margin-top:6px;font-size:11px;color:#D8CFB6;letter-spacing:0.03em;}
+  .pdf-btn-wrap{
+    text-align:center;
+    margin:0 0 40px;
+  }
+  .pdf-cta{
+    font-size:14.5px;
+    font-weight:700;
+    color:var(--ink);
+    margin-bottom:14px;
+  }
+  .pdf-btn{
+    display:inline-flex;
+    align-items:center;
+    gap:8px;
+    background:var(--orange);
+    color:#FFFFFF;
+    border:none;
+    font-size:14px;
+    font-weight:700;
+    padding:13px 26px;
+    border-radius:100px;
+    cursor:pointer;
+    font-family:'Noto Sans TC', sans-serif;
+    box-shadow:0 4px 14px rgba(232,85,30,0.22);
+    transition:background 0.2s ease;
+  }
+  .pdf-btn:hover{background:var(--orange-deep);}
+  .pdf-note{
+    font-size:11.5px;
+    color:var(--muted);
+    margin-top:10px;
+  }
+
+  @media print{
+    .no-print{display:none !important;}
+    body{background:#FFFFFF;}
+    body::before{display:none;}
+    .calc{box-shadow:none;border:1px solid var(--line);}
+    .item-row .remove-btn{display:none;}
+    .add-btn{display:none;}
+  }
+
+  @media (max-width:480px){
+    .results-secondary{grid-template-columns:1fr;}
+    .field-row .input-box{width:118px;}
+    .item-row .input-box{width:104px;}
+  }
+</style>
+</head>
+<body>
+
+<div class="wrap">
+
+  <header class="top">
+    <div class="brand">88<span>La</span></div>
+    <div class="tag">資源工具</div>
+  </header>
+
+  <section class="hero">
+    <div class="eyebrow">預算分配，不是比例，是金額</div>
+    <h1>先找到你的<em>生存線</em>，<br>比例才會是真的</h1>
+    <p>532、631、10 個理財罐，這些比例公式都只解決了「怎麼分」，沒解決「金額對不對」。這個工具幫你先算出自己的最低生存線，再往下分配。</p>
+
+    <div class="line-motif">
+      <div class="seg"></div>
+      <div class="dot"></div>
+      <div class="seg gold"></div>
+    </div>
+    <div class="line-caption">
+      <span>生存支出</span>
+      <span>可動額度</span>
+    </div>
+  </section>
+
+  <section class="calc">
+    <h2>最低生存線試算</h2>
+    <div class="sub">填入你的固定支出與月收入，線會自動畫出來，項目可以自由增減</div>
+
+    <div class="group-label">生存必要支出</div>
+    <div id="item-list"></div>
+    <button class="add-btn" id="add-item-btn" type="button">＋ 新增項目</button>
+
+    <div class="subtotal-row">
+      <span>生存必要支出總額</span>
+      <span id="subtotal-value">$0</span>
+    </div>
+
+    <div class="group-label">月收入</div>
+    <div class="field-row">
+      <label>這個月預計收入</label>
+      <div class="input-box"><span>$</span><input type="number" inputmode="numeric" id="income" placeholder="0"></div>
+    </div>
+
+    <div class="bar-block">
+      <div class="bar-title"><span>視覺化</span><strong id="bar-status">請先輸入資料</strong></div>
+      <div class="bar-outer">
+        <div class="bar-seg seg-survival" id="seg-survival"><span></span></div>
+        <div class="bar-seg seg-save" id="seg-save" style="left:0;"><span></span></div>
+        <div class="bar-seg seg-flex" id="seg-flex" style="left:0;"><span></span></div>
+        <div class="bar-line" id="bar-line" style="left:0;"></div>
+      </div>
+      <div class="legend">
+        <span><i class="dotc l1"></i>生存支出</span>
+        <span><i class="dotc l2"></i>存款目標</span>
+        <span><i class="dotc l3"></i>變動支出（購物、娛樂）</span>
+      </div>
+    </div>
+
+    <div class="save-input-row">
+      <div class="field-row">
+        <label>這個月想存多少？<span class="hint">從「可動額度」裡先撥出來</span></label>
+        <div class="input-box"><span>$</span><input type="number" inputmode="numeric" id="save-target" placeholder="0"></div>
+      </div>
+    </div>
+
+    <div class="results">
+      <div class="result-card highlight full">
+        <div class="rlabel">可動額度<span class="rsub">收入扣掉生存線，存款和變動支出都還沒扣</span></div>
+        <div class="rvalue" id="r-movable">$0</div>
+      </div>
+      <div class="flow-arrow">↓ 扣掉這個月的存款目標</div>
+      <div class="result-card full">
+        <div class="rlabel">變動支出可用<span class="rsub">可動額度再扣掉存款目標，這才是真的能花的錢</span></div>
+        <div class="rvalue" id="r-flex">$0</div>
+      </div>
+      <div class="results-secondary">
+        <div class="result-card">
+          <div class="rlabel">最低生存線</div>
+          <div class="rvalue" id="r-survival">$0</div>
+        </div>
+        <div class="result-card warn" id="r-ratio-card">
+          <div class="rlabel">本月儲蓄比例</div>
+          <div class="rvalue" id="r-ratio">0%</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="section-label">變動支出明細</div>
+    <div class="sub" style="margin-bottom:4px;">購物、娛樂等實際想花的項目，填下去看看有沒有超過可用額度</div>
+    <div class="note-text">這裡才開始分配不影響你生存的支出</div>
+    <div id="flex-item-list"></div>
+    <button class="add-btn" id="add-flex-item-btn" type="button">＋ 新增項目</button>
+
+    <div class="subtotal-row">
+      <span>變動支出總額</span>
+      <span id="flex-subtotal-value">$0</span>
+    </div>
+
+    <div class="subtotal-row" id="flex-remain-row">
+      <span>剩餘額度</span>
+      <span id="flex-remain-value">$0</span>
+    </div>
+
+    <div class="ratio-block">
+      <div class="ratio-title">這是你的真實比例</div>
+      <div class="ratio-sub">不是硬套公式，是照你現在的狀況算出來的</div>
+      <div class="ratio-bar-outer">
+        <div class="ratio-seg ratio-survival" id="ratio-seg-survival"></div>
+        <div class="ratio-seg ratio-save" id="ratio-seg-save"></div>
+        <div class="ratio-seg ratio-flex" id="ratio-seg-flex"></div>
+      </div>
+      <div class="ratio-legend">
+        <div class="ratio-item">
+          <span class="ratio-dot l1"></span>
+          <span class="ratio-label">生存支出</span>
+          <span class="ratio-pct" id="ratio-pct-survival">0%</span>
+        </div>
+        <div class="ratio-item">
+          <span class="ratio-dot l2"></span>
+          <span class="ratio-label">儲蓄</span>
+          <span class="ratio-pct" id="ratio-pct-save">0%</span>
+        </div>
+        <div class="ratio-item">
+          <span class="ratio-dot l3"></span>
+          <span class="ratio-label">變動支出</span>
+          <span class="ratio-pct" id="ratio-pct-flex">0%</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="steps">
+    <h2>為什麼不是先按照比例分配？</h2>
+    <div class="step">
+      <div class="num">01</div>
+      <div class="txt"><strong>先算出最低生存線</strong><p>房租、水電、最低伙食費，支撐你活著的基本開銷，這條線因人而異，不是套公式算出來的。</p></div>
+    </div>
+    <div class="step">
+      <div class="num">02</div>
+      <div class="txt"><strong>知道自己還有多少可以動</strong><p>收入減掉生存線，剩下的才是真正可以分配的錢。</p></div>
+    </div>
+    <div class="step">
+      <div class="num">03</div>
+      <div class="txt"><strong>預估這個月能存多少</strong><p>在可動額度裡，先抓一個這個月想存下來的數字。</p></div>
+    </div>
+    <div class="step">
+      <div class="num">04</div>
+      <div class="txt"><strong>分配不影響生存的變動支出</strong><p>購物、娛樂等彈性花費，用剩下的額度分配。</p></div>
+    </div>
+    <div class="step">
+      <div class="num">05</div>
+      <div class="txt"><strong>協調到你覺得舒適的金額</strong><p>存款和變動支出互相調整，直到過得下去、也有在前進。</p></div>
+    </div>
+  </section>
+
+  <div class="quote">
+    教科書不是不能參考，但要捏成自己的形狀，才是真的有用。
+    <span>88La</span>
+  </div>
+
+  <div class="pdf-btn-wrap no-print">
+    <div class="pdf-cta">把試算結果存下來，下次領薪水回來看很方便～</div>
+    <button class="pdf-btn" id="save-pdf-btn" type="button">📄 保存成 PDF</button>
+    <div class="pdf-note">備註：用外部瀏覽器開啟才能成功保存唷</div>
+  </div>
+
+  <footer>
+    <div class="cta-title">想看更多存錢的真實練習？</div>
+    <div class="cta-sub">追蹤 88La，一起把比例捏成自己的形狀</div>
+    <a href="https://www.instagram.com/every_dollars/" class="ig-btn" target="_blank" rel="noopener">追蹤 Instagram →</a>
+    <div class="fineprint">本工具僅供個人預算試算參考，實際財務規劃請依個人狀況調整。</div>
+    <div class="account-tag">@every_dollars</div>
+  </footer>
+
+</div>
+
+<script>
+  const DEFAULT_ITEMS = [
+    { label: '房租／房貸', amount: '' },
+    { label: '水電瓦斯', amount: '' },
+    { label: '網路／通訊費', amount: '' },
+    { label: '通勤交通費', amount: '' },
+    { label: '最低伙食費', amount: '' },
+    { label: '保險費', amount: '' }
+  ];
+
+  const itemList = document.getElementById('item-list');
+  const addItemBtn = document.getElementById('add-item-btn');
+  const flexItemList = document.getElementById('flex-item-list');
+  const addFlexItemBtn = document.getElementById('add-flex-item-btn');
+  const incomeInput = document.getElementById('income');
+  const saveInput = document.getElementById('save-target');
+
+  const subtotalValue = document.getElementById('subtotal-value');
+  const flexSubtotalValue = document.getElementById('flex-subtotal-value');
+  const flexRemainValue = document.getElementById('flex-remain-value');
+  const flexRemainRow = document.getElementById('flex-remain-row');
+  const rSurvival = document.getElementById('r-survival');
+  const rMovable = document.getElementById('r-movable');
+  const rFlex = document.getElementById('r-flex');
+  const rRatio = document.getElementById('r-ratio');
+  const barStatus = document.getElementById('bar-status');
+
+  const segSurvival = document.getElementById('seg-survival');
+  const segSave = document.getElementById('seg-save');
+  const segFlex = document.getElementById('seg-flex');
+  const barLine = document.getElementById('bar-line');
+
+  const ratioSegSurvival = document.getElementById('ratio-seg-survival');
+  const ratioSegSave = document.getElementById('ratio-seg-save');
+  const ratioSegFlex = document.getElementById('ratio-seg-flex');
+  const ratioPctSurvival = document.getElementById('ratio-pct-survival');
+  const ratioPctSave = document.getElementById('ratio-pct-save');
+  const ratioPctFlex = document.getElementById('ratio-pct-flex');
+
+  function fmt(n){
+    return '$' + Math.round(n).toLocaleString('zh-Hant-TW');
+  }
+
+  function createItemRow(labelText, amountValue, amountClass){
+    const row = document.createElement('div');
+    row.className = 'item-row';
+    row.innerHTML = `
+      <input type="text" class="item-label" value="${labelText}" placeholder="項目名稱">
+      <div class="input-box"><span>$</span><input type="number" inputmode="numeric" class="amount-input ${amountClass}" value="${amountValue}" placeholder="0"></div>
+      <button type="button" class="remove-btn" aria-label="刪除項目">×</button>
+    `;
+    row.querySelector('.' + amountClass).addEventListener('input', recalc);
+    row.querySelector('.remove-btn').addEventListener('click', () => {
+      row.remove();
+      recalc();
+    });
+    return row;
+  }
+
+  function addItem(labelText = '', amountValue = ''){
+    const row = createItemRow(labelText, amountValue, 'item-amount');
+    itemList.appendChild(row);
+    return row;
+  }
+
+  function addFlexItem(labelText = '', amountValue = ''){
+    const row = createItemRow(labelText, amountValue, 'flex-amount');
+    flexItemList.appendChild(row);
+    return row;
+  }
+
+  DEFAULT_ITEMS.forEach(item => addItem(item.label, item.amount));
+
+  const DEFAULT_FLEX_ITEMS = [
+    { label: '購物', amount: '' },
+    { label: '娛樂', amount: '' },
+    { label: '餐飲交際', amount: '' }
+  ];
+  DEFAULT_FLEX_ITEMS.forEach(item => addFlexItem(item.label, item.amount));
+
+  addItemBtn.addEventListener('click', () => {
+    const row = addItem('新項目', '');
+    row.querySelector('.item-label').focus();
+    row.querySelector('.item-label').select();
+  });
+
+  addFlexItemBtn.addEventListener('click', () => {
+    const row = addFlexItem('新項目', '');
+    row.querySelector('.item-label').focus();
+    row.querySelector('.item-label').select();
+  });
+
+  function recalc(){
+    let survivalTotal = 0;
+    document.querySelectorAll('.item-amount').forEach(inp => {
+      survivalTotal += Number(inp.value) || 0;
+    });
+
+    subtotalValue.textContent = fmt(survivalTotal);
+
+    const income = Number(incomeInput.value) || 0;
+    const saveTarget = Number(saveInput.value) || 0;
+
+    const movable = Math.max(income - survivalTotal, 0);
+    const flex = Math.max(movable - saveTarget, 0);
+    const ratio = income > 0 ? (saveTarget / income) * 100 : 0;
+
+    rSurvival.textContent = fmt(survivalTotal);
+    rMovable.textContent = fmt(movable);
+    rFlex.textContent = fmt(flex);
+    rRatio.textContent = Math.round(ratio) + '%';
+
+    let flexSpendTotal = 0;
+    document.querySelectorAll('.flex-amount').forEach(inp => {
+      flexSpendTotal += Number(inp.value) || 0;
+    });
+    flexSubtotalValue.textContent = fmt(flexSpendTotal);
+
+    const flexRemain = flex - flexSpendTotal;
+    flexRemainValue.textContent = fmt(Math.abs(flexRemain));
+    if(flexRemain < 0){
+      flexRemainRow.classList.add('over');
+      flexRemainRow.querySelector('span:first-child').textContent = '超出額度';
+    } else {
+      flexRemainRow.classList.remove('over');
+      flexRemainRow.querySelector('span:first-child').textContent = '剩餘額度';
+    }
+
+    if(income > 0){
+      const realSurvivalPct = (survivalTotal / income) * 100;
+      const realSavePct = (saveTarget / income) * 100;
+      const realFlexPct = (flexSpendTotal / income) * 100;
+
+      ratioSegSurvival.style.width = Math.min(realSurvivalPct, 100) + '%';
+      ratioSegSave.style.width = Math.min(realSavePct, 100) + '%';
+      ratioSegFlex.style.width = Math.min(realFlexPct, 100) + '%';
+
+      ratioPctSurvival.textContent = Math.round(realSurvivalPct) + '%';
+      ratioPctSave.textContent = Math.round(realSavePct) + '%';
+      ratioPctFlex.textContent = Math.round(realFlexPct) + '%';
+    } else {
+      ratioSegSurvival.style.width = '0%';
+      ratioSegSave.style.width = '0%';
+      ratioSegFlex.style.width = '0%';
+      ratioPctSurvival.textContent = '0%';
+      ratioPctSave.textContent = '0%';
+      ratioPctFlex.textContent = '0%';
+    }
+
+    if(income > 0){
+      const total = income;
+      const survivalPct = Math.min((survivalTotal / total) * 100, 100);
+      const savePct = Math.min((saveTarget / total) * 100, 100 - survivalPct);
+      const flexPct = Math.max(100 - survivalPct - savePct, 0);
+
+      segSurvival.style.width = survivalPct + '%';
+      segSurvival.querySelector('span').textContent = survivalPct > 14 ? fmt(survivalTotal) : '';
+
+      segSave.style.left = survivalPct + '%';
+      segSave.style.width = savePct + '%';
+      segSave.querySelector('span').textContent = savePct > 10 ? fmt(saveTarget) : '';
+
+      segFlex.style.left = (survivalPct + savePct) + '%';
+      segFlex.style.width = flexPct + '%';
+      segFlex.querySelector('span').textContent = flexPct > 10 ? fmt(flex) : '';
+
+      barLine.style.left = survivalPct + '%';
+
+      if(survivalTotal > income){
+        barStatus.textContent = '生存線超過收入';
+        barStatus.style.color = 'var(--red)';
+      } else {
+        barStatus.textContent = '已更新';
+        barStatus.style.color = 'var(--ink)';
+      }
+    } else {
+      segSurvival.style.width = '0%';
+      segSave.style.width = '0%';
+      segFlex.style.width = '0%';
+      barLine.style.left = '0%';
+      barStatus.textContent = '請先輸入資料';
+      barStatus.style.color = 'var(--muted)';
+    }
+  }
+
+  incomeInput.addEventListener('input', recalc);
+  saveInput.addEventListener('input', recalc);
+
+  const savePdfBtn = document.getElementById('save-pdf-btn');
+  savePdfBtn.addEventListener('click', () => {
+    window.print();
+  });
+
+  recalc();
+</script>
+
+</body>
+</html>

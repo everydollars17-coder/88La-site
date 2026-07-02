@@ -1778,13 +1778,14 @@ function Resources({ resources, setResources, isAdmin }) {
   const [resUrlErr, setResUrlErr] = useState("");
   const sf = k => e => setForm(p => ({ ...p, [k]: e.target.value }));
   const items = resources || [];
-  const filtered = items.filter(r => r.active && (filter === "全部" || r.type === filter));
+  const activeAll = items.filter(r => r.active).sort((a, b) => b.id - a.id);
+  const filtered = activeAll.filter(r => filter === "全部" || r.type === filter);
   const startAdd = () => { setForm({ name: "", type: "模板", desc: "", url: "", img: "", active: true }); setEditing("new"); setResUrlErr(""); };
   const startEdit = r => { setForm({ ...r }); setEditing(r.id); setResUrlErr(""); };
   const save = () => {
     if (form.url && !isValidUrl(form.url)) { setResUrlErr("連結格式不正確，需以 https:// 開頭"); return; }
     setResUrlErr("");
-    if (editing === "new") setResources(prev => [...(prev || []), { ...form, id: Date.now() }]); else setResources(prev => (prev || []).map(r => r.id === editing ? { ...r, ...form } : r)); setEditing(null);
+    if (editing === "new") setResources(prev => [{ ...form, id: Date.now() }, ...(prev || [])]); else setResources(prev => (prev || []).map(r => r.id === editing ? { ...r, ...form } : r)); setEditing(null);
   };
   const del = id => { if (confirm("確定刪除？")) setResources(prev => (prev || []).filter(r => r.id !== id)); };
   return (
@@ -1827,16 +1828,16 @@ function Resources({ resources, setResources, isAdmin }) {
           <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill,minmax(300px,1fr))", gap: 20 }} className="grid3">
             {filtered.map((r, ri) => (
               <Reveal key={r.id} delay={Math.min(ri * 80, 400)}>
-              <div style={{ background: WHITE, border: `1px solid ${BORDER}`, borderRadius: 12, boxShadow: "0 2px 10px rgba(0,0,0,.06)", overflow: "hidden", transition: "box-shadow .24s, transform .24s" }}
+              <div style={{ background: WHITE, border: `1px solid ${BORDER}`, borderRadius: 12, boxShadow: "0 2px 10px rgba(0,0,0,.06)", overflow: "hidden", height: 400, display: "flex", flexDirection: "column", transition: "box-shadow .24s, transform .24s" }}
                 onMouseEnter={e => { e.currentTarget.style.boxShadow = "0 12px 40px rgba(200,90,20,.15)"; e.currentTarget.style.transform = "translateY(-4px)"; }}
                 onMouseLeave={e => { e.currentTarget.style.boxShadow = "0 2px 10px rgba(0,0,0,.06)"; e.currentTarget.style.transform = "translateY(0)"; }}
               >
-                {r.img && <div style={{ height: 160, overflow: "hidden", background: GRAY }}><img src={r.img} alt={r.name} style={{ width: "100%", height: "100%", objectFit: "cover" }} loading="lazy" /></div>}
-                <div style={{ padding: "22px 24px 24px" }}>
-                  <span className="tag" style={{ marginBottom: 10, display: "inline-block" }}>{r.type}</span>
-                  <h3 style={{ fontSize: 16, fontWeight: 500, color: CHAR, marginBottom: 8 }}>{r.name}</h3>
-                  <p style={{ fontSize: 13, color: MID, lineHeight: 1.85, marginBottom: 18, whiteSpace: "pre-wrap" }}>{r.desc}</p>
-                  <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                <div style={{ height: 160, flexShrink: 0, overflow: "hidden", background: GRAY }}>{r.img && <img src={r.img} alt={r.name} style={{ width: "100%", height: "100%", objectFit: "cover" }} loading="lazy" />}</div>
+                <div style={{ padding: "22px 24px 24px", flex: 1, display: "flex", flexDirection: "column", overflow: "hidden" }}>
+                  <span className="tag" style={{ marginBottom: 10, display: "inline-block", flexShrink: 0 }}>{r.type}</span>
+                  <h3 style={{ fontSize: 16, fontWeight: 500, color: CHAR, marginBottom: 8, flexShrink: 0, display: "-webkit-box", WebkitLineClamp: 1, WebkitBoxOrient: "vertical", overflow: "hidden" }}>{r.name}</h3>
+                  <p style={{ fontSize: 13, color: MID, lineHeight: 1.85, marginBottom: 18, whiteSpace: "pre-wrap", flex: 1, display: "-webkit-box", WebkitLineClamp: 3, WebkitBoxOrient: "vertical", overflow: "hidden" }}>{r.desc}</p>
+                  <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", flexShrink: 0 }}>
                     <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
                       {r.url && <a href={r.url} target="_blank" rel="noopener noreferrer" onClick={() => setResources(prev => (prev || []).map(x => x.id === r.id ? { ...x, clicks: (x.clicks || 0) + 1 } : x), { silent: true })}><button className="pb" style={{ fontSize: 12, padding: "8px 16px" }}>下載 / 查看 →</button></a>}
                       {isAdmin && <span style={{ fontSize: 11, color: LIGHT }}>{r.clicks || 0} 次點擊</span>}
