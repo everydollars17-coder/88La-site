@@ -1,6 +1,6 @@
 import { useState, useEffect, useLayoutEffect, useRef } from "react";
 import { initializeApp } from "firebase/app";
-import { getFirestore, doc, getDoc, setDoc } from "firebase/firestore";
+import { getFirestore, doc, getDoc, setDoc, collection, getDocs, query, orderBy, deleteDoc } from "firebase/firestore";
 import { getAuth, GoogleAuthProvider, signInWithPopup, onAuthStateChanged, signOut } from "firebase/auth";
 import DOMPurify from "dompurify";
 
@@ -2037,11 +2037,109 @@ function Contact({ links, contactContent, setContactContent, isAdmin }) {
   );
 }
 
+const QUIZ_Q_LABELS = {
+  q1: "每月存款", q2: "記帳習慣", q3: "想解決的問題", q4: "緊急備用金",
+  q5: "卡關點", q6: "實體儀式感", q7: "支付方式",
+};
+
+// ── 存錢袋測驗回答紀錄 ──
+function QuizResponsesAdmin() {
+  const [responses, setResponses] = useState(null);
+  const [error, setError] = useState(false);
+
+  const load = () => {
+    setResponses(null);
+    setError(false);
+    getDocs(query(collection(db, "quizResponses"), orderBy("createdAt", "desc")))
+      .then(snap => setResponses(snap.docs.map(d => ({ id: d.id, ...d.data() }))))
+      .catch(() => { setError(true); setResponses([]); });
+  };
+  useEffect(load, []);
+
+  const del = async (id) => {
+    if (!window.confirm("確定刪除這筆回答紀錄？")) return;
+    await deleteDoc(doc(db, "quizResponses", id));
+    setResponses(prev => prev.filter(r => r.id !== id));
+  };
+
+  const fmtTime = (r) => {
+    if (!r.createdAt?.toDate) return "—";
+    return r.createdAt.toDate().toLocaleString("zh-TW", { year: "numeric", month: "2-digit", day: "2-digit", hour: "2-digit", minute: "2-digit" });
+  };
+
+  const exportCSV = () => {
+    const qKeys = Object.keys(QUIZ_Q_LABELS);
+    const header = ["時間", "存錢人格", ...qKeys.map(k => QUIZ_Q_LABELS[k])];
+    const rows = responses.map(r => [fmtTime(r), r.persona || "", ...qKeys.map(k => r.answers?.[k] || "")]);
+    const csv = [header, ...rows].map(row => row.map(c => `"${String(c).replace(/"/g, '""')}"`).join(",")).join("\n");
+    const blob = new Blob(["﻿" + csv], { type: "text/csv;charset=utf-8;" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `存錢袋測驗回答_${new Date().toISOString().slice(0, 10)}.csv`;
+    a.click();
+    URL.revokeObjectURL(url);
+  };
+
+  const personaCounts = {};
+  (responses || []).forEach(r => { const p = r.persona || "未知"; personaCounts[p] = (personaCounts[p] || 0) + 1; });
+
+  return (
+    <div>
+      <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 20, flexWrap: "wrap", gap: 12 }}>
+        <p style={{ fontSize: 13, color: MID }}>
+          {responses === null ? "載入中…" : error ? "載入失敗，請重試" : `共 ${responses.length} 筆回答`}
+        </p>
+        <div style={{ display: "flex", gap: 8 }}>
+          <button className="pg" style={{ fontSize: 12, padding: "6px 16px" }} onClick={load}>重新整理</button>
+          <button className="pb" style={{ fontSize: 12, padding: "6px 16px" }} onClick={exportCSV} disabled={!responses?.length}>匯出 CSV</button>
+        </div>
+      </div>
+
+      {!!responses?.length && (
+        <div style={{ display: "flex", flexWrap: "wrap", gap: 8, marginBottom: 24 }}>
+          {Object.entries(personaCounts).sort((a, b) => b[1] - a[1]).map(([persona, count]) => (
+            <span key={persona} style={{ fontSize: 12, background: GRAY, border: `1px solid ${BORDER}`, borderRadius: 20, padding: "6px 14px", color: CHAR }}>
+              {persona} <b style={{ color: O }}>{count}</b>
+            </span>
+          ))}
+        </div>
+      )}
+
+      {responses?.length === 0 && !error && <p style={{ fontSize: 13, color: MID, padding: "40px 0", textAlign: "center" }}>目前還沒有回答紀錄。</p>}
+
+      {!!responses?.length && (
+        <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+          {responses.map(r => (
+            <div key={r.id} style={{ background: WHITE, border: `1px solid ${BORDER}`, borderRadius: 8, padding: "14px 16px" }}>
+              <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 8, gap: 12 }}>
+                <div style={{ display: "flex", alignItems: "center", gap: 10, flexWrap: "wrap" }}>
+                  <span style={{ fontSize: 12, color: MID }}>{fmtTime(r)}</span>
+                  <span style={{ fontSize: 13, fontWeight: 700, color: CHAR }}>{r.persona || "—"}</span>
+                </div>
+                <span onClick={() => del(r.id)} style={{ fontSize: 11, color: "#E74C3C", cursor: "pointer", flexShrink: 0 }}>刪除</span>
+              </div>
+              <div style={{ display: "flex", flexWrap: "wrap", gap: "4px 14px" }}>
+                {Object.keys(QUIZ_Q_LABELS).map(k => (
+                  <span key={k} style={{ fontSize: 11, color: MID }}>
+                    {QUIZ_Q_LABELS[k]}：<b style={{ color: CHAR }}>{r.answers?.[k] || "—"}</b>
+                  </span>
+                ))}
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}
+
 // ── 存錢袋測驗管理 ──
 function SavingsBagQuizAdmin({ savingsBagQuiz, setSavingsBagQuiz }) {
   const data = savingsBagQuiz || DEFAULTS.savingsBagQuiz;
   const [editingKey, setEditingKey] = useState(null);
   const [form, setForm] = useState({});
+  const [tab, setTab] = useState("content");
 
   const PRODUCT_LABELS = {
     daily_budget: "每日預算記錄組", spending_tracker: "極簡收支分配表",
@@ -2106,8 +2204,16 @@ function SavingsBagQuizAdmin({ savingsBagQuiz, setSavingsBagQuiz }) {
   return (
     <div style={{ maxWidth: 860, margin: "0 auto", padding: "60px 28px" }} className="page-wrap">
       <h2 style={{ fontSize: 22, fontWeight: 700, color: CHAR, marginBottom: 8 }}>存錢袋測驗管理</h2>
-      <p style={{ fontSize: 13, color: MID, marginBottom: 32 }}>編輯各款存錢袋的圖片、說明與連結，前台測驗頁會即時更新。</p>
+      <p style={{ fontSize: 13, color: MID, marginBottom: 24 }}>編輯各款存錢袋的圖片、說明與連結，前台測驗頁會即時更新；也可以在這裡查看使用者的作答紀錄。</p>
 
+      <div style={{ display: "flex", gap: 8, marginBottom: 32, borderBottom: `1px solid ${BORDER}` }}>
+        <span onClick={() => setTab("content")} style={{ fontSize: 13, padding: "10px 4px", marginRight: 20, cursor: "pointer", color: tab === "content" ? O : MID, fontWeight: tab === "content" ? 700 : 400, borderBottom: tab === "content" ? `2px solid ${O}` : "2px solid transparent" }}>產品內容管理</span>
+        <span onClick={() => setTab("responses")} style={{ fontSize: 13, padding: "10px 4px", cursor: "pointer", color: tab === "responses" ? O : MID, fontWeight: tab === "responses" ? 700 : 400, borderBottom: tab === "responses" ? `2px solid ${O}` : "2px solid transparent" }}>回答紀錄</span>
+      </div>
+
+      {tab === "responses" && <QuizResponsesAdmin />}
+
+      {tab === "content" && <>
       {/* 節慶開關 */}
       <div style={{ background: WHITE, border: `1px solid ${BORDER}`, borderRadius: 10, padding: "16px 20px", marginBottom: 32, display: "flex", alignItems: "center", gap: 16 }}>
         <div style={{ flex: 1 }}>
@@ -2158,6 +2264,7 @@ function SavingsBagQuizAdmin({ savingsBagQuiz, setSavingsBagQuiz }) {
           </div>
         );
       })}
+      </>}
     </div>
   );
 }

@@ -597,9 +597,20 @@ function pick(el, q, v) {
   document.getElementById('btn-submit').disabled = done < TOTAL;
 }
 
+// ── 回答紀錄寫入 ──
+function saveResponse(rec) {
+  if (!db) return;
+  db.collection('quizResponses').add({
+    answers: { ...ans },
+    persona: rec.persona,
+    createdAt: firebase.firestore.FieldValue.serverTimestamp()
+  }).catch(() => { /* 寫入失敗不影響測驗體驗 */ });
+}
+
 // ── 顯示結果 ──
 function showResult() {
   const rec = getRec(ans);
+  saveResponse(rec);
   document.getElementById('res-persona').textContent = rec.persona;
   document.getElementById('res-desc').textContent = rec.desc;
 
