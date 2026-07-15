@@ -35,7 +35,7 @@ const MID = "#6B6B6B";
 const LIGHT = "#767676";
 const TITLE_COLOR = "#F05E1C";
 const BORDER = "rgba(0,0,0,0.07)";
-const GRAD = `linear-gradient(135deg, ${O2} 0%, #FFF7F3 60%, ${WHITE} 100%)`;
+const GRAD = O2;
 
 const GF = `@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@300;400;500;700&family=Inter:ital,opsz,wght@0,14..32,300;0,14..32,400;0,14..32,500;0,14..32,700;1,14..32,300&display=swap');`;
 
@@ -58,18 +58,13 @@ button{font-family:inherit;cursor:pointer;border:none;border-radius:8px;}
 .pbn:hover{background:${CORAL2};box-shadow:0 4px 16px rgba(200,90,20,.2);}
 .pg{background:transparent;border:1px solid #D0D5DA;padding:11px 24px;font-size:13px;color:${MID};border-radius:8px;transition:border-color .18s,color .18s,box-shadow .18s;cursor:pointer;}
 .pg:hover{border-color:${O};color:${O};box-shadow:0 2px 10px rgba(200,90,20,.1);}
-.tag{display:inline-block;background:${O2};color:${O};font-size:11px;padding:3px 10px;letter-spacing:.5px;font-weight:500;}
-.tagn{display:inline-block;background:${CORAL};color:#fff;font-size:11px;padding:3px 10px;letter-spacing:.5px;font-weight:500;}
+.tag{display:inline-block;background:${O2};color:${O};font-size:11px;padding:4px 12px;letter-spacing:.5px;font-weight:600;border-radius:999px;}
+.tagn{display:inline-block;background:${CORAL};color:#fff;font-size:11px;padding:4px 12px;letter-spacing:.5px;font-weight:600;border-radius:999px;}
 .ordbtn{background:transparent;border:1px solid #D0D5DA;color:${LIGHT};font-size:11px;padding:2px 6px;line-height:1;cursor:pointer;}
 .ordbtn:hover{border-color:${O};color:${O};}
 .card{background:${WHITE};border:1px solid ${BORDER};border-radius:12px;box-shadow:0 2px 10px rgba(0,0,0,.06);transition:box-shadow .24s,transform .24s;cursor:pointer;overflow:hidden;}
 .card:hover{box-shadow:0 12px 40px rgba(200,90,20,.15);transform:translateY(-4px);}
 .section-label{font-size:11px;letter-spacing:3px;color:${O};font-weight:500;text-transform:uppercase;}
-.hero-pattern{
-  background-color:${O2};
-  background-image:radial-gradient(${CORAL}60 1.5px,transparent 1.5px);
-  background-size:28px 28px;
-}
 @keyframes pageEnter {
   from { opacity: 0; transform: translateY(16px); }
   to   { opacity: 1; transform: translateY(0); }
@@ -731,9 +726,9 @@ function Hero({ about, isAdmin, setAbout, links }) {
   const bl1 = about.bannerLink1 || l.lineCommunity;
   const bl2 = about.bannerLink2 || l.instagram;
   return (
-    <div className={`banner-h${bi ? "" : " hero-pattern"}`} style={{
+    <div className="banner-h" style={{
       height: 560,
-      ...(bi ? { background: `linear-gradient(rgba(40,20,10,.55),rgba(40,20,10,.55)) center/cover, url('${bi.replace(/[\\'()]/g, "\\$&")}') center/cover no-repeat` } : {}),
+      background: bi ? `linear-gradient(rgba(40,20,10,.55),rgba(40,20,10,.55)) center/cover, url('${bi.replace(/[\\'()]/g, "\\$&")}') center/cover no-repeat` : O2,
       display: "flex", alignItems: "center", position: "relative"
     }}>
       <div style={{ maxWidth: 1100, margin: "0 auto", padding: "0 32px", width: "100%" }}>
@@ -803,7 +798,7 @@ function Home({ articles, setPage, setId, setArticles, isAdmin, siteTitle, setSi
         <div style={{ display: "flex", gap: 8, flexWrap: "wrap", marginBottom: 16, alignItems: "center", justifyContent: "space-between" }}>
           <div style={{ display: "flex", gap: 8, flexWrap: "wrap", alignItems: "center" }}>
             {["全部", ...tags].map(t => (
-              <span key={t} onClick={() => setFilter(t)} style={{ fontSize: 12, padding: "8px 16px", cursor: "pointer", background: filter === t ? CORAL : GRAY, color: filter === t ? WHITE : MID, fontWeight: filter === t ? "500" : "400", transition: "background .15s" }}>{t}</span>
+              <span key={t} onClick={() => setFilter(t)} style={{ fontSize: 12, padding: "8px 16px", borderRadius: 999, cursor: "pointer", background: filter === t ? CORAL : GRAY, color: filter === t ? WHITE : MID, fontWeight: filter === t ? "500" : "400", transition: "background .15s" }}>{t}</span>
             ))}
             {isAdmin && <span onClick={() => setEditTags(p => !p)} style={{ fontSize: 12, color: O, cursor: "pointer", marginLeft: 8 }}>{editTags ? "關閉" : "管理標籤"}</span>}
           </div>
@@ -832,19 +827,19 @@ function Home({ articles, setPage, setId, setArticles, isAdmin, siteTitle, setSi
         <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill,minmax(320px,1fr))", gap: 20 }} className="grid3">
           {filtered.map((a, idx) => (
             <Reveal key={a.id} delay={Math.min(idx * 80, 400)}>
-            <div className="card" onClick={() => open(a.id)} style={{ position: "relative" }}>
+            <div className="card" onClick={() => open(a.id)} style={{ position: "relative", height: 440, display: "flex", flexDirection: "column" }}>
               {a.img
-                ? <div style={{ height: 200, overflow: "hidden", background: GRAY }}><img src={a.img} alt={a.title} style={{ width: "100%", height: "100%", objectFit: "cover", transition: "transform .3s" }} loading="lazy" onMouseEnter={e => e.currentTarget.style.transform = "scale(1.04)"} onMouseLeave={e => e.currentTarget.style.transform = "scale(1)"} /></div>
-                : <div style={{ height: 8, background: `linear-gradient(90deg, ${CORAL} 0%, ${O2} 100%)` }} />
+                ? <div style={{ height: 200, flexShrink: 0, overflow: "hidden", background: GRAY }}><img src={a.img} alt={a.title} style={{ width: "100%", height: "100%", objectFit: "cover", transition: "transform .3s" }} loading="lazy" onMouseEnter={e => e.currentTarget.style.transform = "scale(1.04)"} onMouseLeave={e => e.currentTarget.style.transform = "scale(1)"} /></div>
+                : <div style={{ height: 8, flexShrink: 0, background: `linear-gradient(90deg, ${CORAL} 0%, ${O2} 100%)` }} />
               }
-              <div style={{ padding: "24px 28px 24px" }}>
-                <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 12, alignItems: "flex-start" }}>
+              <div style={{ padding: "24px 28px 24px", flex: 1, display: "flex", flexDirection: "column", overflow: "hidden" }}>
+                <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 12, alignItems: "flex-start", flexShrink: 0 }}>
                   <span className="tag">{a.tag}</span>
                   <span style={{ fontSize: 11, color: LIGHT, flexShrink: 0, marginLeft: 8 }}>{a.date}</span>
                 </div>
-                <h3 style={{ fontSize: 17, fontWeight: 500, lineHeight: 1.55, marginBottom: 10, color: TITLE_COLOR }}>{a.title}</h3>
-                <p style={{ fontSize: 14, color: MID, lineHeight: 1.9, marginBottom: 20, whiteSpace: "pre-wrap" }}>{a.excerpt}</p>
-                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                <h3 style={{ fontSize: 17, fontWeight: 500, lineHeight: 1.55, marginBottom: 10, color: TITLE_COLOR, flexShrink: 0, display: "-webkit-box", WebkitLineClamp: 2, WebkitBoxOrient: "vertical", overflow: "hidden" }}>{a.title}</h3>
+                <p style={{ fontSize: 14, color: MID, lineHeight: 1.9, marginBottom: 20, whiteSpace: "pre-wrap", flex: 1, display: "-webkit-box", WebkitLineClamp: 3, WebkitBoxOrient: "vertical", overflow: "hidden" }}>{a.excerpt}</p>
+                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", flexShrink: 0 }}>
                   <span style={{ fontSize: 12, color: O, fontWeight: 500 }}>閱讀全文 →</span>
                   <span style={{ fontSize: 11, color: LIGHT }}>瀏覽 {a.views}</span>
                 </div>
@@ -1080,7 +1075,7 @@ function About({ about, setAbout, isAdmin, links, setLinks }) {
       <button className="pg" onClick={() => setEditing(false)} style={{ marginBottom: 32 }}>← 取消</button>
       <p className="section-label" style={{ marginBottom: 28 }}>編輯關於我</p>
       <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 32, marginBottom: 32 }} className="grid2">
-        <div style={{ background: GRAY, aspectRatio: "3/4", display: "flex", alignItems: "center", justifyContent: "center", overflow: "hidden" }}>
+        <div style={{ background: GRAY, aspectRatio: "3/4", borderRadius: 14, display: "flex", alignItems: "center", justifyContent: "center", overflow: "hidden" }}>
           {tmp.img ? <img src={tmp.img} style={{ width: "100%", height: "100%", objectFit: "cover" }} alt="about" /> : <span style={{ fontSize: 12, color: LIGHT }}>封面圖片</span>}
         </div>
         <div style={{ display: "flex", flexDirection: "column", gap: 20 }}>
@@ -1122,7 +1117,7 @@ function About({ about, setAbout, isAdmin, links, setLinks }) {
       </div>
       <div style={{ maxWidth: 1100, margin: "0 auto", padding: "72px 32px" }} className="page-wrap">
         <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 64, alignItems: "start" }} className="about-grid">
-          <div style={{ background: GRAY, aspectRatio: "3/4", overflow: "hidden", display: "flex", alignItems: "center", justifyContent: "center" }} className="about-img">
+          <div style={{ background: GRAY, aspectRatio: "3/4", borderRadius: 14, overflow: "hidden", display: "flex", alignItems: "center", justifyContent: "center" }} className="about-img">
             {about.img ? <img src={about.img} style={{ width: "100%", height: "100%", objectFit: "cover" }} alt="88La" /> : <span style={{ fontSize: 12, color: LIGHT, letterSpacing: "1px" }}>PHOTO</span>}
           </div>
           <div style={{ paddingTop: 20 }}>
@@ -1191,19 +1186,19 @@ function Shop({ products, setProducts, isAdmin }) {
         <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill,minmax(280px,1fr))", gap: 20 }} className="grid3">
           {products.map((p, idx) => (
             <Reveal key={p.id} delay={Math.min(idx * 80, 400)}>
-            <div style={{ background: WHITE, borderRadius: 12, boxShadow: "0 2px 10px rgba(0,0,0,.06)", overflow: "hidden", position: "relative", border: `1px solid ${BORDER}`, transition: "box-shadow .24s, transform .24s" }}
+            <div style={{ background: WHITE, borderRadius: 12, boxShadow: "0 2px 10px rgba(0,0,0,.06)", overflow: "hidden", position: "relative", border: `1px solid ${BORDER}`, transition: "box-shadow .24s, transform .24s", height: 440, display: "flex", flexDirection: "column" }}
               onMouseEnter={e => { e.currentTarget.style.boxShadow = "0 12px 40px rgba(200,90,20,.15)"; e.currentTarget.style.transform = "translateY(-4px)"; }}
               onMouseLeave={e => { e.currentTarget.style.boxShadow = "0 2px 10px rgba(0,0,0,.06)"; e.currentTarget.style.transform = "translateY(0)"; }}
             >
               {isAdmin && <OrdBtns idx={idx} total={products.length} onMove={move} style={{ position: "absolute", top: 12, right: 12, zIndex: 1 }} />}
-              <div style={{ height: 200, background: "#E8EAEC", overflow: "hidden", display: "flex", alignItems: "center", justifyContent: "center" }}>
+              <div style={{ height: 200, flexShrink: 0, background: "#E8EAEC", overflow: "hidden", display: "flex", alignItems: "center", justifyContent: "center" }}>
                 {p.img ? <img src={p.img} alt={p.name} style={{ width: "100%", height: "100%", objectFit: "cover" }} loading="lazy" /> : <span style={{ fontSize: 12, color: LIGHT, letterSpacing: "1px" }}>{p.type === "digital" ? "DIGITAL" : "PHYSICAL"}</span>}
               </div>
-              <div style={{ padding: "20px 22px 24px" }}>
-                <span className={p.type === "digital" ? "tag" : "tagn"} style={{ marginBottom: 10, display: "inline-block" }}>{p.type === "digital" ? "數位商品" : "實體商品"}</span>
-                <h3 style={{ fontSize: 15, fontWeight: 500, marginBottom: 8, color: O }}>{p.name}</h3>
-                <p style={{ fontSize: 13, color: MID, lineHeight: 1.8, marginBottom: 14, whiteSpace: "pre-wrap" }}>{p.desc}</p>
-                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: 8 }}>
+              <div style={{ padding: "20px 22px 24px", flex: 1, display: "flex", flexDirection: "column", overflow: "hidden" }}>
+                <span className={p.type === "digital" ? "tag" : "tagn"} style={{ marginBottom: 10, display: "inline-block", flexShrink: 0, alignSelf: "flex-start" }}>{p.type === "digital" ? "數位商品" : "實體商品"}</span>
+                <h3 style={{ fontSize: 15, fontWeight: 500, marginBottom: 8, color: O, flexShrink: 0, display: "-webkit-box", WebkitLineClamp: 1, WebkitBoxOrient: "vertical", overflow: "hidden" }}>{p.name}</h3>
+                <p style={{ fontSize: 13, color: MID, lineHeight: 1.8, marginBottom: 14, whiteSpace: "pre-wrap", flex: 1, display: "-webkit-box", WebkitLineClamp: 4, WebkitBoxOrient: "vertical", overflow: "hidden" }}>{p.desc}</p>
+                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: 8, flexShrink: 0 }}>
                   <span style={{ fontSize: 16, fontWeight: 700, color: O }}>{p.price}</span>
                   <div style={{ display: "flex", gap: 8 }}>
                     {p.url
@@ -1278,17 +1273,17 @@ function IG({ igPosts, setIgPosts, isAdmin, links }) {
             const ytId = getYouTubeId(p.url || "");
             return (
               <Reveal key={p.id} delay={Math.min(idx * 80, 400)}>
-              <div key={p.id} style={{ background: WHITE, border: `1px solid ${BORDER}`, borderRadius: 12, boxShadow: "0 2px 10px rgba(0,0,0,.06)", overflow: "hidden", position: "relative", transition: "box-shadow .24s, transform .24s" }}
+              <div key={p.id} style={{ background: WHITE, border: `1px solid ${BORDER}`, borderRadius: 12, boxShadow: "0 2px 10px rgba(0,0,0,.06)", overflow: "hidden", position: "relative", transition: "box-shadow .24s, transform .24s", height: 300, display: "flex", flexDirection: "column" }}
                 onMouseEnter={e => { e.currentTarget.style.boxShadow = "0 12px 40px rgba(200,90,20,.15)"; e.currentTarget.style.transform = "translateY(-4px)"; }}
                 onMouseLeave={e => { e.currentTarget.style.boxShadow = "0 2px 10px rgba(0,0,0,.06)"; e.currentTarget.style.transform = "translateY(0)"; }}
               >
                 {ytId ? (
-                  <div style={{ aspectRatio: "16/9", overflow: "hidden" }}>
+                  <div style={{ height: 200, flexShrink: 0, overflow: "hidden" }}>
                     <iframe src={`https://www.youtube.com/embed/${ytId}`} title={p.title} allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowFullScreen style={{ width: "100%", height: "100%", border: "none", display: "block" }} loading="lazy" />
                   </div>
                 ) : (
-                  <a href={p.url || l.instagram} target="_blank" rel="noopener noreferrer" style={{ display: "block" }}>
-                    <div style={{ aspectRatio: "1", background: "#EBEBEB", overflow: "hidden", position: "relative", display: "flex", alignItems: "center", justifyContent: "center" }}>
+                  <a href={p.url || l.instagram} target="_blank" rel="noopener noreferrer" style={{ display: "block", flexShrink: 0 }}>
+                    <div style={{ height: 200, background: "#EBEBEB", overflow: "hidden", position: "relative", display: "flex", alignItems: "center", justifyContent: "center" }}>
                       {p.thumb ? <img src={p.thumb} alt={p.title} style={{ width: "100%", height: "100%", objectFit: "cover" }} loading="lazy" /> : <span style={{ fontSize: 12, color: LIGHT, letterSpacing: "2px" }}>{p.type === "video" ? "VIDEO" : "IG"}</span>}
                       <div style={{ position: "absolute", inset: 0, background: "rgba(30,20,10,0)", display: "flex", alignItems: "center", justifyContent: "center", transition: "background .2s" }}
                         onMouseEnter={e => e.currentTarget.style.background = "rgba(30,20,10,.4)"}
@@ -1299,8 +1294,8 @@ function IG({ igPosts, setIgPosts, isAdmin, links }) {
                     </div>
                   </a>
                 )}
-                <div style={{ padding: "14px 18px", display: "flex", justifyContent: "space-between", alignItems: "flex-start", gap: 8 }}>
-                  <p style={{ fontSize: 13, lineHeight: 1.6, color: CHAR, flex: 1, whiteSpace: "pre-wrap" }}>{p.title}</p>
+                <div style={{ padding: "14px 18px", display: "flex", justifyContent: "space-between", alignItems: "flex-start", gap: 8, flex: 1, overflow: "hidden" }}>
+                  <p style={{ fontSize: 13, lineHeight: 1.6, color: CHAR, flex: 1, whiteSpace: "pre-wrap", display: "-webkit-box", WebkitLineClamp: 3, WebkitBoxOrient: "vertical", overflow: "hidden" }}>{p.title}</p>
                   {isAdmin && (
                     <div style={{ display: "flex", flexDirection: "column", gap: 4, alignItems: "flex-end", flexShrink: 0 }}>
                       <OrdBtns idx={idx} total={igPosts.length} onMove={move} />
@@ -1369,17 +1364,17 @@ function Goods({ goods, setGoods, isAdmin }) {
           <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill,minmax(260px,1fr))", gap: 20 }} className="grid3">
             {active.map((p, idx) => (
               <Reveal key={p.id} delay={Math.min(idx * 80, 400)}>
-              <div style={{ background: WHITE, borderRadius: 12, boxShadow: "0 2px 10px rgba(0,0,0,.06)", overflow: "hidden", position: "relative", border: `1px solid ${BORDER}`, transition: "box-shadow .24s, transform .24s" }}
+              <div style={{ background: WHITE, borderRadius: 12, boxShadow: "0 2px 10px rgba(0,0,0,.06)", overflow: "hidden", position: "relative", border: `1px solid ${BORDER}`, transition: "box-shadow .24s, transform .24s", height: 420, display: "flex", flexDirection: "column" }}
                 onMouseEnter={e => { e.currentTarget.style.boxShadow = "0 12px 40px rgba(200,90,20,.15)"; e.currentTarget.style.transform = "translateY(-4px)"; }}
                 onMouseLeave={e => { e.currentTarget.style.boxShadow = "0 2px 10px rgba(0,0,0,.06)"; e.currentTarget.style.transform = "translateY(0)"; }}
               >
                 {isAdmin && <OrdBtns idx={idx} total={active.length} onMove={move} style={{ position: "absolute", top: 12, right: 12, zIndex: 1 }} />}
-                {p.img && <div style={{ height: 180, overflow: "hidden", background: "#E8EAEC" }}><img src={p.img} alt={p.name} style={{ width: "100%", height: "100%", objectFit: "cover" }} loading="lazy" /></div>}
-                <div style={{ padding: "22px 22px" }}>
-                  {p.brand && <p style={{ fontSize: 11, color: O, letterSpacing: ".5px", marginBottom: 6, fontWeight: 500 }}>{p.brand}</p>}
-                  <h3 style={{ fontSize: 15, fontWeight: 500, marginBottom: 8, color: CORAL2 }}>{p.name}</h3>
-                  <p style={{ fontSize: 13, color: MID, lineHeight: 1.8, marginBottom: 16, whiteSpace: "pre-wrap" }}>{p.desc}</p>
-                  <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: 8 }}>
+                <div style={{ height: 180, flexShrink: 0, overflow: "hidden", background: "#E8EAEC" }}>{p.img && <img src={p.img} alt={p.name} style={{ width: "100%", height: "100%", objectFit: "cover" }} loading="lazy" />}</div>
+                <div style={{ padding: "22px 22px", flex: 1, display: "flex", flexDirection: "column", overflow: "hidden" }}>
+                  {p.brand && <p style={{ fontSize: 11, color: O, letterSpacing: ".5px", marginBottom: 6, fontWeight: 500, flexShrink: 0 }}>{p.brand}</p>}
+                  <h3 style={{ fontSize: 15, fontWeight: 500, marginBottom: 8, color: CORAL2, flexShrink: 0, display: "-webkit-box", WebkitLineClamp: 1, WebkitBoxOrient: "vertical", overflow: "hidden" }}>{p.name}</h3>
+                  <p style={{ fontSize: 13, color: MID, lineHeight: 1.8, marginBottom: 16, whiteSpace: "pre-wrap", flex: 1, display: "-webkit-box", WebkitLineClamp: 4, WebkitBoxOrient: "vertical", overflow: "hidden" }}>{p.desc}</p>
+                  <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: 8, flexShrink: 0 }}>
                     {p.url && <a href={p.url} target="_blank" rel="noopener noreferrer"><button className="pb" style={{ fontSize: 12, padding: "8px 16px" }}>查看 →</button></a>}
                     {isAdmin && <div style={{ display: "flex", gap: 8 }}><button className="pg" style={{ fontSize: 11, padding: "5px 10px" }} onClick={() => startEdit(p)}>編輯</button><button className="pg" style={{ fontSize: 11, padding: "5px 10px" }} onClick={() => { setGoods(prev => prev.map(g => g.id === p.id ? { ...g, active: false } : g), { silent: true }); _showToast(`「${p.name}」已下架`); }}>下架</button><button className="pg" style={{ fontSize: 11, padding: "5px 10px", color: "#E74C3C", borderColor: "#E74C3C" }} onClick={() => del(p.id)}>刪除</button></div>}
                   </div>
@@ -1558,10 +1553,10 @@ function AppPage({ appContent, setAppContent, isAdmin }) {
               <p style={{ fontSize: 11, color: MID, letterSpacing: "0.08em", textTransform: "uppercase", marginBottom: 12 }}>示範帳戶人設</p>
               <p style={{ fontSize: 15, fontWeight: 700, color: CHAR, marginBottom: 12 }}>小琳，28 歲，行銷企劃</p>
               <ul style={{ listStyle: "none", padding: 0, margin: 0, display: "flex", flexDirection: "column", gap: 8 }}>
-                <li style={{ fontSize: 13, color: MID, display: "flex", gap: 8, lineHeight: 1.6 }}><span style={{ color: O, flexShrink: 0 }}>—</span><span>月薪 NT$42,000，台北租屋，每月房租 NT$13,000</span></li>
-                <li style={{ fontSize: 13, color: MID, display: "flex", gap: 8, lineHeight: 1.6 }}><span style={{ color: O, flexShrink: 0 }}>—</span><span>兩張信用卡：日常消費卡 ＋ 網購回饋卡</span></li>
-                <li style={{ fontSize: 13, color: MID, display: "flex", gap: 8, lineHeight: 1.6 }}><span style={{ color: O, flexShrink: 0 }}>—</span><span>目標：一年內存到 NT$150,000 頭期款基金</span></li>
-                <li style={{ fontSize: 13, color: MID, display: "flex", gap: 8, lineHeight: 1.6 }}><span style={{ color: O, flexShrink: 0 }}>—</span><span>有記帳習慣但常常「記了，然後呢？」月初信心滿滿，月中容易失控（聚餐、網購），月底發現目標又落後</span></li>
+                <li style={{ fontSize: 13, color: MID, display: "flex", gap: 8, lineHeight: 1.6 }}><span style={{ color: O, fontWeight: 700, flexShrink: 0 }}>·</span><span>月薪 NT$42,000，台北租屋，每月房租 NT$13,000</span></li>
+                <li style={{ fontSize: 13, color: MID, display: "flex", gap: 8, lineHeight: 1.6 }}><span style={{ color: O, fontWeight: 700, flexShrink: 0 }}>·</span><span>兩張信用卡：日常消費卡 ＋ 網購回饋卡</span></li>
+                <li style={{ fontSize: 13, color: MID, display: "flex", gap: 8, lineHeight: 1.6 }}><span style={{ color: O, fontWeight: 700, flexShrink: 0 }}>·</span><span>目標：一年內存到 NT$150,000 頭期款基金</span></li>
+                <li style={{ fontSize: 13, color: MID, display: "flex", gap: 8, lineHeight: 1.6 }}><span style={{ color: O, fontWeight: 700, flexShrink: 0 }}>·</span><span>有記帳習慣但常常「記了，然後呢？」月初信心滿滿，月中容易失控（聚餐、網購），月底發現目標又落後</span></li>
               </ul>
             </div>
           </div>
@@ -1589,20 +1584,20 @@ function AppPage({ appContent, setAppContent, isAdmin }) {
         <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill,minmax(300px,1fr))", gap: 20 }} className="grid3">
           {c.features.map((f, i) => (
             <Reveal key={f.id || i} delay={Math.min(i * 80, 400)}>
-            <div style={{ background: WHITE, border: `1px solid ${BORDER}`, borderRadius: 12, boxShadow: "0 2px 10px rgba(0,0,0,.06)", transition: "box-shadow .24s, transform .24s", position: "relative", overflow: "hidden" }}
+            <div style={{ background: WHITE, border: `1px solid ${BORDER}`, borderRadius: 12, boxShadow: "0 2px 10px rgba(0,0,0,.06)", transition: "box-shadow .24s, transform .24s", position: "relative", overflow: "hidden", height: 260, display: "flex", flexDirection: "column" }}
               onMouseEnter={e => { e.currentTarget.style.boxShadow = "0 12px 40px rgba(200,90,20,.15)"; e.currentTarget.style.transform = "translateY(-4px)"; }}
               onMouseLeave={e => { e.currentTarget.style.boxShadow = "0 2px 10px rgba(0,0,0,.06)"; e.currentTarget.style.transform = "translateY(0)"; }}
             >
-              {f.img && <div style={{ height: 160, overflow: "hidden" }}><img src={f.img} alt={f.title} style={{ width: "100%", height: "100%", objectFit: "cover" }} loading="lazy" /></div>}
-              <div style={{ padding: "28px 28px 32px" }}>
+              {f.img && <div style={{ height: 160, flexShrink: 0, overflow: "hidden" }}><img src={f.img} alt={f.title} style={{ width: "100%", height: "100%", objectFit: "cover" }} loading="lazy" /></div>}
+              <div style={{ padding: "28px 28px 32px", flex: 1, display: "flex", flexDirection: "column", overflow: "hidden" }}>
                 {isAdmin && <div style={{ position: "absolute", top: 10, right: 10, display: "flex", gap: 4, alignItems: "center", zIndex: 1 }}>
                   <OrdBtns idx={i} total={c.features.length} onMove={moveFeat} />
                   <button className="pg" style={{ fontSize: 10, padding: "3px 8px" }} onClick={() => { setFeatForm({ n: f.n, title: f.title, desc: f.desc, img: f.img || "" }); setEditingFeat(f.id); }}>編輯</button>
                   <button className="pg" style={{ fontSize: 10, padding: "3px 8px", color: "#E74C3C", borderColor: "#E74C3C" }} onClick={() => delFeat(f.id)}>✕</button>
                 </div>}
-                <p style={{ fontSize: 11, color: O, fontWeight: 600, letterSpacing: "1px", marginBottom: 14 }}>{String(i + 1).padStart(2, "0")}</p>
-                <h3 style={{ fontSize: 17, fontWeight: 500, color: CHAR, marginBottom: 10 }}>{f.title}</h3>
-                <p style={{ fontSize: 14, color: MID, lineHeight: 1.85, whiteSpace: "pre-wrap" }}>{f.desc}</p>
+                <p style={{ fontSize: 11, color: O, fontWeight: 600, letterSpacing: "1px", marginBottom: 14, flexShrink: 0 }}>{String(i + 1).padStart(2, "0")}</p>
+                <h3 style={{ fontSize: 17, fontWeight: 500, color: CHAR, marginBottom: 10, flexShrink: 0, display: "-webkit-box", WebkitLineClamp: 2, WebkitBoxOrient: "vertical", overflow: "hidden" }}>{f.title}</h3>
+                <p style={{ fontSize: 14, color: MID, lineHeight: 1.85, whiteSpace: "pre-wrap", flex: 1, display: "-webkit-box", WebkitLineClamp: 4, WebkitBoxOrient: "vertical", overflow: "hidden" }}>{f.desc}</p>
               </div>
             </div>
             </Reveal>
@@ -1648,9 +1643,14 @@ function AppPage({ appContent, setAppContent, isAdmin }) {
               </div>
             </div>
           ))}
-          <div style={{ background: O2, borderLeft: `3px solid ${O}`, borderRadius: "0 10px 10px 0", padding: "18px 22px", marginBottom: 52 }}>
-            <p style={{ fontSize: 11, fontWeight: 700, color: O, letterSpacing: "1px", marginBottom: 5 }}>資料保存</p>
-            <p style={{ fontSize: 13, color: CHAR, lineHeight: 1.85 }}>{c.guideData?.dataNote || DEFAULTS.appContent.guideData.dataNote}</p>
+          <div style={{ background: O2, borderRadius: 12, padding: "20px 22px", marginBottom: 52, display: "flex", gap: 14, alignItems: "flex-start" }}>
+            <div style={{ width: 30, height: 30, flexShrink: 0, borderRadius: "50%", background: "rgba(200,90,20,.14)", color: O, display: "flex", alignItems: "center", justifyContent: "center" }}>
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="5" y="10" width="14" height="10" rx="2"/><path d="M8 10V7a4 4 0 0 1 8 0v3"/></svg>
+            </div>
+            <div>
+              <p style={{ fontSize: 11, fontWeight: 700, color: O, letterSpacing: "1px", marginBottom: 5 }}>資料保存</p>
+              <p style={{ fontSize: 13, color: CHAR, lineHeight: 1.85 }}>{c.guideData?.dataNote || DEFAULTS.appContent.guideData.dataNote}</p>
+            </div>
           </div>
           <div style={{ textAlign: "center", marginBottom: 28 }}>
             <p className="section-label" style={{ marginBottom: 10 }}>FAQ</p>
@@ -1818,7 +1818,7 @@ function Resources({ resources, setResources, isAdmin }) {
           </div>
         )}
         <div style={{ display: "flex", gap: 8, flexWrap: "wrap", marginBottom: 36 }}>
-          {types.map(t => <span key={t} onClick={() => setFilter(t)} style={{ fontSize: 12, padding: "8px 16px", cursor: "pointer", background: filter === t ? CORAL : GRAY, color: filter === t ? WHITE : MID, transition: "background .15s" }}>{t}</span>)}
+          {types.map(t => <span key={t} onClick={() => setFilter(t)} style={{ fontSize: 12, padding: "8px 16px", borderRadius: 999, cursor: "pointer", background: filter === t ? CORAL : GRAY, color: filter === t ? WHITE : MID, transition: "background .15s" }}>{t}</span>)}
         </div>
         {filtered.length === 0 ? (
           <div style={{ textAlign: "center", padding: "80px 0" }}>
