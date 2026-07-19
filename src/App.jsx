@@ -64,6 +64,8 @@ button{font-family:inherit;cursor:pointer;border:none;border-radius:8px;}
 .ordbtn:hover{border-color:${O};color:${O};}
 .card{background:${WHITE};border:1px solid ${BORDER};border-radius:20px;box-shadow:0 2px 10px rgba(0,0,0,.06);transition:box-shadow .3s,transform .3s;cursor:pointer;overflow:hidden;}
 .card:hover{box-shadow:0 20px 40px rgba(0,0,0,.1);transform:translateY(-6px);}
+.feature-row-alt{direction:rtl;}
+.feature-row-alt>*{direction:ltr;}
 .section-label{font-size:11px;letter-spacing:3px;color:${O};font-weight:500;text-transform:uppercase;}
 @keyframes pageEnter {
   from { opacity: 0; transform: translateY(16px); }
@@ -101,6 +103,8 @@ button{font-family:inherit;cursor:pointer;border:none;border-radius:8px;}
   .page-wrap{padding:40px 20px 88px!important;}
   .grid2{grid-template-columns:1fr!important;}
   .grid3{grid-template-columns:1fr!important;}
+  .feature-row-alt{direction:ltr!important;}
+  .feature-row-item{gap:24px!important;padding:32px 0!important;}
   .footer-grid4{grid-template-columns:1fr 1fr!important;}
   .legacy-card{flex-direction:column!important;align-items:flex-start!important;}
   .grid-ig{grid-template-columns:1fr 1fr!important;}
@@ -165,7 +169,8 @@ const DEFAULTS = {
     subhead: "把存錢這件事從數字變成實際的動作。分類存錢袋讓每一筆存款都有明確去處，適合想要「摸得到」進度的人。",
     ctaPrimary: "前往賣場購買",
     ctaSecondary: "不確定選哪款？先測驗看看",
-    buyTagline: "88La的手作溫暖，陪伴你的存錢之旅。"
+    buyTagline: "88La的手作溫暖，陪伴你的存錢之旅。",
+    heroImg: ""
   },
   goodsHero: {
     eyebrow: "88La · 推薦好物",
@@ -848,10 +853,14 @@ function PageHero({ title, fields, data, setData, defaults, isAdmin, children })
       <div style={{ display: "flex", flexDirection: "column", gap: 20 }}>
         {fields.map(f => (
           <div key={f.key}>
-            <p style={{ fontSize: 12, color: MID, marginBottom: 8 }}>{f.label}</p>
-            {f.multiline
-              ? <textarea value={tmp[f.key] || ""} onChange={e => setTmp(p => ({ ...p, [f.key]: e.target.value }))} style={{ minHeight: 70 }} />
-              : <input value={tmp[f.key] || ""} onChange={e => setTmp(p => ({ ...p, [f.key]: e.target.value }))} />}
+            {f.type === "image"
+              ? <ImgUploader label={f.label} value={tmp[f.key] || ""} onChange={v => setTmp(p => ({ ...p, [f.key]: v }))} aspect={f.aspect || "1/1"} />
+              : <>
+                <p style={{ fontSize: 12, color: MID, marginBottom: 8 }}>{f.label}</p>
+                {f.multiline
+                  ? <textarea value={tmp[f.key] || ""} onChange={e => setTmp(p => ({ ...p, [f.key]: e.target.value }))} style={{ minHeight: 70 }} />
+                  : <input value={tmp[f.key] || ""} onChange={e => setTmp(p => ({ ...p, [f.key]: e.target.value }))} />}
+              </>}
           </div>
         ))}
       </div>
@@ -1711,7 +1720,8 @@ const ENVELOPE_HERO_FIELDS = [
   { key: "subhead", label: "副標題", multiline: true },
   { key: "ctaPrimary", label: "主要按鈕文字" },
   { key: "ctaSecondary", label: "次要按鈕文字" },
-  { key: "buyTagline", label: "底部購買區標語" }
+  { key: "buyTagline", label: "底部購買區標語" },
+  { key: "heroImg", label: "產品實拍圖", type: "image", aspect: "1/1" }
 ];
 
 function Envelope({ products, setPage, isAdmin, envelopeHero, setEnvelopeHero }) {
@@ -1735,7 +1745,9 @@ function Envelope({ products, setPage, isAdmin, envelopeHero, setEnvelopeHero })
             </div>
             <p style={{ fontSize: 12, color: LIGHT, marginTop: 14 }}>賣場下單，選擇取貨方式</p>
           </div>
-          <div style={{ background: WHITE, border: `1px solid ${BORDER}`, borderRadius: 24, aspectRatio: "1/1", display: "flex", alignItems: "center", justifyContent: "center", color: O, fontSize: 13, fontWeight: 500 }}>產品實拍圖示意</div>
+          <div style={{ background: WHITE, border: `1px solid ${BORDER}`, borderRadius: 24, aspectRatio: "1/1", overflow: "hidden", display: "flex", alignItems: "center", justifyContent: "center", color: O, fontSize: 13, fontWeight: 500 }}>
+            {h.heroImg ? <img src={h.heroImg} alt="88La 存錢袋" style={{ width: "100%", height: "100%", objectFit: "cover" }} /> : "產品實拍圖示意"}
+          </div>
         </div>
       </div>
       <div id="products" style={{ background: WHITE, padding: "64px 32px", borderTop: `1px solid ${BORDER}` }}>
@@ -2133,23 +2145,22 @@ function AppPage({ appContent, setAppContent, isAdmin, setPage }) {
           </div>
         )}
         {isAdmin && !editingFeat && <div style={{ marginBottom: 24, textAlign: "right" }}><button className="pb" style={{ fontSize: 12 }} onClick={() => { setFeatForm({ n: String(c.features.length + 1).padStart(2, "0"), title: "", desc: "", img: "" }); setEditingFeat("new"); }}>＋ 新增功能</button></div>}
-        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill,minmax(300px,1fr))", gap: 20 }} className="grid3">
+        <div style={{ display: "flex", flexDirection: "column" }}>
           {c.features.map((f, i) => (
-            <Reveal key={f.id || i} delay={Math.min(i * 80, 400)}>
-            <div style={{ background: WHITE, border: `1px solid ${BORDER}`, borderRadius: 20, boxShadow: "0 2px 10px rgba(0,0,0,.06)", transition: "box-shadow .24s, transform .24s", position: "relative", overflow: "hidden", height: 260, display: "flex", flexDirection: "column" }}
-              onMouseEnter={e => { e.currentTarget.style.boxShadow = "0 20px 40px rgba(0,0,0,.1)"; e.currentTarget.style.transform = "translateY(-6px)"; }}
-              onMouseLeave={e => { e.currentTarget.style.boxShadow = "0 2px 10px rgba(0,0,0,.06)"; e.currentTarget.style.transform = "translateY(0)"; }}
-            >
-              {f.img && <div style={{ height: 160, flexShrink: 0, overflow: "hidden" }}><img src={f.img} alt={f.title} style={{ width: "100%", height: "100%", objectFit: "cover" }} loading="lazy" /></div>}
-              <div style={{ padding: "28px 28px 32px", flex: 1, display: "flex", flexDirection: "column", overflow: "hidden" }}>
-                {isAdmin && <div style={{ position: "absolute", top: 10, right: 10, display: "flex", gap: 4, alignItems: "center", zIndex: 1 }}>
+            <Reveal key={f.id || i}>
+            <div className={`feature-row-item ${i % 2 === 1 ? "feature-row-alt" : ""}`} style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 56, alignItems: "center", padding: "48px 0", borderBottom: i < c.features.length - 1 ? `1px solid ${BORDER}` : "none" }}>
+              <div style={{ background: O2, borderRadius: 24, aspectRatio: "4/3", overflow: "hidden", display: "flex", alignItems: "center", justifyContent: "center" }}>
+                {f.img ? <img src={f.img} alt={f.title} style={{ width: "100%", height: "100%", objectFit: "cover" }} loading="lazy" /> : <span style={{ fontSize: 13, color: O, fontWeight: 500 }}>{f.title || "功能"}畫面示意</span>}
+              </div>
+              <div style={{ position: "relative" }}>
+                {isAdmin && <div style={{ position: "absolute", top: -8, right: 0, display: "flex", gap: 4, alignItems: "center" }}>
                   <OrdBtns idx={i} total={c.features.length} onMove={moveFeat} />
                   <button className="pg" style={{ fontSize: 10, padding: "3px 8px" }} onClick={() => { setFeatForm({ n: f.n, title: f.title, desc: f.desc, img: f.img || "" }); setEditingFeat(f.id); }}>編輯</button>
                   <button className="pg" style={{ fontSize: 10, padding: "3px 8px", color: "#E74C3C", borderColor: "#E74C3C" }} onClick={() => delFeat(f.id)}>✕</button>
                 </div>}
-                <p style={{ fontSize: 11, color: O, fontWeight: 600, letterSpacing: "1px", marginBottom: 14, flexShrink: 0 }}>{String(i + 1).padStart(2, "0")}</p>
-                <h3 style={{ fontSize: 17, fontWeight: 500, color: CHAR, marginBottom: 10, flexShrink: 0, display: "-webkit-box", WebkitLineClamp: 2, WebkitBoxOrient: "vertical", overflow: "hidden" }}>{f.title}</h3>
-                <p style={{ fontSize: 14, color: MID, lineHeight: 1.85, whiteSpace: "pre-wrap", flex: 1, display: "-webkit-box", WebkitLineClamp: 4, WebkitBoxOrient: "vertical", overflow: "hidden" }}>{f.desc}</p>
+                <span style={{ display: "inline-block", fontSize: 12, color: O, fontWeight: 500, background: O2, padding: "4px 12px", borderRadius: 999, marginBottom: 16 }}>{String(i + 1).padStart(2, "0")}</span>
+                <h3 style={{ fontSize: 22, fontWeight: 700, color: CHAR, marginBottom: 12 }}>{f.title}</h3>
+                <p style={{ fontSize: 14, color: MID, lineHeight: 1.85, whiteSpace: "pre-wrap" }}>{f.desc}</p>
               </div>
             </div>
             </Reveal>
