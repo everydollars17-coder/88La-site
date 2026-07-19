@@ -625,8 +625,8 @@ const IcRes  = () => <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" 
 const IcApp  = () => <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8"><rect x="5" y="2" width="14" height="20" rx="2"/><circle cx="12" cy="17" r="1" fill="currentColor"/></svg>;
 const IcShop = () => <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>;
 
-const MOBILE_TABS = [["home","文章",IcUser],["community","社群",IcIG],["resources","資源",IcRes],["app","App",IcApp],["envelope","存錢袋",IcShop]];
-const NAV = [["home","文章"],["app","理財導航器"],["envelope","存錢袋"],["goods","推薦好物"],["community","8友社群"],["resources","資源中心"],["about","關於我們"]];
+const MOBILE_TABS = [["home","首頁",IcUser],["community","社群",IcIG],["resources","資源",IcRes],["app","App",IcApp],["envelope","存錢袋",IcShop]];
+const NAV = [["home","首頁"],["app","理財導航器"],["envelope","存錢袋"],["goods","推薦好物"],["community","8友社群"],["resources","資源中心"],["about","關於我們"]];
 
 // ── Nav ──
 function Nav({ page, setPage, isAdmin }) {
@@ -1766,9 +1766,9 @@ function Envelope({ products, setPage, isAdmin, envelopeHero, setEnvelopeHero })
                   <div style={{ aspectRatio: "4/3", background: O2, display: "flex", alignItems: "center", justifyContent: "center", overflow: "hidden" }}>
                     {p.img ? <img src={p.img} alt={p.name} style={{ width: "100%", height: "100%", objectFit: "cover" }} /> : <span style={{ fontSize: 13, color: O, fontWeight: 500 }}>{p.name}</span>}
                   </div>
-                  <div style={{ padding: 20 }}>
+                  <div style={{ padding: 20, flex: 1, display: "flex", flexDirection: "column" }}>
                     <h4 style={{ fontSize: 15, fontWeight: 500, color: CHAR, marginBottom: 8 }}>{p.name}</h4>
-                    <p style={{ fontSize: 13, color: MID, marginBottom: 16, whiteSpace: "pre-wrap" }}>{p.desc}</p>
+                    <p style={{ fontSize: 13, color: MID, marginBottom: 16, whiteSpace: "pre-wrap", flex: 1 }}>{p.desc}</p>
                     {p.url
                       ? <a href={p.url} target="_blank" rel="noopener noreferrer" style={{ fontSize: 13, fontWeight: 500, color: O }}>前往購買 →</a>
                       : <span style={{ fontSize: 13, color: LIGHT }}>連結準備中</span>}
