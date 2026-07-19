@@ -138,6 +138,25 @@ const DEFAULT_TAGS = ["理財觀念", "信用卡", "記帳", "投資", "讀書�
 const DEFAULTS = {
   siteTitle: "理財觀點與讀書筆記",
   footerTagline: "理財，是為了讓生活更自由。",
+  homeHero: {
+    eyebrow: "給理財新手的自動導航器",
+    headline: "記帳不是壓力\n是看懂自己數字的開始",
+    subheadline: "88La 陪你用最輕鬆的方式，重新認識自己的錢。",
+    ctaText: "開始使用理財導航器",
+    cta2Text: "看看存錢袋",
+    screenshot: ""
+  },
+  trustStats: [
+    { num: "90+", label: "8友社群成員" },
+    { num: "4,000+", label: "記帳範本下載" },
+    { num: "113+", label: "付費工具使用者" },
+    { num: "5年+", label: "理財內容創作經驗" }
+  ],
+  paths: [
+    { icon: "A", title: "理財自動導航器", desc: "雲端記帳 Web App，自動診斷消費模式，幫你看懂錢的流向。", page: "app" },
+    { icon: "B", title: "存錢袋", desc: "手工製作的實體存錢工具，讓存錢這件事更有儀式感。", page: "shop" },
+    { icon: "C", title: "8友社群", desc: "一群正在練習理財的人，互相打氣，不評判彼此的數字。", page: "community" }
+  ],
   links: {
     lineCommunity: "https://line.me/R/ti/p/@367xhgyr",
     lineOfficial: "https://line.me/R/ti/p/@367xhgyr",
@@ -307,6 +326,20 @@ function toSlug(str) {
 
 function stripHtml(s) {
   return (s || "").replace(/<[^>]*>/g, "");
+}
+
+function exportArticlesCSV(articles) {
+  const esc = v => `"${String(v ?? "").replace(/"/g, '""').replace(/\n/g, " ")}"`;
+  const header = ["id", "日期", "分類標籤", "標題", "摘要", "瀏覽數", "會員限定"];
+  const rows = (articles || []).map(a => [a.id, a.date, a.tag, a.title, stripHtml(a.excerpt), a.views || 0, a.member ? "Y" : "N"]);
+  const csv = "﻿" + [header, ...rows].map(r => r.map(esc).join(",")).join("\n");
+  const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = `88La文章清單_${new Date().toISOString().slice(0, 10)}.csv`;
+  a.click();
+  URL.revokeObjectURL(url);
 }
 
 function Reveal({ children, delay = 0 }) {
@@ -562,8 +595,8 @@ const IcRes  = () => <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" 
 const IcApp  = () => <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8"><rect x="5" y="2" width="14" height="20" rx="2"/><circle cx="12" cy="17" r="1" fill="currentColor"/></svg>;
 const IcShop = () => <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>;
 
-const MOBILE_TABS = [["home","文章",IcUser],["ig","最新消息",IcIG],["resources","資源",IcRes],["app","App",IcApp],["shop","商品",IcShop]];
-const NAV = [["home","文章"],["about","關於我"],["ig","最新消息"],["resources","資源分享"],["app","記帳 Web App"],["shop","商品"],["goods","推薦好物"]];
+const MOBILE_TABS = [["home","文章",IcUser],["community","社群",IcIG],["resources","資源",IcRes],["app","App",IcApp],["shop","商品",IcShop]];
+const NAV = [["home","文章"],["app","理財導航器"],["shop","存錢袋"],["goods","推薦好物"],["community","8友社群"],["resources","資源中心"],["about","關於我們"]];
 
 // ── Nav ──
 function Nav({ page, setPage, isAdmin }) {
@@ -748,7 +781,50 @@ function Hero({ about, isAdmin, setAbout, links }) {
 }
 
 // ── Home (article list) ──
-function Home({ articles, setPage, setId, setArticles, isAdmin, siteTitle, setSiteTitle, tags, setTags, about, setAbout, links }) {
+// ── Homepage Hero (marketing) ──
+function HomeHero({ homeHero, setHomeHero, isAdmin, setPage }) {
+  const h = { ...DEFAULTS.homeHero, ...(homeHero || {}) };
+  const [editing, setEditing] = useState(false);
+  const [tmp, setTmp] = useState(h);
+  const save = () => { setHomeHero(tmp); setEditing(false); };
+  if (editing) return (
+    <div style={{ padding: "48px 32px", maxWidth: 600, margin: "0 auto" }}>
+      <p style={{ fontSize: 11, letterSpacing: "2px", color: O, marginBottom: 24 }}>編輯首頁 Hero</p>
+      <div style={{ display: "flex", flexDirection: "column", gap: 20 }}>
+        <div><p style={{ fontSize: 12, color: MID, marginBottom: 8 }}>小標籤（Eyebrow）</p><input value={tmp.eyebrow} onChange={e => setTmp(p => ({ ...p, eyebrow: e.target.value }))} /></div>
+        <div><p style={{ fontSize: 12, color: MID, marginBottom: 8 }}>主標題（可換行）</p><textarea value={tmp.headline} onChange={e => setTmp(p => ({ ...p, headline: e.target.value }))} style={{ minHeight: 80 }} /></div>
+        <div><p style={{ fontSize: 12, color: MID, marginBottom: 8 }}>副標題</p><textarea value={tmp.subheadline} onChange={e => setTmp(p => ({ ...p, subheadline: e.target.value }))} style={{ minHeight: 60 }} /></div>
+        <div><p style={{ fontSize: 12, color: MID, marginBottom: 8 }}>主要按鈕文字</p><input value={tmp.ctaText} onChange={e => setTmp(p => ({ ...p, ctaText: e.target.value }))} /></div>
+        <div><p style={{ fontSize: 12, color: MID, marginBottom: 8 }}>次要按鈕文字</p><input value={tmp.cta2Text} onChange={e => setTmp(p => ({ ...p, cta2Text: e.target.value }))} /></div>
+        <ImgUploader label="App 截圖" value={tmp.screenshot} onChange={v => setTmp(p => ({ ...p, screenshot: v }))} aspect="9/19" />
+      </div>
+      <div style={{ display: "flex", gap: 10, marginTop: 28 }}><button className="pb" onClick={save}>儲存</button><button className="pg" onClick={() => setEditing(false)}>取消</button></div>
+    </div>
+  );
+  return (
+    <div style={{ background: O2, padding: "72px 32px" }}>
+      <div style={{ maxWidth: 1100, margin: "0 auto", display: "grid", gridTemplateColumns: "1.1fr 0.9fr", gap: 48, alignItems: "center" }} className="grid2">
+        <div>
+          <p style={{ fontSize: 12, letterSpacing: "2px", color: O, fontWeight: 600, marginBottom: 16 }}>{h.eyebrow}</p>
+          <h1 style={{ fontSize: 40, fontWeight: 700, color: CHAR, lineHeight: 1.35, marginBottom: 18, whiteSpace: "pre-wrap" }}>{h.headline}</h1>
+          <p style={{ fontSize: 15, color: MID, lineHeight: 1.85, marginBottom: 28, maxWidth: 440 }}>{h.subheadline}</p>
+          <div style={{ display: "flex", gap: 12, flexWrap: "wrap", alignItems: "center" }}>
+            <button className="pb" onClick={() => setPage("app")}>{h.ctaText} →</button>
+            <button className="pg" onClick={() => setPage("shop")}>{h.cta2Text}</button>
+            {isAdmin && <span onClick={() => { setTmp(h); setEditing(true); }} style={{ fontSize: 12, color: O, cursor: "pointer", marginLeft: 4 }}>編輯</span>}
+          </div>
+        </div>
+        <div style={{ display: "flex", justifyContent: "center" }}>
+          <div style={{ width: "100%", maxWidth: 260, aspectRatio: "9/19", borderRadius: 32, background: WHITE, border: `1px solid ${BORDER}`, boxShadow: "0 24px 60px rgba(0,0,0,.14)", overflow: "hidden", display: "flex", alignItems: "center", justifyContent: "center" }}>
+            {h.screenshot ? <img src={h.screenshot} alt="88La App" style={{ width: "100%", height: "100%", objectFit: "cover" }} /> : <span style={{ fontSize: 12, color: LIGHT, textAlign: "center", padding: 20 }}>App 截圖<br />（待上傳）</span>}
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function Home({ articles, setPage, setId, setArticles, isAdmin, siteTitle, setSiteTitle, tags, setTags, about, setAbout, links, homeHero, setHomeHero, trustStats, setTrustStats, paths, setPaths }) {
   const [filter, setFilter] = useState("全部");
   const [sort, setSort] = useState("newest");
   const [editTitle, setEditTitle] = useState(false);
@@ -773,9 +849,70 @@ function Home({ articles, setPage, setId, setArticles, isAdmin, siteTitle, setSi
     if (ri === -1 || ni === -1) return prev;
     [a[ri], a[ni]] = [a[ni], a[ri]]; return a;
   });
+  const ts = trustStats && trustStats.length ? trustStats : DEFAULTS.trustStats;
+  const ph = paths && paths.length ? paths : DEFAULTS.paths;
+  const [editStats, setEditStats] = useState(false);
+  const [tmpStats, setTmpStats] = useState(ts);
+  const [editPaths, setEditPaths] = useState(false);
+  const [tmpPaths, setTmpPaths] = useState(ph);
   return (
     <div>
-      <Hero about={about} isAdmin={isAdmin} setAbout={setAbout} links={links} />
+      <HomeHero homeHero={homeHero} setHomeHero={setHomeHero} isAdmin={isAdmin} setPage={setPage} />
+      <div style={{ maxWidth: 1100, margin: "0 auto", padding: "56px 32px" }} className="page-wrap">
+        {isAdmin && <div style={{ textAlign: "right", marginBottom: 12 }}>{!editStats && <span onClick={() => { setTmpStats(ts); setEditStats(true); }} style={{ fontSize: 12, color: O, cursor: "pointer" }}>編輯信任數據</span>}</div>}
+        {editStats ? (
+          <div style={{ background: GRAY, padding: 24, border: `1px solid ${BORDER}`, marginBottom: 20 }}>
+            <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(200px,1fr))", gap: 16, marginBottom: 16 }} className="grid2">
+              {tmpStats.map((s, i) => (
+                <div key={i}>
+                  <input value={s.num} onChange={e => setTmpStats(p => p.map((x, xi) => xi === i ? { ...x, num: e.target.value } : x))} placeholder="數字" style={{ marginBottom: 6 }} />
+                  <input value={s.label} onChange={e => setTmpStats(p => p.map((x, xi) => xi === i ? { ...x, label: e.target.value } : x))} placeholder="標籤" />
+                </div>
+              ))}
+            </div>
+            <div style={{ display: "flex", gap: 10 }}><button className="pb" onClick={() => { setTrustStats(tmpStats); setEditStats(false); }}>儲存</button><button className="pg" onClick={() => setEditStats(false)}>取消</button></div>
+          </div>
+        ) : (
+          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(160px,1fr))", gap: 20, marginBottom: 64, textAlign: "center" }} className="grid4">
+            {ts.map((s, i) => (
+              <div key={i}>
+                <p style={{ fontSize: 28, fontWeight: 700, color: O }}>{s.num}</p>
+                <p style={{ fontSize: 13, color: MID, marginTop: 4 }}>{s.label}</p>
+              </div>
+            ))}
+          </div>
+        )}
+        {isAdmin && <div style={{ textAlign: "right", marginBottom: 12 }}>{!editPaths && <span onClick={() => { setTmpPaths(ph); setEditPaths(true); }} style={{ fontSize: 12, color: O, cursor: "pointer" }}>編輯分流路徑</span>}</div>}
+        {editPaths ? (
+          <div style={{ background: GRAY, padding: 24, border: `1px solid ${BORDER}`, marginBottom: 20 }}>
+            {tmpPaths.map((p, i) => (
+              <div key={i} style={{ marginBottom: 16, paddingBottom: 16, borderBottom: i < tmpPaths.length - 1 ? `1px solid ${BORDER}` : "none" }}>
+                <input value={p.title} onChange={e => setTmpPaths(pp => pp.map((x, xi) => xi === i ? { ...x, title: e.target.value } : x))} placeholder="標題" style={{ marginBottom: 6 }} />
+                <textarea value={p.desc} onChange={e => setTmpPaths(pp => pp.map((x, xi) => xi === i ? { ...x, desc: e.target.value } : x))} placeholder="說明" style={{ minHeight: 50 }} />
+              </div>
+            ))}
+            <div style={{ display: "flex", gap: 10 }}><button className="pb" onClick={() => { setPaths(tmpPaths); setEditPaths(false); }}>儲存</button><button className="pg" onClick={() => setEditPaths(false)}>取消</button></div>
+          </div>
+        ) : (
+          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(260px,1fr))", gap: 20, marginBottom: 20 }} className="grid3">
+            {ph.map((p, i) => (
+              <div key={i} onClick={() => setPage(p.page)} style={{ background: WHITE, border: `1px solid ${BORDER}`, borderRadius: 20, padding: 28, cursor: "pointer", boxShadow: "0 2px 10px rgba(0,0,0,.06)", transition: "transform .3s, box-shadow .3s" }}
+                onMouseEnter={e => { e.currentTarget.style.transform = "translateY(-6px)"; e.currentTarget.style.boxShadow = "0 20px 40px rgba(0,0,0,.1)"; }}
+                onMouseLeave={e => { e.currentTarget.style.transform = "translateY(0)"; e.currentTarget.style.boxShadow = "0 2px 10px rgba(0,0,0,.06)"; }}
+              >
+                <div style={{ width: 40, height: 40, borderRadius: 12, background: O2, color: O, display: "flex", alignItems: "center", justifyContent: "center", fontWeight: 700, marginBottom: 16 }}>{p.icon}</div>
+                <h3 style={{ fontSize: 17, fontWeight: 500, color: CHAR, marginBottom: 8 }}>{p.title}</h3>
+                <p style={{ fontSize: 13, color: MID, lineHeight: 1.8 }}>{p.desc}</p>
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
+      <div style={{ background: CHAR, padding: "56px 32px", textAlign: "center" }}>
+        <h2 style={{ fontSize: 22, fontWeight: 700, color: WHITE, marginBottom: 14 }}>準備好開始了嗎？</h2>
+        <p style={{ fontSize: 14, color: "rgba(255,255,255,.6)", marginBottom: 24 }}>免費體驗理財自動導航器，看懂自己的錢都去哪了。</p>
+        <button className="pb" onClick={() => setPage("app")}>開始使用理財導航器 →</button>
+      </div>
       <div style={{ maxWidth: 1100, margin: "0 auto", padding: "72px 32px" }} className="page-wrap">
         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-end", flexWrap: "wrap", gap: 16, marginBottom: 40 }}>
           <div>
@@ -793,7 +930,12 @@ function Home({ articles, setPage, setId, setArticles, isAdmin, siteTitle, setSi
               </div>
             )}
           </div>
-          {isAdmin && !editTitle && <button className="pb" onClick={() => setPage("write")}>＋ 新增文章</button>}
+          {isAdmin && !editTitle && (
+            <div style={{ display: "flex", gap: 10 }}>
+              <button className="pg" onClick={() => exportArticlesCSV(articles)}>匯出文章 CSV</button>
+              <button className="pb" onClick={() => setPage("write")}>＋ 新增文章</button>
+            </div>
+          )}
         </div>
         <div style={{ display: "flex", gap: 8, flexWrap: "wrap", marginBottom: 16, alignItems: "center", justifyContent: "space-between" }}>
           <div style={{ display: "flex", gap: 8, flexWrap: "wrap", alignItems: "center" }}>
@@ -833,8 +975,11 @@ function Home({ articles, setPage, setId, setArticles, isAdmin, siteTitle, setSi
                 : <div style={{ height: 8, flexShrink: 0, background: `linear-gradient(90deg, ${CORAL} 0%, ${O2} 100%)` }} />
               }
               <div style={{ padding: "24px 28px 24px", flex: 1, display: "flex", flexDirection: "column", overflow: "hidden" }}>
-                <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 12, alignItems: "flex-start", flexShrink: 0 }}>
-                  <span className="tag">{a.tag}</span>
+                <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 12, alignItems: "flex-start", flexShrink: 0, gap: 8 }}>
+                  <div style={{ display: "flex", gap: 6, alignItems: "center", flexWrap: "wrap" }}>
+                    <span className="tag">{a.tag}</span>
+                    {isAdmin && a.member && <span style={{ fontSize: 10, padding: "2px 8px", borderRadius: 999, background: CORAL2, color: WHITE }}>會員限定</span>}
+                  </div>
                   <span style={{ fontSize: 11, color: LIGHT, flexShrink: 0, marginLeft: 8 }}>{a.date}</span>
                 </div>
                 <h3 style={{ fontSize: 17, fontWeight: 500, lineHeight: 1.55, marginBottom: 10, color: TITLE_COLOR, flexShrink: 0, display: "-webkit-box", WebkitLineClamp: 2, WebkitBoxOrient: "vertical", overflow: "hidden" }}>{a.title}</h3>
@@ -903,7 +1048,7 @@ function RelatedLinkEditor({ relatedLinks, onChange, products, resources }) {
 function Article({ article, onBack, setArticles, isAdmin, tags, links, setPage, products, resources }) {
   const [name, setName] = useState(""); const [text, setText] = useState(""); const [copied, setCopied] = useState(false);
   const [editing, setEditing] = useState(false);
-  const [ed, setEd] = useState({ title: article.title, tag: article.tag, excerpt: article.excerpt, content: article.content, img: article.img || "", date: article.date || "", relatedLinks: article.relatedLinks || [] });
+  const [ed, setEd] = useState({ title: article.title, tag: article.tag, excerpt: article.excerpt, content: article.content, img: article.img || "", date: article.date || "", relatedLinks: article.relatedLinks || [], member: article.member || false });
   const l = links || DEFAULTS.links;
   const lastSubmit = useRef(0);
   const [cooldown, setCooldown] = useState(0);
@@ -945,6 +1090,9 @@ function Article({ article, onBack, setArticles, isAdmin, tags, links, setPage, 
         <textarea placeholder="摘要" value={ed.excerpt} onChange={e => setEd(p => ({ ...p, excerpt: e.target.value }))} style={{ minHeight: 72, resize: "vertical" }} />
         <RichEditor value={ed.content} onChange={v => setEd(p => ({ ...p, content: v }))} />
         <RelatedLinkEditor relatedLinks={ed.relatedLinks} onChange={v => setEd(p => ({ ...p, relatedLinks: v }))} products={products} resources={resources} />
+        <label style={{ fontSize: 13, color: MID, display: "flex", gap: 8, alignItems: "center", cursor: "pointer" }}>
+          <input type="checkbox" checked={ed.member} onChange={e => setEd(p => ({ ...p, member: e.target.checked }))} style={{ width: "auto" }} />會員限定文章
+        </label>
         <div style={{ display: "flex", gap: 10 }}><button className="pb" onClick={saveEdit}>儲存</button><button className="pg" onClick={() => setEditing(false)}>取消</button></div>
       </div>
     </div>
@@ -1042,7 +1190,7 @@ function Article({ article, onBack, setArticles, isAdmin, tags, links, setPage, 
 
 // ── Write (admin new article) ──
 function Write({ onSave, onBack, tags, products, resources }) {
-  const [d, setD] = useState({ title: "", tag: tags[0] || "", excerpt: "", content: "", img: "", relatedLinks: [] });
+  const [d, setD] = useState({ title: "", tag: tags[0] || "", excerpt: "", content: "", img: "", relatedLinks: [], member: false });
   const ok = d.title.trim() && d.content.trim();
   return (
     <div style={{ maxWidth: 740, margin: "0 auto", padding: "60px 32px" }} className="page-wrap">
@@ -1055,6 +1203,9 @@ function Write({ onSave, onBack, tags, products, resources }) {
         <textarea placeholder="摘要（顯示在列表，選填）" value={d.excerpt} onChange={e => setD(p => ({ ...p, excerpt: e.target.value }))} style={{ minHeight: 72, resize: "vertical" }} />
         <RichEditor value={d.content} onChange={v => setD(p => ({ ...p, content: v }))} />
         <RelatedLinkEditor relatedLinks={d.relatedLinks} onChange={v => setD(p => ({ ...p, relatedLinks: v }))} products={products} resources={resources} />
+        <label style={{ fontSize: 13, color: MID, display: "flex", gap: 8, alignItems: "center", cursor: "pointer" }}>
+          <input type="checkbox" checked={d.member} onChange={e => setD(p => ({ ...p, member: e.target.checked }))} style={{ width: "auto" }} />會員限定文章
+        </label>
         <div style={{ display: "flex", gap: 10 }}><button className="pb" disabled={!ok} onClick={() => onSave(d)}>發布</button><button className="pg" onClick={onBack}>取消</button></div>
       </div>
     </div>
@@ -1062,7 +1213,7 @@ function Write({ onSave, onBack, tags, products, resources }) {
 }
 
 // ── About ──
-function About({ about, setAbout, isAdmin, links, setLinks }) {
+function About({ about, setAbout, isAdmin, links, setLinks, setPage }) {
   const [editing, setEditing] = useState(false);
   const [editLinks, setEditLinks] = useState(false);
   const [tmp, setTmp] = useState(about);
@@ -1100,36 +1251,83 @@ function About({ about, setAbout, isAdmin, links, setLinks }) {
   );
   return (
     <div>
-      <div style={{ background: GRAD, padding: "48px 32px", borderBottom: `1px solid ${BORDER}` }}>
-        <div style={{ maxWidth: 1100, margin: "0 auto", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-          <div>
-            <p className="section-label" style={{ marginBottom: 8 }}>ABOUT</p>
-            <h1 style={{ fontSize: 26, fontWeight: 700, color: CHAR }}>88La</h1>
-            <p style={{ fontSize: 13, color: MID, marginTop: 4 }}>@every_dollars · Taiwan</p>
-          </div>
-          {isAdmin && (
-            <div style={{ display: "flex", gap: 10 }}>
-              <button onClick={() => { setTmpL(l); setEditLinks(true); }} className="pg" style={{ fontSize: 12, padding: "8px 16px" }}>連結設定</button>
-              <button onClick={() => { setTmp(about); setEditing(true); }} className="pb" style={{ fontSize: 12, padding: "8px 16px" }}>編輯頁面</button>
-            </div>
-          )}
+      <div style={{ background: GRAD, padding: "64px 32px", textAlign: "center" }}>
+        <div style={{ maxWidth: 640, margin: "0 auto" }}>
+          <p className="section-label" style={{ marginBottom: 16 }}>88La · ABOUT</p>
+          <h1 style={{ fontSize: 30, fontWeight: 700, color: CHAR, lineHeight: 1.5, marginBottom: 16 }}>理財是為了讓生活更自由，不是為了成為另一種壓力。</h1>
+          <p style={{ fontSize: 15, color: MID, lineHeight: 1.85 }}>我們不做「你應該要這樣做」的教學，只給你看懂自己數字的工具。</p>
         </div>
       </div>
-      <div style={{ maxWidth: 1100, margin: "0 auto", padding: "72px 32px" }} className="page-wrap">
-        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 64, alignItems: "start" }} className="about-grid">
+      <div style={{ background: WHITE, padding: "64px 32px", borderTop: `1px solid ${BORDER}`, borderBottom: `1px solid ${BORDER}` }}>
+        <div style={{ maxWidth: 640, margin: "0 auto" }}>
+          <div style={{ textAlign: "center", marginBottom: 40 }}>
+            <p className="section-label" style={{ marginBottom: 10 }}>故事</p>
+            <h2 style={{ fontSize: 20, fontWeight: 700, color: CHAR }}>從一份免費範本開始</h2>
+          </div>
+          {[
+            ["起點", "一份免費的 Google Sheets 記帳範本", "從「先存後花」的概念出發，幫助超過 4,000 人下載使用。"],
+            ["進化", "推出付費 2.0 版本", "加入五種儲蓄模式、支出追蹤、信用卡分析、診斷報告與行事曆檢視，超過百人使用。"],
+            ["現在", "理財自動導航器 + 8友社群", "把範本升級成完整的 Web App，同時也有一群人一起練習理財，不是一個人硬撐。"]
+          ].map(([year, title, desc], i) => (
+            <div key={i} style={{ display: "grid", gridTemplateColumns: "70px 1fr", gap: 20, padding: "20px 0", borderBottom: i < 2 ? `1px solid ${BORDER}` : "none" }}>
+              <p style={{ fontSize: 13, fontWeight: 700, color: O }}>{year}</p>
+              <div>
+                <h4 style={{ fontSize: 15, fontWeight: 500, color: CHAR, marginBottom: 6 }}>{title}</h4>
+                <p style={{ fontSize: 13, color: MID, lineHeight: 1.8 }}>{desc}</p>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+      <div style={{ maxWidth: 1100, margin: "0 auto", padding: "64px 32px" }} className="page-wrap">
+        <div style={{ textAlign: "center", marginBottom: 40 }}>
+          <p className="section-label" style={{ marginBottom: 10 }}>我們相信</p>
+          <h2 style={{ fontSize: 20, fontWeight: 700, color: CHAR }}>做法可以不一樣，但方向很清楚</h2>
+        </div>
+        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(240px,1fr))", gap: 20 }} className="grid3">
+          {[
+            ["1", "行為改變優先", "比起記帳工具本身，我們更在乎它有沒有真的幫你改變花錢的習慣。"],
+            ["2", "給數字不給評判", "我們只呈現「差多少」和「去哪裡調」，不替你的選擇打分數。"],
+            ["3", "不說教的陪伴", "理財很個人，每個人的節奏不一樣，我們不會用同一套標準要求所有人。"]
+          ].map(([n, title, desc]) => (
+            <div key={n} style={{ background: WHITE, border: `1px solid ${BORDER}`, borderRadius: 20, padding: 28, transition: "transform .3s, box-shadow .3s" }}
+              onMouseEnter={e => { e.currentTarget.style.transform = "translateY(-6px)"; e.currentTarget.style.boxShadow = "0 20px 32px rgba(0,0,0,.1)"; }}
+              onMouseLeave={e => { e.currentTarget.style.transform = "translateY(0)"; e.currentTarget.style.boxShadow = "none"; }}
+            >
+              <div style={{ width: 44, height: 44, borderRadius: 14, background: O2, color: O, display: "flex", alignItems: "center", justifyContent: "center", fontWeight: 700, marginBottom: 18 }}>{n}</div>
+              <h4 style={{ fontSize: 16, fontWeight: 500, color: CHAR, marginBottom: 8 }}>{title}</h4>
+              <p style={{ fontSize: 13, color: MID, lineHeight: 1.8 }}>{desc}</p>
+            </div>
+          ))}
+        </div>
+      </div>
+      <div style={{ background: GRAD, padding: "72px 32px", borderTop: `1px solid ${BORDER}` }}>
+        <div style={{ maxWidth: 1100, margin: "0 auto", display: "grid", gridTemplateColumns: "1fr 1fr", gap: 64, alignItems: "start" }} className="about-grid">
           <div style={{ background: GRAY, aspectRatio: "3/4", borderRadius: 14, overflow: "hidden", display: "flex", alignItems: "center", justifyContent: "center" }} className="about-img">
             {about.img ? <img src={about.img} style={{ width: "100%", height: "100%", objectFit: "cover" }} alt="88La" /> : <span style={{ fontSize: 12, color: LIGHT, letterSpacing: "1px" }}>PHOTO</span>}
           </div>
           <div style={{ paddingTop: 20 }}>
             <p className="section-label" style={{ marginBottom: 20 }}>HELLO</p>
             <div style={{ fontSize: 16, color: MID, lineHeight: 2.2, whiteSpace: "pre-wrap", marginBottom: 36 }}>{about.intro}</div>
-            <div style={{ display: "flex", gap: 10, flexWrap: "wrap" }}>
+            <div style={{ display: "flex", gap: 10, flexWrap: "wrap", marginBottom: 20 }}>
               <a href={l.lineCommunity} target="_blank" rel="noopener noreferrer"><button className="pb">LINE 社群</button></a>
               <a href={l.lineOfficial} target="_blank" rel="noopener noreferrer"><button className="pbn">LINE 官方帳號</button></a>
               <a href={l.instagram} target="_blank" rel="noopener noreferrer"><button className="pg">Instagram</button></a>
               <a href={"mailto:" + l.email}><button className="pg">合作信箱</button></a>
             </div>
+            {isAdmin && (
+              <div style={{ display: "flex", gap: 10 }}>
+                <button onClick={() => { setTmpL(l); setEditLinks(true); }} className="pg" style={{ fontSize: 12, padding: "6px 14px" }}>連結設定</button>
+                <button onClick={() => { setTmp(about); setEditing(true); }} className="pg" style={{ fontSize: 12, padding: "6px 14px" }}>編輯頁面</button>
+              </div>
+            )}
           </div>
+        </div>
+      </div>
+      <div style={{ padding: "64px 32px", textAlign: "center" }}>
+        <div style={{ display: "flex", gap: 12, justifyContent: "center", flexWrap: "wrap" }}>
+          <a href={APP_URL} target="_blank" rel="noopener noreferrer"><button className="pb">開始使用理財導航器</button></a>
+          <button className="pg" onClick={() => setPage && setPage("community")}>認識 8友社群</button>
         </div>
       </div>
     </div>
@@ -1158,7 +1356,7 @@ function Shop({ products, setProducts, isAdmin }) {
     <div>
       <div style={{ background: GRAD, padding: "48px 32px", borderBottom: `1px solid ${BORDER}` }}>
         <div style={{ maxWidth: 1100, margin: "0 auto", display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: 16 }}>
-          <div><p className="section-label" style={{ marginBottom: 8 }}>SHOP</p><h1 style={{ fontSize: 26, fontWeight: 700, color: CHAR }}>商品</h1></div>
+          <div><p className="section-label" style={{ marginBottom: 8 }}>SHOP</p><h1 style={{ fontSize: 26, fontWeight: 700, color: CHAR, marginBottom: 8 }}>商品</h1><p style={{ fontSize: 13, color: MID }}>88La的手作溫暖，陪伴你的存錢之旅。</p></div>
           {isAdmin && <button className="pb" onClick={startAdd}>＋ 新增商品</button>}
         </div>
       </div>
@@ -1310,6 +1508,83 @@ function IG({ igPosts, setIgPosts, isAdmin, links }) {
               </Reveal>
             );
           })}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// ── Community (8友社群) ──
+function Community({ igPosts, links, setPage }) {
+  const l = links || DEFAULTS.links;
+  const previewPosts = (igPosts || []).slice(0, 3);
+  return (
+    <div>
+      <div style={{ background: GRAD, padding: "72px 32px 64px", textAlign: "center" }}>
+        <div style={{ maxWidth: 640, margin: "0 auto" }}>
+          <p className="section-label" style={{ marginBottom: 16 }}>88La · COMMUNITY</p>
+          <h1 style={{ fontSize: 34, fontWeight: 700, color: CHAR, lineHeight: 1.45, marginBottom: 18 }}>理財這件事，一個人練習很孤單。</h1>
+          <p style={{ fontSize: 15, color: MID, lineHeight: 1.9 }}>8友社群是一群正在練習理財的人，互相打氣、交流，不評判彼此的數字，只是一起把日子過好一點。</p>
+        </div>
+      </div>
+      <div style={{ background: WHITE, padding: "52px 32px", borderTop: `1px solid ${BORDER}`, borderBottom: `1px solid ${BORDER}` }}>
+        <div style={{ maxWidth: 680, margin: "0 auto", textAlign: "center" }}>
+          <p style={{ fontSize: 15, color: CHAR, lineHeight: 1.9, marginBottom: 14 }}>我們相信理財不是比賽誰存得多、誰花得少，而是找到適合自己的節奏。</p>
+          <p style={{ fontSize: 15, color: CHAR, lineHeight: 1.9 }}>8友社群從一開始就不是一個「教學課程」，而是一群願意誠實面對自己數字的人聚在一起，互相打氣。</p>
+        </div>
+      </div>
+      <div style={{ maxWidth: 1100, margin: "0 auto", padding: "72px 32px" }} className="page-wrap">
+        <div style={{ textAlign: "center", marginBottom: 44 }}>
+          <p className="section-label" style={{ marginBottom: 12 }}>加入方式</p>
+          <h2 style={{ fontSize: 22, fontWeight: 700, color: CHAR }}>先追蹤，LINE 社群開放時第一時間通知你</h2>
+        </div>
+        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(280px,1fr))", gap: 24, marginBottom: 80 }} className="grid2">
+          <div style={{ background: WHITE, border: `1px solid ${BORDER}`, borderRadius: 20, padding: 32, boxShadow: "0 2px 10px rgba(0,0,0,.06)", transition: "box-shadow .3s, transform .3s" }}
+            onMouseEnter={e => { e.currentTarget.style.boxShadow = "0 20px 40px rgba(0,0,0,.1)"; e.currentTarget.style.transform = "translateY(-6px)"; }}
+            onMouseLeave={e => { e.currentTarget.style.boxShadow = "0 2px 10px rgba(0,0,0,.06)"; e.currentTarget.style.transform = "translateY(0)"; }}
+          >
+            <span style={{ fontSize: 12, color: O, fontWeight: 500, background: O2, padding: "4px 12px", borderRadius: 999, display: "inline-block", marginBottom: 16 }}>Coming soon</span>
+            <h3 style={{ fontSize: 18, fontWeight: 500, color: CHAR, marginBottom: 10 }}>加入 LINE 社群</h3>
+            <p style={{ fontSize: 14, color: MID, lineHeight: 1.8, marginBottom: 24 }}>正式社群還在籌備中，開放後會優先通知目前已追蹤 IG 的朋友。</p>
+            <span style={{ display: "inline-block", background: GRAY, color: LIGHT, padding: "12px 26px", borderRadius: 999, fontSize: 14, fontWeight: 500, cursor: "default" }}>敬請期待</span>
+          </div>
+          <div style={{ background: WHITE, border: `1px solid ${BORDER}`, borderRadius: 20, padding: 32, boxShadow: "0 2px 10px rgba(0,0,0,.06)", transition: "box-shadow .3s, transform .3s" }}
+            onMouseEnter={e => { e.currentTarget.style.boxShadow = "0 20px 40px rgba(0,0,0,.1)"; e.currentTarget.style.transform = "translateY(-6px)"; }}
+            onMouseLeave={e => { e.currentTarget.style.boxShadow = "0 2px 10px rgba(0,0,0,.06)"; e.currentTarget.style.transform = "translateY(0)"; }}
+          >
+            <span style={{ fontSize: 12, color: O, fontWeight: 500, background: O2, padding: "4px 12px", borderRadius: 999, display: "inline-block", marginBottom: 16 }}>現在就能開始</span>
+            <h3 style={{ fontSize: 18, fontWeight: 500, color: CHAR, marginBottom: 10 }}>追蹤 Instagram</h3>
+            <p style={{ fontSize: 14, color: MID, lineHeight: 1.8, marginBottom: 24 }}>日常理財觀念、社群第一手消息都會先在這裡發布，不想錯過就先追蹤起來。</p>
+            <a href={l.instagram} target="_blank" rel="noopener noreferrer"><button className="pb">追蹤 @every_dollars</button></a>
+          </div>
+        </div>
+        {previewPosts.length > 0 && (
+          <div style={{ marginBottom: 20 }}>
+            <div style={{ textAlign: "center", marginBottom: 36 }}>
+              <p className="section-label" style={{ marginBottom: 12 }}>最新動態</p>
+              <h2 style={{ fontSize: 22, fontWeight: 700, color: CHAR }}>Instagram 上的最新分享</h2>
+            </div>
+            <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill,minmax(240px,1fr))", gap: 20, marginBottom: 28 }} className="grid3">
+              {previewPosts.map(p => (
+                <a key={p.id} href={p.url || l.instagram} target="_blank" rel="noopener noreferrer" style={{ display: "block" }}>
+                  <div style={{ background: WHITE, border: `1px solid ${BORDER}`, borderRadius: 12, overflow: "hidden", height: 200, transition: "transform .24s" }}
+                    onMouseEnter={e => e.currentTarget.style.transform = "translateY(-4px)"} onMouseLeave={e => e.currentTarget.style.transform = "translateY(0)"}
+                  >
+                    {p.thumb ? <img src={p.thumb} alt={p.title} style={{ width: "100%", height: "100%", objectFit: "cover" }} loading="lazy" /> : <div style={{ width: "100%", height: "100%", background: GRAY, display: "flex", alignItems: "center", justifyContent: "center" }}><span style={{ fontSize: 12, color: LIGHT, letterSpacing: "2px" }}>IG</span></div>}
+                  </div>
+                </a>
+              ))}
+            </div>
+            <p style={{ textAlign: "center" }}><span onClick={() => setPage("ig")} style={{ fontSize: 13, color: O, cursor: "pointer" }}>查看更多動態 →</span></p>
+          </div>
+        )}
+      </div>
+      <div style={{ background: CHAR, padding: "64px 32px", textAlign: "center" }}>
+        <div style={{ maxWidth: 480, margin: "0 auto" }}>
+          <p style={{ fontSize: 12, color: CORAL, letterSpacing: "1px", fontWeight: 600, marginBottom: 14 }}>下一步</p>
+          <h2 style={{ fontSize: 24, fontWeight: 700, color: WHITE, marginBottom: 14 }}>先從追蹤開始</h2>
+          <p style={{ fontSize: 14, color: "rgba(255,255,255,.6)", lineHeight: 1.8, marginBottom: 28 }}>LINE 社群開放前，IG 是我們跟大家保持聯繫的地方，日常理財觀念也會先在這裡分享。</p>
+          <a href={l.instagram} target="_blank" rel="noopener noreferrer"><button style={{ background: CORAL, color: CHAR, border: "none", padding: "12px 26px", borderRadius: 999, fontSize: 14, fontWeight: 500, cursor: "pointer", fontFamily: "inherit" }}>追蹤 Instagram →</button></a>
         </div>
       </div>
     </div>
@@ -1770,9 +2045,13 @@ function AppPage({ appContent, setAppContent, isAdmin }) {
 }
 
 // ── NEW: 免費資源 ──
-function Resources({ resources, setResources, isAdmin }) {
+function Resources({ resources, setResources, isAdmin, articles, setArticles, setId, setPage }) {
   const types = ["全部", "模板", "教學", "工具", "其他"];
   const [filter, setFilter] = useState("全部");
+  const [articleFilter, setArticleFilter] = useState("全部");
+  const articleList = [...(articles || [])].sort((a, b) => (b.date || "").localeCompare(a.date || ""));
+  const filteredArticles = articleList.filter(a => articleFilter === "全部" || (articleFilter === "會員文章" ? a.member : !a.member));
+  const openArticle = id => { setArticles(prev => prev.map(a => a.id === id ? { ...a, views: (a.views || 0) + 1 } : a), { silent: true }); setId(id); setPage("article"); window.scrollTo({ top: 0, behavior: "instant" }); const a = (articles || []).find(x => x.id === id); history.pushState({}, "", "?article=" + (a?.slug || id)); };
   const [editing, setEditing] = useState(null);
   const [form, setForm] = useState({ name: "", type: "模板", desc: "", url: "", img: "", active: true });
   const [resUrlErr, setResUrlErr] = useState("");
@@ -1865,6 +2144,33 @@ function Resources({ resources, setResources, isAdmin }) {
                 </div>
               </div>
             ))}
+          </div>
+        )}
+        {articleList.length > 0 && (
+          <div style={{ marginTop: 64 }}>
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-end", flexWrap: "wrap", gap: 16, marginBottom: 24 }}>
+              <h2 style={{ fontSize: 20, fontWeight: 700, color: CHAR }}>文章</h2>
+              <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
+                {["全部", "免費文章", "會員文章"].map(t => (
+                  <span key={t} onClick={() => setArticleFilter(t)} style={{ fontSize: 12, padding: "8px 16px", borderRadius: 999, cursor: "pointer", background: articleFilter === t ? CORAL : GRAY, color: articleFilter === t ? WHITE : MID, transition: "background .15s" }}>{t}</span>
+                ))}
+              </div>
+            </div>
+            <div style={{ display: "flex", flexDirection: "column" }}>
+              {filteredArticles.map(a => (
+                <div key={a.id} onClick={() => openArticle(a.id)} style={{ display: "flex", justifyContent: "space-between", alignItems: "center", gap: 16, padding: "18px 0", borderBottom: `1px solid ${BORDER}`, cursor: "pointer" }}>
+                  <div style={{ flex: 1, minWidth: 0 }}>
+                    <div style={{ display: "flex", gap: 8, alignItems: "center", marginBottom: 6 }}>
+                      <span className="tag">{a.tag}</span>
+                      {a.member && <span style={{ fontSize: 10, padding: "2px 8px", borderRadius: 999, background: CORAL2, color: WHITE }}>會員限定</span>}
+                    </div>
+                    <p style={{ fontSize: 15, color: CHAR, fontWeight: 500, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{a.title}</p>
+                  </div>
+                  <span style={{ fontSize: 12, color: LIGHT, flexShrink: 0 }}>{a.date}</span>
+                </div>
+              ))}
+              {filteredArticles.length === 0 && <p style={{ fontSize: 13, color: LIGHT, padding: "20px 0" }}>這個分類還沒有文章</p>}
+            </div>
           </div>
         )}
       </div>
@@ -2790,6 +3096,9 @@ export default function App() {
   const [appContent, setAppContent, acL] = useFS("appContent", DEFAULTS.appContent);
   const [contactContent, setContactContent, ccL] = useFS("contactContent", DEFAULTS.contactContent);
   const [savingsBagQuiz, setSavingsBagQuiz, sbqL] = useFS("savingsBagQuiz", DEFAULTS.savingsBagQuiz);
+  const [homeHero, setHomeHero, hhL] = useFS("homeHero", DEFAULTS.homeHero);
+  const [trustStats, setTrustStats, tsL] = useFS("trustStats", DEFAULTS.trustStats);
+  const [paths, setPaths, pthL] = useFS("paths", DEFAULTS.paths);
   const [page, setPage] = useState("home");
   const [id, setId] = useState(null);
   const [isAdmin, setIsAdmin] = useState(false);
@@ -2912,13 +3221,14 @@ export default function App() {
       <Toast />
       <Nav page={page} setPage={nav} isAdmin={isAdmin} />
       <div key={page} className="page-anim">
-        {page === "home" && <Home articles={articles} setPage={setPage} setId={setId} setArticles={setArticles} isAdmin={isAdmin} siteTitle={siteTitle} setSiteTitle={setSiteTitle} tags={tags} setTags={setTags} about={about} setAbout={setAbout} links={links} />}
-        {page === "about" && <About about={about} setAbout={setAbout} isAdmin={isAdmin} links={links} setLinks={setLinks} />}
+        {page === "home" && <Home articles={articles} setPage={setPage} setId={setId} setArticles={setArticles} isAdmin={isAdmin} siteTitle={siteTitle} setSiteTitle={setSiteTitle} tags={tags} setTags={setTags} about={about} setAbout={setAbout} links={links} homeHero={homeHero} setHomeHero={setHomeHero} trustStats={trustStats} setTrustStats={setTrustStats} paths={paths} setPaths={setPaths} />}
+        {page === "about" && <About about={about} setAbout={setAbout} isAdmin={isAdmin} links={links} setLinks={setLinks} setPage={nav} />}
         {page === "ig" && <IG igPosts={igPosts} setIgPosts={setIgPosts} isAdmin={isAdmin} links={links} />}
+        {page === "community" && <Community igPosts={igPosts} links={links} setPage={nav} />}
         {page === "shop" && <Shop products={products} setProducts={setProducts} isAdmin={isAdmin} />}
         {page === "goods" && <Goods goods={goods} setGoods={setGoods} isAdmin={isAdmin} />}
         {page === "app" && <AppPage appContent={appContent} setAppContent={setAppContent} isAdmin={isAdmin} />}
-        {page === "resources" && <Resources resources={resources} setResources={setResources} isAdmin={isAdmin} />}
+        {page === "resources" && <Resources resources={resources} setResources={setResources} isAdmin={isAdmin} articles={articles} setArticles={setArticles} setId={setId} setPage={setPage} />}
         {page === "newsletter" && <Newsletter newsletter={newsletter} setNewsletter={setNewsletter} isAdmin={isAdmin} articles={articles} setArticles={setArticles} setId={setId} setPage={setPage} />}
         {page === "contact" && <Contact links={links} contactContent={contactContent} setContactContent={setContactContent} isAdmin={isAdmin} />}
         {page === "savings-quiz" && isAdmin && <SavingsBagQuizAdmin savingsBagQuiz={savingsBagQuiz} setSavingsBagQuiz={setSavingsBagQuiz} />}
