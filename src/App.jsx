@@ -62,8 +62,8 @@ button{font-family:inherit;cursor:pointer;border:none;border-radius:8px;}
 .tagn{display:inline-block;background:${CORAL};color:#fff;font-size:11px;padding:4px 12px;letter-spacing:.5px;font-weight:600;border-radius:999px;}
 .ordbtn{background:transparent;border:1px solid #D0D5DA;color:${LIGHT};font-size:11px;padding:2px 6px;line-height:1;cursor:pointer;}
 .ordbtn:hover{border-color:${O};color:${O};}
-.card{background:${WHITE};border:1px solid ${BORDER};border-radius:12px;box-shadow:0 2px 10px rgba(0,0,0,.06);transition:box-shadow .24s,transform .24s;cursor:pointer;overflow:hidden;}
-.card:hover{box-shadow:0 12px 40px rgba(200,90,20,.15);transform:translateY(-4px);}
+.card{background:${WHITE};border:1px solid ${BORDER};border-radius:20px;box-shadow:0 2px 10px rgba(0,0,0,.06);transition:box-shadow .3s,transform .3s;cursor:pointer;overflow:hidden;}
+.card:hover{box-shadow:0 20px 40px rgba(0,0,0,.1);transform:translateY(-6px);}
 .section-label{font-size:11px;letter-spacing:3px;color:${O};font-weight:500;text-transform:uppercase;}
 @keyframes pageEnter {
   from { opacity: 0; transform: translateY(16px); }
@@ -204,11 +204,11 @@ const DEFAULTS = {
       { id: 6, n: "06", title: "PWA 支援", desc: "加到主畫面，iOS / Android 體驗接近原生 App。", img: "" },
     ],
     plans: [
-      { id: 1, name: "月訂閱", price: "NT$129", period: "/月", highlight: false, badge: "", features: ["88La 理財導航器完整功能", "桌面快速記帳", "隨時可取消"], detailTitle: "", detailImg: "", detailContent: "" },
+      { id: 1, name: "月訂閱", price: "NT$149", period: "/月", highlight: false, badge: "", features: ["88La 理財導航器完整功能", "桌面快速記帳", "隨時可取消"], detailTitle: "", detailImg: "", detailContent: "" },
       { id: 2, name: "年方案", price: "NT$999", period: "/年", highlight: true, badge: "最多人選擇", features: ["88La 理財導航器完整功能", "桌面快速記帳", "省下約 35%", "相當於 NT$83/月"], detailTitle: "", detailImg: "", detailContent: "" },
       { id: 3, name: "兩年方案", price: "NT$1,899", period: "/兩年", highlight: false, badge: "", features: ["88La 理財導航器完整功能", "桌面快速記帳", "最划算方案", "相當於 NT$79/月"], detailTitle: "", detailImg: "", detailContent: "" },
     ],
-    guideTitle: "88La 理財自動導航器 — 使用說明",
+    guideTitle: "88La 理財自動導航器，使用說明",
     guideData: {
       phases: [
         { id: 0, label: "初次設定", sub: "開始使用，設定一次即可", isSetup: true, steps: [
@@ -1384,8 +1384,8 @@ function Shop({ products, setProducts, isAdmin }) {
         <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill,minmax(280px,1fr))", gap: 20 }} className="grid3">
           {products.map((p, idx) => (
             <Reveal key={p.id} delay={Math.min(idx * 80, 400)}>
-            <div style={{ background: WHITE, borderRadius: 12, boxShadow: "0 2px 10px rgba(0,0,0,.06)", overflow: "hidden", position: "relative", border: `1px solid ${BORDER}`, transition: "box-shadow .24s, transform .24s", height: 440, display: "flex", flexDirection: "column" }}
-              onMouseEnter={e => { e.currentTarget.style.boxShadow = "0 12px 40px rgba(200,90,20,.15)"; e.currentTarget.style.transform = "translateY(-4px)"; }}
+            <div style={{ background: WHITE, borderRadius: 20, boxShadow: "0 2px 10px rgba(0,0,0,.06)", overflow: "hidden", position: "relative", border: `1px solid ${BORDER}`, transition: "box-shadow .3s, transform .3s", height: 440, display: "flex", flexDirection: "column" }}
+              onMouseEnter={e => { e.currentTarget.style.boxShadow = "0 20px 40px rgba(0,0,0,.1)"; e.currentTarget.style.transform = "translateY(-6px)"; }}
               onMouseLeave={e => { e.currentTarget.style.boxShadow = "0 2px 10px rgba(0,0,0,.06)"; e.currentTarget.style.transform = "translateY(0)"; }}
             >
               {isAdmin && <OrdBtns idx={idx} total={products.length} onMove={move} style={{ position: "absolute", top: 12, right: 12, zIndex: 1 }} />}
@@ -1471,8 +1471,8 @@ function IG({ igPosts, setIgPosts, isAdmin, links }) {
             const ytId = getYouTubeId(p.url || "");
             return (
               <Reveal key={p.id} delay={Math.min(idx * 80, 400)}>
-              <div key={p.id} style={{ background: WHITE, border: `1px solid ${BORDER}`, borderRadius: 12, boxShadow: "0 2px 10px rgba(0,0,0,.06)", overflow: "hidden", position: "relative", transition: "box-shadow .24s, transform .24s", height: 300, display: "flex", flexDirection: "column" }}
-                onMouseEnter={e => { e.currentTarget.style.boxShadow = "0 12px 40px rgba(200,90,20,.15)"; e.currentTarget.style.transform = "translateY(-4px)"; }}
+              <div key={p.id} style={{ background: WHITE, border: `1px solid ${BORDER}`, borderRadius: 20, boxShadow: "0 2px 10px rgba(0,0,0,.06)", overflow: "hidden", position: "relative", transition: "box-shadow .24s, transform .24s", height: 300, display: "flex", flexDirection: "column" }}
+                onMouseEnter={e => { e.currentTarget.style.boxShadow = "0 20px 40px rgba(0,0,0,.1)"; e.currentTarget.style.transform = "translateY(-6px)"; }}
                 onMouseLeave={e => { e.currentTarget.style.boxShadow = "0 2px 10px rgba(0,0,0,.06)"; e.currentTarget.style.transform = "translateY(0)"; }}
               >
                 {ytId ? (
@@ -1639,8 +1639,8 @@ function Goods({ goods, setGoods, isAdmin }) {
           <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill,minmax(260px,1fr))", gap: 20 }} className="grid3">
             {active.map((p, idx) => (
               <Reveal key={p.id} delay={Math.min(idx * 80, 400)}>
-              <div style={{ background: WHITE, borderRadius: 12, boxShadow: "0 2px 10px rgba(0,0,0,.06)", overflow: "hidden", position: "relative", border: `1px solid ${BORDER}`, transition: "box-shadow .24s, transform .24s", height: 420, display: "flex", flexDirection: "column" }}
-                onMouseEnter={e => { e.currentTarget.style.boxShadow = "0 12px 40px rgba(200,90,20,.15)"; e.currentTarget.style.transform = "translateY(-4px)"; }}
+              <div style={{ background: WHITE, borderRadius: 20, boxShadow: "0 2px 10px rgba(0,0,0,.06)", overflow: "hidden", position: "relative", border: `1px solid ${BORDER}`, transition: "box-shadow .24s, transform .24s", height: 420, display: "flex", flexDirection: "column" }}
+                onMouseEnter={e => { e.currentTarget.style.boxShadow = "0 20px 40px rgba(0,0,0,.1)"; e.currentTarget.style.transform = "translateY(-6px)"; }}
                 onMouseLeave={e => { e.currentTarget.style.boxShadow = "0 2px 10px rgba(0,0,0,.06)"; e.currentTarget.style.transform = "translateY(0)"; }}
               >
                 {isAdmin && <OrdBtns idx={idx} total={active.length} onMove={move} style={{ position: "absolute", top: 12, right: 12, zIndex: 1 }} />}
@@ -1859,8 +1859,8 @@ function AppPage({ appContent, setAppContent, isAdmin }) {
         <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill,minmax(300px,1fr))", gap: 20 }} className="grid3">
           {c.features.map((f, i) => (
             <Reveal key={f.id || i} delay={Math.min(i * 80, 400)}>
-            <div style={{ background: WHITE, border: `1px solid ${BORDER}`, borderRadius: 12, boxShadow: "0 2px 10px rgba(0,0,0,.06)", transition: "box-shadow .24s, transform .24s", position: "relative", overflow: "hidden", height: 260, display: "flex", flexDirection: "column" }}
-              onMouseEnter={e => { e.currentTarget.style.boxShadow = "0 12px 40px rgba(200,90,20,.15)"; e.currentTarget.style.transform = "translateY(-4px)"; }}
+            <div style={{ background: WHITE, border: `1px solid ${BORDER}`, borderRadius: 20, boxShadow: "0 2px 10px rgba(0,0,0,.06)", transition: "box-shadow .24s, transform .24s", position: "relative", overflow: "hidden", height: 260, display: "flex", flexDirection: "column" }}
+              onMouseEnter={e => { e.currentTarget.style.boxShadow = "0 20px 40px rgba(0,0,0,.1)"; e.currentTarget.style.transform = "translateY(-6px)"; }}
               onMouseLeave={e => { e.currentTarget.style.boxShadow = "0 2px 10px rgba(0,0,0,.06)"; e.currentTarget.style.transform = "translateY(0)"; }}
             >
               {f.img && <div style={{ height: 160, flexShrink: 0, overflow: "hidden" }}><img src={f.img} alt={f.title} style={{ width: "100%", height: "100%", objectFit: "cover" }} loading="lazy" /></div>}
@@ -1896,9 +1896,9 @@ function AppPage({ appContent, setAppContent, isAdmin }) {
               <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill,minmax(240px,1fr))", gap: 14 }}>
                 {phase.steps.map((step, si) => (
                   <Reveal key={step.id} delay={Math.min(si * 80, 400)}>
-                  <div style={{ background: phase.isSetup ? O2 : WHITE, border: `1px solid ${phase.isSetup ? "rgba(200,90,20,.18)" : BORDER}`, borderRadius: 10, padding: "20px 20px 22px", boxShadow: "0 2px 8px rgba(0,0,0,.05)", transition: "box-shadow .2s,transform .2s" }}
-                    onMouseEnter={e => { e.currentTarget.style.boxShadow = "0 8px 28px rgba(200,90,20,.11)"; e.currentTarget.style.transform = "translateY(-3px)"; }}
-                    onMouseLeave={e => { e.currentTarget.style.boxShadow = "0 2px 8px rgba(0,0,0,.05)"; e.currentTarget.style.transform = "translateY(0)"; }}
+                  <div style={{ background: phase.isSetup ? O2 : WHITE, border: `1px solid ${phase.isSetup ? "rgba(200,90,20,.18)" : BORDER}`, borderRadius: 20, padding: "20px 20px 22px", boxShadow: "0 2px 10px rgba(0,0,0,.06)", transition: "box-shadow .3s,transform .3s" }}
+                    onMouseEnter={e => { e.currentTarget.style.boxShadow = "0 20px 40px rgba(0,0,0,.1)"; e.currentTarget.style.transform = "translateY(-6px)"; }}
+                    onMouseLeave={e => { e.currentTarget.style.boxShadow = "0 2px 10px rgba(0,0,0,.06)"; e.currentTarget.style.transform = "translateY(0)"; }}
                   >
                     <p style={{ fontSize: 10, color: O, fontWeight: 700, letterSpacing: "2px", marginBottom: 8 }}>STEP {step.num}</p>
                     <h4 style={{ fontSize: 14, fontWeight: 600, color: CHAR, marginBottom: 7, lineHeight: 1.45 }}>{step.title}</h4>
@@ -1933,7 +1933,7 @@ function AppPage({ appContent, setAppContent, isAdmin }) {
           </div>
           <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill,minmax(300px,1fr))", gap: 14 }}>
             {(c.guideData?.faqs || DEFAULTS.appContent.guideData.faqs).map(faq => (
-              <div key={faq.id} style={{ background: WHITE, border: `1px solid ${BORDER}`, borderRadius: 10, padding: "18px 20px" }}>
+              <div key={faq.id} style={{ background: WHITE, border: `1px solid ${BORDER}`, borderRadius: 20, padding: "18px 20px" }}>
                 <p style={{ fontSize: 13, fontWeight: 600, color: CHAR, marginBottom: 7, lineHeight: 1.5 }}>Q：{faq.q}</p>
                 <p style={{ fontSize: 12, color: MID, lineHeight: 1.85 }}>A：{faq.a}</p>
               </div>
@@ -2003,8 +2003,8 @@ function AppPage({ appContent, setAppContent, isAdmin }) {
           {isAdmin && !editingPlan && <div style={{ marginBottom: 20, textAlign: "right" }}><button className="pb" style={{ fontSize: 12 }} onClick={() => { setPlanForm({ name: "", price: "", period: "", highlight: false, badge: "", features: [], detailTitle: "", detailImg: "", detailContent: "" }); setEditingPlan("new"); }}>＋ 新增方案</button></div>}
           <div style={{ display: "grid", gridTemplateColumns: `repeat(${Math.max(c.plans.length, 1)}, 1fr)`, gap: 20 }} className="grid2">
             {c.plans.map((p, i) => (
-              <div key={p.id || i} style={{ background: p.highlight ? O : WHITE, border: `2px solid ${p.highlight ? O : BORDER}`, borderRadius: 12, boxShadow: "0 2px 10px rgba(0,0,0,.06)", padding: "36px 28px", position: "relative", transition: "box-shadow .24s, transform .24s" }}
-                onMouseEnter={e => { e.currentTarget.style.boxShadow = "0 12px 40px rgba(200,90,20,.15)"; e.currentTarget.style.transform = "translateY(-4px)"; }}
+              <div key={p.id || i} style={{ background: p.highlight ? O : WHITE, border: `2px solid ${p.highlight ? O : BORDER}`, borderRadius: 20, boxShadow: "0 2px 10px rgba(0,0,0,.06)", padding: "36px 28px", position: "relative", transition: "box-shadow .24s, transform .24s" }}
+                onMouseEnter={e => { e.currentTarget.style.boxShadow = "0 20px 40px rgba(0,0,0,.1)"; e.currentTarget.style.transform = "translateY(-6px)"; }}
                 onMouseLeave={e => { e.currentTarget.style.boxShadow = "0 2px 10px rgba(0,0,0,.06)"; e.currentTarget.style.transform = "translateY(0)"; }}
               >
                 {p.badge && <span style={{ position: "absolute", top: -11, right: 18, background: CHAR, color: WHITE, fontSize: 10, padding: "3px 10px", letterSpacing: ".5px" }}>{p.badge}</span>}
@@ -2107,8 +2107,8 @@ function Resources({ resources, setResources, isAdmin, articles, setArticles, se
           <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill,minmax(300px,1fr))", gap: 20 }} className="grid3">
             {filtered.map((r, ri) => (
               <Reveal key={r.id} delay={Math.min(ri * 80, 400)}>
-              <div style={{ background: WHITE, border: `1px solid ${BORDER}`, borderRadius: 12, boxShadow: "0 2px 10px rgba(0,0,0,.06)", overflow: "hidden", height: 400, display: "flex", flexDirection: "column", transition: "box-shadow .24s, transform .24s" }}
-                onMouseEnter={e => { e.currentTarget.style.boxShadow = "0 12px 40px rgba(200,90,20,.15)"; e.currentTarget.style.transform = "translateY(-4px)"; }}
+              <div style={{ background: WHITE, border: `1px solid ${BORDER}`, borderRadius: 20, boxShadow: "0 2px 10px rgba(0,0,0,.06)", overflow: "hidden", height: 400, display: "flex", flexDirection: "column", transition: "box-shadow .24s, transform .24s" }}
+                onMouseEnter={e => { e.currentTarget.style.boxShadow = "0 20px 40px rgba(0,0,0,.1)"; e.currentTarget.style.transform = "translateY(-6px)"; }}
                 onMouseLeave={e => { e.currentTarget.style.boxShadow = "0 2px 10px rgba(0,0,0,.06)"; e.currentTarget.style.transform = "translateY(0)"; }}
               >
                 <div style={{ height: 160, flexShrink: 0, overflow: "hidden", background: GRAY }}>{r.img && <img src={r.img} alt={r.name} style={{ width: "100%", height: "100%", objectFit: "cover" }} loading="lazy" />}</div>
@@ -2606,8 +2606,8 @@ function PricingPage({ appContent, setPage }) {
         <div style={{ maxWidth: 860, margin: "0 auto" }}>
           <div style={{ display: "grid", gridTemplateColumns: `repeat(${Math.min(plans.length, 2)}, 1fr)`, gap: 24 }} className="grid2">
             {plans.map(plan => (
-              <div key={plan.id} style={{ background: plan.highlight ? O : WHITE, border: `2px solid ${plan.highlight ? O : BORDER}`, borderRadius: 16, padding: "40px 32px", position: "relative", boxShadow: plan.highlight ? "0 8px 40px rgba(200,90,20,.22)" : "0 2px 16px rgba(0,0,0,.06)", transition: "transform .24s, box-shadow .24s" }}
-                onMouseEnter={e => { e.currentTarget.style.transform = "translateY(-4px)"; e.currentTarget.style.boxShadow = plan.highlight ? "0 16px 48px rgba(200,90,20,.32)" : "0 12px 40px rgba(0,0,0,.1)"; }}
+              <div key={plan.id} style={{ background: plan.highlight ? O : WHITE, border: `2px solid ${plan.highlight ? O : BORDER}`, borderRadius: 20, padding: "40px 32px", position: "relative", boxShadow: plan.highlight ? "0 8px 40px rgba(200,90,20,.22)" : "0 2px 16px rgba(0,0,0,.06)", transition: "transform .3s, box-shadow .3s" }}
+                onMouseEnter={e => { e.currentTarget.style.transform = "translateY(-6px)"; e.currentTarget.style.boxShadow = plan.highlight ? "0 16px 48px rgba(200,90,20,.32)" : "0 20px 40px rgba(0,0,0,.1)"; }}
                 onMouseLeave={e => { e.currentTarget.style.transform = "translateY(0)"; e.currentTarget.style.boxShadow = plan.highlight ? "0 8px 40px rgba(200,90,20,.22)" : "0 2px 16px rgba(0,0,0,.06)"; }}
               >
                 {plan.badge && <span style={{ position: "absolute", top: -12, left: "50%", transform: "translateX(-50%)", background: CHAR, color: WHITE, fontSize: 11, padding: "4px 14px", borderRadius: 20, letterSpacing: ".5px", fontWeight: 500, whiteSpace: "nowrap" }}>{plan.badge}</span>}
@@ -2678,7 +2678,7 @@ function TermsPage() {
     },
     {
       title: "訂閱方案與收費",
-      content: `本服務提供以下訂閱方案：\n\n• 月訂閱：NT$129 / 月\n• 年方案：NT$999 / 年\n• 兩年方案：NT$1,899 / 兩年\n\n所有金額均為新台幣計價。付款由綠界科技股份有限公司代為處理，採信用卡定期定額方式進行。`,
+      content: `本服務提供以下訂閱方案：\n\n• 月訂閱：NT$149 / 月\n• 年方案：NT$999 / 年\n• 兩年方案：NT$1,899 / 兩年\n\n所有金額均為新台幣計價。付款由綠界科技股份有限公司代為處理，採信用卡定期定額方式進行。`,
     },
     {
       title: "自動續約",
@@ -2963,7 +2963,7 @@ function SubscriptionPage({ setPage, isAdmin }) {
     {
       id: 1,
       name: "月訂閱",
-      price: "NT$129",
+      price: "NT$149",
       period: "/月",
       equiv: null,
       badge: null,
@@ -3011,13 +3011,13 @@ function SubscriptionPage({ setPage, isAdmin }) {
               <div key={plan.id} style={{
                 background: plan.highlight ? O : WHITE,
                 border: `2px solid ${plan.highlight ? O : BORDER}`,
-                borderRadius: 12,
+                borderRadius: 20,
                 padding: "36px 26px 32px",
                 position: "relative",
                 boxShadow: plan.highlight ? "0 8px 32px rgba(200,90,20,.2)" : "0 2px 10px rgba(0,0,0,.05)",
-                transition: "transform .22s, box-shadow .22s",
+                transition: "transform .3s, box-shadow .3s",
               }}
-                onMouseEnter={e => { e.currentTarget.style.transform = "translateY(-4px)"; e.currentTarget.style.boxShadow = plan.highlight ? "0 16px 48px rgba(200,90,20,.28)" : "0 10px 30px rgba(0,0,0,.1)"; }}
+                onMouseEnter={e => { e.currentTarget.style.transform = "translateY(-6px)"; e.currentTarget.style.boxShadow = plan.highlight ? "0 16px 48px rgba(200,90,20,.28)" : "0 20px 40px rgba(0,0,0,.1)"; }}
                 onMouseLeave={e => { e.currentTarget.style.transform = "translateY(0)"; e.currentTarget.style.boxShadow = plan.highlight ? "0 8px 32px rgba(200,90,20,.2)" : "0 2px 10px rgba(0,0,0,.05)"; }}
               >
                 {plan.badge && (
