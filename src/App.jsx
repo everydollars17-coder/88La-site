@@ -159,6 +159,29 @@ const DEFAULTS = {
     { icon: "B", title: "存錢袋", desc: "手工製作的實體存錢工具，讓存錢這件事更有儀式感。", page: "envelope" },
     { icon: "C", title: "8友社群", desc: "一群正在練習理財的人，互相打氣，不評判彼此的數字。", page: "community" }
   ],
+  envelopeHero: {
+    eyebrow: "88La · 實體工具",
+    headline: "看得見的存錢儀式感",
+    subhead: "把存錢這件事從數字變成實際的動作。分類存錢袋讓每一筆存款都有明確去處，適合想要「摸得到」進度的人。",
+    ctaPrimary: "前往賣場購買",
+    ctaSecondary: "不確定選哪款？先測驗看看",
+    buyTagline: "88La的手作溫暖，陪伴你的存錢之旅。"
+  },
+  goodsHero: {
+    eyebrow: "88La · 推薦好物",
+    headline: "真的有在用，才推薦",
+    subhead: "這些不是我自己的商品，是我實際用過、覺得對理財這件事有幫助的東西。"
+  },
+  resourcesHero: {
+    eyebrow: "資源中心",
+    headline: "免費工具與文章，先看懂自己再說",
+    subhead: "不用訂閱也能先玩玩看。互動測驗幫你快速抓到自己的財務位置，文章則是把理財觀念拆成你聽得懂的話。"
+  },
+  communityHero: {
+    eyebrow: "88La · COMMUNITY",
+    headline: "理財這件事，一個人練習很孤單。",
+    subhead: "8友社群是一群正在練習理財的人，互相打氣、交流，不評判彼此的數字，只是一起把日子過好一點。"
+  },
   links: {
     lineCommunity: "https://line.me/R/ti/p/@367xhgyr",
     lineOfficial: "https://line.me/R/ti/p/@367xhgyr",
@@ -814,6 +837,30 @@ function Hero({ about, isAdmin, setAbout, links }) {
 
 // ── Home (article list) ──
 // ── Homepage Hero (marketing) ──
+function PageHero({ title, fields, data, setData, defaults, isAdmin, children }) {
+  const h = { ...defaults, ...(data || {}) };
+  const [editing, setEditing] = useState(false);
+  const [tmp, setTmp] = useState(h);
+  const save = () => { setData(tmp); setEditing(false); };
+  if (editing) return (
+    <div style={{ padding: "48px 32px", maxWidth: 600, margin: "0 auto" }}>
+      <p style={{ fontSize: 11, letterSpacing: "2px", color: O, marginBottom: 24 }}>編輯{title}</p>
+      <div style={{ display: "flex", flexDirection: "column", gap: 20 }}>
+        {fields.map(f => (
+          <div key={f.key}>
+            <p style={{ fontSize: 12, color: MID, marginBottom: 8 }}>{f.label}</p>
+            {f.multiline
+              ? <textarea value={tmp[f.key] || ""} onChange={e => setTmp(p => ({ ...p, [f.key]: e.target.value }))} style={{ minHeight: 70 }} />
+              : <input value={tmp[f.key] || ""} onChange={e => setTmp(p => ({ ...p, [f.key]: e.target.value }))} />}
+          </div>
+        ))}
+      </div>
+      <div style={{ display: "flex", gap: 10, marginTop: 28 }}><button className="pb" onClick={save}>儲存</button><button className="pg" onClick={() => setEditing(false)}>取消</button></div>
+    </div>
+  );
+  return children(h, isAdmin ? <span onClick={() => { setTmp(h); setEditing(true); }} style={{ fontSize: 12, color: O, cursor: "pointer" }}>編輯文字</span> : null);
+}
+
 function HomeHero({ homeHero, setHomeHero, isAdmin, setPage }) {
   const h = { ...DEFAULTS.homeHero, ...(homeHero || {}) };
   const [editing, setEditing] = useState(false);
@@ -1570,16 +1617,25 @@ function IG({ igPosts, setIgPosts, isAdmin, links }) {
 }
 
 // ── Community (8友社群) ──
-function Community({ igPosts, links, setPage }) {
+const COMMUNITY_HERO_FIELDS = [
+  { key: "eyebrow", label: "小標籤（Eyebrow）" },
+  { key: "headline", label: "主標題" },
+  { key: "subhead", label: "副標題", multiline: true }
+];
+
+function Community({ igPosts, links, setPage, isAdmin, communityHero, setCommunityHero }) {
   const l = links || DEFAULTS.links;
   const previewPosts = (igPosts || []).slice(0, 3);
   return (
+    <PageHero title="8友社群頁文字" fields={COMMUNITY_HERO_FIELDS} data={communityHero} setData={setCommunityHero} defaults={DEFAULTS.communityHero} isAdmin={isAdmin}>
+      {(h, editLink) => (
     <div>
       <div style={{ background: GRAD, padding: "72px 32px 64px", textAlign: "center" }}>
         <div style={{ maxWidth: 640, margin: "0 auto" }}>
-          <p className="section-label" style={{ marginBottom: 16 }}>88La · COMMUNITY</p>
-          <h1 style={{ fontSize: 34, fontWeight: 700, color: CHAR, lineHeight: 1.45, marginBottom: 18 }}>理財這件事，一個人練習很孤單。</h1>
-          <p style={{ fontSize: 15, color: MID, lineHeight: 1.9 }}>8友社群是一群正在練習理財的人，互相打氣、交流，不評判彼此的數字，只是一起把日子過好一點。</p>
+          <p className="section-label" style={{ marginBottom: 16 }}>{h.eyebrow}</p>
+          <h1 style={{ fontSize: 34, fontWeight: 700, color: CHAR, lineHeight: 1.45, marginBottom: 18 }}>{h.headline}</h1>
+          <p style={{ fontSize: 15, color: MID, lineHeight: 1.9 }}>{h.subhead}</p>
+          {editLink && <p style={{ marginTop: 12 }}>{editLink}</p>}
         </div>
       </div>
       <div style={{ background: WHITE, padding: "52px 32px", borderTop: `1px solid ${BORDER}`, borderBottom: `1px solid ${BORDER}` }}>
@@ -1643,25 +1699,39 @@ function Community({ igPosts, links, setPage }) {
         </div>
       </div>
     </div>
+      )}
+    </PageHero>
   );
 }
 
 // ── 存錢袋 (Envelope) ──
-function Envelope({ products, setPage, isAdmin }) {
+const ENVELOPE_HERO_FIELDS = [
+  { key: "eyebrow", label: "小標籤（Eyebrow）" },
+  { key: "headline", label: "主標題" },
+  { key: "subhead", label: "副標題", multiline: true },
+  { key: "ctaPrimary", label: "主要按鈕文字" },
+  { key: "ctaSecondary", label: "次要按鈕文字" },
+  { key: "buyTagline", label: "底部購買區標語" }
+];
+
+function Envelope({ products, setPage, isAdmin, envelopeHero, setEnvelopeHero }) {
   const physical = (products || []).filter(p => p.type === "physical");
   const storeUrl = physical.find(p => p.url)?.url || "";
   const buyHref = storeUrl || "#products";
   return (
+    <PageHero title="存錢袋頁文字" fields={ENVELOPE_HERO_FIELDS} data={envelopeHero} setData={setEnvelopeHero} defaults={DEFAULTS.envelopeHero} isAdmin={isAdmin}>
+      {(h, editLink) => (
     <div>
       <div style={{ background: GRAD, padding: "64px 32px" }}>
         <div style={{ maxWidth: 1100, margin: "0 auto", display: "grid", gridTemplateColumns: "1fr 1fr", gap: 56, alignItems: "center" }} className="grid2">
           <div>
-            <p className="section-label" style={{ marginBottom: 16 }}>88La · 實體工具</p>
-            <h1 style={{ fontSize: 36, fontWeight: 700, color: CHAR, lineHeight: 1.4, marginBottom: 16 }}>看得見的存錢儀式感</h1>
-            <p style={{ fontSize: 15, color: MID, lineHeight: 1.85, marginBottom: 28, maxWidth: 420 }}>把存錢這件事從數字變成實際的動作。分類存錢袋讓每一筆存款都有明確去處，適合想要「摸得到」進度的人。</p>
+            <p className="section-label" style={{ marginBottom: 16 }}>{h.eyebrow}</p>
+            <h1 style={{ fontSize: 36, fontWeight: 700, color: CHAR, lineHeight: 1.4, marginBottom: 16 }}>{h.headline}</h1>
+            <p style={{ fontSize: 15, color: MID, lineHeight: 1.85, marginBottom: 28, maxWidth: 420 }}>{h.subhead}</p>
             <div style={{ display: "flex", gap: 12, flexWrap: "wrap", alignItems: "center" }}>
-              <a href={buyHref} target={storeUrl ? "_blank" : undefined} rel="noopener noreferrer"><button className="pb">前往賣場購買</button></a>
-              <a href={QUIZ_URL} target="_blank" rel="noopener noreferrer"><button className="pg">不確定選哪款？先測驗看看</button></a>
+              <a href={buyHref} target={storeUrl ? "_blank" : undefined} rel="noopener noreferrer"><button className="pb">{h.ctaPrimary}</button></a>
+              <a href={QUIZ_URL} target="_blank" rel="noopener noreferrer"><button className="pg">{h.ctaSecondary}</button></a>
+              {editLink}
             </div>
             <p style={{ fontSize: 12, color: LIGHT, marginTop: 14 }}>賣場下單，選擇取貨方式</p>
           </div>
@@ -1719,15 +1789,23 @@ function Envelope({ products, setPage, isAdmin }) {
       <div style={{ background: CHAR, padding: "64px 32px", textAlign: "center" }}>
         <p style={{ fontSize: 12, color: CORAL, letterSpacing: "1px", fontWeight: 600, marginBottom: 14 }}>開始存錢</p>
         <h2 style={{ fontSize: 24, fontWeight: 700, color: WHITE, marginBottom: 14 }}>在賣場就能買到</h2>
-        <p style={{ fontSize: 14, color: "rgba(255,255,255,.6)", marginBottom: 28 }}>88La的手作溫暖，陪伴你的存錢之旅。</p>
+        <p style={{ fontSize: 14, color: "rgba(255,255,255,.6)", marginBottom: 28 }}>{h.buyTagline}</p>
         <a href={buyHref} target={storeUrl ? "_blank" : undefined} rel="noopener noreferrer"><button style={{ background: CORAL, color: CHAR, border: "none", padding: "12px 26px", borderRadius: 999, fontSize: 14, fontWeight: 500, cursor: "pointer", fontFamily: "inherit" }}>前往賣場 →</button></a>
       </div>
     </div>
+      )}
+    </PageHero>
   );
 }
 
 // ── Goods ──
-function Goods({ goods, setGoods, isAdmin }) {
+const GOODS_HERO_FIELDS = [
+  { key: "eyebrow", label: "小標籤（Eyebrow）" },
+  { key: "headline", label: "主標題" },
+  { key: "subhead", label: "副標題", multiline: true }
+];
+
+function Goods({ goods, setGoods, isAdmin, goodsHero, setGoodsHero }) {
   const [editing, setEditing] = useState(null);
   const [form, setForm] = useState({ name: "", brand: "", desc: "", url: "", img: "", active: true });
   const [goodsUrlErr, setGoodsUrlErr] = useState("");
@@ -1743,13 +1821,16 @@ function Goods({ goods, setGoods, isAdmin }) {
   const active = (goods || []).filter(g => g.active);
   const move = (idx, dir) => setGoods(prev => { const act = (prev || []).filter(g => g.active); const inact = (prev || []).filter(g => !g.active); return [...moveItem(act, idx, dir), ...inact]; });
   return (
+    <PageHero title="推薦好物頁文字" fields={GOODS_HERO_FIELDS} data={goodsHero} setData={setGoodsHero} defaults={DEFAULTS.goodsHero} isAdmin={isAdmin}>
+      {(h, editLink) => (
     <div>
       <div style={{ background: GRAD, padding: "64px 32px" }}>
         <div style={{ maxWidth: 1100, margin: "0 auto", display: "flex", justifyContent: "space-between", alignItems: "flex-end", flexWrap: "wrap", gap: 16 }}>
           <div>
-            <p className="section-label" style={{ marginBottom: 12 }}>88La · 推薦好物</p>
-            <h1 style={{ fontSize: 30, fontWeight: 700, color: CHAR, marginBottom: 10 }}>真的有在用，才推薦</h1>
-            <p style={{ fontSize: 14, color: MID, maxWidth: 420 }}>這些不是我自己的商品，是我實際用過、覺得對理財這件事有幫助的東西。</p>
+            <p className="section-label" style={{ marginBottom: 12 }}>{h.eyebrow}</p>
+            <h1 style={{ fontSize: 30, fontWeight: 700, color: CHAR, marginBottom: 10 }}>{h.headline}</h1>
+            <p style={{ fontSize: 14, color: MID, maxWidth: 420 }}>{h.subhead}</p>
+            {editLink}
           </div>
           {isAdmin && <button className="pb" onClick={startAdd}>＋ 新增</button>}
         </div>
@@ -1815,6 +1896,8 @@ function Goods({ goods, setGoods, isAdmin }) {
         )}
       </div>
     </div>
+      )}
+    </PageHero>
   );
 }
 
@@ -2210,7 +2293,13 @@ function AppPage({ appContent, setAppContent, isAdmin, setPage }) {
 }
 
 // ── NEW: 免費資源 ──
-function Resources({ resources, setResources, isAdmin, articles, setArticles, setId, setPage }) {
+const RESOURCES_HERO_FIELDS = [
+  { key: "eyebrow", label: "小標籤（Eyebrow）" },
+  { key: "headline", label: "主標題" },
+  { key: "subhead", label: "副標題", multiline: true }
+];
+
+function Resources({ resources, setResources, isAdmin, articles, setArticles, setId, setPage, resourcesHero, setResourcesHero }) {
   const [mainFilter, setMainFilter] = useState("全部");
   const showTools = mainFilter === "全部" || mainFilter === "互動工具";
   const showArticles = mainFilter === "全部" || mainFilter === "免費文章" || mainFilter === "會員文章";
@@ -2232,12 +2321,15 @@ function Resources({ resources, setResources, isAdmin, articles, setArticles, se
   };
   const del = id => { if (confirm("確定刪除？")) setResources(prev => (prev || []).filter(r => r.id !== id)); };
   return (
+    <PageHero title="資源中心頁文字" fields={RESOURCES_HERO_FIELDS} data={resourcesHero} setData={setResourcesHero} defaults={DEFAULTS.resourcesHero} isAdmin={isAdmin}>
+      {(h, editLink) => (
     <div>
       <div style={{ background: GRAD, padding: "64px 32px" }}>
         <div style={{ maxWidth: 1100, margin: "0 auto" }}>
-          <p className="section-label" style={{ marginBottom: 12 }}>資源中心</p>
-          <h1 style={{ fontSize: 30, fontWeight: 700, color: CHAR, marginBottom: 12 }}>免費工具與文章，先看懂自己再說</h1>
-          <p style={{ fontSize: 14, color: MID, maxWidth: 480 }}>不用訂閱也能先玩玩看。互動測驗幫你快速抓到自己的財務位置，文章則是把理財觀念拆成你聽得懂的話。</p>
+          <p className="section-label" style={{ marginBottom: 12 }}>{h.eyebrow}</p>
+          <h1 style={{ fontSize: 30, fontWeight: 700, color: CHAR, marginBottom: 12 }}>{h.headline}</h1>
+          <p style={{ fontSize: 14, color: MID, maxWidth: 480 }}>{h.subhead}</p>
+          {editLink}
         </div>
       </div>
       <div style={{ maxWidth: 1100, margin: "0 auto", padding: "40px 32px 0" }} className="page-wrap">
@@ -2345,6 +2437,8 @@ function Resources({ resources, setResources, isAdmin, articles, setArticles, se
       </div>
       )}
     </div>
+      )}
+    </PageHero>
   );
 }
 
@@ -3269,6 +3363,10 @@ export default function App() {
   const [homeHero, setHomeHero, hhL] = useFS("homeHero", DEFAULTS.homeHero);
   const [trustStats, setTrustStats, tsL] = useFS("trustStats", DEFAULTS.trustStats);
   const [paths, setPaths, pthL] = useFS("paths", DEFAULTS.paths);
+  const [envelopeHero, setEnvelopeHero, ehL] = useFS("envelopeHero", DEFAULTS.envelopeHero);
+  const [goodsHero, setGoodsHero, ghL] = useFS("goodsHero", DEFAULTS.goodsHero);
+  const [resourcesHero, setResourcesHero, rhL] = useFS("resourcesHero", DEFAULTS.resourcesHero);
+  const [communityHero, setCommunityHero, chL] = useFS("communityHero", DEFAULTS.communityHero);
   const [page, setPage] = useState("home");
   const [id, setId] = useState(null);
   const [isAdmin, setIsAdmin] = useState(false);
@@ -3394,13 +3492,13 @@ export default function App() {
         {page === "home" && <Home articles={articles} setPage={setPage} setId={setId} setArticles={setArticles} isAdmin={isAdmin} siteTitle={siteTitle} setSiteTitle={setSiteTitle} tags={tags} setTags={setTags} about={about} setAbout={setAbout} links={links} homeHero={homeHero} setHomeHero={setHomeHero} trustStats={trustStats} setTrustStats={setTrustStats} paths={paths} setPaths={setPaths} />}
         {page === "about" && <About about={about} setAbout={setAbout} isAdmin={isAdmin} links={links} setLinks={setLinks} setPage={nav} />}
         {page === "ig" && <IG igPosts={igPosts} setIgPosts={setIgPosts} isAdmin={isAdmin} links={links} />}
-        {page === "community" && <Community igPosts={igPosts} links={links} setPage={nav} />}
+        {page === "community" && <Community igPosts={igPosts} links={links} setPage={nav} isAdmin={isAdmin} communityHero={communityHero} setCommunityHero={setCommunityHero} />}
         {page === "shop" && <Shop products={products} setProducts={setProducts} isAdmin={isAdmin} />}
-        {page === "envelope" && <Envelope products={products} setPage={nav} isAdmin={isAdmin} />}
-        {page === "goods" && <Goods goods={goods} setGoods={setGoods} isAdmin={isAdmin} />}
+        {page === "envelope" && <Envelope products={products} setPage={nav} isAdmin={isAdmin} envelopeHero={envelopeHero} setEnvelopeHero={setEnvelopeHero} />}
+        {page === "goods" && <Goods goods={goods} setGoods={setGoods} isAdmin={isAdmin} goodsHero={goodsHero} setGoodsHero={setGoodsHero} />}
         {page === "app" && <AppPage appContent={appContent} setAppContent={setAppContent} isAdmin={isAdmin} setPage={nav} />}
         {page === "guide" && <Guide appContent={appContent} isAdmin={isAdmin} setPage={nav} />}
-        {page === "resources" && <Resources resources={resources} setResources={setResources} isAdmin={isAdmin} articles={articles} setArticles={setArticles} setId={setId} setPage={setPage} />}
+        {page === "resources" && <Resources resources={resources} setResources={setResources} isAdmin={isAdmin} articles={articles} setArticles={setArticles} setId={setId} setPage={setPage} resourcesHero={resourcesHero} setResourcesHero={setResourcesHero} />}
         {page === "newsletter" && <Newsletter newsletter={newsletter} setNewsletter={setNewsletter} isAdmin={isAdmin} articles={articles} setArticles={setArticles} setId={setId} setPage={setPage} />}
         {page === "contact" && <Contact links={links} contactContent={contactContent} setContactContent={setContactContent} isAdmin={isAdmin} />}
         {page === "savings-quiz" && isAdmin && <SavingsBagQuizAdmin savingsBagQuiz={savingsBagQuiz} setSavingsBagQuiz={setSavingsBagQuiz} />}
