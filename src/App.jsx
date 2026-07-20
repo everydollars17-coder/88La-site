@@ -144,6 +144,7 @@ const DEFAULT_TAGS = ["理財觀念", "信用卡", "記帳", "投資", "讀書�
 const DEFAULTS = {
   siteTitle: "理財觀點與讀書筆記",
   footerTagline: "理財，是為了讓生活更自由。",
+  memberPassword: "",
   homeHero: {
     eyebrow: "給理財新手的自動導航器",
     headline: "記帳不是壓力\n是看懂自己數字的開始",
@@ -1156,9 +1157,19 @@ function RelatedLinkEditor({ relatedLinks, onChange, products, resources }) {
   );
 }
 
-function Article({ article, onBack, setArticles, isAdmin, tags, links, setPage, products, resources }) {
+function Article({ article, onBack, setArticles, isAdmin, tags, links, setPage, products, resources, memberPassword }) {
   const [name, setName] = useState(""); const [text, setText] = useState(""); const [copied, setCopied] = useState(false);
   const [editing, setEditing] = useState(false);
+  const [unlocked, setUnlocked] = useState(() => localStorage.getItem("88la_member_unlocked") === "1");
+  const [pwdInput, setPwdInput] = useState("");
+  const [pwdErr, setPwdErr] = useState(false);
+  const locked = article.member && !isAdmin && !unlocked;
+  const tryUnlock = () => {
+    if (pwdInput.trim() && memberPassword && pwdInput.trim() === memberPassword.trim()) {
+      localStorage.setItem("88la_member_unlocked", "1");
+      setUnlocked(true); setPwdErr(false);
+    } else setPwdErr(true);
+  };
   const [ed, setEd] = useState({ title: article.title, tag: article.tag, excerpt: article.excerpt, content: article.content, img: article.img || "", date: article.date || "", relatedLinks: article.relatedLinks || [], member: article.member || false });
   const l = links || DEFAULTS.links;
   const lastSubmit = useRef(0);
@@ -1228,8 +1239,28 @@ function Article({ article, onBack, setArticles, isAdmin, tags, links, setPage, 
         </div>
       )}
       <div style={{ maxWidth: 740, margin: "0 auto", padding: "52px 32px" }} className="page-wrap">
-        <div className="article-content" style={{ fontSize: 16, lineHeight: 1.8, color: CHAR, marginBottom: 56 }}
-          dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(/<[a-z][\s\S]*>/i.test(article.content || "") ? article.content : (article.content || "").replace(/\n/g, "<br>")) }} />
+        {locked ? (
+          <div style={{ marginBottom: 56 }}>
+            <p style={{ fontSize: 16, lineHeight: 1.8, color: CHAR, marginBottom: 24 }}>{article.excerpt}</p>
+            <div style={{ position: "relative", marginBottom: 28 }}>
+              <div className="article-content" style={{ fontSize: 16, lineHeight: 1.8, color: CHAR, maxHeight: 120, overflow: "hidden", filter: "blur(4px)", userSelect: "none", pointerEvents: "none" }}
+                dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(/<[a-z][\s\S]*>/i.test(article.content || "") ? article.content : (article.content || "").replace(/\n/g, "<br>")) }} />
+              <div style={{ position: "absolute", inset: 0, background: `linear-gradient(to bottom, transparent, ${WHITE} 90%)` }} />
+            </div>
+            <div style={{ background: GRAY, border: `1px solid ${BORDER}`, padding: "28px 28px", textAlign: "center" }}>
+              <p style={{ fontSize: 14, fontWeight: 500, color: CHAR, marginBottom: 4 }}>🔒 這是會員限定文章</p>
+              <p style={{ fontSize: 13, color: MID, marginBottom: 18 }}>輸入會員密碼即可閱讀全文</p>
+              <div style={{ display: "flex", gap: 10, justifyContent: "center", flexWrap: "wrap" }}>
+                <input type="password" value={pwdInput} onChange={e => { setPwdInput(e.target.value); setPwdErr(false); }} onKeyDown={e => e.key === "Enter" && tryUnlock()} placeholder="請輸入密碼" style={{ maxWidth: 200 }} />
+                <button className="pb" onClick={tryUnlock}>解鎖</button>
+              </div>
+              {pwdErr && <p style={{ fontSize: 12, color: "#C0392B", marginTop: 10 }}>密碼不正確，請再試一次</p>}
+            </div>
+          </div>
+        ) : (
+          <div className="article-content" style={{ fontSize: 16, lineHeight: 1.8, color: CHAR, marginBottom: 56 }}
+            dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(/<[a-z][\s\S]*>/i.test(article.content || "") ? article.content : (article.content || "").replace(/\n/g, "<br>")) }} />
+        )}
         {relLinks.length > 0 && (
           <div style={{ marginBottom: 48 }}>
             <p style={{ fontSize: 11, letterSpacing: "2px", color: MID, marginBottom: 16 }}>相關內容</p>
@@ -2122,7 +2153,7 @@ function AppPage({ appContent, setAppContent, isAdmin, setPage }) {
             </div>
           </div>
           <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 20, marginTop: 24 }}>
-            <div style={{ maxWidth: 390, width: "100%", textAlign: "left" }}>
+            <div style={{ maxWidth: 780, width: "100%", textAlign: "left" }}>
               <p style={{ fontSize: 11, color: MID, letterSpacing: "0.08em", textTransform: "uppercase", marginBottom: 12 }}>示範帳戶人設</p>
               <p style={{ fontSize: 15, fontWeight: 700, color: CHAR, marginBottom: 12 }}>小琳，28 歲，行銷企劃</p>
               <ul style={{ listStyle: "none", padding: 0, margin: 0, display: "flex", flexDirection: "column", gap: 8 }}>
@@ -2163,7 +2194,7 @@ function AppPage({ appContent, setAppContent, isAdmin, setPage }) {
           <div style={{ background: GRAY, padding: "24px", marginBottom: 32, border: `1px solid ${BORDER}` }}>
             <p style={{ fontSize: 11, color: MID, marginBottom: 16, letterSpacing: "1px" }}>{editingFeat === "new" ? "新增功能" : "編輯功能"}</p>
             <div style={{ display: "grid", gridTemplateColumns: "100px 1fr", gap: 16, marginBottom: 16 }} className="grid2">
-              <div><p style={{ fontSize: 12, color: MID, marginBottom: 6 }}>編號</p><input value={featForm.n} onChange={e => setFeatForm(p => ({ ...p, n: e.target.value }))} /></div>
+              <div><p style={{ fontSize: 12, color: MID, marginBottom: 6 }}>分類標籤</p><input value={featForm.n} onChange={e => setFeatForm(p => ({ ...p, n: e.target.value }))} placeholder="例：即時記帳" /></div>
               <div><p style={{ fontSize: 12, color: MID, marginBottom: 6 }}>標題</p><input value={featForm.title} onChange={e => setFeatForm(p => ({ ...p, title: e.target.value }))} /></div>
             </div>
             <div style={{ marginBottom: 12 }}><p style={{ fontSize: 12, color: MID, marginBottom: 6 }}>說明</p><textarea value={featForm.desc} onChange={e => setFeatForm(p => ({ ...p, desc: e.target.value }))} style={{ minHeight: 70 }} /></div>
@@ -2171,7 +2202,7 @@ function AppPage({ appContent, setAppContent, isAdmin, setPage }) {
             <div style={{ display: "flex", gap: 10 }}><button className="pb" onClick={saveFeat} disabled={!featForm.title.trim()}>儲存</button><button className="pg" onClick={() => setEditingFeat(null)}>取消</button></div>
           </div>
         )}
-        {isAdmin && !editingFeat && <div style={{ marginBottom: 24, textAlign: "right" }}><button className="pb" style={{ fontSize: 12 }} onClick={() => { setFeatForm({ n: String(c.features.length + 1).padStart(2, "0"), title: "", desc: "", img: "" }); setEditingFeat("new"); }}>＋ 新增功能</button></div>}
+        {isAdmin && !editingFeat && <div style={{ marginBottom: 24, textAlign: "right" }}><button className="pb" style={{ fontSize: 12 }} onClick={() => { setFeatForm({ n: "", title: "", desc: "", img: "" }); setEditingFeat("new"); }}>＋ 新增功能</button></div>}
         <div style={{ display: "flex", flexDirection: "column" }}>
           {c.features.map((f, i) => (
             <Reveal key={f.id || i}>
@@ -2185,7 +2216,7 @@ function AppPage({ appContent, setAppContent, isAdmin, setPage }) {
                   <button className="pg" style={{ fontSize: 10, padding: "3px 8px" }} onClick={() => { setFeatForm({ n: f.n, title: f.title, desc: f.desc, img: f.img || "" }); setEditingFeat(f.id); }}>編輯</button>
                   <button className="pg" style={{ fontSize: 10, padding: "3px 8px", color: "#E74C3C", borderColor: "#E74C3C" }} onClick={() => delFeat(f.id)}>✕</button>
                 </div>}
-                <span style={{ display: "inline-block", fontSize: 12, color: O, fontWeight: 500, background: O2, padding: "4px 12px", borderRadius: 999, marginBottom: 16 }}>{String(i + 1).padStart(2, "0")}</span>
+                {f.n && <span style={{ display: "inline-block", fontSize: 12, color: O, fontWeight: 500, background: O2, padding: "4px 12px", borderRadius: 999, marginBottom: 16 }}>{f.n}</span>}
                 <h3 style={{ fontSize: 22, fontWeight: 700, color: CHAR, marginBottom: 12 }}>{f.title}</h3>
                 <p style={{ fontSize: 14, color: MID, lineHeight: 1.85, whiteSpace: "pre-wrap" }}>{f.desc}</p>
               </div>
@@ -2337,8 +2368,10 @@ const RESOURCES_HERO_FIELDS = [
   { key: "subhead", label: "副標題", multiline: true }
 ];
 
-function Resources({ resources, setResources, isAdmin, articles, setArticles, setId, setPage, resourcesHero, setResourcesHero }) {
+function Resources({ resources, setResources, isAdmin, articles, setArticles, setId, setPage, resourcesHero, setResourcesHero, memberPassword, setMemberPassword }) {
   const [mainFilter, setMainFilter] = useState("全部");
+  const [editingPwd, setEditingPwd] = useState(false);
+  const [tmpPwd, setTmpPwd] = useState(memberPassword || "");
   const showTools = mainFilter === "全部" || mainFilter === "互動工具";
   const showArticles = mainFilter === "全部" || mainFilter === "免費文章" || mainFilter === "會員文章";
   const articleList = [...(articles || [])].sort((a, b) => (b.date || "").localeCompare(a.date || ""));
@@ -2376,6 +2409,23 @@ function Resources({ resources, setResources, isAdmin, articles, setArticles, se
             <span key={t} onClick={() => setMainFilter(t)} style={{ fontSize: 13, padding: "8px 18px", borderRadius: 999, cursor: "pointer", border: `1px solid ${mainFilter === t ? O : BORDER}`, background: mainFilter === t ? O : "transparent", color: mainFilter === t ? WHITE : CHAR, transition: "background .15s" }}>{t}</span>
           ))}
         </div>
+        {isAdmin && (
+          <div style={{ marginTop: 20, background: GRAY, border: `1px solid ${BORDER}`, padding: "16px 20px" }}>
+            {!editingPwd ? (
+              <div style={{ display: "flex", alignItems: "center", gap: 12, flexWrap: "wrap" }}>
+                <p style={{ fontSize: 12, color: MID }}>會員限定文章密碼：{memberPassword ? <span style={{ color: CHAR, fontWeight: 500 }}>已設定（{"•".repeat(Math.min(memberPassword.length, 10))}）</span> : <span style={{ color: "#C0392B" }}>尚未設定，會員限定文章目前任何人都能看到全文</span>}</p>
+                <span onClick={() => { setTmpPwd(memberPassword || ""); setEditingPwd(true); }} style={{ fontSize: 12, color: O, cursor: "pointer" }}>{memberPassword ? "修改密碼" : "設定密碼"}</span>
+              </div>
+            ) : (
+              <div style={{ display: "flex", gap: 10, flexWrap: "wrap", alignItems: "center" }}>
+                <input value={tmpPwd} onChange={e => setTmpPwd(e.target.value)} placeholder="設定共用密碼" style={{ maxWidth: 240 }} />
+                <button className="pb" style={{ fontSize: 12, padding: "8px 16px" }} onClick={() => { setMemberPassword(tmpPwd.trim()); setEditingPwd(false); }}>儲存</button>
+                <button className="pg" style={{ fontSize: 12, padding: "8px 16px" }} onClick={() => setEditingPwd(false)}>取消</button>
+              </div>
+            )}
+            <p style={{ fontSize: 11, color: LIGHT, marginTop: 10, lineHeight: 1.6 }}>提醒：這是單一共用密碼，給所有會員限定文章共用，不是逐篇文章各自的密碼。此密碼儲存在網站公開內容中，只能防一般讀者，無法防真的想繞過的技術使用者。</p>
+          </div>
+        )}
       </div>
       {showTools && (
       <div style={{ maxWidth: 1100, margin: "0 auto", padding: "48px 32px" }} className="page-wrap">
@@ -3393,6 +3443,7 @@ export default function App() {
   const [tags, setTags, taL] = useFS("tags", DEFAULTS.tags);
   const [links, setLinks, lL] = useFS("links", DEFAULTS.links);
   const [footerTagline, setFooterTagline, ftL] = useFS("footerTagline", DEFAULTS.footerTagline);
+  const [memberPassword, setMemberPassword, mpL] = useFS("memberPassword", DEFAULTS.memberPassword);
   const [resources, setResources, rlL] = useFS("resources", []);
   const [newsletter, setNewsletter, nlL] = useFS("newsletter", DEFAULTS.newsletter);
   const [appContent, setAppContent, acL] = useFS("appContent", DEFAULTS.appContent);
@@ -3536,7 +3587,7 @@ export default function App() {
         {page === "goods" && <Goods goods={goods} setGoods={setGoods} isAdmin={isAdmin} goodsHero={goodsHero} setGoodsHero={setGoodsHero} />}
         {page === "app" && <AppPage appContent={appContent} setAppContent={setAppContent} isAdmin={isAdmin} setPage={nav} />}
         {page === "guide" && <Guide appContent={appContent} isAdmin={isAdmin} setPage={nav} />}
-        {page === "resources" && <Resources resources={resources} setResources={setResources} isAdmin={isAdmin} articles={articles} setArticles={setArticles} setId={setId} setPage={setPage} resourcesHero={resourcesHero} setResourcesHero={setResourcesHero} />}
+        {page === "resources" && <Resources resources={resources} setResources={setResources} isAdmin={isAdmin} articles={articles} setArticles={setArticles} setId={setId} setPage={setPage} resourcesHero={resourcesHero} setResourcesHero={setResourcesHero} memberPassword={memberPassword} setMemberPassword={setMemberPassword} />}
         {page === "newsletter" && <Newsletter newsletter={newsletter} setNewsletter={setNewsletter} isAdmin={isAdmin} articles={articles} setArticles={setArticles} setId={setId} setPage={setPage} />}
         {page === "contact" && <Contact links={links} contactContent={contactContent} setContactContent={setContactContent} isAdmin={isAdmin} />}
         {page === "savings-quiz" && isAdmin && <SavingsBagQuizAdmin savingsBagQuiz={savingsBagQuiz} setSavingsBagQuiz={setSavingsBagQuiz} />}
@@ -3545,7 +3596,7 @@ export default function App() {
         {page === "terms" && <TermsPage />}
         {page === "privacy" && <PrivacyPage />}
         {page === "disclaimer" && <DisclaimerPage />}
-        {page === "article" && article && <Article article={article} onBack={() => nav("home")} setArticles={setArticles} isAdmin={isAdmin} tags={tags} links={links} setPage={nav} products={products} resources={resources} />}
+        {page === "article" && article && <Article article={article} onBack={() => nav("home")} setArticles={setArticles} isAdmin={isAdmin} tags={tags} links={links} setPage={nav} products={products} resources={resources} memberPassword={memberPassword} />}
         {page === "write" && isAdmin && <Write onSave={saveArticle} onBack={() => nav("home")} tags={tags} products={products} resources={resources} />}
       </div>
       <Footer links={links} footerTagline={footerTagline} setFooterTagline={setFooterTagline} isAdmin={isAdmin} setPage={nav} />
