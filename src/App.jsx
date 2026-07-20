@@ -2091,28 +2091,37 @@ function AppPage({ appContent, setAppContent, isAdmin, setPage }) {
               以下是示範帳戶「小琳」的完整記帳紀錄，和你未來使用的畫面一模一樣。
             </p>
           </div>
-          <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 20 }}>
-            <div style={{
-              width: "100%", maxWidth: 390,
-              background: "#1A1A1A", borderRadius: 40,
-              padding: "14px 12px",
-              boxShadow: "0 24px 80px rgba(0,0,0,0.28)",
-            }}>
-              <div style={{ height: 28, display: "flex", justifyContent: "center", alignItems: "center", marginBottom: 4 }}>
-                <div style={{ width: 100, height: 22, background: "#111", borderRadius: 12 }} />
-              </div>
-              <div style={{ borderRadius: 28, overflow: "hidden", height: 680 }}>
-                <iframe
-                  src={`${APP_URL}?demo=true`}
-                  style={{ width: "100%", height: "100%", border: "none", display: "block" }}
-                  title="88La 理財導航器示範"
-                  loading="lazy"
-                />
-              </div>
-              <div style={{ height: 24, display: "flex", justifyContent: "center", alignItems: "center" }}>
-                <div style={{ width: 100, height: 4, background: "#444", borderRadius: 2 }} />
-              </div>
+          <div style={{ background: WHITE, border: `1px solid ${BORDER}`, borderRadius: 20, padding: "24px 20px 32px", boxShadow: "0 24px 48px -20px rgba(26,26,26,0.12)" }}>
+            <div style={{ display: "flex", alignItems: "center", gap: 6, marginBottom: 20 }}>
+              <span style={{ width: 6, height: 6, borderRadius: "50%", background: O, display: "inline-block", flexShrink: 0 }} />
+              <span style={{ fontSize: 12, color: LIGHT }}>互動 Demo</span>
             </div>
+            <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 20 }}>
+              <div style={{
+                width: "100%", maxWidth: 390,
+                background: "#1A1A1A", borderRadius: 40,
+                padding: "14px 12px",
+                boxShadow: "0 24px 80px rgba(0,0,0,0.28)",
+              }}>
+                <div style={{ height: 28, display: "flex", justifyContent: "center", alignItems: "center", marginBottom: 4 }}>
+                  <div style={{ width: 100, height: 22, background: "#111", borderRadius: 12 }} />
+                </div>
+                <div style={{ borderRadius: 28, overflow: "hidden", height: 680 }}>
+                  <iframe
+                    src={`${APP_URL}?demo=true`}
+                    style={{ width: "100%", height: "100%", border: "none", display: "block" }}
+                    title="88La 理財導航器示範"
+                    loading="lazy"
+                  />
+                </div>
+                <div style={{ height: 24, display: "flex", justifyContent: "center", alignItems: "center" }}>
+                  <div style={{ width: 100, height: 4, background: "#444", borderRadius: 2 }} />
+                </div>
+              </div>
+              <p style={{ fontSize: 12, color: LIGHT, textAlign: "center" }}>直接點擊畫面裡的按鈕操作，跟實際 App 一樣的流程</p>
+            </div>
+          </div>
+          <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 20, marginTop: 24 }}>
             <div style={{ maxWidth: 390, width: "100%", textAlign: "left" }}>
               <p style={{ fontSize: 11, color: MID, letterSpacing: "0.08em", textTransform: "uppercase", marginBottom: 12 }}>示範帳戶人設</p>
               <p style={{ fontSize: 15, fontWeight: 700, color: CHAR, marginBottom: 12 }}>小琳，28 歲，行銷企劃</p>
@@ -2123,6 +2132,24 @@ function AppPage({ appContent, setAppContent, isAdmin, setPage }) {
                 <li style={{ fontSize: 13, color: MID, display: "flex", gap: 8, lineHeight: 1.6 }}><span style={{ color: O, fontWeight: 700, flexShrink: 0 }}>·</span><span>有記帳習慣但常常「記了，然後呢？」月初信心滿滿，月中容易失控（聚餐、網購），月底發現目標又落後</span></li>
               </ul>
             </div>
+            <div className="grid2" style={{ maxWidth: 780, width: "100%", display: "grid", gridTemplateColumns: "1fr 1fr", gap: 16 }}>
+              <div style={{ background: WHITE, border: `1px solid ${BORDER}`, borderRadius: 16, padding: "20px 22px" }}>
+                <p style={{ fontSize: 12, color: O, fontWeight: 700, letterSpacing: "0.04em", marginBottom: 12 }}>系統怎麼看</p>
+                <ul style={{ listStyle: "none", padding: 0, margin: 0, display: "flex", flexDirection: "column", gap: 10 }}>
+                  <li style={{ fontSize: 13, color: CHAR, display: "flex", gap: 8, lineHeight: 1.6 }}><span style={{ color: O, fontWeight: 700, flexShrink: 0 }}>·</span><span>系統偵測到：本月網購類別支出比預算高出 62%</span></li>
+                  <li style={{ fontSize: 13, color: CHAR, display: "flex", gap: 8, lineHeight: 1.6 }}><span style={{ color: O, fontWeight: 700, flexShrink: 0 }}>·</span><span>信用卡預留卡費已超過本月現金結餘，出現負值缺口</span></li>
+                  <li style={{ fontSize: 13, color: CHAR, display: "flex", gap: 8, lineHeight: 1.6 }}><span style={{ color: O, fontWeight: 700, flexShrink: 0 }}>·</span><span>儲蓄目標進度落後，以目前速度需要多花 4 個月才能達標</span></li>
+                </ul>
+              </div>
+              <div style={{ background: WHITE, border: `1px solid ${BORDER}`, borderRadius: 16, padding: "20px 22px" }}>
+                <p style={{ fontSize: 12, color: "#4A8C5C", fontWeight: 700, letterSpacing: "0.04em", marginBottom: 12 }}>給小琳的建議</p>
+                <ul style={{ listStyle: "none", padding: 0, margin: 0, display: "flex", flexDirection: "column", gap: 10 }}>
+                  <li style={{ fontSize: 13, color: CHAR, display: "flex", gap: 8, lineHeight: 1.6 }}><span style={{ color: "#4A8C5C", fontWeight: 700, flexShrink: 0 }}>·</span><span>建議下個月網購類別預算下修 NT$3,000，轉移到卡費預留</span></li>
+                  <li style={{ fontSize: 13, color: CHAR, display: "flex", gap: 8, lineHeight: 1.6 }}><span style={{ color: "#4A8C5C", fontWeight: 700, flexShrink: 0 }}>·</span><span>聚餐類別出現 3 次非計畫性支出，建議設定週間現金額度提醒自己</span></li>
+                </ul>
+              </div>
+            </div>
+            <p style={{ fontSize: 12, color: LIGHT, textAlign: "center", background: GRAY, borderRadius: 10, padding: "10px 16px", maxWidth: 780, width: "100%" }}>🔒 完整月度診斷報告與帳單明細，登入後查看</p>
           </div>
         </div>
       </div>
@@ -2170,20 +2197,20 @@ function AppPage({ appContent, setAppContent, isAdmin, setPage }) {
       {/* FAQ */}
       <div style={{ background: "#FAFAFA", padding: "72px 32px", borderTop: `1px solid ${BORDER}` }}>
         <div style={{ maxWidth: 1100, margin: "0 auto" }}>
-          <div style={{ textAlign: "center", marginBottom: 28 }}>
-            <p className="section-label" style={{ marginBottom: 10 }}>FAQ</p>
-            <h3 style={{ fontSize: 20, fontWeight: 700, color: CHAR }}>常見問題</h3>
+          <div style={{ textAlign: "center", marginBottom: 40 }}>
+            <p className="section-label" style={{ marginBottom: 10 }}>常見問題</p>
+            <h3 style={{ fontSize: 26, fontWeight: 700, color: CHAR }}>大家最常問的幾件事</h3>
           </div>
-          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill,minmax(300px,1fr))", gap: 14 }}>
+          <div style={{ maxWidth: 720, margin: "0 auto", display: "flex", flexDirection: "column", gap: 14 }}>
             {(c.guideData?.faqs || DEFAULTS.appContent.guideData.faqs).slice(0, 4).map(faq => (
-              <div key={faq.id} style={{ background: WHITE, border: `1px solid ${BORDER}`, borderRadius: 20, padding: "18px 20px" }}>
-                <p style={{ fontSize: 13, fontWeight: 600, color: CHAR, marginBottom: 7, lineHeight: 1.5 }}>Q：{faq.q}</p>
-                <p style={{ fontSize: 12, color: MID, lineHeight: 1.85 }}>A：{faq.a}</p>
+              <div key={faq.id} style={{ background: WHITE, border: `1px solid ${BORDER}`, borderRadius: 16, padding: "22px 26px" }}>
+                <p style={{ fontSize: 15, fontWeight: 500, color: CHAR, marginBottom: 8 }}>{faq.q}</p>
+                <p style={{ fontSize: 13, color: MID, lineHeight: 1.8 }}>{faq.a}</p>
               </div>
             ))}
           </div>
           <p style={{ textAlign: "center", fontSize: 13, color: LIGHT, marginTop: 20 }}>完整 FAQ 共 {(c.guideData?.faqs || DEFAULTS.appContent.guideData.faqs).length} 題，詳見官網使用說明頁</p>
-          <div style={{ textAlign: "center", marginTop: 16 }}>
+          <div style={{ textAlign: "center", marginTop: 20 }}>
             <button className="pg" onClick={() => setPage("guide")}>查看完整使用說明 →</button>
           </div>
           {isAdmin && (
