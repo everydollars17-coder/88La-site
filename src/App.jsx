@@ -145,6 +145,153 @@ const DEFAULTS = {
   siteTitle: "理財觀點與讀書筆記",
   footerTagline: "理財，是為了讓生活更自由。",
   memberPassword: "",
+  navLabels: { home: "首頁", app: "理財導航器", envelope: "存錢袋", goods: "推薦好物", community: "8友社群", resources: "資源中心", about: "關於我們" },
+  mobileTabLabels: { home: "首頁", community: "社群", resources: "資源", app: "App", envelope: "存錢袋" },
+  footerLabels: {
+    colProduct: "產品", colAbout: "關於", colLegal: "法律資訊",
+    fApp: "理財導航器", fEnvelope: "存錢袋", fGoods: "推薦好物", fPricing: "訂閱方案",
+    fAbout: "關於我們", fCommunity: "8友社群", fResources: "資源中心", fNewsletter: "電子報", fContact: "合作洽談",
+    fTerms: "服務條款", fPrivacy: "隱私政策", fDisclaimer: "免責聲明",
+    copyright: "© 2026 88La 版權所有"
+  },
+  termsContent: {
+    eyebrow: "LEGAL",
+    title: "88La 理財導航器\n服務條款與退款政策",
+    lastUpdated: "最後更新：2026 年 7 月",
+    body: `<h2>一、服務說明</h2><p>88La 理財導航器（以下簡稱「本服務」）由 88La 提供，為個人理財記帳管理工具，提供收支記錄、預算規劃及桌面快速記帳等功能。本服務以訂閱制提供，訂閱期間內可無限制使用所有功能。</p><h2>二、訂閱方案與收費</h2><p>本服務提供以下訂閱方案：</p><ul><li>月訂閱：NT$149 / 月</li><li>年方案：NT$999 / 年</li><li>兩年方案：NT$1,899 / 兩年</li></ul><p>所有金額均為新台幣計價。付款由綠界科技股份有限公司代為處理，採信用卡定期定額方式進行。</p><h2>三、自動續約</h2><p>訂閱方案將於到期日自動續約，並依原方案金額扣款。如不希望續約，請於訂閱到期日前至帳戶設定頁面取消。取消後，服務仍可使用至當期訂閱到期日為止。</p><h2>四、退款政策</h2><p>本服務所販售之內容為數位服務，依消費者保護法第 19 條規定，數位內容於開通後不適用七天鑑賞期退換貨規定。</p><p>如有特殊情形，請聯繫 everydollars17@gmail.com，由 88La 個案審酌處理。</p><h2>五、帳戶與資料</h2><p>用戶須自行保管帳戶登入資訊。用戶的記帳資料儲存於個人 Google 雲端帳號中，訂閱取消後資料仍保留於用戶自己的 Google 試算表，88La 不持有用戶資料。</p><h2>六、服務變更</h2><p>88La 保留調整訂閱方案定價及功能內容之權利，並將提前 30 天以電子郵件通知用戶。現有訂閱者不受漲價影響，直至當期訂閱到期。</p><h2>七、帳號到期與資料保留</h2><ol><li>訂閱方案到期前三天，系統將透過 Email 及 App 推播通知提醒續訂。</li><li>方案到期後，帳號進入 7 天緩衝期：<ul><li>可瀏覽所有歷史記帳紀錄</li><li>可匯出個人資料</li><li>新增、編輯、刪除等寫入功能暫停使用</li></ul></li><li>緩衝期結束後（到期後第 8 天起），帳號功能將完全停用，但資料不會主動刪除。</li><li>如需恢復使用，續訂即可立即解鎖所有功能。</li></ol><h2>八、聯絡方式</h2><p>Email：everydollars17@gmail.com<br>官方網站：https://88la-site.vercel.app</p>`,
+    footerNote: "使用本服務即代表你已閱讀並同意以上服務條款。\n如對條款有任何疑問，請於訂閱前透過 Email 與我們聯繫。"
+  },
+  privacyContent: {
+    eyebrow: "PRIVACY",
+    title: "88La 理財導航器\n隱私政策",
+    lastUpdated: "最後更新：2026 年 7 月",
+    intro: "88La 由個人創作者獨立營運，我們深知理財記帳涉及您最私密的財務細節，因此特別撰寫此份隱私政策，以清楚說明本服務蒐集何種資料、如何運用、儲存於何處，以及哪些人能夠接觸這些資訊。",
+    body: `<h2>一、適用範圍</h2><p>本隱私政策適用於 88La 理財自動導航器（官網與網頁應用程式），說明本服務如何處理您於使用過程中提供或產生之個人資料。本政策不適用於本服務以外之外部連結網站，亦不適用於非本服務委託或參與管理之第三方。</p><h2>二、我們蒐集的資料</h2><p><strong>【登入時】</strong><br>本服務採用 Google 帳號登入機制，系統將取得您的電子郵件位址，作為識別您帳號身分之唯一依據。您無需另行設定獨立的帳號密碼。</p><p><strong>【使用記帳功能時】</strong><br>您於使用過程中主動輸入之內容，包括每一筆記帳明細（金額、類別、付款方式、備註、消費當下之心情記錄）、月度預算規劃、信用卡與帳戶設定、負債資料，以及理財筆記，皆屬於您所提供之資料範疇。</p><p><strong>【付款時】</strong><br>訂閱費用係由綠界科技股份有限公司代為收取，您的信用卡卡號、有效期限等付款資訊將直接於綠界之付款頁面輸入，88La 不會接觸、亦不會儲存任何與您的付款工具相關之資訊。本服務僅會收到付款是否成功之通知，以憑此開通您的訂閱權限。</p><p><strong>【瀏覽網站時（自動蒐集）】</strong><br>本服務官網使用 Vercel Web Analytics 統計流量，此工具不使用第三方 cookie，而是以傳入請求產生的雜湊值識別訪客，所記錄之資料皆為匿名性質，不會與任何個人、客戶或 IP 位址綁定或關聯，相關瀏覽紀錄亦不會永久保存，將於 24 小時後自動清除。我們僅藉此瞭解整體網站使用狀況（如頁面瀏覽量），不會用來識別您的個人身分。</p><h2>三、未成年使用者</h2><p>本服務之受眾可能包含未滿 18 歲之學生族群。若您未滿 18 歲，建議於監護人知悉並同意之情況下使用本服務。若您是未滿 18 歲使用者之監護人，並認為您的子女未經同意提供了個人資料，請透過第七條所列聯絡方式與我們聯繫，我們將協助處理相關資料之刪除或更正事宜。</p><h2>四、資料儲存之處所</h2><table style="width:100%;border-collapse:collapse;font-size:13px;"><thead><tr style="background:#FDF0E8;"><th style="padding:10px 14px;text-align:left;font-weight:600;border-bottom:2px solid #C85A14;font-size:12px;">資料類型</th><th style="padding:10px 14px;text-align:left;font-weight:600;border-bottom:2px solid #C85A14;font-size:12px;">儲存位置</th><th style="padding:10px 14px;text-align:left;font-weight:600;border-bottom:2px solid #C85A14;font-size:12px;">說明</th></tr></thead><tbody><tr style="border-bottom:1px solid rgba(0,0,0,0.07);"><td style="padding:12px 14px;vertical-align:top;">記帳明細、預算、筆記</td><td style="padding:12px 14px;vertical-align:top;">您個人之 Google 試算表</td><td style="padding:12px 14px;vertical-align:top;">登入後，系統將自動於您的 Google 雲端硬碟建立專屬檔案，相關資料即時寫入其中</td></tr><tr style="border-bottom:1px solid rgba(0,0,0,0.07);"><td style="padding:12px 14px;vertical-align:top;">帳號狀態、到期日、帳戶與信用卡及負債設定</td><td style="padding:12px 14px;vertical-align:top;">Firebase（本服務之後端資料庫）</td><td style="padding:12px 14px;vertical-align:top;">用於驗證您訂閱之有效性，並儲存您的個人化功能設定</td></tr><tr style="border-bottom:1px solid rgba(0,0,0,0.07);"><td style="padding:12px 14px;vertical-align:top;">最近一次驗證之時間戳記</td><td style="padding:12px 14px;vertical-align:top;">您裝置之本機儲存空間（localStorage）</td><td style="padding:12px 14px;vertical-align:top;">僅用於判斷離線狀態下之暫時可用性，不含任何記帳內容</td></tr><tr style="border-bottom:1px solid rgba(0,0,0,0.07);"><td style="padding:12px 14px;vertical-align:top;">匿名瀏覽統計</td><td style="padding:12px 14px;vertical-align:top;">Vercel Web Analytics</td><td style="padding:12px 14px;vertical-align:top;">不可識別個人身分，24 小時後自動清除</td></tr></tbody></table><p>換言之，您的記帳流水帳實際上是存放於「您個人」之 Google 雲端硬碟內，而非本服務之伺服器。即便本服務有朝一日終止運作，該份試算表仍歸屬於您本人，您可隨時開啟、複製或刪除。</p><h2>五、資料之存取權限</h2><ul><li>您的記帳明細存放於您個人之 Google 試算表中，僅您本人得以查閱，本服務不具備、亦未申請主動讀取或瀏覽該試算表內容之權限</li><li>本服務所申請之 Google 授權範圍，僅限於「本應用程式所建立之檔案」（技術上稱為 drive.file），絕不涉及您 Google 雲端硬碟中既有之其他檔案</li><li>帳號狀態與設定資料存放於 Firebase，僅供系統驗證訂閱狀態之用，本服務不會將其提供、洩露或出售予任何第三方</li><li>金流相關資訊由綠界科技依其自身隱私規範處理，本服務全程不接觸您的付款資料</li></ul><p>本服務承諾，絕不將您的資料出售予廣告主，亦不會將您的記帳內容用於任何行銷分析或對外提供。</p><h2>六、資料之運用目的</h2><ul><li>呈現您的記帳記錄、預算對比分析、月度診斷報告等您主動使用之功能</li><li>驗證您的訂閱是否仍屬有效期間</li><li>於您與客服聯繫時，協助核對您的帳號狀況</li><li>透過匿名流量統計瞭解網站整體使用狀況，藉以優化服務內容</li></ul><p>凡未經您同意或非屬您主動使用之功能範疇，本服務絕不擅自運用您的資料，例如分析您的消費習慣以投放廣告。</p><h2>七、資料安全與外洩通知</h2><p>本服務已採取合理之技術與管理措施，保護您的資料免於未經授權之存取、使用或揭露。惟若不幸發生資料安全事件（例如後端系統遭未經授權存取），本服務將於知悉後之合理期限內，透過您註冊時所使用之電子郵件通知您，並說明事件性質、可能受影響之資料範圍，以及本服務已採取或將採取之應變措施。</p><h2>八、資料保留期限</h2><ul><li>訂閱使用期間，資料持續妥善保存</li><li>訂閱取消或到期後，依本服務之服務條款，資料將保留七日供您匯出（CSV 或 PDF 格式），逾期後系統可能予以清除</li><li>至於存放於您個人 Google 試算表內之資料，縱使本服務端之紀錄遭清除，惟若您未自行刪除，該份試算表仍將留存於您的 Google 雲端硬碟之中</li></ul><h2>九、您所享有之權利</h2><p>依個人資料保護法相關規定，您對於本服務所持有之個人資料，得行使下列權利：</p><ul><li>查詢或請求閱覽</li><li>請求製給複製本</li><li>請求補充或更正</li><li>請求停止蒐集、處理或利用</li><li>請求刪除</li></ul><p>您可隨時匯出您完整之記帳資料（CSV 或 PDF 格式），亦可隨時開啟您的 Google 試算表自行查閱、複製或備份原始資料。如欲行使上述權利或取消訂閱，敬請致信 everydollars17@gmail.com 提出申請，我們將於合理期限內處理回覆。</p><h2>十、政策之修改</h2><p>本政策內容如有修改，將於本網站公告並更新最後修改日期。重大變更將透過電子郵件另行通知您。</p><h2>十一、聯絡方式</h2><p>如有任何關於本隱私政策之疑問，敬請致信 everydollars17@gmail.com，我們將竭誠為您回覆。</p>`
+  },
+  disclaimerContent: {
+    eyebrow: "DISCLAIMER",
+    title: "88La 理財導航器\n免責聲明",
+    lastUpdated: "最後更新：2026 年 7 月",
+    body: `<h2>一、服務性質聲明</h2><p>88La 理財自動導航器（以下簡稱「本服務」）為個人記帳、支出追蹤與儲蓄習慣建立之輔助工具，其核心功能在於協助使用者記錄日常收支、設定個人預算目標，以及建立規律的儲蓄行為。</p><p>本服務所提供之收支診斷報告，係依據使用者自行輸入之數據，結合本服務創作者之個人實務理財經驗所設計之參考框架自動產生。本服務創作者並非持有任何金融相關執照之財務顧問，所有內容均屬個人實務經驗之分享，不構成專業財務顧問服務，亦不涉及任何有價證券、基金、期貨、外匯、加密貨幣或其他金融商品之投資策略建議、推介或勸誘行為。</p><h2>二、資訊僅供參考</h2><p>本服務所提供之預算建議、收支診斷分析、儲蓄目標試算及相關數字呈現，均係依據使用者自行輸入之個人資料，結合創作者個人實務理財經驗所設計之參考框架，由系統自動運算後呈現之參考資訊。</p><p>診斷報告中所呈現之支出比例建議、預算配置方向等內容，均源自創作者個人實務經驗之歸納，不同使用者之財務狀況、收入結構、家庭背景與生活條件各異，上述建議未必適用於每一位使用者的個別情況。</p><p>上述資訊：</p><ul><li>係創作者個人實務經驗之分享，不代表對您財務狀況之專業個人化評估</li><li>不構成任何具法律效力之財務建議或投資意見</li><li>不保證使用本服務後必然達成特定儲蓄金額或財務目標</li><li>如您的財務狀況較為複雜（如負債重組、保險規劃、稅務安排等），建議另行諮詢具有合法執照之專業人士</li></ul><h2>三、使用者自行負責原則</h2><p>使用者在參考本服務所提供之任何資訊、數據或分析結果後，所作出之一切財務決策，均應由使用者本人獨立評估、審慎判斷，並自行承擔相應之後果與責任。</p><p>如需專業之財務規劃建議，建議您諮詢具有合法執照之財務顧問或相關專業人士。</p><h2>四、系統資料準確性</h2><p>本服務之所有計算與分析結果，均以使用者自行輸入之資料為基礎。若輸入資料有誤、不完整或未即時更新，系統所呈現之結果可能與您的實際財務狀況有所落差，本服務對此不負任何責任。</p><h2>五、服務中斷與資料完整性</h2><p>本服務係透過網際網路提供，可能因伺服器維護、網路異常、第三方服務（包括 Google、Firebase、綠界科技等）故障，或其他不可抗力因素，導致服務暫時中斷或資料暫時無法存取。本服務對上述情形所造成之不便，不負任何賠償責任，但將盡合理努力維持服務之穩定運行。</p><h2>六、本聲明之修改</h2><p>本服務得隨時修訂本免責聲明，修訂後之內容將公告於本頁面並更新修改日期。繼續使用本服務，即視為接受修訂後之條款。</p><h2>七、聯絡方式</h2><p>如對本聲明有任何疑問，歡迎透過以下方式與我們聯繫：</p><p>Email：everydollars17@gmail.com<br>Instagram：@every_dollars</p>`,
+    footerNote: "本服務為個人記帳與儲蓄習慣建立工具。診斷報告內容係創作者個人實務理財經驗之分享，僅供參考，不構成專業財務顧問服務或投資建議。使用者應依據自身狀況獨立判斷，並自行承擔相應責任。"
+  },
+  demoStory: {
+    toolbarLabel: "互動 Demo",
+    label: "LIVE DEMO",
+    heading: "真實帳戶長這樣",
+    intro: "以下是示範帳戶「小琳」的完整記帳紀錄，和你未來使用的畫面一模一樣。",
+    note: "直接點擊畫面裡的按鈕操作，跟實際 App 一樣的流程",
+    personaLabel: "示範帳戶人設",
+    personaName: "小琳，28 歲，行銷企劃",
+    personaFacts: "月薪 NT$42,000，台北租屋，每月房租 NT$13,000\n兩張信用卡：日常消費卡 ＋ 網購回饋卡\n目標：一年內存到 NT$150,000 頭期款基金\n有記帳習慣但常常「記了，然後呢？」月初信心滿滿，月中容易失控（聚餐、網購），月底發現目標又落後",
+    findingsLabel: "系統怎麼看",
+    findings: "系統偵測到：本月網購類別支出比預算高出 62%\n信用卡預留卡費已超過本月現金結餘，出現負值缺口\n儲蓄目標進度落後，以目前速度需要多花 4 個月才能達標",
+    suggestionsLabel: "給小琳的建議",
+    suggestions: "建議下個月網購類別預算下修 NT$3,000，轉移到卡費預留\n聚餐類別出現 3 次非計畫性支出，建議設定週間現金額度提醒自己",
+    lockNote: "🔒 完整月度診斷報告與帳單明細，登入後查看"
+  },
+  resourcesCopy: {
+    filterAll: "全部", filterTools: "互動工具", filterFree: "免費文章", filterMember: "會員文章",
+    toolsHeading: "互動工具", toolsSub: "動手玩，兩分鐘看結果",
+    toolsEmpty1: "還沒有資源", toolsEmpty2: "資源整理好後會放在這裡",
+    articlesHeading: "文章", articlesSub: "免費與會員限定文章都在這裡",
+    articlesEmpty: "這個分類還沒有文章"
+  },
+  goodsCopy: {
+    emptyState1: "88La 正在尋找好物中",
+    emptyState2: "有合適的商品會在這裡和你分享"
+  },
+  envelopeCopy: {
+    storeNote: "賣場下單，選擇取貨方式",
+    heroImgPlaceholder: "產品實拍圖示意",
+    productsLabel: "商品系列",
+    productsHeading: "存錢袋系列",
+    manageLink: "管理商品 →",
+    emptyState: "商品準備中，敬請期待",
+    buyLink: "前往購買 →",
+    comingSoonLink: "連結準備中",
+    whyLabel: "為什麼選實體工具",
+    whyHeading: "不是每個人都適合純數位記帳",
+    why: [
+      { title: "看得到、摸得到", desc: "數位數字有時候不夠有感，實體存錢袋讓存錢變成一個具體的動作。" },
+      { title: "跟 App 互補使用", desc: "日常花費用理財導航器記錄，存錢目標用存錢袋實體累積，兩者不衝突。" },
+      { title: "不需要學習成本", desc: "不用研究功能怎麼用，拿到就能開始，適合想簡單開始的人。" },
+    ],
+    ctaLabel: "開始存錢",
+    ctaHeading: "在賣場就能買到",
+    ctaBtn: "前往賣場 →"
+  },
+  communityCopy: {
+    introPara1: "我們相信理財不是比賽誰存得多、誰花得少，而是找到適合自己的節奏。",
+    introPara2: "8友社群從一開始就不是一個「教學課程」，而是一群願意誠實面對自己數字的人聚在一起，互相打氣。",
+    joinLabel: "加入方式",
+    joinHeading: "先追蹤，LINE 社群開放時第一時間通知你",
+    lineBadge: "Coming soon",
+    lineTitle: "加入 LINE 社群",
+    lineDesc: "正式社群還在籌備中，開放後會優先通知目前已追蹤 IG 的朋友。",
+    linePill: "敬請期待",
+    igBadge: "現在就能開始",
+    igTitle: "追蹤 Instagram",
+    igDesc: "日常理財觀念、社群第一手消息都會先在這裡發布，不想錯過就先追蹤起來。",
+    igBtn: "追蹤 @every_dollars",
+    recentLabel: "最新動態",
+    recentHeading: "Instagram 上的最新分享",
+    moreLink: "查看更多動態 →",
+    ctaLabel: "下一步",
+    ctaHeading: "先從追蹤開始",
+    ctaDesc: "LINE 社群開放前，IG 是我們跟大家保持聯繫的地方，日常理財觀念也會先在這裡分享。",
+    ctaBtn: "追蹤 Instagram →"
+  },
+  igCopy: {
+    label: "LATEST",
+    heading: "最新消息",
+    sub: "影片、貼文，直接連結 Instagram",
+    profileBtn: "IG 主頁 →"
+  },
+  shopCopy: {
+    label: "SHOP",
+    heading: "商品",
+    sub: "88La的手作溫暖，陪伴你的存錢之旅。",
+    quizTag: "88LA QUIZ • 互動工具",
+    quizHeading: "找到最適合你的存錢工具",
+    quizDesc: "做完 7 題，直接告訴你哪款存錢工具最適合你。",
+    quizBtn: "開始測驗 →",
+    soldOut: "尚未上架"
+  },
+  aboutCopy: {
+    heroHeading: "理財是為了讓生活更自由，不是為了成為另一種壓力。",
+    heroSub: "我們不做「你應該要這樣做」的教學，只給你看懂自己數字的工具。",
+    storyLabel: "故事",
+    storyHeading: "從一份免費範本開始",
+    timeline: [
+      { year: "起點", title: "一份免費的 Google Sheets 記帳範本", desc: "從「先存後花」的概念出發，幫助超過 4,000 人下載使用。" },
+      { year: "進化", title: "推出付費 2.0 版本", desc: "加入五種儲蓄模式、支出追蹤、信用卡分析、診斷報告與行事曆檢視，超過百人使用。" },
+      { year: "現在", title: "理財自動導航器 + 8友社群", desc: "把範本升級成完整的 Web App，同時也有一群人一起練習理財，不是一個人硬撐。" },
+    ],
+    beliefsLabel: "我們相信",
+    beliefsHeading: "做法可以不一樣，但方向很清楚",
+    beliefs: [
+      { n: "1", title: "行為改變優先", desc: "比起記帳工具本身，我們更在乎它有沒有真的幫你改變花錢的習慣。" },
+      { n: "2", title: "給數字不給評判", desc: "我們只呈現「差多少」和「去哪裡調」，不替你的選擇打分數。" },
+      { n: "3", title: "不說教的陪伴", desc: "理財很個人，每個人的節奏不一樣，我們不會用同一套標準要求所有人。" },
+    ],
+    helloLabel: "HELLO",
+    ctaBtn1: "開始使用理財導航器",
+    ctaBtn2: "認識 8友社群"
+  },
+  homeCopy: {
+    latestLabel: "最新文章",
+    latestHeading: "理財知識，用你聽得懂的方式說",
+    ctaHeading: "準備好開始了嗎？",
+    ctaSub: "免費體驗理財自動導航器，看懂自己的錢都去哪了。",
+    ctaBtn: "開始使用理財導航器 →"
+  },
+  subscriptionCopy: {
+    heading: "選擇你的方案",
+    intro: "用 88La 理財導航器，把記帳這件事變成每天兩分鐘的習慣。\n所有方案皆包含桌面快速記帳功能。",
+    notes: "所有金額均為新台幣計價，含稅\n訂閱將於到期日自動續約，可於到期前至帳戶設定取消\n付款方式：信用卡定期定額（由綠界科技處理）\n到期前三天將寄送提醒通知。到期後提供 7 天資料匯出緩衝期，期間可瀏覽歷史紀錄，續訂即可立即恢復完整功能",
+    foundingNote: "感謝最早支持 88La 的 90 位創始成員，你們的定價永久保留：月訂閱 NT$109 ／ 年方案 NT$599 ／ 兩年方案 NT$998。此優惠僅適用於已取得創始會員資格之用戶，不開放新申請。"
+  },
   homeHero: {
     eyebrow: "給理財新手的自動導航器",
     headline: "記帳不是壓力\n是看懂自己數字的開始",
@@ -220,12 +367,42 @@ const DEFAULTS = {
   ],
   tags: DEFAULT_TAGS,
   resources: [],
-  newsletter: { subscriberCount: "1,000+", intro: "每週一篇理財觀念，寫給想讓錢更有意義的你。不說廢話，只寫真實心得。", archiveNote: "隨時取消訂閱，沒有壓力。" },
+  newsletter: {
+    subscriberCount: "1,000+", intro: "每週一篇理財觀念，寫給想讓錢更有意義的你。不說廢話，只寫真實心得。", archiveNote: "隨時取消訂閱，沒有壓力。",
+    readerSuffix: "位讀者", titleLine2: "理財週報",
+    successTitle: "感謝訂閱！", successSub: "我們會在下期發刊時通知你。",
+    emailPlaceholder: "你的 Email", subscribeBtn: "訂閱",
+    recentLabel: "RECENT ISSUES", recentHeading: "最新文章", viewAllLink: "查看全部 →", readLink: "閱讀 →"
+  },
   appContent: {
     heroTitle: "記帳 App，讓你真的",
     heroHighlight: "存到錢",
     heroSub: "雲端同步 Google Sheets，智慧診斷消費模式，支援家庭記帳。不只記帳，更幫你看懂錢的流向。",
     pricingNote: "所有方案皆包含桌面快速記帳功能，選擇最適合你的方案",
+    comingSoonTitle: "訂閱方案即將開放",
+    comingSoonSub: "預計 7 月下旬上市，敬請期待",
+    heroEyebrow: "88LA FINANCE · APP",
+    heroCtaBtn: "了解方案 →",
+    featuresLabel: "FEATURES",
+    featuresHeading: "你需要的，都在這裡",
+    pricingLabel: "PRICING",
+    pricingHeading: "方案與費用",
+    loginNote: "已有帳號？",
+    loginLink: "直接登入",
+    legacyBadge: "輕量版",
+    legacyHeading: "想要更簡單的 Google Sheets 版本？",
+    legacyDesc: "理財自動導航器 2.0 是純 Google Sheets 模板，自動模式偵測，適合不想用 App、只想要一份好用表格的人。",
+    legacyPrice: "NT$ 299 · 一次性購買",
+    legacyBtn: "前往購買 2.0 版本",
+    planDetailBackBtn: "← 返回方案",
+    planDetailLabel: "PLAN DETAILS",
+    planDetailFeaturesLabel: "包含功能",
+    planDetailBuyBtn: "立即購買 →",
+    planLearnMoreBtn: "了解更多 →",
+    faqLabel: "常見問題",
+    faqHeading: "大家最常問的幾件事",
+    faqCountNote: "完整 FAQ 共 {n} 題，詳見官網使用說明頁",
+    faqGuideBtn: "查看完整使用說明 →",
     features: [
       { id: 1, n: "01", title: "即時記帳", desc: "一秒記下每筆花費，情緒、類別、帳戶、分期全部記錄。", img: "" },
       { id: 2, n: "02", title: "雲端同步", desc: "資料存在你自己的 Google Sheets，永遠不鎖在 App 裡。", img: "" },
@@ -285,6 +462,11 @@ const DEFAULTS = {
   },
   contactContent: {
     intro: "如果你是品牌方、媒體、或想和 88La 合作，歡迎透過以下方式聯絡。我通常會在 3 個工作天內回覆。",
+    label: "CONTACT", heading: "合作洽談", sub: "品牌合作、課程邀請、媒體採訪，歡迎來信",
+    nameLabel: "姓名 / 稱呼 *", companyLabel: "公司 / 品牌（選填）", emailLabel: "Email *",
+    typeLabel: "合作類型", typePlaceholder: "請選擇", typeOptions: "品牌贊助\n內容合作\n講座/課程\n媒體採訪\n其他",
+    messageLabel: "合作說明 *", messagePlaceholder: "請簡單描述合作方向⋯", submitBtn: "送出合作申請",
+    successTitle: "訊息已送出", successSub: "感謝你的來信，我會盡快回覆。"
   },
   savingsBagQuiz: {
     showSeasonal: false,
@@ -626,15 +808,20 @@ const IcRes  = () => <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" 
 const IcApp  = () => <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8"><rect x="5" y="2" width="14" height="20" rx="2"/><circle cx="12" cy="17" r="1" fill="currentColor"/></svg>;
 const IcShop = () => <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>;
 
-const MOBILE_TABS = [["home","首頁",IcUser],["community","社群",IcIG],["resources","資源",IcRes],["app","App",IcApp],["envelope","存錢袋",IcShop]];
-const NAV = [["home","首頁"],["app","理財導航器"],["envelope","存錢袋"],["goods","推薦好物"],["community","8友社群"],["resources","資源中心"],["about","關於我們"]];
+const MOBILE_TAB_ICONS = [["home",IcUser],["community",IcIG],["resources",IcRes],["app",IcApp],["envelope",IcShop]];
+const NAV_KEYS = ["home","app","envelope","goods","community","resources","about"];
 
 // ── Nav ──
-function Nav({ page, setPage, isAdmin }) {
+function Nav({ page, setPage, isAdmin, navLabels, setNavLabels, mobileTabLabels, setMobileTabLabels }) {
+  const nl = { ...DEFAULTS.navLabels, ...(navLabels || {}) };
+  const mtl = { ...DEFAULTS.mobileTabLabels, ...(mobileTabLabels || {}) };
   const [showL, setShowL] = useState(false);
   const [mob, setMob] = useState(false);
   const [logging, setLogging] = useState(false);
   const [err, setErr] = useState("");
+  const [editingNav, setEditingNav] = useState(false);
+  const [tmpNav, setTmpNav] = useState(nl);
+  const [tmpMob, setTmpMob] = useState(mtl);
   const login = async () => {
     if (logging) return;
     setLogging(true); setErr("");
@@ -669,10 +856,10 @@ function Nav({ page, setPage, isAdmin }) {
         <div style={{ maxWidth: 1100, margin: "0 auto", padding: "0 28px", height: 60, display: "flex", alignItems: "center", justifyContent: "space-between" }}>
           <span onClick={() => go("home")} style={{ fontFamily: "Inter", fontWeight: 700, fontSize: 16, letterSpacing: "2px", color: WHITE, cursor: "pointer", flexShrink: 0 }}>88La</span>
           <nav className="nav-links" style={{ display: "flex", gap: 22, alignItems: "center" }}>
-            {NAV.map(([k, l]) => (
-              <span key={k} onClick={() => go(k)} style={{ fontSize: 12, letterSpacing: ".8px", color: page === k ? WHITE : "rgba(255,255,255,.7)", cursor: "pointer", fontWeight: page === k ? "700" : "400", borderBottom: page === k ? `2px solid ${WHITE}` : "2px solid transparent", paddingBottom: 2, transition: "color .15s" }}>{l}</span>
+            {NAV_KEYS.map(k => (
+              <span key={k} onClick={() => go(k)} style={{ fontSize: 12, letterSpacing: ".8px", color: page === k ? WHITE : "rgba(255,255,255,.7)", cursor: "pointer", fontWeight: page === k ? "700" : "400", borderBottom: page === k ? `2px solid ${WHITE}` : "2px solid transparent", paddingBottom: 2, transition: "color .15s" }}>{nl[k]}</span>
             ))}
-            {isAdmin && <><span onClick={() => go("write")} style={{ fontSize: 12, color: WHITE, cursor: "pointer", letterSpacing: ".5px" }}>＋ 撰文</span><span onClick={() => go("savings-quiz")} style={{ fontSize: 12, color: "rgba(255,255,255,.7)", cursor: "pointer", letterSpacing: ".5px", marginLeft: 6 }}>存錢袋測驗</span><span onClick={() => signOut(auth)} style={{ fontSize: 11, color: "rgba(255,255,255,.5)", cursor: "pointer", marginLeft: 6 }}>登出</span></>}
+            {isAdmin && <><span onClick={() => go("write")} style={{ fontSize: 12, color: WHITE, cursor: "pointer", letterSpacing: ".5px" }}>＋ 撰文</span><span onClick={() => go("savings-quiz")} style={{ fontSize: 12, color: "rgba(255,255,255,.7)", cursor: "pointer", letterSpacing: ".5px", marginLeft: 6 }}>存錢袋測驗</span><span onClick={() => { setTmpNav(nl); setTmpMob(mtl); setEditingNav(true); }} style={{ fontSize: 11, color: "rgba(255,255,255,.6)", cursor: "pointer", letterSpacing: ".5px", marginLeft: 6, textDecoration: "underline" }}>編輯選單文字</span><span onClick={() => signOut(auth)} style={{ fontSize: 11, color: "rgba(255,255,255,.5)", cursor: "pointer", marginLeft: 6 }}>登出</span></>}
           </nav>
           <button className="mob-menu" onClick={() => setMob(p => !p)} aria-label={mob ? "關閉選單" : "開啟選單"} style={{ background: "none", border: "none", color: WHITE, fontSize: 22, cursor: "pointer", display: "flex", alignItems: "center" }}>
             {mob ? "✕" : "☰"}
@@ -680,8 +867,8 @@ function Nav({ page, setPage, isAdmin }) {
         </div>
         {mob && (
           <div className="mob-panel" style={{ background: CHAR, display: "flex", flexDirection: "column" }}>
-            {NAV.map(([k, l]) => (
-              <span key={k} onClick={() => go(k)} style={{ fontSize: 15, padding: "15px 24px", borderBottom: `1px solid rgba(255,255,255,.08)`, color: page === k ? O : "rgba(255,255,255,.85)", cursor: "pointer", fontWeight: page === k ? "600" : "400" }}>{l}</span>
+            {NAV_KEYS.map(k => (
+              <span key={k} onClick={() => go(k)} style={{ fontSize: 15, padding: "15px 24px", borderBottom: `1px solid rgba(255,255,255,.08)`, color: page === k ? O : "rgba(255,255,255,.85)", cursor: "pointer", fontWeight: page === k ? "600" : "400" }}>{nl[k]}</span>
             ))}
             {isAdmin && <><span onClick={() => go("write")} style={{ fontSize: 15, padding: "15px 24px", borderBottom: `1px solid rgba(255,255,255,.08)`, color: O, cursor: "pointer" }}>＋ 撰文</span><span onClick={() => go("savings-quiz")} style={{ fontSize: 15, padding: "15px 24px", borderBottom: `1px solid rgba(255,255,255,.08)`, color: "rgba(255,255,255,.7)", cursor: "pointer" }}>存錢袋測驗</span><span onClick={() => { signOut(auth); setMob(false); }} style={{ fontSize: 13, padding: "13px 24px", color: "rgba(255,255,255,.4)", cursor: "pointer" }}>登出</span></>}
           </div>
@@ -689,13 +876,36 @@ function Nav({ page, setPage, isAdmin }) {
       </header>
       {/* Mobile bottom tab bar */}
       <nav className="mob-tab-bar">
-        {MOBILE_TABS.map(([k, l, Icon]) => (
+        {MOBILE_TAB_ICONS.map(([k, Icon]) => (
           <button key={k} className={`tab-item ${page === k ? "active" : ""}`} onClick={() => go(k)}>
             <Icon />
-            <span>{l}</span>
+            <span>{mtl[k]}</span>
           </button>
         ))}
       </nav>
+      {editingNav && (
+        <div style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,.6)", zIndex: 61, display: "flex", alignItems: "center", justifyContent: "center", padding: "20px" }}>
+          <div style={{ background: WHITE, padding: 32, width: "100%", maxWidth: 480, maxHeight: "80vh", overflowY: "auto" }}>
+            <p style={{ fontSize: 13, letterSpacing: "2px", color: CORAL2, marginBottom: 20, fontWeight: 500 }}>編輯選單文字</p>
+            <p style={{ fontSize: 12, color: MID, marginBottom: 10, fontWeight: 500 }}>頂部導覽列</p>
+            <div style={{ display: "flex", flexDirection: "column", gap: 10, marginBottom: 20 }}>
+              {NAV_KEYS.map(k => (
+                <input key={k} value={tmpNav[k] ?? ""} onChange={e => setTmpNav(p => ({ ...p, [k]: e.target.value }))} />
+              ))}
+            </div>
+            <p style={{ fontSize: 12, color: MID, marginBottom: 10, fontWeight: 500 }}>手機底部分頁</p>
+            <div style={{ display: "flex", flexDirection: "column", gap: 10, marginBottom: 24 }}>
+              {MOBILE_TAB_ICONS.map(([k]) => (
+                <input key={k} value={tmpMob[k] ?? ""} onChange={e => setTmpMob(p => ({ ...p, [k]: e.target.value }))} />
+              ))}
+            </div>
+            <div style={{ display: "flex", gap: 10 }}>
+              <button className="pb" onClick={() => { setNavLabels(tmpNav); setMobileTabLabels(tmpMob); setEditingNav(false); }}>儲存</button>
+              <button className="pg" onClick={() => setEditingNav(false)}>取消</button>
+            </div>
+          </div>
+        </div>
+      )}
       {showL && (
         <div style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,.6)", zIndex: 60, display: "flex", alignItems: "center", justifyContent: "center", padding: "0 20px" }}>
           <div style={{ background: WHITE, padding: 40, width: "100%", maxWidth: 360 }}>
@@ -717,16 +927,25 @@ function Nav({ page, setPage, isAdmin }) {
 }
 
 // ── Footer ──
-function Footer({ links, footerTagline, setFooterTagline, isAdmin, setPage }) {
+function Footer({ links, footerTagline, setFooterTagline, isAdmin, setPage, footerLabels, setFooterLabels }) {
   const l = links || DEFAULTS.links;
+  const fl = { ...DEFAULTS.footerLabels, ...(footerLabels || {}) };
   const [editing, setEditing] = useState(false);
   const [tmp, setTmp] = useState(footerTagline || DEFAULTS.footerTagline);
   const save = () => { setFooterTagline(tmp); setEditing(false); };
+  const [editingLabels, setEditingLabels] = useState(false);
+  const [tmpLabels, setTmpLabels] = useState(fl);
   const FLink = ({ page, children }) => (
     <li style={{ marginBottom: 10 }}>
       <span onClick={() => setPage && setPage(page)} style={{ fontSize: 13, color: "rgba(255,255,255,.7)", cursor: "pointer", transition: "color .15s" }} onMouseEnter={e => e.currentTarget.style.color = CORAL} onMouseLeave={e => e.currentTarget.style.color = "rgba(255,255,255,.7)"}>{children}</span>
     </li>
   );
+  const LABEL_ROWS = [
+    ["colProduct", "「產品」欄標題"], ["fApp", "理財導航器連結文字"], ["fEnvelope", "存錢袋連結文字"], ["fGoods", "推薦好物連結文字"], ["fPricing", "訂閱方案連結文字"],
+    ["colAbout", "「關於」欄標題"], ["fAbout", "關於我們連結文字"], ["fCommunity", "8友社群連結文字"], ["fResources", "資源中心連結文字"], ["fNewsletter", "電子報連結文字"], ["fContact", "合作洽談連結文字"],
+    ["colLegal", "「法律資訊」欄標題"], ["fTerms", "服務條款連結文字"], ["fPrivacy", "隱私政策連結文字"], ["fDisclaimer", "免責聲明連結文字"],
+    ["copyright", "版權宣告文字"],
+  ];
   return (
     <footer style={{ background: CHAR, padding: "56px 32px calc(28px + env(safe-area-inset-bottom, 0px))" }} className="site-footer">
       <div style={{ maxWidth: 1100, margin: "0 auto" }}>
@@ -752,38 +971,60 @@ function Footer({ links, footerTagline, setFooterTagline, isAdmin, setPage }) {
             </div>
           </div>
           <div>
-            <h5 style={{ fontSize: 13, color: WHITE, marginBottom: 16, fontWeight: 700 }}>產品</h5>
+            <h5 style={{ fontSize: 13, color: WHITE, marginBottom: 16, fontWeight: 700 }}>{fl.colProduct}</h5>
             <ul style={{ listStyle: "none" }}>
-              <FLink page="app">理財導航器</FLink>
-              <FLink page="envelope">存錢袋</FLink>
-              <FLink page="goods">推薦好物</FLink>
-              <FLink page="pricing">訂閱方案</FLink>
+              <FLink page="app">{fl.fApp}</FLink>
+              <FLink page="envelope">{fl.fEnvelope}</FLink>
+              <FLink page="goods">{fl.fGoods}</FLink>
+              <FLink page="pricing">{fl.fPricing}</FLink>
             </ul>
           </div>
           <div>
-            <h5 style={{ fontSize: 13, color: WHITE, marginBottom: 16, fontWeight: 700 }}>關於</h5>
+            <h5 style={{ fontSize: 13, color: WHITE, marginBottom: 16, fontWeight: 700 }}>{fl.colAbout}</h5>
             <ul style={{ listStyle: "none" }}>
-              <FLink page="about">關於我們</FLink>
-              <FLink page="community">8友社群</FLink>
-              <FLink page="resources">資源中心</FLink>
-              <FLink page="newsletter">電子報</FLink>
-              <FLink page="contact">合作洽談</FLink>
+              <FLink page="about">{fl.fAbout}</FLink>
+              <FLink page="community">{fl.fCommunity}</FLink>
+              <FLink page="resources">{fl.fResources}</FLink>
+              <FLink page="newsletter">{fl.fNewsletter}</FLink>
+              <FLink page="contact">{fl.fContact}</FLink>
             </ul>
           </div>
           <div>
-            <h5 style={{ fontSize: 13, color: WHITE, marginBottom: 16, fontWeight: 700 }}>法律資訊</h5>
+            <h5 style={{ fontSize: 13, color: WHITE, marginBottom: 16, fontWeight: 700 }}>{fl.colLegal}</h5>
             <ul style={{ listStyle: "none" }}>
-              <FLink page="terms">服務條款</FLink>
-              <FLink page="privacy">隱私政策</FLink>
-              <FLink page="disclaimer">免責聲明</FLink>
+              <FLink page="terms">{fl.fTerms}</FLink>
+              <FLink page="privacy">{fl.fPrivacy}</FLink>
+              <FLink page="disclaimer">{fl.fDisclaimer}</FLink>
             </ul>
           </div>
         </div>
         <div style={{ paddingTop: 20, borderTop: `1px solid rgba(255,255,255,.1)`, display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: 8 }}>
-          <p style={{ fontSize: 11, color: "rgba(255,255,255,.5)" }}>© 2026 88La 版權所有</p>
-          <a href={`mailto:${l.email}`} style={{ fontSize: 11, color: "rgba(255,255,255,.5)", transition: "color .15s" }} onMouseEnter={e => e.currentTarget.style.color = "rgba(255,255,255,.8)"} onMouseLeave={e => e.currentTarget.style.color = "rgba(255,255,255,.5)"}>{l.email}</a>
+          <p style={{ fontSize: 11, color: "rgba(255,255,255,.5)" }}>{fl.copyright}</p>
+          <div style={{ display: "flex", alignItems: "center", gap: 14 }}>
+            <a href={`mailto:${l.email}`} style={{ fontSize: 11, color: "rgba(255,255,255,.5)", transition: "color .15s" }} onMouseEnter={e => e.currentTarget.style.color = "rgba(255,255,255,.8)"} onMouseLeave={e => e.currentTarget.style.color = "rgba(255,255,255,.5)"}>{l.email}</a>
+            {isAdmin && <span onClick={() => { setTmpLabels(fl); setEditingLabels(true); }} style={{ fontSize: 11, color: "rgba(255,255,255,.35)", cursor: "pointer", textDecoration: "underline" }}>編輯頁尾文字</span>}
+          </div>
         </div>
       </div>
+      {editingLabels && (
+        <div style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,.6)", zIndex: 61, display: "flex", alignItems: "center", justifyContent: "center", padding: "20px" }}>
+          <div style={{ background: WHITE, padding: 32, width: "100%", maxWidth: 480, maxHeight: "80vh", overflowY: "auto" }}>
+            <p style={{ fontSize: 13, letterSpacing: "2px", color: CORAL2, marginBottom: 20, fontWeight: 500 }}>編輯頁尾文字</p>
+            <div style={{ display: "flex", flexDirection: "column", gap: 12, marginBottom: 24 }}>
+              {LABEL_ROWS.map(([k, label]) => (
+                <div key={k}>
+                  <p style={{ fontSize: 11, color: MID, marginBottom: 4 }}>{label}</p>
+                  <input value={tmpLabels[k] ?? ""} onChange={e => setTmpLabels(p => ({ ...p, [k]: e.target.value }))} />
+                </div>
+              ))}
+            </div>
+            <div style={{ display: "flex", gap: 10 }}>
+              <button className="pb" onClick={() => { setFooterLabels(tmpLabels); setEditingLabels(false); }}>儲存</button>
+              <button className="pg" onClick={() => setEditingLabels(false)}>取消</button>
+            </div>
+          </div>
+        </div>
+      )}
     </footer>
   );
 }
@@ -913,7 +1154,10 @@ function HomeHero({ homeHero, setHomeHero, isAdmin, setPage }) {
   );
 }
 
-function Home({ articles, setPage, setId, setArticles, isAdmin, siteTitle, setSiteTitle, tags, setTags, about, setAbout, links, homeHero, setHomeHero, trustStats, setTrustStats, paths, setPaths }) {
+function Home({ articles, setPage, setId, setArticles, isAdmin, siteTitle, setSiteTitle, tags, setTags, about, setAbout, links, homeHero, setHomeHero, trustStats, setTrustStats, paths, setPaths, homeCopy, setHomeCopy }) {
+  const hc = { ...DEFAULTS.homeCopy, ...(homeCopy || {}) };
+  const [editHomeCopy, setEditHomeCopy] = useState(false);
+  const [tmpHomeCopy, setTmpHomeCopy] = useState(hc);
   const [filter, setFilter] = useState("全部");
   const [sort, setSort] = useState("newest");
   const [editTitle, setEditTitle] = useState(false);
@@ -1001,8 +1245,9 @@ function Home({ articles, setPage, setId, setArticles, isAdmin, siteTitle, setSi
         <div style={{ background: WHITE, padding: "64px 32px", borderTop: `1px solid ${BORDER}` }}>
           <div style={{ maxWidth: 1100, margin: "0 auto" }}>
             <div style={{ textAlign: "center", marginBottom: 40 }}>
-              <p className="section-label" style={{ marginBottom: 12 }}>最新文章</p>
-              <h2 style={{ fontSize: 22, fontWeight: 700, color: CHAR }}>理財知識，用你聽得懂的方式說</h2>
+              <p className="section-label" style={{ marginBottom: 12 }}>{hc.latestLabel}</p>
+              <h2 style={{ fontSize: 22, fontWeight: 700, color: CHAR }}>{hc.latestHeading}</h2>
+              {isAdmin && <span onClick={() => { setTmpHomeCopy(hc); setEditHomeCopy(true); }} style={{ fontSize: 11, color: O, cursor: "pointer", marginTop: 6, display: "inline-block" }}>編輯</span>}
             </div>
             <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(260px,1fr))", gap: 20 }} className="grid3">
               {[...articles].sort((a, b) => (b.date || "").localeCompare(a.date || "")).slice(0, 3).map(a => (
@@ -1021,10 +1266,29 @@ function Home({ articles, setPage, setId, setArticles, isAdmin, siteTitle, setSi
         </div>
       )}
       <div style={{ background: CHAR, padding: "56px 32px", textAlign: "center" }}>
-        <h2 style={{ fontSize: 22, fontWeight: 700, color: WHITE, marginBottom: 14 }}>準備好開始了嗎？</h2>
-        <p style={{ fontSize: 14, color: "rgba(255,255,255,.6)", marginBottom: 24 }}>免費體驗理財自動導航器，看懂自己的錢都去哪了。</p>
-        <button className="pb" onClick={() => setPage("app")}>開始使用理財導航器 →</button>
+        <h2 style={{ fontSize: 22, fontWeight: 700, color: WHITE, marginBottom: 14 }}>{hc.ctaHeading}</h2>
+        <p style={{ fontSize: 14, color: "rgba(255,255,255,.6)", marginBottom: 24 }}>{hc.ctaSub}</p>
+        <button className="pb" onClick={() => setPage("app")}>{hc.ctaBtn}</button>
+        {isAdmin && <div style={{ marginTop: 10 }}><span onClick={() => { setTmpHomeCopy(hc); setEditHomeCopy(true); }} style={{ fontSize: 11, color: "rgba(255,255,255,.5)", cursor: "pointer", textDecoration: "underline" }}>編輯</span></div>}
       </div>
+      {editHomeCopy && (
+        <div style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,.6)", zIndex: 61, display: "flex", alignItems: "center", justifyContent: "center", padding: "20px" }}>
+          <div style={{ background: WHITE, padding: 32, width: "100%", maxWidth: 480, maxHeight: "80vh", overflowY: "auto" }}>
+            <p style={{ fontSize: 13, letterSpacing: "2px", color: CORAL2, marginBottom: 20, fontWeight: 500 }}>編輯首頁文字</p>
+            <div style={{ display: "flex", flexDirection: "column", gap: 14, marginBottom: 24 }}>
+              <div><p style={{ fontSize: 12, color: MID, marginBottom: 6 }}>「最新文章」標籤</p><input value={tmpHomeCopy.latestLabel} onChange={e => setTmpHomeCopy(p => ({ ...p, latestLabel: e.target.value }))} /></div>
+              <div><p style={{ fontSize: 12, color: MID, marginBottom: 6 }}>最新文章區標題</p><input value={tmpHomeCopy.latestHeading} onChange={e => setTmpHomeCopy(p => ({ ...p, latestHeading: e.target.value }))} /></div>
+              <div><p style={{ fontSize: 12, color: MID, marginBottom: 6 }}>結尾 CTA 標題</p><input value={tmpHomeCopy.ctaHeading} onChange={e => setTmpHomeCopy(p => ({ ...p, ctaHeading: e.target.value }))} /></div>
+              <div><p style={{ fontSize: 12, color: MID, marginBottom: 6 }}>結尾 CTA 說明</p><input value={tmpHomeCopy.ctaSub} onChange={e => setTmpHomeCopy(p => ({ ...p, ctaSub: e.target.value }))} /></div>
+              <div><p style={{ fontSize: 12, color: MID, marginBottom: 6 }}>結尾 CTA 按鈕文字</p><input value={tmpHomeCopy.ctaBtn} onChange={e => setTmpHomeCopy(p => ({ ...p, ctaBtn: e.target.value }))} /></div>
+            </div>
+            <div style={{ display: "flex", gap: 10 }}>
+              <button className="pb" onClick={() => { setHomeCopy(tmpHomeCopy); setEditHomeCopy(false); }}>儲存</button>
+              <button className="pg" onClick={() => setEditHomeCopy(false)}>取消</button>
+            </div>
+          </div>
+        </div>
+      )}
       <div style={{ maxWidth: 1100, margin: "0 auto", padding: "72px 32px" }} className="page-wrap">
         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-end", flexWrap: "wrap", gap: 16, marginBottom: 40 }}>
           <div>
@@ -1355,14 +1619,20 @@ function Write({ onSave, onBack, tags, products, resources }) {
 }
 
 // ── About ──
-function About({ about, setAbout, isAdmin, links, setLinks, setPage }) {
+function About({ about, setAbout, isAdmin, links, setLinks, setPage, aboutCopy, setAboutCopy }) {
+  const ac = { ...DEFAULTS.aboutCopy, ...(aboutCopy || {}) };
   const [editing, setEditing] = useState(false);
   const [editLinks, setEditLinks] = useState(false);
+  const [editCopy, setEditCopy] = useState(false);
   const [tmp, setTmp] = useState(about);
   const [tmpL, setTmpL] = useState(links || DEFAULTS.links);
+  const [tmpCopy, setTmpCopy] = useState(ac);
   const l = links || DEFAULTS.links;
   const save = () => { setAbout(tmp); setEditing(false); };
   const saveLinks = () => { setLinks(tmpL); setEditLinks(false); };
+  const saveCopy = () => { setAboutCopy(tmpCopy); setEditCopy(false); };
+  const setTimelineItem = (i, field, v) => setTmpCopy(p => ({ ...p, timeline: p.timeline.map((x, xi) => xi === i ? { ...x, [field]: v } : x) }));
+  const setBeliefItem = (i, field, v) => setTmpCopy(p => ({ ...p, beliefs: p.beliefs.map((x, xi) => xi === i ? { ...x, [field]: v } : x) }));
   if (editing) return (
     <div style={{ maxWidth: 860, margin: "0 auto", padding: "60px 32px" }} className="page-wrap">
       <button className="pg" onClick={() => setEditing(false)} style={{ marginBottom: 32 }}>← 取消</button>
@@ -1377,6 +1647,55 @@ function About({ about, setAbout, isAdmin, links, setLinks, setPage }) {
         </div>
       </div>
       <div style={{ display: "flex", gap: 10 }}><button className="pb" onClick={save}>儲存</button><button className="pg" onClick={() => setEditing(false)}>取消</button></div>
+    </div>
+  );
+  if (editCopy) return (
+    <div style={{ maxWidth: 860, margin: "0 auto", padding: "60px 32px" }} className="page-wrap">
+      <button className="pg" onClick={() => setEditCopy(false)} style={{ marginBottom: 32 }}>← 取消</button>
+      <p className="section-label" style={{ marginBottom: 28 }}>編輯關於我們頁文字</p>
+      <div style={{ display: "flex", flexDirection: "column", gap: 14, marginBottom: 32 }}>
+        <p style={{ fontSize: 13, color: MID, fontWeight: 500 }}>開頭</p>
+        <div><p style={{ fontSize: 12, color: MID, marginBottom: 6 }}>主標題</p><textarea value={tmpCopy.heroHeading} onChange={e => setTmpCopy(p => ({ ...p, heroHeading: e.target.value }))} style={{ minHeight: 60 }} /></div>
+        <div><p style={{ fontSize: 12, color: MID, marginBottom: 6 }}>副標題</p><textarea value={tmpCopy.heroSub} onChange={e => setTmpCopy(p => ({ ...p, heroSub: e.target.value }))} style={{ minHeight: 50 }} /></div>
+      </div>
+      <div style={{ display: "flex", flexDirection: "column", gap: 14, marginBottom: 32 }}>
+        <p style={{ fontSize: 13, color: MID, fontWeight: 500 }}>故事區塊</p>
+        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 16 }} className="grid2">
+          <div><p style={{ fontSize: 12, color: MID, marginBottom: 6 }}>標籤</p><input value={tmpCopy.storyLabel} onChange={e => setTmpCopy(p => ({ ...p, storyLabel: e.target.value }))} /></div>
+          <div><p style={{ fontSize: 12, color: MID, marginBottom: 6 }}>標題</p><input value={tmpCopy.storyHeading} onChange={e => setTmpCopy(p => ({ ...p, storyHeading: e.target.value }))} /></div>
+        </div>
+        {tmpCopy.timeline.map((t, i) => (
+          <div key={i} style={{ display: "grid", gridTemplateColumns: "70px 1fr", gap: 12, padding: "12px 0", borderTop: `1px solid ${BORDER}` }}>
+            <input value={t.year} onChange={e => setTimelineItem(i, "year", e.target.value)} placeholder="年份標籤" />
+            <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+              <input value={t.title} onChange={e => setTimelineItem(i, "title", e.target.value)} placeholder="標題" />
+              <textarea value={t.desc} onChange={e => setTimelineItem(i, "desc", e.target.value)} placeholder="說明" style={{ minHeight: 50 }} />
+            </div>
+          </div>
+        ))}
+      </div>
+      <div style={{ display: "flex", flexDirection: "column", gap: 14, marginBottom: 32 }}>
+        <p style={{ fontSize: 13, color: MID, fontWeight: 500 }}>我們相信區塊</p>
+        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 16 }} className="grid2">
+          <div><p style={{ fontSize: 12, color: MID, marginBottom: 6 }}>標籤</p><input value={tmpCopy.beliefsLabel} onChange={e => setTmpCopy(p => ({ ...p, beliefsLabel: e.target.value }))} /></div>
+          <div><p style={{ fontSize: 12, color: MID, marginBottom: 6 }}>標題</p><input value={tmpCopy.beliefsHeading} onChange={e => setTmpCopy(p => ({ ...p, beliefsHeading: e.target.value }))} /></div>
+        </div>
+        {tmpCopy.beliefs.map((b, i) => (
+          <div key={i} style={{ display: "flex", flexDirection: "column", gap: 8, padding: "12px 0", borderTop: `1px solid ${BORDER}` }}>
+            <input value={b.title} onChange={e => setBeliefItem(i, "title", e.target.value)} placeholder="標題" />
+            <textarea value={b.desc} onChange={e => setBeliefItem(i, "desc", e.target.value)} placeholder="說明" style={{ minHeight: 50 }} />
+          </div>
+        ))}
+      </div>
+      <div style={{ display: "flex", flexDirection: "column", gap: 14, marginBottom: 32 }}>
+        <p style={{ fontSize: 13, color: MID, fontWeight: 500 }}>其他</p>
+        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 16 }} className="grid2">
+          <div><p style={{ fontSize: 12, color: MID, marginBottom: 6 }}>HELLO 區標籤</p><input value={tmpCopy.helloLabel} onChange={e => setTmpCopy(p => ({ ...p, helloLabel: e.target.value }))} /></div>
+          <div><p style={{ fontSize: 12, color: MID, marginBottom: 6 }}>結尾按鈕1</p><input value={tmpCopy.ctaBtn1} onChange={e => setTmpCopy(p => ({ ...p, ctaBtn1: e.target.value }))} /></div>
+          <div><p style={{ fontSize: 12, color: MID, marginBottom: 6 }}>結尾按鈕2</p><input value={tmpCopy.ctaBtn2} onChange={e => setTmpCopy(p => ({ ...p, ctaBtn2: e.target.value }))} /></div>
+        </div>
+      </div>
+      <div style={{ display: "flex", gap: 10 }}><button className="pb" onClick={saveCopy}>儲存</button><button className="pg" onClick={() => setEditCopy(false)}>取消</button></div>
     </div>
   );
   if (editLinks) return (
@@ -1396,26 +1715,23 @@ function About({ about, setAbout, isAdmin, links, setLinks, setPage }) {
       <div style={{ background: GRAD, padding: "64px 32px", textAlign: "center" }}>
         <div style={{ maxWidth: 640, margin: "0 auto" }}>
           <p className="section-label" style={{ marginBottom: 16 }}>88La · ABOUT</p>
-          <h1 style={{ fontSize: 30, fontWeight: 700, color: CHAR, lineHeight: 1.5, marginBottom: 16 }}>理財是為了讓生活更自由，不是為了成為另一種壓力。</h1>
-          <p style={{ fontSize: 15, color: MID, lineHeight: 1.85 }}>我們不做「你應該要這樣做」的教學，只給你看懂自己數字的工具。</p>
+          <h1 style={{ fontSize: 30, fontWeight: 700, color: CHAR, lineHeight: 1.5, marginBottom: 16 }}>{ac.heroHeading}</h1>
+          <p style={{ fontSize: 15, color: MID, lineHeight: 1.85 }}>{ac.heroSub}</p>
+          {isAdmin && <span onClick={() => { setTmpCopy(ac); setEditCopy(true); }} style={{ fontSize: 12, color: O, cursor: "pointer", marginTop: 12, display: "inline-block" }}>編輯本頁文字</span>}
         </div>
       </div>
       <div style={{ background: WHITE, padding: "64px 32px", borderTop: `1px solid ${BORDER}`, borderBottom: `1px solid ${BORDER}` }}>
         <div style={{ maxWidth: 640, margin: "0 auto" }}>
           <div style={{ textAlign: "center", marginBottom: 40 }}>
-            <p className="section-label" style={{ marginBottom: 10 }}>故事</p>
-            <h2 style={{ fontSize: 20, fontWeight: 700, color: CHAR }}>從一份免費範本開始</h2>
+            <p className="section-label" style={{ marginBottom: 10 }}>{ac.storyLabel}</p>
+            <h2 style={{ fontSize: 20, fontWeight: 700, color: CHAR }}>{ac.storyHeading}</h2>
           </div>
-          {[
-            ["起點", "一份免費的 Google Sheets 記帳範本", "從「先存後花」的概念出發，幫助超過 4,000 人下載使用。"],
-            ["進化", "推出付費 2.0 版本", "加入五種儲蓄模式、支出追蹤、信用卡分析、診斷報告與行事曆檢視，超過百人使用。"],
-            ["現在", "理財自動導航器 + 8友社群", "把範本升級成完整的 Web App，同時也有一群人一起練習理財，不是一個人硬撐。"]
-          ].map(([year, title, desc], i) => (
-            <div key={i} style={{ display: "grid", gridTemplateColumns: "70px 1fr", gap: 20, padding: "20px 0", borderBottom: i < 2 ? `1px solid ${BORDER}` : "none" }}>
-              <p style={{ fontSize: 13, fontWeight: 700, color: O }}>{year}</p>
+          {ac.timeline.map((t, i) => (
+            <div key={i} style={{ display: "grid", gridTemplateColumns: "70px 1fr", gap: 20, padding: "20px 0", borderBottom: i < ac.timeline.length - 1 ? `1px solid ${BORDER}` : "none" }}>
+              <p style={{ fontSize: 13, fontWeight: 700, color: O }}>{t.year}</p>
               <div>
-                <h4 style={{ fontSize: 15, fontWeight: 500, color: CHAR, marginBottom: 6 }}>{title}</h4>
-                <p style={{ fontSize: 13, color: MID, lineHeight: 1.8 }}>{desc}</p>
+                <h4 style={{ fontSize: 15, fontWeight: 500, color: CHAR, marginBottom: 6 }}>{t.title}</h4>
+                <p style={{ fontSize: 13, color: MID, lineHeight: 1.8 }}>{t.desc}</p>
               </div>
             </div>
           ))}
@@ -1423,22 +1739,18 @@ function About({ about, setAbout, isAdmin, links, setLinks, setPage }) {
       </div>
       <div style={{ maxWidth: 1100, margin: "0 auto", padding: "64px 32px" }} className="page-wrap">
         <div style={{ textAlign: "center", marginBottom: 40 }}>
-          <p className="section-label" style={{ marginBottom: 10 }}>我們相信</p>
-          <h2 style={{ fontSize: 20, fontWeight: 700, color: CHAR }}>做法可以不一樣，但方向很清楚</h2>
+          <p className="section-label" style={{ marginBottom: 10 }}>{ac.beliefsLabel}</p>
+          <h2 style={{ fontSize: 20, fontWeight: 700, color: CHAR }}>{ac.beliefsHeading}</h2>
         </div>
         <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(240px,1fr))", gap: 20 }} className="grid3">
-          {[
-            ["1", "行為改變優先", "比起記帳工具本身，我們更在乎它有沒有真的幫你改變花錢的習慣。"],
-            ["2", "給數字不給評判", "我們只呈現「差多少」和「去哪裡調」，不替你的選擇打分數。"],
-            ["3", "不說教的陪伴", "理財很個人，每個人的節奏不一樣，我們不會用同一套標準要求所有人。"]
-          ].map(([n, title, desc]) => (
-            <div key={n} style={{ background: WHITE, border: `1px solid ${BORDER}`, borderRadius: 20, padding: 28, transition: "transform .3s, box-shadow .3s" }}
+          {ac.beliefs.map(b => (
+            <div key={b.n} style={{ background: WHITE, border: `1px solid ${BORDER}`, borderRadius: 20, padding: 28, transition: "transform .3s, box-shadow .3s" }}
               onMouseEnter={e => { e.currentTarget.style.transform = "translateY(-6px)"; e.currentTarget.style.boxShadow = "0 20px 32px rgba(0,0,0,.1)"; }}
               onMouseLeave={e => { e.currentTarget.style.transform = "translateY(0)"; e.currentTarget.style.boxShadow = "none"; }}
             >
-              <div style={{ width: 44, height: 44, borderRadius: 14, background: O2, color: O, display: "flex", alignItems: "center", justifyContent: "center", fontWeight: 700, marginBottom: 18 }}>{n}</div>
-              <h4 style={{ fontSize: 16, fontWeight: 500, color: CHAR, marginBottom: 8 }}>{title}</h4>
-              <p style={{ fontSize: 13, color: MID, lineHeight: 1.8 }}>{desc}</p>
+              <div style={{ width: 44, height: 44, borderRadius: 14, background: O2, color: O, display: "flex", alignItems: "center", justifyContent: "center", fontWeight: 700, marginBottom: 18 }}>{b.n}</div>
+              <h4 style={{ fontSize: 16, fontWeight: 500, color: CHAR, marginBottom: 8 }}>{b.title}</h4>
+              <p style={{ fontSize: 13, color: MID, lineHeight: 1.8 }}>{b.desc}</p>
             </div>
           ))}
         </div>
@@ -1449,7 +1761,7 @@ function About({ about, setAbout, isAdmin, links, setLinks, setPage }) {
             {about.img ? <img src={about.img} style={{ width: "100%", height: "100%", objectFit: "cover" }} alt="88La" /> : <span style={{ fontSize: 12, color: LIGHT, letterSpacing: "1px" }}>PHOTO</span>}
           </div>
           <div style={{ paddingTop: 20 }}>
-            <p className="section-label" style={{ marginBottom: 20 }}>HELLO</p>
+            <p className="section-label" style={{ marginBottom: 20 }}>{ac.helloLabel}</p>
             <div style={{ fontSize: 16, color: MID, lineHeight: 2.2, whiteSpace: "pre-wrap", marginBottom: 36 }}>{about.intro}</div>
             <div style={{ display: "flex", gap: 10, flexWrap: "wrap", marginBottom: 20 }}>
               <a href={l.lineCommunity} target="_blank" rel="noopener noreferrer"><button className="pb">LINE 社群</button></a>
@@ -1468,8 +1780,8 @@ function About({ about, setAbout, isAdmin, links, setLinks, setPage }) {
       </div>
       <div style={{ padding: "64px 32px", textAlign: "center" }}>
         <div style={{ display: "flex", gap: 12, justifyContent: "center", flexWrap: "wrap" }}>
-          <a href={APP_URL} target="_blank" rel="noopener noreferrer"><button className="pb">開始使用理財導航器</button></a>
-          <button className="pg" onClick={() => setPage && setPage("community")}>認識 8友社群</button>
+          <a href={APP_URL} target="_blank" rel="noopener noreferrer"><button className="pb">{ac.ctaBtn1}</button></a>
+          <button className="pg" onClick={() => setPage && setPage("community")}>{ac.ctaBtn2}</button>
         </div>
       </div>
     </div>
@@ -1477,7 +1789,10 @@ function About({ about, setAbout, isAdmin, links, setLinks, setPage }) {
 }
 
 // ── Shop ──
-function Shop({ products, setProducts, isAdmin }) {
+function Shop({ products, setProducts, isAdmin, shopCopy, setShopCopy }) {
+  const sc = { ...DEFAULTS.shopCopy, ...(shopCopy || {}) };
+  const [editCopy, setEditCopy] = useState(false);
+  const [tmpCopy, setTmpCopy] = useState(sc);
   const [editing, setEditing] = useState(null);
   const [form, setForm] = useState({ name: "", type: "digital", price: "", desc: "", url: "", img: "" });
   const sf = k => e => setForm(p => ({ ...p, [k]: e.target.value }));
@@ -1498,11 +1813,29 @@ function Shop({ products, setProducts, isAdmin }) {
     <div>
       <div style={{ background: GRAD, padding: "48px 32px", borderBottom: `1px solid ${BORDER}` }}>
         <div style={{ maxWidth: 1100, margin: "0 auto", display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: 16 }}>
-          <div><p className="section-label" style={{ marginBottom: 8 }}>SHOP</p><h1 style={{ fontSize: 26, fontWeight: 700, color: CHAR, marginBottom: 8 }}>商品</h1><p style={{ fontSize: 13, color: MID }}>88La的手作溫暖，陪伴你的存錢之旅。</p></div>
+          <div><p className="section-label" style={{ marginBottom: 8 }}>{sc.label}</p><h1 style={{ fontSize: 26, fontWeight: 700, color: CHAR, marginBottom: 8 }}>{sc.heading}</h1><p style={{ fontSize: 13, color: MID }}>{sc.sub}</p>
+            {isAdmin && <span onClick={() => { setTmpCopy(sc); setEditCopy(true); }} style={{ fontSize: 11, color: O, cursor: "pointer", marginTop: 4, display: "inline-block" }}>編輯文字</span>}
+          </div>
           {isAdmin && <button className="pb" onClick={startAdd}>＋ 新增商品</button>}
         </div>
       </div>
       <div style={{ maxWidth: 1100, margin: "0 auto", padding: "56px 32px" }} className="page-wrap">
+        {editCopy && (
+          <div style={{ background: GRAY, padding: "24px", marginBottom: 32, border: `1px solid ${BORDER}` }}>
+            <p style={{ fontSize: 11, color: MID, marginBottom: 16, letterSpacing: "1px" }}>編輯頁面文字</p>
+            <div style={{ display: "flex", flexDirection: "column", gap: 12, marginBottom: 16 }}>
+              <div><p style={{ fontSize: 12, color: MID, marginBottom: 6 }}>標籤</p><input value={tmpCopy.label} onChange={e => setTmpCopy(p => ({ ...p, label: e.target.value }))} /></div>
+              <div><p style={{ fontSize: 12, color: MID, marginBottom: 6 }}>標題</p><input value={tmpCopy.heading} onChange={e => setTmpCopy(p => ({ ...p, heading: e.target.value }))} /></div>
+              <div><p style={{ fontSize: 12, color: MID, marginBottom: 6 }}>副標題</p><input value={tmpCopy.sub} onChange={e => setTmpCopy(p => ({ ...p, sub: e.target.value }))} /></div>
+              <div><p style={{ fontSize: 12, color: MID, marginBottom: 6 }}>測驗小卡標籤</p><input value={tmpCopy.quizTag} onChange={e => setTmpCopy(p => ({ ...p, quizTag: e.target.value }))} /></div>
+              <div><p style={{ fontSize: 12, color: MID, marginBottom: 6 }}>測驗小卡標題</p><input value={tmpCopy.quizHeading} onChange={e => setTmpCopy(p => ({ ...p, quizHeading: e.target.value }))} /></div>
+              <div><p style={{ fontSize: 12, color: MID, marginBottom: 6 }}>測驗小卡說明</p><input value={tmpCopy.quizDesc} onChange={e => setTmpCopy(p => ({ ...p, quizDesc: e.target.value }))} /></div>
+              <div><p style={{ fontSize: 12, color: MID, marginBottom: 6 }}>測驗小卡按鈕</p><input value={tmpCopy.quizBtn} onChange={e => setTmpCopy(p => ({ ...p, quizBtn: e.target.value }))} /></div>
+              <div><p style={{ fontSize: 12, color: MID, marginBottom: 6 }}>未上架商品的按鈕文字</p><input value={tmpCopy.soldOut} onChange={e => setTmpCopy(p => ({ ...p, soldOut: e.target.value }))} /></div>
+            </div>
+            <div style={{ display: "flex", gap: 10 }}><button className="pb" onClick={() => { setShopCopy(tmpCopy); setEditCopy(false); }}>儲存</button><button className="pg" onClick={() => setEditCopy(false)}>取消</button></div>
+          </div>
+        )}
         {editing && (
           <div style={{ background: GRAY, padding: "32px", marginBottom: 40, border: `1px solid ${BORDER}` }}>
             <p style={{ fontSize: 12, letterSpacing: "1px", color: MID, marginBottom: 20 }}>{editing === "new" ? "新增商品" : "編輯商品"}</p>
@@ -1518,10 +1851,10 @@ function Shop({ products, setProducts, isAdmin }) {
           </div>
         )}
         <div style={{ background:"#FFF8F3", border:`1px solid ${BORDER}`, borderRadius:12, padding:"40px 48px", marginBottom:40 }}>
-          <p style={{ fontSize:11, color:O, fontWeight:700, letterSpacing:"1.5px", marginBottom:14 }}>88LA QUIZ • 互動工具</p>
-          <h2 style={{ fontSize:28, fontWeight:800, color:CHAR, marginBottom:12, lineHeight:1.3 }}>找到最適合你的存錢工具</h2>
-          <p style={{ fontSize:14, color:MID, lineHeight:1.85, marginBottom:28 }}>做完 7 題，直接告訴你哪款存錢工具最適合你。</p>
-          <a href={QUIZ_URL} target="_blank" rel="noopener noreferrer"><button className="pb">開始測驗 →</button></a>
+          <p style={{ fontSize:11, color:O, fontWeight:700, letterSpacing:"1.5px", marginBottom:14 }}>{sc.quizTag}</p>
+          <h2 style={{ fontSize:28, fontWeight:800, color:CHAR, marginBottom:12, lineHeight:1.3 }}>{sc.quizHeading}</h2>
+          <p style={{ fontSize:14, color:MID, lineHeight:1.85, marginBottom:28 }}>{sc.quizDesc}</p>
+          <a href={QUIZ_URL} target="_blank" rel="noopener noreferrer"><button className="pb">{sc.quizBtn}</button></a>
         </div>
         <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill,minmax(280px,1fr))", gap: 20 }} className="grid3">
           {products.map((p, idx) => (
@@ -1543,7 +1876,7 @@ function Shop({ products, setProducts, isAdmin }) {
                   <div style={{ display: "flex", gap: 8 }}>
                     {p.url
                       ? <a href={p.url} target="_blank" rel="noopener noreferrer"><button className="pb" style={{ fontSize: 12, padding: "8px 16px" }}>購買 →</button></a>
-                      : <button className="pg" style={{ fontSize: 12, padding: "8px 16px", opacity: .45, cursor: "default" }} disabled>尚未上架</button>}
+                      : <button className="pg" style={{ fontSize: 12, padding: "8px 16px", opacity: .45, cursor: "default" }} disabled>{sc.soldOut}</button>}
                     {isAdmin && <><button className="pg" style={{ fontSize: 11, padding: "5px 10px" }} onClick={() => startEdit(p)}>編輯</button><button className="pg" style={{ fontSize: 11, padding: "5px 10px", color: "#E74C3C", borderColor: "#E74C3C" }} onClick={() => del(p.id)}>刪除</button></>}
                   </div>
                 </div>
@@ -1558,7 +1891,10 @@ function Shop({ products, setProducts, isAdmin }) {
 }
 
 // ── IG / 最新消息 ──
-function IG({ igPosts, setIgPosts, isAdmin, links }) {
+function IG({ igPosts, setIgPosts, isAdmin, links, igCopy, setIgCopy }) {
+  const igc = { ...DEFAULTS.igCopy, ...(igCopy || {}) };
+  const [editCopy, setEditCopy] = useState(false);
+  const [tmpCopy, setTmpCopy] = useState(igc);
   const [editing, setEditing] = useState(null);
   const [form, setForm] = useState({ title: "", url: "", thumb: "", type: "post" });
   const [igUrlErr, setIgUrlErr] = useState("");
@@ -1578,17 +1914,30 @@ function IG({ igPosts, setIgPosts, isAdmin, links }) {
       <div style={{ background: GRAD, padding: "52px 32px", borderBottom: `1px solid ${BORDER}` }}>
         <div style={{ maxWidth: 1100, margin: "0 auto", display: "flex", justifyContent: "space-between", alignItems: "flex-end", flexWrap: "wrap", gap: 16 }}>
           <div>
-            <p className="section-label" style={{ marginBottom: 10 }}>LATEST</p>
-            <h1 style={{ fontSize: 30, fontWeight: 700, color: CHAR }}>最新消息</h1>
-            <p style={{ fontSize: 13, color: MID, marginTop: 8 }}>影片、貼文，直接連結 Instagram</p>
+            <p className="section-label" style={{ marginBottom: 10 }}>{igc.label}</p>
+            <h1 style={{ fontSize: 30, fontWeight: 700, color: CHAR }}>{igc.heading}</h1>
+            <p style={{ fontSize: 13, color: MID, marginTop: 8 }}>{igc.sub}</p>
+            {isAdmin && <span onClick={() => { setTmpCopy(igc); setEditCopy(true); }} style={{ fontSize: 11, color: O, cursor: "pointer", marginTop: 6, display: "inline-block" }}>編輯文字</span>}
           </div>
           <div style={{ display: "flex", gap: 12 }}>
             {isAdmin && <button className="pb" onClick={startAdd}>＋ 新增</button>}
-            <a href={l.instagram} target="_blank" rel="noopener noreferrer"><button className="pb" style={{ fontSize: 12, padding: "6px 14px" }}>IG 主頁 →</button></a>
+            <a href={l.instagram} target="_blank" rel="noopener noreferrer"><button className="pb" style={{ fontSize: 12, padding: "6px 14px" }}>{igc.profileBtn}</button></a>
           </div>
         </div>
       </div>
       <div style={{ maxWidth: 1100, margin: "0 auto", padding: "56px 32px" }} className="page-wrap">
+        {editCopy && (
+          <div style={{ background: GRAY, padding: "24px", marginBottom: 32, border: `1px solid ${BORDER}` }}>
+            <p style={{ fontSize: 11, color: MID, marginBottom: 16, letterSpacing: "1px" }}>編輯頁面文字</p>
+            <div style={{ display: "flex", flexDirection: "column", gap: 12, marginBottom: 16 }}>
+              <div><p style={{ fontSize: 12, color: MID, marginBottom: 6 }}>標籤</p><input value={tmpCopy.label} onChange={e => setTmpCopy(p => ({ ...p, label: e.target.value }))} /></div>
+              <div><p style={{ fontSize: 12, color: MID, marginBottom: 6 }}>標題</p><input value={tmpCopy.heading} onChange={e => setTmpCopy(p => ({ ...p, heading: e.target.value }))} /></div>
+              <div><p style={{ fontSize: 12, color: MID, marginBottom: 6 }}>副標題</p><input value={tmpCopy.sub} onChange={e => setTmpCopy(p => ({ ...p, sub: e.target.value }))} /></div>
+              <div><p style={{ fontSize: 12, color: MID, marginBottom: 6 }}>IG 主頁按鈕文字</p><input value={tmpCopy.profileBtn} onChange={e => setTmpCopy(p => ({ ...p, profileBtn: e.target.value }))} /></div>
+            </div>
+            <div style={{ display: "flex", gap: 10 }}><button className="pb" onClick={() => { setIgCopy(tmpCopy); setEditCopy(false); }}>儲存</button><button className="pg" onClick={() => setEditCopy(false)}>取消</button></div>
+          </div>
+        )}
         {editing && (
           <div style={{ background: GRAY, padding: "32px", marginBottom: 40, border: `1px solid ${BORDER}` }}>
             <div style={{ display: "flex", flexDirection: "column", gap: 20, marginBottom: 24 }}>
@@ -1663,8 +2012,11 @@ const COMMUNITY_HERO_FIELDS = [
   { key: "subhead", label: "副標題", multiline: true }
 ];
 
-function Community({ igPosts, links, setPage, isAdmin, communityHero, setCommunityHero }) {
+function Community({ igPosts, links, setPage, isAdmin, communityHero, setCommunityHero, communityCopy, setCommunityCopy }) {
   const l = links || DEFAULTS.links;
+  const cc = { ...DEFAULTS.communityCopy, ...(communityCopy || {}) };
+  const [editCopy, setEditCopy] = useState(false);
+  const [tmpCopy, setTmpCopy] = useState(cc);
   const previewPosts = (igPosts || []).slice(0, 3);
   return (
     <PageHero title="8友社群頁文字" fields={COMMUNITY_HERO_FIELDS} data={communityHero} setData={setCommunityHero} defaults={DEFAULTS.communityHero} isAdmin={isAdmin}>
@@ -1680,40 +2032,41 @@ function Community({ igPosts, links, setPage, isAdmin, communityHero, setCommuni
       </div>
       <div style={{ background: WHITE, padding: "52px 32px", borderTop: `1px solid ${BORDER}`, borderBottom: `1px solid ${BORDER}` }}>
         <div style={{ maxWidth: 680, margin: "0 auto", textAlign: "center" }}>
-          <p style={{ fontSize: 15, color: CHAR, lineHeight: 1.9, marginBottom: 14 }}>我們相信理財不是比賽誰存得多、誰花得少，而是找到適合自己的節奏。</p>
-          <p style={{ fontSize: 15, color: CHAR, lineHeight: 1.9 }}>8友社群從一開始就不是一個「教學課程」，而是一群願意誠實面對自己數字的人聚在一起，互相打氣。</p>
+          <p style={{ fontSize: 15, color: CHAR, lineHeight: 1.9, marginBottom: 14 }}>{cc.introPara1}</p>
+          <p style={{ fontSize: 15, color: CHAR, lineHeight: 1.9 }}>{cc.introPara2}</p>
+          {isAdmin && <span onClick={() => { setTmpCopy(cc); setEditCopy(true); }} style={{ fontSize: 12, color: O, cursor: "pointer", marginTop: 14, display: "inline-block" }}>編輯本頁文字</span>}
         </div>
       </div>
       <div style={{ maxWidth: 1100, margin: "0 auto", padding: "72px 32px" }} className="page-wrap">
         <div style={{ textAlign: "center", marginBottom: 44 }}>
-          <p className="section-label" style={{ marginBottom: 12 }}>加入方式</p>
-          <h2 style={{ fontSize: 22, fontWeight: 700, color: CHAR }}>先追蹤，LINE 社群開放時第一時間通知你</h2>
+          <p className="section-label" style={{ marginBottom: 12 }}>{cc.joinLabel}</p>
+          <h2 style={{ fontSize: 22, fontWeight: 700, color: CHAR }}>{cc.joinHeading}</h2>
         </div>
         <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(280px,1fr))", gap: 24, marginBottom: 80 }} className="grid2">
           <div style={{ background: WHITE, border: `1px solid ${BORDER}`, borderRadius: 20, padding: 32, boxShadow: "0 2px 10px rgba(0,0,0,.06)", transition: "box-shadow .3s, transform .3s" }}
             onMouseEnter={e => { e.currentTarget.style.boxShadow = "0 20px 40px rgba(0,0,0,.1)"; e.currentTarget.style.transform = "translateY(-6px)"; }}
             onMouseLeave={e => { e.currentTarget.style.boxShadow = "0 2px 10px rgba(0,0,0,.06)"; e.currentTarget.style.transform = "translateY(0)"; }}
           >
-            <span style={{ fontSize: 12, color: O, fontWeight: 500, background: O2, padding: "4px 12px", borderRadius: 999, display: "inline-block", marginBottom: 16 }}>Coming soon</span>
-            <h3 style={{ fontSize: 18, fontWeight: 500, color: CHAR, marginBottom: 10 }}>加入 LINE 社群</h3>
-            <p style={{ fontSize: 14, color: MID, lineHeight: 1.8, marginBottom: 24 }}>正式社群還在籌備中，開放後會優先通知目前已追蹤 IG 的朋友。</p>
-            <span style={{ display: "inline-block", background: GRAY, color: LIGHT, padding: "12px 26px", borderRadius: 999, fontSize: 14, fontWeight: 500, cursor: "default" }}>敬請期待</span>
+            <span style={{ fontSize: 12, color: O, fontWeight: 500, background: O2, padding: "4px 12px", borderRadius: 999, display: "inline-block", marginBottom: 16 }}>{cc.lineBadge}</span>
+            <h3 style={{ fontSize: 18, fontWeight: 500, color: CHAR, marginBottom: 10 }}>{cc.lineTitle}</h3>
+            <p style={{ fontSize: 14, color: MID, lineHeight: 1.8, marginBottom: 24 }}>{cc.lineDesc}</p>
+            <span style={{ display: "inline-block", background: GRAY, color: LIGHT, padding: "12px 26px", borderRadius: 999, fontSize: 14, fontWeight: 500, cursor: "default" }}>{cc.linePill}</span>
           </div>
           <div style={{ background: WHITE, border: `1px solid ${BORDER}`, borderRadius: 20, padding: 32, boxShadow: "0 2px 10px rgba(0,0,0,.06)", transition: "box-shadow .3s, transform .3s" }}
             onMouseEnter={e => { e.currentTarget.style.boxShadow = "0 20px 40px rgba(0,0,0,.1)"; e.currentTarget.style.transform = "translateY(-6px)"; }}
             onMouseLeave={e => { e.currentTarget.style.boxShadow = "0 2px 10px rgba(0,0,0,.06)"; e.currentTarget.style.transform = "translateY(0)"; }}
           >
-            <span style={{ fontSize: 12, color: O, fontWeight: 500, background: O2, padding: "4px 12px", borderRadius: 999, display: "inline-block", marginBottom: 16 }}>現在就能開始</span>
-            <h3 style={{ fontSize: 18, fontWeight: 500, color: CHAR, marginBottom: 10 }}>追蹤 Instagram</h3>
-            <p style={{ fontSize: 14, color: MID, lineHeight: 1.8, marginBottom: 24 }}>日常理財觀念、社群第一手消息都會先在這裡發布，不想錯過就先追蹤起來。</p>
-            <a href={l.instagram} target="_blank" rel="noopener noreferrer"><button className="pb">追蹤 @every_dollars</button></a>
+            <span style={{ fontSize: 12, color: O, fontWeight: 500, background: O2, padding: "4px 12px", borderRadius: 999, display: "inline-block", marginBottom: 16 }}>{cc.igBadge}</span>
+            <h3 style={{ fontSize: 18, fontWeight: 500, color: CHAR, marginBottom: 10 }}>{cc.igTitle}</h3>
+            <p style={{ fontSize: 14, color: MID, lineHeight: 1.8, marginBottom: 24 }}>{cc.igDesc}</p>
+            <a href={l.instagram} target="_blank" rel="noopener noreferrer"><button className="pb">{cc.igBtn}</button></a>
           </div>
         </div>
         {previewPosts.length > 0 && (
           <div style={{ marginBottom: 20 }}>
             <div style={{ textAlign: "center", marginBottom: 36 }}>
-              <p className="section-label" style={{ marginBottom: 12 }}>最新動態</p>
-              <h2 style={{ fontSize: 22, fontWeight: 700, color: CHAR }}>Instagram 上的最新分享</h2>
+              <p className="section-label" style={{ marginBottom: 12 }}>{cc.recentLabel}</p>
+              <h2 style={{ fontSize: 22, fontWeight: 700, color: CHAR }}>{cc.recentHeading}</h2>
             </div>
             <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill,minmax(240px,1fr))", gap: 20, marginBottom: 28 }} className="grid3">
               {previewPosts.map(p => (
@@ -1726,18 +2079,44 @@ function Community({ igPosts, links, setPage, isAdmin, communityHero, setCommuni
                 </a>
               ))}
             </div>
-            <p style={{ textAlign: "center" }}><span onClick={() => setPage("ig")} style={{ fontSize: 13, color: O, cursor: "pointer" }}>查看更多動態 →</span></p>
+            <p style={{ textAlign: "center" }}><span onClick={() => setPage("ig")} style={{ fontSize: 13, color: O, cursor: "pointer" }}>{cc.moreLink}</span></p>
           </div>
         )}
       </div>
       <div style={{ background: CHAR, padding: "64px 32px", textAlign: "center" }}>
         <div style={{ maxWidth: 480, margin: "0 auto" }}>
-          <p style={{ fontSize: 12, color: CORAL, letterSpacing: "1px", fontWeight: 600, marginBottom: 14 }}>下一步</p>
-          <h2 style={{ fontSize: 24, fontWeight: 700, color: WHITE, marginBottom: 14 }}>先從追蹤開始</h2>
-          <p style={{ fontSize: 14, color: "rgba(255,255,255,.6)", lineHeight: 1.8, marginBottom: 28 }}>LINE 社群開放前，IG 是我們跟大家保持聯繫的地方，日常理財觀念也會先在這裡分享。</p>
-          <a href={l.instagram} target="_blank" rel="noopener noreferrer"><button style={{ background: CORAL, color: CHAR, border: "none", padding: "12px 26px", borderRadius: 999, fontSize: 14, fontWeight: 500, cursor: "pointer", fontFamily: "inherit" }}>追蹤 Instagram →</button></a>
+          <p style={{ fontSize: 12, color: CORAL, letterSpacing: "1px", fontWeight: 600, marginBottom: 14 }}>{cc.ctaLabel}</p>
+          <h2 style={{ fontSize: 24, fontWeight: 700, color: WHITE, marginBottom: 14 }}>{cc.ctaHeading}</h2>
+          <p style={{ fontSize: 14, color: "rgba(255,255,255,.6)", lineHeight: 1.8, marginBottom: 28 }}>{cc.ctaDesc}</p>
+          <a href={l.instagram} target="_blank" rel="noopener noreferrer"><button style={{ background: CORAL, color: CHAR, border: "none", padding: "12px 26px", borderRadius: 999, fontSize: 14, fontWeight: 500, cursor: "pointer", fontFamily: "inherit" }}>{cc.ctaBtn}</button></a>
         </div>
       </div>
+      {editCopy && (
+        <div style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,.6)", zIndex: 61, display: "flex", alignItems: "center", justifyContent: "center", padding: "20px" }}>
+          <div style={{ background: WHITE, padding: 32, width: "100%", maxWidth: 560, maxHeight: "80vh", overflowY: "auto" }}>
+            <p style={{ fontSize: 13, letterSpacing: "2px", color: CORAL2, marginBottom: 20, fontWeight: 500 }}>編輯 8友社群頁文字</p>
+            <div style={{ display: "flex", flexDirection: "column", gap: 12, marginBottom: 24 }}>
+              {[
+                ["introPara1", "開頭段落 1"], ["introPara2", "開頭段落 2"],
+                ["joinLabel", "「加入方式」標籤"], ["joinHeading", "「加入方式」標題"],
+                ["lineBadge", "LINE 卡片徽章"], ["lineTitle", "LINE 卡片標題"], ["lineDesc", "LINE 卡片說明"], ["linePill", "LINE 卡片按鈕（尚未開放狀態）"],
+                ["igBadge", "IG 卡片徽章"], ["igTitle", "IG 卡片標題"], ["igDesc", "IG 卡片說明"], ["igBtn", "IG 卡片按鈕"],
+                ["recentLabel", "「最新動態」標籤"], ["recentHeading", "「最新動態」標題"], ["moreLink", "查看更多連結文字"],
+                ["ctaLabel", "結尾標籤"], ["ctaHeading", "結尾標題"], ["ctaDesc", "結尾說明"], ["ctaBtn", "結尾按鈕"],
+              ].map(([k, label]) => (
+                <div key={k}>
+                  <p style={{ fontSize: 12, color: MID, marginBottom: 4 }}>{label}</p>
+                  <input value={tmpCopy[k] ?? ""} onChange={e => setTmpCopy(p => ({ ...p, [k]: e.target.value }))} />
+                </div>
+              ))}
+            </div>
+            <div style={{ display: "flex", gap: 10 }}>
+              <button className="pb" onClick={() => { setCommunityCopy(tmpCopy); setEditCopy(false); }}>儲存</button>
+              <button className="pg" onClick={() => setEditCopy(false)}>取消</button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
       )}
     </PageHero>
@@ -1755,10 +2134,14 @@ const ENVELOPE_HERO_FIELDS = [
   { key: "heroImg", label: "產品實拍圖", type: "image", aspect: "1/1" }
 ];
 
-function Envelope({ products, setPage, isAdmin, envelopeHero, setEnvelopeHero }) {
+function Envelope({ products, setPage, isAdmin, envelopeHero, setEnvelopeHero, envelopeCopy, setEnvelopeCopy }) {
   const physical = (products || []).filter(p => p.type === "physical");
   const storeUrl = physical.find(p => p.url)?.url || "";
   const buyHref = storeUrl || "#products";
+  const ec = { ...DEFAULTS.envelopeCopy, ...(envelopeCopy || {}) };
+  const [editCopy, setEditCopy] = useState(false);
+  const [tmpCopy, setTmpCopy] = useState(ec);
+  const setWhyItem = (i, field, v) => setTmpCopy(p => ({ ...p, why: p.why.map((x, xi) => xi === i ? { ...x, [field]: v } : x) }));
   return (
     <PageHero title="存錢袋頁文字" fields={ENVELOPE_HERO_FIELDS} data={envelopeHero} setData={setEnvelopeHero} defaults={DEFAULTS.envelopeHero} isAdmin={isAdmin}>
       {(h, editLink) => (
@@ -1774,22 +2157,23 @@ function Envelope({ products, setPage, isAdmin, envelopeHero, setEnvelopeHero })
               <a href={QUIZ_URL} target="_blank" rel="noopener noreferrer"><button className="pg">{h.ctaSecondary}</button></a>
               {editLink}
             </div>
-            <p style={{ fontSize: 12, color: LIGHT, marginTop: 14 }}>賣場下單，選擇取貨方式</p>
+            <p style={{ fontSize: 12, color: LIGHT, marginTop: 14 }}>{ec.storeNote}</p>
+            {isAdmin && <span onClick={() => { setTmpCopy(ec); setEditCopy(true); }} style={{ fontSize: 11, color: O, cursor: "pointer", marginTop: 8, display: "inline-block" }}>編輯其他文字</span>}
           </div>
           <div style={{ background: WHITE, border: `1px solid ${BORDER}`, borderRadius: 24, aspectRatio: "1/1", overflow: "hidden", display: "flex", alignItems: "center", justifyContent: "center", color: O, fontSize: 13, fontWeight: 500 }}>
-            {h.heroImg ? <img src={h.heroImg} alt="88La 存錢袋" style={{ width: "100%", height: "100%", objectFit: "cover" }} /> : "產品實拍圖示意"}
+            {h.heroImg ? <img src={h.heroImg} alt="88La 存錢袋" style={{ width: "100%", height: "100%", objectFit: "cover" }} /> : ec.heroImgPlaceholder}
           </div>
         </div>
       </div>
       <div id="products" style={{ background: WHITE, padding: "64px 32px", borderTop: `1px solid ${BORDER}` }}>
         <div style={{ maxWidth: 1100, margin: "0 auto" }}>
           <div style={{ textAlign: "center", marginBottom: 44 }}>
-            <p className="section-label" style={{ marginBottom: 12 }}>商品系列</p>
-            <h2 style={{ fontSize: 22, fontWeight: 700, color: CHAR }}>存錢袋系列</h2>
-            {isAdmin && <p style={{ marginTop: 10 }}><span onClick={() => setPage("shop")} style={{ fontSize: 12, color: O, cursor: "pointer" }}>管理商品 →</span></p>}
+            <p className="section-label" style={{ marginBottom: 12 }}>{ec.productsLabel}</p>
+            <h2 style={{ fontSize: 22, fontWeight: 700, color: CHAR }}>{ec.productsHeading}</h2>
+            {isAdmin && <p style={{ marginTop: 10 }}><span onClick={() => setPage("shop")} style={{ fontSize: 12, color: O, cursor: "pointer" }}>{ec.manageLink}</span></p>}
           </div>
           {physical.length === 0 ? (
-            <p style={{ textAlign: "center", fontSize: 14, color: LIGHT }}>商品準備中，敬請期待</p>
+            <p style={{ textAlign: "center", fontSize: 14, color: LIGHT }}>{ec.emptyState}</p>
           ) : (
             <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(260px,1fr))", gap: 24 }} className="grid3">
               {physical.map(p => (
@@ -1801,8 +2185,8 @@ function Envelope({ products, setPage, isAdmin, envelopeHero, setEnvelopeHero })
                     <h4 style={{ fontSize: 15, fontWeight: 500, color: CHAR, marginBottom: 8 }}>{p.name}</h4>
                     <p style={{ fontSize: 13, color: MID, marginBottom: 16, whiteSpace: "pre-wrap", flex: 1 }}>{p.desc}</p>
                     {p.url
-                      ? <a href={p.url} target="_blank" rel="noopener noreferrer" style={{ fontSize: 13, fontWeight: 500, color: O }}>前往購買 →</a>
-                      : <span style={{ fontSize: 13, color: LIGHT }}>連結準備中</span>}
+                      ? <a href={p.url} target="_blank" rel="noopener noreferrer" style={{ fontSize: 13, fontWeight: 500, color: O }}>{ec.buyLink}</a>
+                      : <span style={{ fontSize: 13, color: LIGHT }}>{ec.comingSoonLink}</span>}
                   </div>
                 </div>
               ))}
@@ -1812,29 +2196,57 @@ function Envelope({ products, setPage, isAdmin, envelopeHero, setEnvelopeHero })
       </div>
       <div style={{ maxWidth: 1100, margin: "0 auto", padding: "80px 32px" }} className="page-wrap">
         <div style={{ textAlign: "center", marginBottom: 44 }}>
-          <p className="section-label" style={{ marginBottom: 12 }}>為什麼選實體工具</p>
-          <h2 style={{ fontSize: 22, fontWeight: 700, color: CHAR }}>不是每個人都適合純數位記帳</h2>
+          <p className="section-label" style={{ marginBottom: 12 }}>{ec.whyLabel}</p>
+          <h2 style={{ fontSize: 22, fontWeight: 700, color: CHAR }}>{ec.whyHeading}</h2>
         </div>
         <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(240px,1fr))", gap: 20 }} className="grid3">
-          {[
-            ["1", "看得到、摸得到", "數位數字有時候不夠有感，實體存錢袋讓存錢變成一個具體的動作。"],
-            ["2", "跟 App 互補使用", "日常花費用理財導航器記錄，存錢目標用存錢袋實體累積，兩者不衝突。"],
-            ["3", "不需要學習成本", "不用研究功能怎麼用，拿到就能開始，適合想簡單開始的人。"]
-          ].map(([n, title, desc]) => (
-            <div key={n} className="card" style={{ padding: 28 }}>
-              <div style={{ width: 44, height: 44, borderRadius: 14, background: O2, color: O, display: "flex", alignItems: "center", justifyContent: "center", fontWeight: 700, marginBottom: 18 }}>{n}</div>
-              <h4 style={{ fontSize: 16, fontWeight: 500, color: CHAR, marginBottom: 8 }}>{title}</h4>
-              <p style={{ fontSize: 13, color: MID, lineHeight: 1.8 }}>{desc}</p>
+          {ec.why.map((w, i) => (
+            <div key={i} className="card" style={{ padding: 28 }}>
+              <div style={{ width: 44, height: 44, borderRadius: 14, background: O2, color: O, display: "flex", alignItems: "center", justifyContent: "center", fontWeight: 700, marginBottom: 18 }}>{i + 1}</div>
+              <h4 style={{ fontSize: 16, fontWeight: 500, color: CHAR, marginBottom: 8 }}>{w.title}</h4>
+              <p style={{ fontSize: 13, color: MID, lineHeight: 1.8 }}>{w.desc}</p>
             </div>
           ))}
         </div>
       </div>
       <div style={{ background: CHAR, padding: "64px 32px", textAlign: "center" }}>
-        <p style={{ fontSize: 12, color: CORAL, letterSpacing: "1px", fontWeight: 600, marginBottom: 14 }}>開始存錢</p>
-        <h2 style={{ fontSize: 24, fontWeight: 700, color: WHITE, marginBottom: 14 }}>在賣場就能買到</h2>
+        <p style={{ fontSize: 12, color: CORAL, letterSpacing: "1px", fontWeight: 600, marginBottom: 14 }}>{ec.ctaLabel}</p>
+        <h2 style={{ fontSize: 24, fontWeight: 700, color: WHITE, marginBottom: 14 }}>{ec.ctaHeading}</h2>
         <p style={{ fontSize: 14, color: "rgba(255,255,255,.6)", marginBottom: 28 }}>{h.buyTagline}</p>
-        <a href={buyHref} target={storeUrl ? "_blank" : undefined} rel="noopener noreferrer"><button style={{ background: CORAL, color: CHAR, border: "none", padding: "12px 26px", borderRadius: 999, fontSize: 14, fontWeight: 500, cursor: "pointer", fontFamily: "inherit" }}>前往賣場 →</button></a>
+        <a href={buyHref} target={storeUrl ? "_blank" : undefined} rel="noopener noreferrer"><button style={{ background: CORAL, color: CHAR, border: "none", padding: "12px 26px", borderRadius: 999, fontSize: 14, fontWeight: 500, cursor: "pointer", fontFamily: "inherit" }}>{ec.ctaBtn}</button></a>
       </div>
+      {editCopy && (
+        <div style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,.6)", zIndex: 61, display: "flex", alignItems: "center", justifyContent: "center", padding: "20px" }}>
+          <div style={{ background: WHITE, padding: 32, width: "100%", maxWidth: 560, maxHeight: "80vh", overflowY: "auto" }}>
+            <p style={{ fontSize: 13, letterSpacing: "2px", color: CORAL2, marginBottom: 20, fontWeight: 500 }}>編輯存錢袋頁其他文字</p>
+            <div style={{ display: "flex", flexDirection: "column", gap: 12, marginBottom: 20 }}>
+              {[
+                ["storeNote", "賣場提示文字"], ["heroImgPlaceholder", "產品圖預設文字"],
+                ["productsLabel", "「商品系列」標籤"], ["productsHeading", "「商品系列」標題"], ["manageLink", "管理商品連結"], ["emptyState", "無商品時的提示"],
+                ["buyLink", "前往購買連結文字"], ["comingSoonLink", "無連結時的文字"],
+                ["whyLabel", "「為什麼選實體」標籤"], ["whyHeading", "「為什麼選實體」標題"],
+                ["ctaLabel", "結尾標籤"], ["ctaHeading", "結尾標題"], ["ctaBtn", "結尾按鈕"],
+              ].map(([k, label]) => (
+                <div key={k}>
+                  <p style={{ fontSize: 12, color: MID, marginBottom: 4 }}>{label}</p>
+                  <input value={tmpCopy[k] ?? ""} onChange={e => setTmpCopy(p => ({ ...p, [k]: e.target.value }))} />
+                </div>
+              ))}
+              <p style={{ fontSize: 13, color: MID, fontWeight: 500, marginTop: 8 }}>為什麼選實體工具（3 項）</p>
+              {tmpCopy.why.map((w, i) => (
+                <div key={i} style={{ display: "flex", flexDirection: "column", gap: 6, padding: "10px 0", borderTop: `1px solid ${BORDER}` }}>
+                  <input value={w.title} onChange={e => setWhyItem(i, "title", e.target.value)} placeholder="標題" />
+                  <textarea value={w.desc} onChange={e => setWhyItem(i, "desc", e.target.value)} placeholder="說明" style={{ minHeight: 50 }} />
+                </div>
+              ))}
+            </div>
+            <div style={{ display: "flex", gap: 10 }}>
+              <button className="pb" onClick={() => { setEnvelopeCopy(tmpCopy); setEditCopy(false); }}>儲存</button>
+              <button className="pg" onClick={() => setEditCopy(false)}>取消</button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
       )}
     </PageHero>
@@ -1848,7 +2260,10 @@ const GOODS_HERO_FIELDS = [
   { key: "subhead", label: "副標題", multiline: true }
 ];
 
-function Goods({ goods, setGoods, isAdmin, goodsHero, setGoodsHero }) {
+function Goods({ goods, setGoods, isAdmin, goodsHero, setGoodsHero, goodsCopy, setGoodsCopy }) {
+  const gc = { ...DEFAULTS.goodsCopy, ...(goodsCopy || {}) };
+  const [editCopy, setEditCopy] = useState(false);
+  const [tmpCopy, setTmpCopy] = useState(gc);
   const [editing, setEditing] = useState(null);
   const [form, setForm] = useState({ name: "", brand: "", desc: "", url: "", img: "", active: true });
   const [goodsUrlErr, setGoodsUrlErr] = useState("");
@@ -1894,9 +2309,20 @@ function Goods({ goods, setGoods, isAdmin, goodsHero, setGoodsHero }) {
             <div style={{ display: "flex", gap: 10 }}><button className="pb" onClick={save} disabled={!form.name.trim()}>儲存</button><button className="pg" onClick={() => setEditing(null)}>取消</button></div>
           </div>
         )}
+        {editCopy && (
+          <div style={{ background: GRAY, padding: "24px", marginBottom: 32, border: `1px solid ${BORDER}` }}>
+            <p style={{ fontSize: 11, color: MID, marginBottom: 16, letterSpacing: "1px" }}>編輯無商品時的提示文字</p>
+            <div style={{ display: "flex", flexDirection: "column", gap: 12, marginBottom: 16 }}>
+              <input value={tmpCopy.emptyState1} onChange={e => setTmpCopy(p => ({ ...p, emptyState1: e.target.value }))} />
+              <input value={tmpCopy.emptyState2} onChange={e => setTmpCopy(p => ({ ...p, emptyState2: e.target.value }))} />
+            </div>
+            <div style={{ display: "flex", gap: 10 }}><button className="pb" onClick={() => { setGoodsCopy(tmpCopy); setEditCopy(false); }}>儲存</button><button className="pg" onClick={() => setEditCopy(false)}>取消</button></div>
+          </div>
+        )}
         {active.length === 0 ? (
           <div style={{ textAlign: "center", padding: "100px 0" }}>
-            <p style={{ fontSize: 14, color: LIGHT, lineHeight: 2.4 }}>88La 正在尋找好物中<br /><span style={{ fontSize: 12 }}>有合適的商品會在這裡和你分享</span></p>
+            <p style={{ fontSize: 14, color: LIGHT, lineHeight: 2.4 }}>{gc.emptyState1}<br /><span style={{ fontSize: 12 }}>{gc.emptyState2}</span></p>
+            {isAdmin && <span onClick={() => { setTmpCopy(gc); setEditCopy(true); }} style={{ fontSize: 11, color: O, cursor: "pointer" }}>編輯文字</span>}
           </div>
         ) : (
           <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill,minmax(260px,1fr))", gap: 20 }} className="grid3">
@@ -2000,18 +2426,23 @@ function Guide({ appContent, isAdmin, setPage }) {
   );
 }
 
-function AppPage({ appContent, setAppContent, isAdmin, setPage }) {
+function AppPage({ appContent, setAppContent, isAdmin, setPage, demoStory, setDemoStory }) {
   const c = { ...DEFAULTS.appContent, ...(appContent || {}) };
+  const ds = { ...DEFAULTS.demoStory, ...(demoStory || {}) };
   const upd = patch => setAppContent(prev => ({ ...DEFAULTS.appContent, ...(prev || {}), ...patch }));
   const [detailPlan, setDetailPlan] = useState(null);
   const [editHero, setEditHero] = useState(false);
-  const [tmpHero, setTmpHero] = useState({ heroTitle: c.heroTitle, heroHighlight: c.heroHighlight, heroSub: c.heroSub });
+  const [tmpHero, setTmpHero] = useState({ heroEyebrow: c.heroEyebrow, heroTitle: c.heroTitle, heroHighlight: c.heroHighlight, heroSub: c.heroSub, heroCtaBtn: c.heroCtaBtn });
+  const [editMisc, setEditMisc] = useState(false);
+  const [tmpMisc, setTmpMisc] = useState(c);
+  const [editDemoStory, setEditDemoStory] = useState(false);
+  const [tmpDemoStory, setTmpDemoStory] = useState(ds);
   const [editingFeat, setEditingFeat] = useState(null);
   const [featForm, setFeatForm] = useState({ n: "", title: "", desc: "", img: "" });
   const [editingPlan, setEditingPlan] = useState(null);
   const [planForm, setPlanForm] = useState({ name: "", price: "", period: "", highlight: false, badge: "", features: [], detailTitle: "", detailImg: "", detailContent: "" });
   const [editNote, setEditNote] = useState(false);
-  const [tmpNote, setTmpNote] = useState(c.pricingNote);
+  const [tmpNote, setTmpNote] = useState({ pricingNote: c.pricingNote, comingSoonTitle: c.comingSoonTitle, comingSoonSub: c.comingSoonSub });
   const [editGuide, setEditGuide] = useState(false);
   const [tmpGuide, setTmpGuide] = useState({ title: "", json: "" });
   const saveFeat = () => {
@@ -2036,8 +2467,8 @@ function AppPage({ appContent, setAppContent, isAdmin, setPage }) {
       <div>
         <div style={{ background: GRAD, padding: "52px 32px 44px", borderBottom: `1px solid ${BORDER}` }}>
           <div style={{ maxWidth: 800, margin: "0 auto" }}>
-            <button onClick={() => setDetailPlan(null)} style={{ background: "transparent", color: MID, border: `1px solid ${BORDER}`, padding: "7px 16px", fontSize: 12, cursor: "pointer", fontFamily: "inherit", marginBottom: 28 }}>← 返回方案</button>
-            <p className="section-label" style={{ marginBottom: 12 }}>PLAN DETAILS</p>
+            <button onClick={() => setDetailPlan(null)} style={{ background: "transparent", color: MID, border: `1px solid ${BORDER}`, padding: "7px 16px", fontSize: 12, cursor: "pointer", fontFamily: "inherit", marginBottom: 28 }}>{c.planDetailBackBtn}</button>
+            <p className="section-label" style={{ marginBottom: 12 }}>{c.planDetailLabel}</p>
             <h1 style={{ fontSize: 32, fontWeight: 700, color: CHAR, lineHeight: 1.3 }}>{plan.detailTitle || plan.name}</h1>
             <div style={{ display: "flex", alignItems: "baseline", gap: 6, marginTop: 16 }}>
               <span style={{ fontSize: 36, fontWeight: 700, color: O }}>{plan.price}</span>
@@ -2053,7 +2484,7 @@ function AppPage({ appContent, setAppContent, isAdmin, setPage }) {
         <div style={{ maxWidth: 800, margin: "0 auto", padding: "52px 32px" }} className="page-wrap">
           {plan.detailContent && <div style={{ fontSize: 16, lineHeight: 2.1, color: CHAR, whiteSpace: "pre-wrap", marginBottom: 48 }}>{plan.detailContent}</div>}
           <div style={{ background: plan.highlight ? O : GRAY, border: `2px solid ${plan.highlight ? O : BORDER}`, padding: "36px", marginBottom: 32 }}>
-            <p style={{ fontSize: 11, color: plan.highlight ? "rgba(255,255,255,.55)" : MID, letterSpacing: "1px", marginBottom: 16 }}>包含功能</p>
+            <p style={{ fontSize: 11, color: plan.highlight ? "rgba(255,255,255,.55)" : MID, letterSpacing: "1px", marginBottom: 16 }}>{c.planDetailFeaturesLabel}</p>
             <ul style={{ listStyle: "none", display: "flex", flexDirection: "column", gap: 12, marginBottom: 32 }}>
               {(plan.features || []).filter(Boolean).map((f, j) => (
                 <li key={j} style={{ fontSize: 14, color: plan.highlight ? "rgba(255,255,255,.9)" : MID, display: "flex", alignItems: "center", gap: 10 }}>
@@ -2064,7 +2495,7 @@ function AppPage({ appContent, setAppContent, isAdmin, setPage }) {
             <a href={APP_URL} target="_blank" rel="noopener noreferrer">
               <button style={{ background: plan.highlight ? WHITE : O, color: plan.highlight ? O : WHITE, border: "none", padding: "14px 36px", fontSize: 14, fontWeight: 500, cursor: "pointer", fontFamily: "inherit", transition: "opacity .18s" }}
                 onMouseEnter={e => e.currentTarget.style.opacity = ".85"} onMouseLeave={e => e.currentTarget.style.opacity = "1"}
-              >立即購買 →</button>
+              >{c.planDetailBuyBtn}</button>
             </a>
           </div>
           {isAdmin && (
@@ -2091,22 +2522,24 @@ function AppPage({ appContent, setAppContent, isAdmin, setPage }) {
             <div style={{ background: WHITE, padding: 24, border: `1px solid ${BORDER}`, maxWidth: 560, margin: "0 auto 16px", textAlign: "left" }}>
               <p style={{ fontSize: 11, color: MID, marginBottom: 16, letterSpacing: "1px" }}>編輯主標題</p>
               <div style={{ display: "flex", flexDirection: "column", gap: 14 }}>
+                <div><p style={{ fontSize: 12, color: MID, marginBottom: 6 }}>小標籤</p><input value={tmpHero.heroEyebrow} onChange={e => setTmpHero(p => ({ ...p, heroEyebrow: e.target.value }))} /></div>
                 <div><p style={{ fontSize: 12, color: MID, marginBottom: 6 }}>標題（第一行）</p><input value={tmpHero.heroTitle} onChange={e => setTmpHero(p => ({ ...p, heroTitle: e.target.value }))} /></div>
                 <div><p style={{ fontSize: 12, color: MID, marginBottom: 6 }}>橘色強調字（第二行）</p><input value={tmpHero.heroHighlight} onChange={e => setTmpHero(p => ({ ...p, heroHighlight: e.target.value }))} /></div>
                 <div><p style={{ fontSize: 12, color: MID, marginBottom: 6 }}>副標題</p><textarea value={tmpHero.heroSub} onChange={e => setTmpHero(p => ({ ...p, heroSub: e.target.value }))} style={{ minHeight: 80 }} /></div>
+                <div><p style={{ fontSize: 12, color: MID, marginBottom: 6 }}>按鈕文字</p><input value={tmpHero.heroCtaBtn} onChange={e => setTmpHero(p => ({ ...p, heroCtaBtn: e.target.value }))} /></div>
               </div>
-              <div style={{ display: "flex", gap: 10, marginTop: 16 }}><button className="pb" onClick={() => { upd({ heroTitle: tmpHero.heroTitle, heroHighlight: tmpHero.heroHighlight, heroSub: tmpHero.heroSub }); setEditHero(false); }}>儲存</button><button className="pg" onClick={() => setEditHero(false)}>取消</button></div>
+              <div style={{ display: "flex", gap: 10, marginTop: 16 }}><button className="pb" onClick={() => { upd(tmpHero); setEditHero(false); }}>儲存</button><button className="pg" onClick={() => setEditHero(false)}>取消</button></div>
             </div>
           ) : (
             <>
-              <p className="section-label hero-stagger hs-1" style={{ marginBottom: 16 }}>88LA FINANCE · APP</p>
+              <p className="section-label hero-stagger hs-1" style={{ marginBottom: 16 }}>{c.heroEyebrow}</p>
               <h1 className="hero-stagger hs-2" style={{ fontSize: 48, fontWeight: 700, color: CHAR, lineHeight: 1.2, maxWidth: 620, margin: "0 auto 20px" }}>
                 {c.heroTitle}<br /><span style={{ color: O }}>{c.heroHighlight}</span>
               </h1>
               <p className="hero-stagger hs-3" style={{ fontSize: 16, color: MID, lineHeight: 1.9, maxWidth: 480, margin: "0 auto 36px", whiteSpace: "pre-wrap" }}>{c.heroSub}</p>
               <div className="hero-stagger hs-4" style={{ display: "flex", gap: 12, flexWrap: "wrap", alignItems: "center", justifyContent: "center" }}>
-                <a href="#pricing" onClick={e => { e.preventDefault(); document.getElementById("app-pricing")?.scrollIntoView({ behavior: "smooth" }); }}><button className="pb" style={{ fontSize: 14, padding: "14px 32px" }}>了解方案 →</button></a>
-                {isAdmin && <button className="pg" style={{ fontSize: 12, padding: "6px 14px" }} onClick={() => { setTmpHero({ heroTitle: c.heroTitle, heroHighlight: c.heroHighlight, heroSub: c.heroSub }); setEditHero(true); }}>編輯標題</button>}
+                <a href="#pricing" onClick={e => { e.preventDefault(); document.getElementById("app-pricing")?.scrollIntoView({ behavior: "smooth" }); }}><button className="pb" style={{ fontSize: 14, padding: "14px 32px" }}>{c.heroCtaBtn}</button></a>
+                {isAdmin && <button className="pg" style={{ fontSize: 12, padding: "6px 14px" }} onClick={() => { setTmpHero({ heroEyebrow: c.heroEyebrow, heroTitle: c.heroTitle, heroHighlight: c.heroHighlight, heroSub: c.heroSub, heroCtaBtn: c.heroCtaBtn }); setEditHero(true); }}>編輯標題</button>}
               </div>
             </>
           )}
@@ -2116,16 +2549,15 @@ function AppPage({ appContent, setAppContent, isAdmin, setPage }) {
       <div style={{ background: "#FFF8F4", borderTop: `1px solid ${BORDER}`, borderBottom: `1px solid ${BORDER}`, padding: "72px 32px" }}>
         <div style={{ maxWidth: 1100, margin: "0 auto" }}>
           <div style={{ textAlign: "center", marginBottom: 48 }}>
-            <p className="section-label" style={{ marginBottom: 12 }}>LIVE DEMO</p>
-            <h2 style={{ fontSize: 28, fontWeight: 700, color: CHAR, marginBottom: 16 }}>真實帳戶長這樣</h2>
-            <p style={{ fontSize: 15, color: MID, lineHeight: 1.8, maxWidth: 480, margin: "0 auto" }}>
-              以下是示範帳戶「小琳」的完整記帳紀錄，和你未來使用的畫面一模一樣。
-            </p>
+            <p className="section-label" style={{ marginBottom: 12 }}>{ds.label}</p>
+            <h2 style={{ fontSize: 28, fontWeight: 700, color: CHAR, marginBottom: 16 }}>{ds.heading}</h2>
+            <p style={{ fontSize: 15, color: MID, lineHeight: 1.8, maxWidth: 480, margin: "0 auto" }}>{ds.intro}</p>
+            {isAdmin && <span onClick={() => { setTmpDemoStory(ds); setEditDemoStory(true); }} style={{ fontSize: 11, color: O, cursor: "pointer", marginTop: 8, display: "inline-block" }}>編輯示範情境文字</span>}
           </div>
           <div style={{ background: WHITE, border: `1px solid ${BORDER}`, borderRadius: 20, padding: "24px 20px 32px", boxShadow: "0 24px 48px -20px rgba(26,26,26,0.12)" }}>
             <div style={{ display: "flex", alignItems: "center", gap: 6, marginBottom: 20 }}>
               <span style={{ width: 6, height: 6, borderRadius: "50%", background: O, display: "inline-block", flexShrink: 0 }} />
-              <span style={{ fontSize: 12, color: LIGHT }}>互動 Demo</span>
+              <span style={{ fontSize: 12, color: LIGHT }}>{ds.toolbarLabel}</span>
             </div>
             <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 20 }}>
               <div style={{
@@ -2149,46 +2581,73 @@ function AppPage({ appContent, setAppContent, isAdmin, setPage }) {
                   <div style={{ width: 100, height: 4, background: "#444", borderRadius: 2 }} />
                 </div>
               </div>
-              <p style={{ fontSize: 12, color: LIGHT, textAlign: "center" }}>直接點擊畫面裡的按鈕操作，跟實際 App 一樣的流程</p>
+              <p style={{ fontSize: 12, color: LIGHT, textAlign: "center" }}>{ds.note}</p>
             </div>
           </div>
           <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 20, marginTop: 24 }}>
             <div style={{ maxWidth: 780, width: "100%", textAlign: "left" }}>
-              <p style={{ fontSize: 11, color: MID, letterSpacing: "0.08em", textTransform: "uppercase", marginBottom: 12 }}>示範帳戶人設</p>
-              <p style={{ fontSize: 15, fontWeight: 700, color: CHAR, marginBottom: 12 }}>小琳，28 歲，行銷企劃</p>
+              <p style={{ fontSize: 11, color: MID, letterSpacing: "0.08em", textTransform: "uppercase", marginBottom: 12 }}>{ds.personaLabel}</p>
+              <p style={{ fontSize: 15, fontWeight: 700, color: CHAR, marginBottom: 12 }}>{ds.personaName}</p>
               <ul style={{ listStyle: "none", padding: 0, margin: 0, display: "flex", flexDirection: "column", gap: 8 }}>
-                <li style={{ fontSize: 13, color: MID, display: "flex", gap: 8, lineHeight: 1.6 }}><span style={{ color: O, fontWeight: 700, flexShrink: 0 }}>·</span><span>月薪 NT$42,000，台北租屋，每月房租 NT$13,000</span></li>
-                <li style={{ fontSize: 13, color: MID, display: "flex", gap: 8, lineHeight: 1.6 }}><span style={{ color: O, fontWeight: 700, flexShrink: 0 }}>·</span><span>兩張信用卡：日常消費卡 ＋ 網購回饋卡</span></li>
-                <li style={{ fontSize: 13, color: MID, display: "flex", gap: 8, lineHeight: 1.6 }}><span style={{ color: O, fontWeight: 700, flexShrink: 0 }}>·</span><span>目標：一年內存到 NT$150,000 頭期款基金</span></li>
-                <li style={{ fontSize: 13, color: MID, display: "flex", gap: 8, lineHeight: 1.6 }}><span style={{ color: O, fontWeight: 700, flexShrink: 0 }}>·</span><span>有記帳習慣但常常「記了，然後呢？」月初信心滿滿，月中容易失控（聚餐、網購），月底發現目標又落後</span></li>
+                {ds.personaFacts.split("\n").filter(Boolean).map((f, i) => (
+                  <li key={i} style={{ fontSize: 13, color: MID, display: "flex", gap: 8, lineHeight: 1.6 }}><span style={{ color: O, fontWeight: 700, flexShrink: 0 }}>·</span><span>{f}</span></li>
+                ))}
               </ul>
             </div>
             <div className="grid2" style={{ maxWidth: 780, width: "100%", display: "grid", gridTemplateColumns: "1fr 1fr", gap: 16 }}>
               <div style={{ background: WHITE, border: `1px solid ${BORDER}`, borderRadius: 16, padding: "20px 22px" }}>
-                <p style={{ fontSize: 12, color: O, fontWeight: 700, letterSpacing: "0.04em", marginBottom: 12 }}>系統怎麼看</p>
+                <p style={{ fontSize: 12, color: O, fontWeight: 700, letterSpacing: "0.04em", marginBottom: 12 }}>{ds.findingsLabel}</p>
                 <ul style={{ listStyle: "none", padding: 0, margin: 0, display: "flex", flexDirection: "column", gap: 10 }}>
-                  <li style={{ fontSize: 13, color: CHAR, display: "flex", gap: 8, lineHeight: 1.6 }}><span style={{ color: O, fontWeight: 700, flexShrink: 0 }}>·</span><span>系統偵測到：本月網購類別支出比預算高出 62%</span></li>
-                  <li style={{ fontSize: 13, color: CHAR, display: "flex", gap: 8, lineHeight: 1.6 }}><span style={{ color: O, fontWeight: 700, flexShrink: 0 }}>·</span><span>信用卡預留卡費已超過本月現金結餘，出現負值缺口</span></li>
-                  <li style={{ fontSize: 13, color: CHAR, display: "flex", gap: 8, lineHeight: 1.6 }}><span style={{ color: O, fontWeight: 700, flexShrink: 0 }}>·</span><span>儲蓄目標進度落後，以目前速度需要多花 4 個月才能達標</span></li>
+                  {ds.findings.split("\n").filter(Boolean).map((f, i) => (
+                    <li key={i} style={{ fontSize: 13, color: CHAR, display: "flex", gap: 8, lineHeight: 1.6 }}><span style={{ color: O, fontWeight: 700, flexShrink: 0 }}>·</span><span>{f}</span></li>
+                  ))}
                 </ul>
               </div>
               <div style={{ background: WHITE, border: `1px solid ${BORDER}`, borderRadius: 16, padding: "20px 22px" }}>
-                <p style={{ fontSize: 12, color: "#4A8C5C", fontWeight: 700, letterSpacing: "0.04em", marginBottom: 12 }}>給小琳的建議</p>
+                <p style={{ fontSize: 12, color: "#4A8C5C", fontWeight: 700, letterSpacing: "0.04em", marginBottom: 12 }}>{ds.suggestionsLabel}</p>
                 <ul style={{ listStyle: "none", padding: 0, margin: 0, display: "flex", flexDirection: "column", gap: 10 }}>
-                  <li style={{ fontSize: 13, color: CHAR, display: "flex", gap: 8, lineHeight: 1.6 }}><span style={{ color: "#4A8C5C", fontWeight: 700, flexShrink: 0 }}>·</span><span>建議下個月網購類別預算下修 NT$3,000，轉移到卡費預留</span></li>
-                  <li style={{ fontSize: 13, color: CHAR, display: "flex", gap: 8, lineHeight: 1.6 }}><span style={{ color: "#4A8C5C", fontWeight: 700, flexShrink: 0 }}>·</span><span>聚餐類別出現 3 次非計畫性支出，建議設定週間現金額度提醒自己</span></li>
+                  {ds.suggestions.split("\n").filter(Boolean).map((f, i) => (
+                    <li key={i} style={{ fontSize: 13, color: CHAR, display: "flex", gap: 8, lineHeight: 1.6 }}><span style={{ color: "#4A8C5C", fontWeight: 700, flexShrink: 0 }}>·</span><span>{f}</span></li>
+                  ))}
                 </ul>
               </div>
             </div>
-            <p style={{ fontSize: 12, color: LIGHT, textAlign: "center", background: GRAY, borderRadius: 10, padding: "10px 16px", maxWidth: 780, width: "100%" }}>🔒 完整月度診斷報告與帳單明細，登入後查看</p>
+            <p style={{ fontSize: 12, color: LIGHT, textAlign: "center", background: GRAY, borderRadius: 10, padding: "10px 16px", maxWidth: 780, width: "100%" }}>{ds.lockNote}</p>
           </div>
         </div>
       </div>
+      {editDemoStory && (
+        <div style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,.6)", zIndex: 61, display: "flex", alignItems: "center", justifyContent: "center", padding: "20px" }}>
+          <div style={{ background: WHITE, padding: 32, width: "100%", maxWidth: 560, maxHeight: "80vh", overflowY: "auto" }}>
+            <p style={{ fontSize: 13, letterSpacing: "2px", color: CORAL2, marginBottom: 20, fontWeight: 500 }}>編輯示範情境文字</p>
+            <div style={{ display: "flex", flexDirection: "column", gap: 14, marginBottom: 24 }}>
+              <div><p style={{ fontSize: 12, color: MID, marginBottom: 6 }}>區塊標籤</p><input value={tmpDemoStory.label} onChange={e => setTmpDemoStory(p => ({ ...p, label: e.target.value }))} /></div>
+              <div><p style={{ fontSize: 12, color: MID, marginBottom: 6 }}>標題</p><input value={tmpDemoStory.heading} onChange={e => setTmpDemoStory(p => ({ ...p, heading: e.target.value }))} /></div>
+              <div><p style={{ fontSize: 12, color: MID, marginBottom: 6 }}>說明</p><textarea value={tmpDemoStory.intro} onChange={e => setTmpDemoStory(p => ({ ...p, intro: e.target.value }))} style={{ minHeight: 50 }} /></div>
+              <div><p style={{ fontSize: 12, color: MID, marginBottom: 6 }}>Demo 小標籤</p><input value={tmpDemoStory.toolbarLabel} onChange={e => setTmpDemoStory(p => ({ ...p, toolbarLabel: e.target.value }))} /></div>
+              <div><p style={{ fontSize: 12, color: MID, marginBottom: 6 }}>操作提示文字</p><input value={tmpDemoStory.note} onChange={e => setTmpDemoStory(p => ({ ...p, note: e.target.value }))} /></div>
+              <div><p style={{ fontSize: 12, color: MID, marginBottom: 6 }}>人設標籤</p><input value={tmpDemoStory.personaLabel} onChange={e => setTmpDemoStory(p => ({ ...p, personaLabel: e.target.value }))} /></div>
+              <div><p style={{ fontSize: 12, color: MID, marginBottom: 6 }}>人設姓名/身分</p><input value={tmpDemoStory.personaName} onChange={e => setTmpDemoStory(p => ({ ...p, personaName: e.target.value }))} /></div>
+              <div><p style={{ fontSize: 12, color: MID, marginBottom: 6 }}>人設細節（每行一條）</p><textarea value={tmpDemoStory.personaFacts} onChange={e => setTmpDemoStory(p => ({ ...p, personaFacts: e.target.value }))} style={{ minHeight: 90 }} /></div>
+              <div><p style={{ fontSize: 12, color: MID, marginBottom: 6 }}>「系統怎麼看」標籤</p><input value={tmpDemoStory.findingsLabel} onChange={e => setTmpDemoStory(p => ({ ...p, findingsLabel: e.target.value }))} /></div>
+              <div><p style={{ fontSize: 12, color: MID, marginBottom: 6 }}>系統偵測項目（每行一條）</p><textarea value={tmpDemoStory.findings} onChange={e => setTmpDemoStory(p => ({ ...p, findings: e.target.value }))} style={{ minHeight: 70 }} /></div>
+              <div><p style={{ fontSize: 12, color: MID, marginBottom: 6 }}>「給小琳的建議」標籤</p><input value={tmpDemoStory.suggestionsLabel} onChange={e => setTmpDemoStory(p => ({ ...p, suggestionsLabel: e.target.value }))} /></div>
+              <div><p style={{ fontSize: 12, color: MID, marginBottom: 6 }}>建議項目（每行一條）</p><textarea value={tmpDemoStory.suggestions} onChange={e => setTmpDemoStory(p => ({ ...p, suggestions: e.target.value }))} style={{ minHeight: 60 }} /></div>
+              <div><p style={{ fontSize: 12, color: MID, marginBottom: 6 }}>鎖定提示文字</p><input value={tmpDemoStory.lockNote} onChange={e => setTmpDemoStory(p => ({ ...p, lockNote: e.target.value }))} /></div>
+            </div>
+            <div style={{ display: "flex", gap: 10 }}>
+              <button className="pb" onClick={() => { setDemoStory(tmpDemoStory); setEditDemoStory(false); }}>儲存</button>
+              <button className="pg" onClick={() => setEditDemoStory(false)}>取消</button>
+            </div>
+          </div>
+        </div>
+      )}
       {/* Features */}
       <div style={{ maxWidth: 1100, margin: "0 auto", padding: "72px 32px" }} className="page-wrap">
         <div style={{ textAlign: "center", marginBottom: 52 }}>
-          <p className="section-label" style={{ marginBottom: 12 }}>FEATURES</p>
-          <h2 style={{ fontSize: 28, fontWeight: 700, color: CHAR }}>你需要的，都在這裡</h2>
+          <p className="section-label" style={{ marginBottom: 12 }}>{c.featuresLabel}</p>
+          <h2 style={{ fontSize: 28, fontWeight: 700, color: CHAR }}>{c.featuresHeading}</h2>
+          {isAdmin && <span onClick={() => { setTmpMisc(c); setEditMisc(true); }} style={{ fontSize: 11, color: O, cursor: "pointer", marginTop: 8, display: "inline-block" }}>編輯本頁其他文字</span>}
         </div>
         {editingFeat && (
           <div style={{ background: GRAY, padding: "24px", marginBottom: 32, border: `1px solid ${BORDER}` }}>
@@ -2229,8 +2688,8 @@ function AppPage({ appContent, setAppContent, isAdmin, setPage }) {
       <div style={{ background: "#FAFAFA", padding: "72px 32px", borderTop: `1px solid ${BORDER}` }}>
         <div style={{ maxWidth: 1100, margin: "0 auto" }}>
           <div style={{ textAlign: "center", marginBottom: 40 }}>
-            <p className="section-label" style={{ marginBottom: 10 }}>常見問題</p>
-            <h3 style={{ fontSize: 26, fontWeight: 700, color: CHAR }}>大家最常問的幾件事</h3>
+            <p className="section-label" style={{ marginBottom: 10 }}>{c.faqLabel}</p>
+            <h3 style={{ fontSize: 26, fontWeight: 700, color: CHAR }}>{c.faqHeading}</h3>
           </div>
           <div style={{ maxWidth: 720, margin: "0 auto", display: "flex", flexDirection: "column", gap: 14 }}>
             {(c.guideData?.faqs || DEFAULTS.appContent.guideData.faqs).slice(0, 4).map(faq => (
@@ -2240,9 +2699,9 @@ function AppPage({ appContent, setAppContent, isAdmin, setPage }) {
               </div>
             ))}
           </div>
-          <p style={{ textAlign: "center", fontSize: 13, color: LIGHT, marginTop: 20 }}>完整 FAQ 共 {(c.guideData?.faqs || DEFAULTS.appContent.guideData.faqs).length} 題，詳見官網使用說明頁</p>
+          <p style={{ textAlign: "center", fontSize: 13, color: LIGHT, marginTop: 20 }}>{c.faqCountNote.replace("{n}", (c.guideData?.faqs || DEFAULTS.appContent.guideData.faqs).length)}</p>
           <div style={{ textAlign: "center", marginTop: 20 }}>
-            <button className="pg" onClick={() => setPage("guide")}>查看完整使用說明 →</button>
+            <button className="pg" onClick={() => setPage("guide")}>{c.faqGuideBtn}</button>
           </div>
           {isAdmin && (
             <div style={{ marginTop: 36, textAlign: "right" }}>
@@ -2268,18 +2727,22 @@ function AppPage({ appContent, setAppContent, isAdmin, setPage }) {
       <div id="app-pricing" style={{ background: GRAY, padding: "72px 32px", position: "relative" }}>
         <div style={{ maxWidth: 680, margin: "0 auto" }}>
           <div style={{ textAlign: "center", marginBottom: 48 }}>
-            <p className="section-label" style={{ marginBottom: 12 }}>PRICING</p>
-            <h2 style={{ fontSize: 28, fontWeight: 700, color: CHAR }}>方案與費用</h2>
+            <p className="section-label" style={{ marginBottom: 12 }}>{c.pricingLabel}</p>
+            <h2 style={{ fontSize: 28, fontWeight: 700, color: CHAR }}>{c.pricingHeading}</h2>
             {editNote ? (
-              <div style={{ display: "flex", gap: 8, marginTop: 10, justifyContent: "center" }}>
-                <input value={tmpNote} onChange={e => setTmpNote(e.target.value)} style={{ maxWidth: 340 }} />
-                <button className="pb" style={{ fontSize: 11, padding: "5px 12px" }} onClick={() => { upd({ pricingNote: tmpNote }); setEditNote(false); }}>存</button>
-                <button className="pg" style={{ fontSize: 11, padding: "5px 10px" }} onClick={() => setEditNote(false)}>✕</button>
+              <div style={{ display: "flex", flexDirection: "column", gap: 8, marginTop: 10, alignItems: "center" }}>
+                <input value={tmpNote.pricingNote} onChange={e => setTmpNote(p => ({ ...p, pricingNote: e.target.value }))} style={{ maxWidth: 340 }} placeholder="方案說明文字" />
+                <input value={tmpNote.comingSoonTitle} onChange={e => setTmpNote(p => ({ ...p, comingSoonTitle: e.target.value }))} style={{ maxWidth: 340 }} placeholder="即將開放標題" />
+                <input value={tmpNote.comingSoonSub} onChange={e => setTmpNote(p => ({ ...p, comingSoonSub: e.target.value }))} style={{ maxWidth: 340 }} placeholder="即將開放說明" />
+                <div style={{ display: "flex", gap: 8 }}>
+                  <button className="pb" style={{ fontSize: 11, padding: "5px 12px" }} onClick={() => { upd({ pricingNote: tmpNote.pricingNote, comingSoonTitle: tmpNote.comingSoonTitle, comingSoonSub: tmpNote.comingSoonSub }); setEditNote(false); }}>存</button>
+                  <button className="pg" style={{ fontSize: 11, padding: "5px 10px" }} onClick={() => setEditNote(false)}>✕</button>
+                </div>
               </div>
             ) : (
               <p style={{ fontSize: 14, color: MID, marginTop: 10 }}>
                 {c.pricingNote}
-                {isAdmin && <span onClick={() => { setTmpNote(c.pricingNote); setEditNote(true); }} style={{ fontSize: 11, color: O, cursor: "pointer", marginLeft: 8 }}>編輯</span>}
+                {isAdmin && <span onClick={() => { setTmpNote({ pricingNote: c.pricingNote, comingSoonTitle: c.comingSoonTitle, comingSoonSub: c.comingSoonSub }); setEditNote(true); }} style={{ fontSize: 11, color: O, cursor: "pointer", marginLeft: 8 }}>編輯（含即將開放提示文字）</span>}
               </p>
             )}
           </div>
@@ -2331,17 +2794,17 @@ function AppPage({ appContent, setAppContent, isAdmin, setPage }) {
                 </ul>
                 <button onClick={() => setDetailPlan(p.id)} style={{ width: "100%", background: p.highlight ? WHITE : O, color: p.highlight ? O : WHITE, border: "none", padding: "12px 0", fontSize: 13, fontWeight: 500, cursor: "pointer", fontFamily: "inherit", transition: "opacity .18s" }}
                   onMouseEnter={e => e.currentTarget.style.opacity = ".85"} onMouseLeave={e => e.currentTarget.style.opacity = "1"}
-                >了解更多 →</button>
+                >{c.planLearnMoreBtn}</button>
               </div>
             ))}
           </div>
-          <p style={{ textAlign: "center", fontSize: 12, color: LIGHT, marginTop: 20 }}>已有帳號？<a href={APP_URL} target="_blank" rel="noopener noreferrer" style={{ color: O }}>直接登入</a></p>
+          <p style={{ textAlign: "center", fontSize: 12, color: LIGHT, marginTop: 20 }}>{c.loginNote}<a href={APP_URL} target="_blank" rel="noopener noreferrer" style={{ color: O }}>{c.loginLink}</a></p>
         </div>
         {!isAdmin && (
           <div style={{ position: "absolute", inset: 0, backdropFilter: "blur(6px)", WebkitBackdropFilter: "blur(6px)", background: "rgba(248,248,248,0.75)", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", gap: 14 }}>
             <p style={{ fontSize: 11, fontWeight: 700, letterSpacing: "0.18em", color: O }}>COMING SOON</p>
-            <p style={{ fontSize: 28, fontWeight: 700, color: CHAR, lineHeight: 1.3 }}>訂閱方案即將開放</p>
-            <p style={{ fontSize: 14, color: MID }}>預計 7 月下旬上市，敬請期待</p>
+            <p style={{ fontSize: 28, fontWeight: 700, color: CHAR, lineHeight: 1.3 }}>{c.comingSoonTitle}</p>
+            <p style={{ fontSize: 14, color: MID }}>{c.comingSoonSub}</p>
           </div>
         )}
       </div>
@@ -2349,14 +2812,40 @@ function AppPage({ appContent, setAppContent, isAdmin, setPage }) {
       <div style={{ maxWidth: 1100, margin: "0 auto", padding: "56px 32px" }} className="page-wrap">
         <div style={{ background: WHITE, border: `1px solid ${BORDER}`, borderRadius: 20, padding: 32, display: "flex", justifyContent: "space-between", alignItems: "center", gap: 24, flexWrap: "wrap" }} className="legacy-card">
           <div>
-            <span style={{ fontSize: 12, color: O, fontWeight: 500, background: O2, padding: "4px 12px", borderRadius: 999 }}>輕量版</span>
-            <h3 style={{ fontSize: 17, fontWeight: 700, color: CHAR, margin: "10px 0 8px" }}>想要更簡單的 Google Sheets 版本？</h3>
-            <p style={{ fontSize: 13, color: MID, maxWidth: 480, marginBottom: 10 }}>理財自動導航器 2.0 是純 Google Sheets 模板，自動模式偵測，適合不想用 App、只想要一份好用表格的人。</p>
-            <p style={{ fontSize: 13, color: O, fontWeight: 500 }}>NT$299・一次性購買</p>
+            <span style={{ fontSize: 12, color: O, fontWeight: 500, background: O2, padding: "4px 12px", borderRadius: 999 }}>{c.legacyBadge}</span>
+            <h3 style={{ fontSize: 17, fontWeight: 700, color: CHAR, margin: "10px 0 8px" }}>{c.legacyHeading}</h3>
+            <p style={{ fontSize: 13, color: MID, maxWidth: 480, marginBottom: 10 }}>{c.legacyDesc}</p>
+            <p style={{ fontSize: 13, color: O, fontWeight: 500 }}>{c.legacyPrice}</p>
           </div>
-          <a href="https://portaly.cc/every_dollars" target="_blank" rel="noopener noreferrer"><button className="pg">前往購買 2.0 版本</button></a>
+          <a href="https://portaly.cc/every_dollars" target="_blank" rel="noopener noreferrer"><button className="pg">{c.legacyBtn}</button></a>
         </div>
       </div>
+      {editMisc && (
+        <div style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,.6)", zIndex: 61, display: "flex", alignItems: "center", justifyContent: "center", padding: "20px" }}>
+          <div style={{ background: WHITE, padding: 32, width: "100%", maxWidth: 560, maxHeight: "80vh", overflowY: "auto" }}>
+            <p style={{ fontSize: 13, letterSpacing: "2px", color: CORAL2, marginBottom: 20, fontWeight: 500 }}>編輯 App 頁其他文字</p>
+            <div style={{ display: "flex", flexDirection: "column", gap: 12, marginBottom: 24 }}>
+              {[
+                ["featuresLabel", "「FEATURES」標籤"], ["featuresHeading", "功能區標題"],
+                ["faqLabel", "「常見問題」標籤"], ["faqHeading", "常見問題標題"], ["faqCountNote", "FAQ 題數提示（用 {n} 代表題數）"], ["faqGuideBtn", "查看完整使用說明按鈕"],
+                ["pricingLabel", "「PRICING」標籤"], ["pricingHeading", "方案區標題"], ["planLearnMoreBtn", "方案卡片按鈕"],
+                ["loginNote", "登入提示前綴"], ["loginLink", "登入連結文字"],
+                ["legacyBadge", "2.0 版徽章"], ["legacyHeading", "2.0 版標題"], ["legacyDesc", "2.0 版說明"], ["legacyPrice", "2.0 版價格"], ["legacyBtn", "2.0 版按鈕"],
+                ["planDetailBackBtn", "方案詳情頁返回按鈕"], ["planDetailLabel", "方案詳情頁標籤"], ["planDetailFeaturesLabel", "方案詳情頁功能列標籤"], ["planDetailBuyBtn", "方案詳情頁購買按鈕"],
+              ].map(([k, label]) => (
+                <div key={k}>
+                  <p style={{ fontSize: 12, color: MID, marginBottom: 4 }}>{label}</p>
+                  <input value={tmpMisc[k] ?? ""} onChange={e => setTmpMisc(p => ({ ...p, [k]: e.target.value }))} />
+                </div>
+              ))}
+            </div>
+            <div style={{ display: "flex", gap: 10 }}>
+              <button className="pb" onClick={() => { upd(tmpMisc); setEditMisc(false); }}>儲存</button>
+              <button className="pg" onClick={() => setEditMisc(false)}>取消</button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
@@ -2368,14 +2857,17 @@ const RESOURCES_HERO_FIELDS = [
   { key: "subhead", label: "副標題", multiline: true }
 ];
 
-function Resources({ resources, setResources, isAdmin, articles, setArticles, setId, setPage, resourcesHero, setResourcesHero, memberPassword, setMemberPassword }) {
-  const [mainFilter, setMainFilter] = useState("全部");
+function Resources({ resources, setResources, isAdmin, articles, setArticles, setId, setPage, resourcesHero, setResourcesHero, memberPassword, setMemberPassword, resourcesCopy, setResourcesCopy }) {
+  const rc = { ...DEFAULTS.resourcesCopy, ...(resourcesCopy || {}) };
+  const [editCopy, setEditCopy] = useState(false);
+  const [tmpCopy, setTmpCopy] = useState(rc);
+  const [mainFilter, setMainFilter] = useState("all");
   const [editingPwd, setEditingPwd] = useState(false);
   const [tmpPwd, setTmpPwd] = useState(memberPassword || "");
-  const showTools = mainFilter === "全部" || mainFilter === "互動工具";
-  const showArticles = mainFilter === "全部" || mainFilter === "免費文章" || mainFilter === "會員文章";
+  const showTools = mainFilter === "all" || mainFilter === "tools";
+  const showArticles = mainFilter === "all" || mainFilter === "free" || mainFilter === "member";
   const articleList = [...(articles || [])].sort((a, b) => (b.date || "").localeCompare(a.date || ""));
-  const filteredArticles = articleList.filter(a => mainFilter === "會員文章" ? a.member : mainFilter === "免費文章" ? !a.member : true);
+  const filteredArticles = articleList.filter(a => mainFilter === "member" ? a.member : mainFilter === "free" ? !a.member : true);
   const openArticle = id => { setArticles(prev => prev.map(a => a.id === id ? { ...a, views: (a.views || 0) + 1 } : a), { silent: true }); setId(id); setPage("article"); window.scrollTo({ top: 0, behavior: "instant" }); const a = (articles || []).find(x => x.id === id); history.pushState({}, "", "?article=" + (a?.slug || id)); };
   const [editing, setEditing] = useState(null);
   const [form, setForm] = useState({ name: "", type: "模板", desc: "", url: "", img: "", active: true });
@@ -2405,10 +2897,30 @@ function Resources({ resources, setResources, isAdmin, articles, setArticles, se
       </div>
       <div style={{ maxWidth: 1100, margin: "0 auto", padding: "40px 32px 0" }} className="page-wrap">
         <div style={{ display: "flex", gap: 8, flexWrap: "wrap", marginBottom: 8 }}>
-          {["全部", "互動工具", "免費文章", "會員文章"].map(t => (
-            <span key={t} onClick={() => setMainFilter(t)} style={{ fontSize: 13, padding: "8px 18px", borderRadius: 999, cursor: "pointer", border: `1px solid ${mainFilter === t ? O : BORDER}`, background: mainFilter === t ? O : "transparent", color: mainFilter === t ? WHITE : CHAR, transition: "background .15s" }}>{t}</span>
+          {[["all", rc.filterAll], ["tools", rc.filterTools], ["free", rc.filterFree], ["member", rc.filterMember]].map(([k, label]) => (
+            <span key={k} onClick={() => setMainFilter(k)} style={{ fontSize: 13, padding: "8px 18px", borderRadius: 999, cursor: "pointer", border: `1px solid ${mainFilter === k ? O : BORDER}`, background: mainFilter === k ? O : "transparent", color: mainFilter === k ? WHITE : CHAR, transition: "background .15s" }}>{label}</span>
           ))}
+          {isAdmin && <span onClick={() => { setTmpCopy(rc); setEditCopy(true); }} style={{ fontSize: 12, color: O, cursor: "pointer", alignSelf: "center", marginLeft: 4 }}>編輯本頁文字</span>}
         </div>
+        {editCopy && (
+          <div style={{ background: GRAY, padding: "24px", marginBottom: 20, border: `1px solid ${BORDER}` }}>
+            <p style={{ fontSize: 11, color: MID, marginBottom: 16, letterSpacing: "1px" }}>編輯頁面文字</p>
+            <div style={{ display: "flex", flexDirection: "column", gap: 12, marginBottom: 16 }}>
+              {[
+                ["filterAll", "篩選：全部"], ["filterTools", "篩選：互動工具"], ["filterFree", "篩選：免費文章"], ["filterMember", "篩選：會員文章"],
+                ["toolsHeading", "互動工具區標題"], ["toolsSub", "互動工具區說明"],
+                ["toolsEmpty1", "無互動工具提示（第一行）"], ["toolsEmpty2", "無互動工具提示（第二行）"],
+                ["articlesHeading", "文章區標題"], ["articlesSub", "文章區說明"], ["articlesEmpty", "無文章提示"],
+              ].map(([k, label]) => (
+                <div key={k}>
+                  <p style={{ fontSize: 12, color: MID, marginBottom: 4 }}>{label}</p>
+                  <input value={tmpCopy[k] ?? ""} onChange={e => setTmpCopy(p => ({ ...p, [k]: e.target.value }))} />
+                </div>
+              ))}
+            </div>
+            <div style={{ display: "flex", gap: 10 }}><button className="pb" onClick={() => { setResourcesCopy(tmpCopy); setEditCopy(false); }}>儲存</button><button className="pg" onClick={() => setEditCopy(false)}>取消</button></div>
+          </div>
+        )}
         {isAdmin && (
           <div style={{ marginTop: 20, background: GRAY, border: `1px solid ${BORDER}`, padding: "16px 20px" }}>
             {!editingPwd ? (
@@ -2430,9 +2942,9 @@ function Resources({ resources, setResources, isAdmin, articles, setArticles, se
       {showTools && (
       <div style={{ maxWidth: 1100, margin: "0 auto", padding: "48px 32px" }} className="page-wrap">
         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "baseline", flexWrap: "wrap", gap: 12, marginBottom: 28 }}>
-          <h2 style={{ fontSize: 20, fontWeight: 500, color: CHAR }}>互動工具</h2>
+          <h2 style={{ fontSize: 20, fontWeight: 500, color: CHAR }}>{rc.toolsHeading}</h2>
           <div style={{ display: "flex", alignItems: "center", gap: 16 }}>
-            <span style={{ fontSize: 13, color: MID }}>動手玩，兩分鐘看結果</span>
+            <span style={{ fontSize: 13, color: MID }}>{rc.toolsSub}</span>
             {isAdmin && <button className="pb" style={{ fontSize: 12, padding: "6px 14px" }} onClick={startAdd}>＋ 新增</button>}
           </div>
         </div>
@@ -2454,7 +2966,7 @@ function Resources({ resources, setResources, isAdmin, articles, setArticles, se
         )}
         {filtered.length === 0 ? (
           <div style={{ textAlign: "center", padding: "80px 0" }}>
-            <p style={{ fontSize: 14, color: LIGHT, lineHeight: 2.4 }}>還沒有資源<br /><span style={{ fontSize: 12 }}>資源整理好後會放在這裡</span></p>
+            <p style={{ fontSize: 14, color: LIGHT, lineHeight: 2.4 }}>{rc.toolsEmpty1}<br /><span style={{ fontSize: 12 }}>{rc.toolsEmpty2}</span></p>
           </div>
         ) : (
           <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill,minmax(300px,1fr))", gap: 20 }} className="grid3">
@@ -2504,8 +3016,8 @@ function Resources({ resources, setResources, isAdmin, articles, setArticles, se
       {showArticles && (
       <div style={{ maxWidth: 1100, margin: "0 auto", padding: "16px 32px 64px" }} className="page-wrap">
         <div style={{ marginBottom: 24 }}>
-          <h2 style={{ fontSize: 20, fontWeight: 500, color: CHAR, marginBottom: 6 }}>文章</h2>
-          <span style={{ fontSize: 13, color: MID }}>免費與會員限定文章都在這裡</span>
+          <h2 style={{ fontSize: 20, fontWeight: 500, color: CHAR, marginBottom: 6 }}>{rc.articlesHeading}</h2>
+          <span style={{ fontSize: 13, color: MID }}>{rc.articlesSub}</span>
         </div>
         <div style={{ display: "flex", flexDirection: "column" }}>
           {filteredArticles.map(a => (
@@ -2520,7 +3032,7 @@ function Resources({ resources, setResources, isAdmin, articles, setArticles, se
               <span style={{ fontSize: 12, color: LIGHT, flexShrink: 0 }}>{a.date}</span>
             </div>
           ))}
-          {filteredArticles.length === 0 && <p style={{ fontSize: 13, color: LIGHT, padding: "20px 0" }}>這個分類還沒有文章</p>}
+          {filteredArticles.length === 0 && <p style={{ fontSize: 13, color: LIGHT, padding: "20px 0" }}>{rc.articlesEmpty}</p>}
         </div>
       </div>
       )}
@@ -2532,11 +3044,11 @@ function Resources({ resources, setResources, isAdmin, articles, setArticles, se
 
 // ── NEW: 電子報訂閱 ──
 function Newsletter({ newsletter, setNewsletter, isAdmin, articles, setArticles, setId, setPage }) {
+  const info = { ...DEFAULTS.newsletter, ...(newsletter || {}) };
   const [editMode, setEditMode] = useState(false);
-  const [tmp, setTmp] = useState(newsletter || DEFAULTS.newsletter);
+  const [tmp, setTmp] = useState(info);
   const [email, setEmail] = useState("");
   const [submitted, setSubmitted] = useState(false);
-  const info = newsletter || DEFAULTS.newsletter;
   const save = () => { setNewsletter(tmp); setEditMode(false); };
   const recent = [...(articles || [])].sort((a, b) => b.date.localeCompare(a.date)).slice(0, 3);
   const open = id => { setArticles(prev => prev.map(a => a.id === id ? { ...a, views: (a.views || 0) + 1 } : a), { silent: true }); setId(id); setPage("article"); window.scrollTo({ top: 0, behavior: "instant" }); const a = (articles || []).find(x => x.id === id); history.pushState({}, "", "?article=" + (a?.slug || id)); };
@@ -2550,8 +3062,18 @@ function Newsletter({ newsletter, setNewsletter, isAdmin, articles, setArticles,
       <button className="pg" onClick={() => setEditMode(false)} style={{ marginBottom: 32 }}>← 取消</button>
       <div style={{ display: "flex", flexDirection: "column", gap: 20 }}>
         <div><p style={{ fontSize: 12, color: MID, marginBottom: 8 }}>訂閱人數文字</p><input value={tmp.subscriberCount || ""} onChange={e => setTmp(p => ({ ...p, subscriberCount: e.target.value }))} placeholder="1,000+" /></div>
+        <div><p style={{ fontSize: 12, color: MID, marginBottom: 8 }}>「位讀者」文字</p><input value={tmp.readerSuffix || ""} onChange={e => setTmp(p => ({ ...p, readerSuffix: e.target.value }))} /></div>
+        <div><p style={{ fontSize: 12, color: MID, marginBottom: 8 }}>標題第二行（橘字）</p><input value={tmp.titleLine2 || ""} onChange={e => setTmp(p => ({ ...p, titleLine2: e.target.value }))} /></div>
         <div><p style={{ fontSize: 12, color: MID, marginBottom: 8 }}>介紹文字</p><textarea value={tmp.intro || ""} onChange={e => setTmp(p => ({ ...p, intro: e.target.value }))} style={{ minHeight: 100 }} /></div>
         <div><p style={{ fontSize: 12, color: MID, marginBottom: 8 }}>備註</p><input value={tmp.archiveNote || ""} onChange={e => setTmp(p => ({ ...p, archiveNote: e.target.value }))} /></div>
+        <div><p style={{ fontSize: 12, color: MID, marginBottom: 8 }}>Email 輸入框提示文字</p><input value={tmp.emailPlaceholder || ""} onChange={e => setTmp(p => ({ ...p, emailPlaceholder: e.target.value }))} /></div>
+        <div><p style={{ fontSize: 12, color: MID, marginBottom: 8 }}>訂閱按鈕文字</p><input value={tmp.subscribeBtn || ""} onChange={e => setTmp(p => ({ ...p, subscribeBtn: e.target.value }))} /></div>
+        <div><p style={{ fontSize: 12, color: MID, marginBottom: 8 }}>訂閱成功標題</p><input value={tmp.successTitle || ""} onChange={e => setTmp(p => ({ ...p, successTitle: e.target.value }))} /></div>
+        <div><p style={{ fontSize: 12, color: MID, marginBottom: 8 }}>訂閱成功說明</p><input value={tmp.successSub || ""} onChange={e => setTmp(p => ({ ...p, successSub: e.target.value }))} /></div>
+        <div><p style={{ fontSize: 12, color: MID, marginBottom: 8 }}>「最新文章」標籤</p><input value={tmp.recentLabel || ""} onChange={e => setTmp(p => ({ ...p, recentLabel: e.target.value }))} /></div>
+        <div><p style={{ fontSize: 12, color: MID, marginBottom: 8 }}>「最新文章」標題</p><input value={tmp.recentHeading || ""} onChange={e => setTmp(p => ({ ...p, recentHeading: e.target.value }))} /></div>
+        <div><p style={{ fontSize: 12, color: MID, marginBottom: 8 }}>查看全部連結文字</p><input value={tmp.viewAllLink || ""} onChange={e => setTmp(p => ({ ...p, viewAllLink: e.target.value }))} /></div>
+        <div><p style={{ fontSize: 12, color: MID, marginBottom: 8 }}>閱讀連結文字</p><input value={tmp.readLink || ""} onChange={e => setTmp(p => ({ ...p, readLink: e.target.value }))} /></div>
       </div>
       <div style={{ display: "flex", gap: 10, marginTop: 28 }}><button className="pb" onClick={save}>儲存</button><button className="pg" onClick={() => setEditMode(false)}>取消</button></div>
     </div>
@@ -2564,19 +3086,19 @@ function Newsletter({ newsletter, setNewsletter, isAdmin, articles, setArticles,
           {isAdmin && <button onClick={() => { setTmp(info); setEditMode(true); }} style={{ position: "absolute", top: -48, right: 0, background: O, color: WHITE, border: "none", padding: "6px 14px", fontSize: 11, cursor: "pointer", fontFamily: "inherit" }}>編輯</button>}
           <div className="hero-stagger hs-1" style={{ display: "inline-flex", alignItems: "center", gap: 8, background: O2, border: `1px solid ${O}25`, padding: "6px 14px", marginBottom: 24 }}>
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke={O} strokeWidth="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
-            <span style={{ fontSize: 12, color: O, fontWeight: 500 }}>{info.subscriberCount} 位讀者</span>
+            <span style={{ fontSize: 12, color: O, fontWeight: 500 }}>{info.subscriberCount} {info.readerSuffix}</span>
           </div>
-          <h1 className="hero-stagger hs-2" style={{ fontSize: 42, fontWeight: 700, color: CHAR, lineHeight: 1.25, marginBottom: 16 }}>88La<br /><span style={{ color: O }}>理財週報</span></h1>
+          <h1 className="hero-stagger hs-2" style={{ fontSize: 42, fontWeight: 700, color: CHAR, lineHeight: 1.25, marginBottom: 16 }}>88La<br /><span style={{ color: O }}>{info.titleLine2}</span></h1>
           <p className="hero-stagger hs-3" style={{ fontSize: 16, color: MID, lineHeight: 1.9, marginBottom: 32, maxWidth: 460, whiteSpace: "pre-wrap" }}>{info.intro}</p>
           {submitted ? (
             <div style={{ background: O2, border: `1px solid ${O}30`, padding: "20px 24px" }}>
-              <p style={{ fontSize: 14, color: O, fontWeight: 500 }}>感謝訂閱！</p>
-              <p style={{ fontSize: 13, color: MID, marginTop: 6 }}>我們會在下期發刊時通知你。</p>
+              <p style={{ fontSize: 14, color: O, fontWeight: 500 }}>{info.successTitle}</p>
+              <p style={{ fontSize: 13, color: MID, marginTop: 6 }}>{info.successSub}</p>
             </div>
           ) : (
             <div style={{ display: "flex", gap: 0, maxWidth: 420 }}>
-              <input type="email" placeholder="你的 Email" value={email} onChange={e => setEmail(e.target.value)} onKeyDown={e => e.key === "Enter" && handleSubscribe()} style={{ flex: 1, borderBottom: "none", border: `1px solid #D0D5DA`, padding: "12px 16px", fontSize: 14, background: WHITE }} />
-              <button className="pb" style={{ padding: "12px 22px", fontSize: 13, flexShrink: 0 }} onClick={handleSubscribe} disabled={!email}>訂閱</button>
+              <input type="email" placeholder={info.emailPlaceholder} value={email} onChange={e => setEmail(e.target.value)} onKeyDown={e => e.key === "Enter" && handleSubscribe()} style={{ flex: 1, borderBottom: "none", border: `1px solid #D0D5DA`, padding: "12px 16px", fontSize: 14, background: WHITE }} />
+              <button className="pb" style={{ padding: "12px 22px", fontSize: 13, flexShrink: 0 }} onClick={handleSubscribe} disabled={!email}>{info.subscribeBtn}</button>
             </div>
           )}
           <p style={{ fontSize: 11, color: LIGHT, marginTop: 10 }}>{info.archiveNote}</p>
@@ -2585,8 +3107,8 @@ function Newsletter({ newsletter, setNewsletter, isAdmin, articles, setArticles,
       {recent.length > 0 && (
         <div style={{ maxWidth: 1100, margin: "0 auto", padding: "56px 32px" }} className="page-wrap">
           <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 32 }}>
-            <div><p className="section-label" style={{ marginBottom: 8 }}>RECENT ISSUES</p><h2 style={{ fontSize: 22, fontWeight: 700, color: CHAR }}>最新文章</h2></div>
-            <span onClick={() => setPage("home")} style={{ fontSize: 13, color: O, cursor: "pointer" }}>查看全部 →</span>
+            <div><p className="section-label" style={{ marginBottom: 8 }}>{info.recentLabel}</p><h2 style={{ fontSize: 22, fontWeight: 700, color: CHAR }}>{info.recentHeading}</h2></div>
+            <span onClick={() => setPage("home")} style={{ fontSize: 13, color: O, cursor: "pointer" }}>{info.viewAllLink}</span>
           </div>
           <div style={{ display: "flex", flexDirection: "column" }}>
             {recent.map(a => (
@@ -2598,7 +3120,7 @@ function Newsletter({ newsletter, setNewsletter, isAdmin, articles, setArticles,
                   </div>
                   <h3 style={{ fontSize: 16, fontWeight: 500, color: CHAR, lineHeight: 1.5 }}>{a.title}</h3>
                 </div>
-                <span style={{ fontSize: 12, color: O, fontWeight: 500, flexShrink: 0 }}>閱讀 →</span>
+                <span style={{ fontSize: 12, color: O, fontWeight: 500, flexShrink: 0 }}>{info.readLink}</span>
               </div>
             ))}
           </div>
@@ -2611,9 +3133,11 @@ function Newsletter({ newsletter, setNewsletter, isAdmin, articles, setArticles,
 // ── NEW: 合作洽談 ──
 function Contact({ links, contactContent, setContactContent, isAdmin }) {
   const l = links || DEFAULTS.links;
-  const c = contactContent || DEFAULTS.contactContent;
+  const c = { ...DEFAULTS.contactContent, ...(contactContent || {}) };
   const [editIntro, setEditIntro] = useState(false);
   const [tmpIntro, setTmpIntro] = useState(c.intro);
+  const [editCopy, setEditCopy] = useState(false);
+  const [tmpCopy, setTmpCopy] = useState(c);
   const [form, setForm] = useState({ name: "", company: "", type: "", message: "", email: "" });
   const [submitted, setSubmitted] = useState(false);
   const sf = k => e => setForm(p => ({ ...p, [k]: e.target.value }));
@@ -2628,11 +3152,41 @@ function Contact({ links, contactContent, setContactContent, isAdmin }) {
     <div>
       <div style={{ background: GRAD, padding: "52px 32px", borderBottom: `1px solid ${BORDER}` }}>
         <div style={{ maxWidth: 1100, margin: "0 auto" }}>
-          <p className="section-label" style={{ marginBottom: 10 }}>CONTACT</p>
-          <h1 style={{ fontSize: 28, fontWeight: 700, color: CHAR }}>合作洽談</h1>
-          <p style={{ fontSize: 13, color: MID, marginTop: 8 }}>品牌合作、課程邀請、媒體採訪，歡迎來信</p>
+          <p className="section-label" style={{ marginBottom: 10 }}>{c.label}</p>
+          <h1 style={{ fontSize: 28, fontWeight: 700, color: CHAR }}>{c.heading}</h1>
+          <p style={{ fontSize: 13, color: MID, marginTop: 8 }}>{c.sub}</p>
+          {isAdmin && <span onClick={() => { setTmpCopy(c); setEditCopy(true); }} style={{ fontSize: 11, color: O, cursor: "pointer", marginTop: 8, display: "inline-block" }}>編輯頁面文字</span>}
         </div>
       </div>
+      {editCopy && (
+        <div style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,.6)", zIndex: 61, display: "flex", alignItems: "center", justifyContent: "center", padding: "20px" }}>
+          <div style={{ background: WHITE, padding: 32, width: "100%", maxWidth: 520, maxHeight: "80vh", overflowY: "auto" }}>
+            <p style={{ fontSize: 13, letterSpacing: "2px", color: CORAL2, marginBottom: 20, fontWeight: 500 }}>編輯合作洽談頁文字</p>
+            <div style={{ display: "flex", flexDirection: "column", gap: 12, marginBottom: 24 }}>
+              {[
+                ["label", "小標籤"], ["heading", "標題"], ["sub", "副標題"],
+                ["nameLabel", "姓名欄位標籤"], ["companyLabel", "公司欄位標籤"], ["emailLabel", "Email 欄位標籤"],
+                ["typeLabel", "合作類型標籤"], ["typePlaceholder", "合作類型預設選項"],
+                ["messageLabel", "合作說明標籤"], ["messagePlaceholder", "合作說明提示文字"], ["submitBtn", "送出按鈕文字"],
+                ["successTitle", "送出成功標題"], ["successSub", "送出成功說明"],
+              ].map(([k, label]) => (
+                <div key={k}>
+                  <p style={{ fontSize: 12, color: MID, marginBottom: 4 }}>{label}</p>
+                  <input value={tmpCopy[k] ?? ""} onChange={e => setTmpCopy(p => ({ ...p, [k]: e.target.value }))} />
+                </div>
+              ))}
+              <div>
+                <p style={{ fontSize: 12, color: MID, marginBottom: 4 }}>合作類型選項（每行一項）</p>
+                <textarea value={tmpCopy.typeOptions} onChange={e => setTmpCopy(p => ({ ...p, typeOptions: e.target.value }))} style={{ minHeight: 100 }} />
+              </div>
+            </div>
+            <div style={{ display: "flex", gap: 10 }}>
+              <button className="pb" onClick={() => { setContactContent(tmpCopy); setEditCopy(false); }}>儲存</button>
+              <button className="pg" onClick={() => setEditCopy(false)}>取消</button>
+            </div>
+          </div>
+        </div>
+      )}
       <div style={{ maxWidth: 900, margin: "0 auto", padding: "64px 32px" }} className="page-wrap">
         <div style={{ display: "grid", gridTemplateColumns: "1fr 1.6fr", gap: 64 }} className="about-grid">
           <div>
@@ -2668,26 +3222,26 @@ function Contact({ links, contactContent, setContactContent, isAdmin }) {
                 <div style={{ width: 52, height: 52, background: O2, display: "flex", alignItems: "center", justifyContent: "center", margin: "0 auto 16px" }}>
                   <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke={O} strokeWidth="2.5"><polyline points="20 6 9 17 4 12"/></svg>
                 </div>
-                <p style={{ fontSize: 18, fontWeight: 500, color: CHAR, marginBottom: 8 }}>訊息已送出</p>
-                <p style={{ fontSize: 14, color: MID }}>感謝你的來信，我會盡快回覆。</p>
+                <p style={{ fontSize: 18, fontWeight: 500, color: CHAR, marginBottom: 8 }}>{c.successTitle}</p>
+                <p style={{ fontSize: 14, color: MID }}>{c.successSub}</p>
               </div>
             </div>
           ) : (
             <div style={{ display: "flex", flexDirection: "column", gap: 22 }}>
               <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 20 }} className="grid2">
-                <div><p style={{ fontSize: 12, color: MID, marginBottom: 8 }}>姓名 / 稱呼 *</p><input value={form.name} onChange={sf("name")} /></div>
-                <div><p style={{ fontSize: 12, color: MID, marginBottom: 8 }}>公司 / 品牌（選填）</p><input value={form.company} onChange={sf("company")} /></div>
+                <div><p style={{ fontSize: 12, color: MID, marginBottom: 8 }}>{c.nameLabel}</p><input value={form.name} onChange={sf("name")} /></div>
+                <div><p style={{ fontSize: 12, color: MID, marginBottom: 8 }}>{c.companyLabel}</p><input value={form.company} onChange={sf("company")} /></div>
               </div>
-              <div><p style={{ fontSize: 12, color: MID, marginBottom: 8 }}>Email *</p><input type="email" value={form.email} onChange={sf("email")} /></div>
+              <div><p style={{ fontSize: 12, color: MID, marginBottom: 8 }}>{c.emailLabel}</p><input type="email" value={form.email} onChange={sf("email")} /></div>
               <div>
-                <p style={{ fontSize: 12, color: MID, marginBottom: 8 }}>合作類型</p>
+                <p style={{ fontSize: 12, color: MID, marginBottom: 8 }}>{c.typeLabel}</p>
                 <select value={form.type} onChange={sf("type")} style={{ border: "1px solid #D0D5DA", padding: "10px 12px", background: WHITE, width: "100%" }}>
-                  <option value="">請選擇</option>
-                  {["品牌贊助","內容合作","講座/課程","媒體採訪","其他"].map(t => <option key={t}>{t}</option>)}
+                  <option value="">{c.typePlaceholder}</option>
+                  {c.typeOptions.split("\n").filter(Boolean).map(t => <option key={t}>{t}</option>)}
                 </select>
               </div>
-              <div><p style={{ fontSize: 12, color: MID, marginBottom: 8 }}>合作說明 *</p><textarea placeholder="請簡單描述合作方向⋯" value={form.message} onChange={sf("message")} style={{ minHeight: 120, border: "none", background: GRAY, padding: "12px 14px", borderBottom: `1px solid #D0D5DA` }} /></div>
-              <button className="pb" onClick={submit} disabled={!form.name || !form.message || !form.email} style={{ alignSelf: "flex-start", padding: "13px 32px" }}>送出合作申請</button>
+              <div><p style={{ fontSize: 12, color: MID, marginBottom: 8 }}>{c.messageLabel}</p><textarea placeholder={c.messagePlaceholder} value={form.message} onChange={sf("message")} style={{ minHeight: 120, border: "none", background: GRAY, padding: "12px 14px", borderBottom: `1px solid #D0D5DA` }} /></div>
+              <button className="pb" onClick={submit} disabled={!form.name || !form.message || !form.email} style={{ alignSelf: "flex-start", padding: "13px 32px" }}>{c.submitBtn}</button>
             </div>
           )}
         </div>
@@ -3021,345 +3575,102 @@ function PricingPage({ appContent, setPage }) {
 }
 
 // ── 服務條款 ──
-function TermsPage() {
-  const NUMERALS = ["一", "二", "三", "四", "五", "六", "七", "八"];
-  const SECTIONS = [
-    {
-      title: "服務說明",
-      content: `88La 理財導航器（以下簡稱「本服務」）由 88La 提供，為個人理財記帳管理工具，提供收支記錄、預算規劃及桌面快速記帳等功能。本服務以訂閱制提供，訂閱期間內可無限制使用所有功能。`,
-    },
-    {
-      title: "訂閱方案與收費",
-      content: `本服務提供以下訂閱方案：\n\n• 月訂閱：NT$149 / 月\n• 年方案：NT$999 / 年\n• 兩年方案：NT$1,899 / 兩年\n\n所有金額均為新台幣計價。付款由綠界科技股份有限公司代為處理，採信用卡定期定額方式進行。`,
-    },
-    {
-      title: "自動續約",
-      content: `訂閱方案將於到期日自動續約，並依原方案金額扣款。如不希望續約，請於訂閱到期日前至帳戶設定頁面取消。取消後，服務仍可使用至當期訂閱到期日為止。`,
-    },
-    {
-      title: "退款政策",
-      content: `本服務所販售之內容為數位服務，依消費者保護法第 19 條規定，數位內容於開通後不適用七天鑑賞期退換貨規定。\n\n如有特殊情形，請聯繫 everydollars17@gmail.com，由 88La 個案審酌處理。`,
-    },
-    {
-      title: "帳戶與資料",
-      content: `用戶須自行保管帳戶登入資訊。用戶的記帳資料儲存於個人 Google 雲端帳號中，訂閱取消後資料仍保留於用戶自己的 Google 試算表，88La 不持有用戶資料。`,
-    },
-    {
-      title: "服務變更",
-      content: `88La 保留調整訂閱方案定價及功能內容之權利，並將提前 30 天以電子郵件通知用戶。現有訂閱者不受漲價影響，直至當期訂閱到期。`,
-    },
-    {
-      title: "帳號到期與資料保留",
-      content: `1. 訂閱方案到期前三天，系統將透過 Email 及 App 推播通知提醒續訂。\n\n2. 方案到期後，帳號進入 7 天緩衝期：\n　• 可瀏覽所有歷史記帳紀錄\n　• 可匯出個人資料\n　• 新增、編輯、刪除等寫入功能暫停使用\n\n3. 緩衝期結束後（到期後第 8 天起），帳號功能將完全停用，但資料不會主動刪除。\n\n4. 如需恢復使用，續訂即可立即解鎖所有功能。`,
-    },
-    {
-      title: "聯絡方式",
-      content: `Email：everydollars17@gmail.com\n官方網站：https://88la-site.vercel.app`,
-    },
-  ];
-
+function LegalPage({ isAdmin, content, setContent, defaults, hasIntro }) {
+  const c = { ...defaults, ...(content || {}) };
+  const [editing, setEditing] = useState(false);
+  const [tmp, setTmp] = useState(c);
+  const titleLines = (c.title || "").split("\n");
   return (
     <div>
       <div style={{ background: GRAD, padding: "52px 32px", borderBottom: `1px solid ${BORDER}` }}>
         <div style={{ maxWidth: 800, margin: "0 auto" }}>
-          <p className="section-label" style={{ marginBottom: 10 }}>LEGAL</p>
-          <h1 style={{ fontSize: 24, fontWeight: 700, color: CHAR, lineHeight: 1.45 }}>88La 理財導航器<br />服務條款與退款政策</h1>
-          <p style={{ fontSize: 13, color: MID, marginTop: 10 }}>最後更新：2026 年 7 月</p>
+          <p className="section-label" style={{ marginBottom: 10 }}>{c.eyebrow}</p>
+          <h1 style={{ fontSize: 24, fontWeight: 700, color: CHAR, lineHeight: 1.45 }}>
+            {titleLines.map((line, i) => <span key={i}>{line}{i < titleLines.length - 1 && <br />}</span>)}
+          </h1>
+          <p style={{ fontSize: 13, color: MID, marginTop: 10 }}>{c.lastUpdated}</p>
+          {isAdmin && !editing && <button className="pg" style={{ fontSize: 12, marginTop: 14 }} onClick={() => { setTmp(c); setEditing(true); }}>編輯本頁</button>}
         </div>
       </div>
       <div style={{ maxWidth: 800, margin: "0 auto", padding: "64px 32px" }} className="page-wrap">
-        <div style={{ display: "flex", flexDirection: "column", gap: 48 }}>
-          {SECTIONS.map((s, i) => (
-            <div key={i}>
-              <h2 style={{ fontSize: 15, fontWeight: 700, color: CHAR, marginBottom: 14 }}>{NUMERALS[i]}、{s.title}</h2>
-              <p style={{ fontSize: 14, color: MID, lineHeight: 2.1, whiteSpace: "pre-wrap" }}>{linkify(s.content)}</p>
+        {editing ? (
+          <div>
+            <div style={{ display: "flex", flexDirection: "column", gap: 16, marginBottom: 24 }}>
+              <div><p style={{ fontSize: 12, color: MID, marginBottom: 6 }}>小標籤</p><input value={tmp.eyebrow} onChange={e => setTmp(p => ({ ...p, eyebrow: e.target.value }))} /></div>
+              <div><p style={{ fontSize: 12, color: MID, marginBottom: 6 }}>標題（可分行，用換行分隔）</p><textarea value={tmp.title} onChange={e => setTmp(p => ({ ...p, title: e.target.value }))} style={{ minHeight: 60 }} /></div>
+              <div><p style={{ fontSize: 12, color: MID, marginBottom: 6 }}>最後更新文字</p><input value={tmp.lastUpdated} onChange={e => setTmp(p => ({ ...p, lastUpdated: e.target.value }))} /></div>
+              {hasIntro && <div><p style={{ fontSize: 12, color: MID, marginBottom: 6 }}>開頭說明段落</p><textarea value={tmp.intro} onChange={e => setTmp(p => ({ ...p, intro: e.target.value }))} style={{ minHeight: 80 }} /></div>}
+              <div>
+                <p style={{ fontSize: 12, color: MID, marginBottom: 6 }}>內文</p>
+                <RichEditor value={tmp.body} onChange={v => setTmp(p => ({ ...p, body: v }))} />
+              </div>
+              <div><p style={{ fontSize: 12, color: MID, marginBottom: 6 }}>結尾提示框文字（選填，留空則不顯示）</p><textarea value={tmp.footerNote || ""} onChange={e => setTmp(p => ({ ...p, footerNote: e.target.value }))} style={{ minHeight: 60 }} /></div>
             </div>
-          ))}
-        </div>
-        <div style={{ marginTop: 64, padding: "22px 26px", background: GRAY, border: `1px solid ${BORDER}` }}>
-          <p style={{ fontSize: 12, color: LIGHT, lineHeight: 2 }}>
-            使用本服務即代表你已閱讀並同意以上服務條款。<br />
-            如對條款有任何疑問，請於訂閱前透過 Email 與我們聯繫。
-          </p>
-        </div>
+            <div style={{ display: "flex", gap: 10 }}>
+              <button className="pb" onClick={() => { setContent(tmp); setEditing(false); }}>儲存</button>
+              <button className="pg" onClick={() => setEditing(false)}>取消</button>
+            </div>
+          </div>
+        ) : (
+          <>
+            {hasIntro && <p style={{ fontSize: 14, color: MID, lineHeight: 2.1, marginBottom: 48, whiteSpace: "pre-wrap" }}>{c.intro}</p>}
+            <div className="article-content" style={{ fontSize: 14, color: MID, lineHeight: 2.1 }} dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(c.body) }} />
+            {c.footerNote && (
+              <div style={{ marginTop: 64, padding: "22px 26px", background: GRAY, border: `1px solid ${BORDER}` }}>
+                <p style={{ fontSize: 12, color: LIGHT, lineHeight: 2, whiteSpace: "pre-wrap" }}>{c.footerNote}</p>
+              </div>
+            )}
+          </>
+        )}
       </div>
     </div>
   );
+}
+
+function TermsPage({ isAdmin, termsContent, setTermsContent }) {
+  return <LegalPage isAdmin={isAdmin} content={termsContent} setContent={setTermsContent} defaults={DEFAULTS.termsContent} />;
 }
 
 // ── 隱私政策 ──
-function PrivacyPage() {
-  const NUMERALS = ["一", "二", "三", "四", "五", "六", "七", "八", "九", "十", "十一"];
-  const SECTIONS = [
-    {
-      title: "適用範圍",
-      content: `本隱私政策適用於 88La 理財自動導航器（官網與網頁應用程式），說明本服務如何處理您於使用過程中提供或產生之個人資料。本政策不適用於本服務以外之外部連結網站，亦不適用於非本服務委託或參與管理之第三方。`,
-    },
-    {
-      title: "我們蒐集的資料",
-      content: null,
-      subsections: [
-        { subtitle: "登入時", text: "本服務採用 Google 帳號登入機制，系統將取得您的電子郵件位址，作為識別您帳號身分之唯一依據。您無需另行設定獨立的帳號密碼。" },
-        { subtitle: "使用記帳功能時", text: "您於使用過程中主動輸入之內容，包括每一筆記帳明細（金額、類別、付款方式、備註、消費當下之心情記錄）、月度預算規劃、信用卡與帳戶設定、負債資料，以及理財筆記，皆屬於您所提供之資料範疇。" },
-        { subtitle: "付款時", text: "訂閱費用係由綠界科技股份有限公司代為收取，您的信用卡卡號、有效期限等付款資訊將直接於綠界之付款頁面輸入，88La 不會接觸、亦不會儲存任何與您的付款工具相關之資訊。本服務僅會收到付款是否成功之通知，以憑此開通您的訂閱權限。" },
-        { subtitle: "瀏覽網站時（自動蒐集）", text: "本服務官網使用 Vercel Web Analytics 統計流量，此工具不使用第三方 cookie，而是以傳入請求產生的雜湊值識別訪客，所記錄之資料皆為匿名性質，不會與任何個人、客戶或 IP 位址綁定或關聯，相關瀏覽紀錄亦不會永久保存，將於 24 小時後自動清除。我們僅藉此瞭解整體網站使用狀況（如頁面瀏覽量），不會用來識別您的個人身分。" },
-      ],
-    },
-    {
-      title: "未成年使用者",
-      content: `本服務之受眾可能包含未滿 18 歲之學生族群。若您未滿 18 歲，建議於監護人知悉並同意之情況下使用本服務。若您是未滿 18 歲使用者之監護人，並認為您的子女未經同意提供了個人資料，請透過第七條所列聯絡方式與我們聯繫，我們將協助處理相關資料之刪除或更正事宜。`,
-    },
-    {
-      title: "資料儲存之處所",
-      content: null,
-      table: [
-        ["記帳明細、預算、筆記", "您個人之 Google 試算表", "登入後，系統將自動於您的 Google 雲端硬碟建立專屬檔案，相關資料即時寫入其中"],
-        ["帳號狀態、到期日、帳戶與信用卡及負債設定", "Firebase（本服務之後端資料庫）", "用於驗證您訂閱之有效性，並儲存您的個人化功能設定"],
-        ["最近一次驗證之時間戳記", "您裝置之本機儲存空間（localStorage）", "僅用於判斷離線狀態下之暫時可用性，不含任何記帳內容"],
-        ["匿名瀏覽統計", "Vercel Web Analytics", "不可識別個人身分，24 小時後自動清除"],
-      ],
-      afterTable: `換言之，您的記帳流水帳實際上是存放於「您個人」之 Google 雲端硬碟內，而非本服務之伺服器。即便本服務有朝一日終止運作，該份試算表仍歸屬於您本人，您可隨時開啟、複製或刪除。`,
-    },
-    {
-      title: "資料之存取權限",
-      content: null,
-      bullets: [
-        "您的記帳明細存放於您個人之 Google 試算表中，僅您本人得以查閱，本服務不具備、亦未申請主動讀取或瀏覽該試算表內容之權限",
-        "本服務所申請之 Google 授權範圍，僅限於「本應用程式所建立之檔案」（技術上稱為 drive.file），絕不涉及您 Google 雲端硬碟中既有之其他檔案",
-        "帳號狀態與設定資料存放於 Firebase，僅供系統驗證訂閱狀態之用，本服務不會將其提供、洩露或出售予任何第三方",
-        "金流相關資訊由綠界科技依其自身隱私規範處理，本服務全程不接觸您的付款資料",
-      ],
-      afterBullets: `本服務承諾，絕不將您的資料出售予廣告主，亦不會將您的記帳內容用於任何行銷分析或對外提供。`,
-    },
-    {
-      title: "資料之運用目的",
-      content: null,
-      bullets: [
-        "呈現您的記帳記錄、預算對比分析、月度診斷報告等您主動使用之功能",
-        "驗證您的訂閱是否仍屬有效期間",
-        "於您與客服聯繫時，協助核對您的帳號狀況",
-        "透過匿名流量統計瞭解網站整體使用狀況，藉以優化服務內容",
-      ],
-      afterBullets: `凡未經您同意或非屬您主動使用之功能範疇，本服務絕不擅自運用您的資料，例如分析您的消費習慣以投放廣告。`,
-    },
-    {
-      title: "資料安全與外洩通知",
-      content: `本服務已採取合理之技術與管理措施，保護您的資料免於未經授權之存取、使用或揭露。惟若不幸發生資料安全事件（例如後端系統遭未經授權存取），本服務將於知悉後之合理期限內，透過您註冊時所使用之電子郵件通知您，並說明事件性質、可能受影響之資料範圍，以及本服務已採取或將採取之應變措施。`,
-    },
-    {
-      title: "資料保留期限",
-      content: null,
-      bullets: [
-        "訂閱使用期間，資料持續妥善保存",
-        "訂閱取消或到期後，依本服務之服務條款，資料將保留七日供您匯出（CSV 或 PDF 格式），逾期後系統可能予以清除",
-        "至於存放於您個人 Google 試算表內之資料，縱使本服務端之紀錄遭清除，惟若您未自行刪除，該份試算表仍將留存於您的 Google 雲端硬碟之中",
-      ],
-    },
-    {
-      title: "您所享有之權利",
-      content: `依個人資料保護法相關規定，您對於本服務所持有之個人資料，得行使下列權利：`,
-      bullets: [
-        "查詢或請求閱覽",
-        "請求製給複製本",
-        "請求補充或更正",
-        "請求停止蒐集、處理或利用",
-        "請求刪除",
-      ],
-      afterBullets: `您可隨時匯出您完整之記帳資料（CSV 或 PDF 格式），亦可隨時開啟您的 Google 試算表自行查閱、複製或備份原始資料。如欲行使上述權利或取消訂閱，敬請致信 everydollars17@gmail.com 提出申請，我們將於合理期限內處理回覆。`,
-    },
-    {
-      title: "政策之修改",
-      content: `本政策內容如有修改，將於本網站公告並更新最後修改日期。重大變更將透過電子郵件另行通知您。`,
-    },
-    {
-      title: "聯絡方式",
-      content: `如有任何關於本隱私政策之疑問，敬請致信 everydollars17@gmail.com，我們將竭誠為您回覆。`,
-    },
-  ];
-
-  return (
-    <div>
-      <div style={{ background: GRAD, padding: "52px 32px", borderBottom: `1px solid ${BORDER}` }}>
-        <div style={{ maxWidth: 800, margin: "0 auto" }}>
-          <p className="section-label" style={{ marginBottom: 10 }}>PRIVACY</p>
-          <h1 style={{ fontSize: 24, fontWeight: 700, color: CHAR, lineHeight: 1.45 }}>88La 理財導航器<br />隱私政策</h1>
-          <p style={{ fontSize: 13, color: MID, marginTop: 10 }}>最後更新：2026 年 7 月</p>
-        </div>
-      </div>
-      <div style={{ maxWidth: 800, margin: "0 auto", padding: "64px 32px" }} className="page-wrap">
-        <p style={{ fontSize: 14, color: MID, lineHeight: 2.1, marginBottom: 48 }}>
-          88La 由個人創作者獨立營運，我們深知理財記帳涉及您最私密的財務細節，因此特別撰寫此份隱私政策，以清楚說明本服務蒐集何種資料、如何運用、儲存於何處，以及哪些人能夠接觸這些資訊。
-        </p>
-        <div style={{ display: "flex", flexDirection: "column", gap: 48 }}>
-          {SECTIONS.map((s, i) => (
-            <div key={i}>
-              <h2 style={{ fontSize: 15, fontWeight: 700, color: CHAR, marginBottom: 14 }}>{NUMERALS[i]}、{s.title}</h2>
-              {s.content && <p style={{ fontSize: 14, color: MID, lineHeight: 2.1, whiteSpace: "pre-wrap" }}>{linkify(s.content)}</p>}
-              {s.subsections && s.subsections.map((sub, j) => (
-                <div key={j} style={{ marginTop: j === 0 ? 0 : 20, marginBottom: 4 }}>
-                  <p style={{ fontSize: 13, fontWeight: 600, color: CHAR, marginBottom: 6 }}>【{sub.subtitle}】</p>
-                  <p style={{ fontSize: 14, color: MID, lineHeight: 2.1 }}>{sub.text}</p>
-                </div>
-              ))}
-              {s.table && (
-                <div style={{ overflowX: "auto", marginTop: 8, marginBottom: 16 }}>
-                  <table style={{ width: "100%", borderCollapse: "collapse", fontSize: 13, color: MID }}>
-                    <thead>
-                      <tr style={{ background: O2 }}>
-                        {["資料類型", "儲存位置", "說明"].map(h => (
-                          <th key={h} style={{ padding: "10px 14px", textAlign: "left", fontWeight: 600, color: CHAR, borderBottom: `2px solid ${O}`, fontSize: 12 }}>{h}</th>
-                        ))}
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {s.table.map((row, ri) => (
-                        <tr key={ri} style={{ borderBottom: `1px solid ${BORDER}` }}>
-                          {row.map((cell, ci) => (
-                            <td key={ci} style={{ padding: "12px 14px", lineHeight: 1.8, verticalAlign: "top" }}>{cell}</td>
-                          ))}
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
-                </div>
-              )}
-              {s.afterTable && <p style={{ fontSize: 14, color: MID, lineHeight: 2.1 }}>{linkify(s.afterTable)}</p>}
-              {s.bullets && (
-                <ul style={{ paddingLeft: 20, margin: s.content ? "12px 0 0" : "0" }}>
-                  {s.bullets.map((b, bi) => (
-                    <li key={bi} style={{ fontSize: 14, color: MID, lineHeight: 2.1, marginBottom: 4 }}>{b}</li>
-                  ))}
-                </ul>
-              )}
-              {s.afterBullets && <p style={{ fontSize: 14, color: MID, lineHeight: 2.1, marginTop: 12 }}>{linkify(s.afterBullets)}</p>}
-            </div>
-          ))}
-        </div>
-      </div>
-    </div>
-  );
+function PrivacyPage({ isAdmin, privacyContent, setPrivacyContent }) {
+  return <LegalPage isAdmin={isAdmin} content={privacyContent} setContent={setPrivacyContent} defaults={DEFAULTS.privacyContent} hasIntro />;
 }
 
 // ── 免責聲明 ──
-function DisclaimerPage() {
-  const NUMERALS = ["一", "二", "三", "四", "五", "六", "七"];
-  const SECTIONS = [
-    {
-      title: "服務性質聲明",
-      content: `88La 理財自動導航器（以下簡稱「本服務」）為個人記帳、支出追蹤與儲蓄習慣建立之輔助工具，其核心功能在於協助使用者記錄日常收支、設定個人預算目標，以及建立規律的儲蓄行為。\n\n本服務所提供之收支診斷報告，係依據使用者自行輸入之數據，結合本服務創作者之個人實務理財經驗所設計之參考框架自動產生。本服務創作者並非持有任何金融相關執照之財務顧問，所有內容均屬個人實務經驗之分享，不構成專業財務顧問服務，亦不涉及任何有價證券、基金、期貨、外匯、加密貨幣或其他金融商品之投資策略建議、推介或勸誘行為。`,
-    },
-    {
-      title: "資訊僅供參考",
-      content: `本服務所提供之預算建議、收支診斷分析、儲蓄目標試算及相關數字呈現，均係依據使用者自行輸入之個人資料，結合創作者個人實務理財經驗所設計之參考框架，由系統自動運算後呈現之參考資訊。\n\n診斷報告中所呈現之支出比例建議、預算配置方向等內容，均源自創作者個人實務經驗之歸納，不同使用者之財務狀況、收入結構、家庭背景與生活條件各異，上述建議未必適用於每一位使用者的個別情況。\n\n上述資訊：\n• 係創作者個人實務經驗之分享，不代表對您財務狀況之專業個人化評估\n• 不構成任何具法律效力之財務建議或投資意見\n• 不保證使用本服務後必然達成特定儲蓄金額或財務目標\n• 如您的財務狀況較為複雜（如負債重組、保險規劃、稅務安排等），建議另行諮詢具有合法執照之專業人士`,
-    },
-    {
-      title: "使用者自行負責原則",
-      content: `使用者在參考本服務所提供之任何資訊、數據或分析結果後，所作出之一切財務決策，均應由使用者本人獨立評估、審慎判斷，並自行承擔相應之後果與責任。\n\n如需專業之財務規劃建議，建議您諮詢具有合法執照之財務顧問或相關專業人士。`,
-    },
-    {
-      title: "系統資料準確性",
-      content: `本服務之所有計算與分析結果，均以使用者自行輸入之資料為基礎。若輸入資料有誤、不完整或未即時更新，系統所呈現之結果可能與您的實際財務狀況有所落差，本服務對此不負任何責任。`,
-    },
-    {
-      title: "服務中斷與資料完整性",
-      content: `本服務係透過網際網路提供，可能因伺服器維護、網路異常、第三方服務（包括 Google、Firebase、綠界科技等）故障，或其他不可抗力因素，導致服務暫時中斷或資料暫時無法存取。本服務對上述情形所造成之不便，不負任何賠償責任，但將盡合理努力維持服務之穩定運行。`,
-    },
-    {
-      title: "本聲明之修改",
-      content: `本服務得隨時修訂本免責聲明，修訂後之內容將公告於本頁面並更新修改日期。繼續使用本服務，即視為接受修訂後之條款。`,
-    },
-    {
-      title: "聯絡方式",
-      content: `如對本聲明有任何疑問，歡迎透過以下方式與我們聯繫：\n\nEmail：everydollars17@gmail.com\nInstagram：@every_dollars`,
-    },
-  ];
-
-  return (
-    <div>
-      <div style={{ background: GRAD, padding: "52px 32px", borderBottom: `1px solid ${BORDER}` }}>
-        <div style={{ maxWidth: 800, margin: "0 auto" }}>
-          <p className="section-label" style={{ marginBottom: 10 }}>DISCLAIMER</p>
-          <h1 style={{ fontSize: 24, fontWeight: 700, color: CHAR, lineHeight: 1.45 }}>88La 理財導航器<br />免責聲明</h1>
-          <p style={{ fontSize: 13, color: MID, marginTop: 10 }}>最後更新：2026 年 7 月</p>
-        </div>
-      </div>
-      <div style={{ maxWidth: 800, margin: "0 auto", padding: "64px 32px" }} className="page-wrap">
-        <div style={{ display: "flex", flexDirection: "column", gap: 48 }}>
-          {SECTIONS.map((s, i) => (
-            <div key={i}>
-              <h2 style={{ fontSize: 15, fontWeight: 700, color: CHAR, marginBottom: 14 }}>{NUMERALS[i]}、{s.title}</h2>
-              <p style={{ fontSize: 14, color: MID, lineHeight: 2.1, whiteSpace: "pre-wrap" }}>{linkify(s.content)}</p>
-            </div>
-          ))}
-        </div>
-        <div style={{ marginTop: 64, padding: "22px 26px", background: GRAY, border: `1px solid ${BORDER}` }}>
-          <p style={{ fontSize: 12, color: LIGHT, lineHeight: 2 }}>
-            本服務為個人記帳與儲蓄習慣建立工具。診斷報告內容係創作者個人實務理財經驗之分享，僅供參考，不構成專業財務顧問服務或投資建議。使用者應依據自身狀況獨立判斷，並自行承擔相應責任。
-          </p>
-        </div>
-      </div>
-    </div>
-  );
+function DisclaimerPage({ isAdmin, disclaimerContent, setDisclaimerContent }) {
+  return <LegalPage isAdmin={isAdmin} content={disclaimerContent} setContent={setDisclaimerContent} defaults={DEFAULTS.disclaimerContent} />;
 }
 
 // ── 訂閱方案 ──
-function SubscriptionPage({ setPage, isAdmin }) {
+function SubscriptionPage({ setPage, isAdmin, appContent, subscriptionCopy, setSubscriptionCopy }) {
+  const c = { ...DEFAULTS.appContent, ...(appContent || {}) };
+  const sc = { ...DEFAULTS.subscriptionCopy, ...(subscriptionCopy || {}) };
+  const [editing, setEditing] = useState(false);
+  const [tmp, setTmp] = useState(sc);
   if (!isAdmin) return (
     <div style={{ background: GRAD, minHeight: "60vh", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", padding: "80px 32px", textAlign: "center" }}>
       <p style={{ fontSize: 11, fontWeight: 700, letterSpacing: "0.18em", color: O, marginBottom: 16 }}>COMING SOON</p>
-      <h1 style={{ fontSize: 32, fontWeight: 700, color: CHAR, lineHeight: 1.3, marginBottom: 14 }}>訂閱方案即將開放</h1>
-      <p style={{ fontSize: 15, color: MID, lineHeight: 1.9 }}>預計 7 月下旬上市，敬請期待</p>
+      <h1 style={{ fontSize: 32, fontWeight: 700, color: CHAR, lineHeight: 1.3, marginBottom: 14 }}>{c.comingSoonTitle}</h1>
+      <p style={{ fontSize: 15, color: MID, lineHeight: 1.9 }}>{c.comingSoonSub}</p>
     </div>
   );
-  const PLANS = [
-    {
-      id: 1,
-      name: "月訂閱",
-      price: "NT$149",
-      period: "/月",
-      equiv: null,
-      badge: null,
-      highlight: false,
-      features: ["88La 理財導航器完整功能", "桌面快速記帳", "隨時可取消"],
-    },
-    {
-      id: 2,
-      name: "年方案",
-      price: "NT$999",
-      period: "/年",
-      equiv: "相當於 NT$83/月",
-      badge: "最多人選擇",
-      highlight: true,
-      features: ["88La 理財導航器完整功能", "桌面快速記帳", "省下約 35%"],
-    },
-    {
-      id: 3,
-      name: "兩年方案",
-      price: "NT$1,899",
-      period: "/兩年",
-      equiv: "相當於 NT$79/月",
-      badge: null,
-      highlight: false,
-      features: ["88La 理財導航器完整功能", "桌面快速記帳", "最划算方案"],
-    },
-  ];
+  const plans = c.plans;
 
   return (
     <div>
       <div style={{ background: GRAD, padding: "72px 32px 56px", borderBottom: `1px solid ${BORDER}` }}>
         <div style={{ maxWidth: 920, margin: "0 auto" }}>
           <p className="section-label" style={{ marginBottom: 10 }}>PRICING</p>
-          <h1 style={{ fontSize: 36, fontWeight: 700, color: CHAR, lineHeight: 1.3, marginBottom: 14 }}>選擇你的方案</h1>
-          <p style={{ fontSize: 15, color: MID, lineHeight: 1.9, maxWidth: 540 }}>
-            用 88La 理財導航器，把記帳這件事變成每天兩分鐘的習慣。<br />所有方案皆包含桌面快速記帳功能。
-          </p>
+          <h1 style={{ fontSize: 36, fontWeight: 700, color: CHAR, lineHeight: 1.3, marginBottom: 14 }}>{sc.heading}</h1>
+          <p style={{ fontSize: 15, color: MID, lineHeight: 1.9, maxWidth: 540, whiteSpace: "pre-wrap" }}>{sc.intro}</p>
+          {isAdmin && <span onClick={() => { setTmp(sc); setEditing(true); }} style={{ fontSize: 12, color: O, cursor: "pointer", marginTop: 10, display: "inline-block" }}>編輯本頁文字</span>}
         </div>
       </div>
 
       <div style={{ background: GRAY, padding: "64px 32px 48px" }}>
         <div style={{ maxWidth: 920, margin: "0 auto" }}>
           <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 20 }} className="grid3">
-            {PLANS.map(plan => (
+            {plans.map(plan => (
               <div key={plan.id} style={{
                 background: plan.highlight ? O : WHITE,
                 border: `2px solid ${plan.highlight ? O : BORDER}`,
@@ -3376,13 +3687,10 @@ function SubscriptionPage({ setPage, isAdmin }) {
                   <span style={{ position: "absolute", top: -11, left: "50%", transform: "translateX(-50%)", background: CHAR, color: WHITE, fontSize: 11, padding: "3px 14px", borderRadius: 20, letterSpacing: ".5px", fontWeight: 500, whiteSpace: "nowrap" }}>{plan.badge}</span>
                 )}
                 <p style={{ fontSize: 11, letterSpacing: "1.5px", color: plan.highlight ? "rgba(255,255,255,.6)" : MID, marginBottom: 10, fontWeight: 500 }}>{plan.name.toUpperCase()}</p>
-                <div style={{ display: "flex", alignItems: "baseline", gap: 3, marginBottom: plan.equiv ? 6 : 28, flexWrap: "nowrap" }}>
+                <div style={{ display: "flex", alignItems: "baseline", gap: 3, marginBottom: 28, flexWrap: "nowrap" }}>
                   <span style={{ fontSize: 28, fontWeight: 700, color: plan.highlight ? WHITE : CHAR, whiteSpace: "nowrap" }}>{plan.price}</span>
                   <span style={{ fontSize: 13, color: plan.highlight ? "rgba(255,255,255,.5)" : LIGHT, whiteSpace: "nowrap" }}>{plan.period}</span>
                 </div>
-                {plan.equiv && (
-                  <p style={{ fontSize: 12, color: plan.highlight ? "rgba(255,255,255,.55)" : MID, marginBottom: 24 }}>{plan.equiv}</p>
-                )}
                 <ul style={{ listStyle: "none", display: "flex", flexDirection: "column", gap: 10, marginBottom: 28 }}>
                   {plan.features.map((f, i) => (
                     <li key={i} style={{ fontSize: 13, color: plan.highlight ? "rgba(255,255,255,.88)" : MID, display: "flex", alignItems: "center", gap: 9 }}>
@@ -3402,7 +3710,7 @@ function SubscriptionPage({ setPage, isAdmin }) {
           </div>
 
           <div style={{ marginTop: 32, display: "flex", flexDirection: "column", gap: 8 }}>
-            {["所有金額均為新台幣計價，含稅", "訂閱將於到期日自動續約，可於到期前至帳戶設定取消", "付款方式：信用卡定期定額（由綠界科技處理）", "到期前三天將寄送提醒通知。到期後提供 7 天資料匯出緩衝期，期間可瀏覽歷史紀錄，續訂即可立即恢復完整功能"].map((n, i) => (
+            {sc.notes.split("\n").filter(Boolean).map((n, i) => (
               <p key={i} style={{ fontSize: 12, color: MID, display: "flex", gap: 8, alignItems: "flex-start" }}>
                 <span style={{ color: O, fontWeight: 700, flexShrink: 0 }}>·</span>{n}
               </p>
@@ -3422,12 +3730,27 @@ function SubscriptionPage({ setPage, isAdmin }) {
       <div style={{ padding: "32px 32px 48px" }}>
         <div style={{ maxWidth: 920, margin: "0 auto" }}>
           <div style={{ padding: "20px 24px", background: GRAY, border: `1px solid ${BORDER}` }}>
-            <p style={{ fontSize: 12, color: LIGHT, lineHeight: 2.1 }}>
-              感謝最早支持 88La 的 90 位創始成員，你們的定價永久保留：月訂閱 NT$109 ／ 年方案 NT$599 ／ 兩年方案 NT$998。此優惠僅適用於已取得創始會員資格之用戶，不開放新申請。
-            </p>
+            <p style={{ fontSize: 12, color: LIGHT, lineHeight: 2.1 }}>{sc.foundingNote}</p>
           </div>
         </div>
       </div>
+      {editing && (
+        <div style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,.6)", zIndex: 61, display: "flex", alignItems: "center", justifyContent: "center", padding: "20px" }}>
+          <div style={{ background: WHITE, padding: 32, width: "100%", maxWidth: 560, maxHeight: "80vh", overflowY: "auto" }}>
+            <p style={{ fontSize: 13, letterSpacing: "2px", color: CORAL2, marginBottom: 20, fontWeight: 500 }}>編輯訂閱方案頁文字</p>
+            <div style={{ display: "flex", flexDirection: "column", gap: 16, marginBottom: 24 }}>
+              <div><p style={{ fontSize: 12, color: MID, marginBottom: 6 }}>標題</p><input value={tmp.heading} onChange={e => setTmp(p => ({ ...p, heading: e.target.value }))} /></div>
+              <div><p style={{ fontSize: 12, color: MID, marginBottom: 6 }}>說明（每行一句）</p><textarea value={tmp.intro} onChange={e => setTmp(p => ({ ...p, intro: e.target.value }))} style={{ minHeight: 60 }} /></div>
+              <div><p style={{ fontSize: 12, color: MID, marginBottom: 6 }}>方案注意事項（每行一條）</p><textarea value={tmp.notes} onChange={e => setTmp(p => ({ ...p, notes: e.target.value }))} style={{ minHeight: 100 }} /></div>
+              <div><p style={{ fontSize: 12, color: MID, marginBottom: 6 }}>創始會員說明</p><textarea value={tmp.foundingNote} onChange={e => setTmp(p => ({ ...p, foundingNote: e.target.value }))} style={{ minHeight: 60 }} /></div>
+            </div>
+            <div style={{ display: "flex", gap: 10 }}>
+              <button className="pb" onClick={() => { setSubscriptionCopy(tmp); setEditing(false); }}>儲存</button>
+              <button className="pg" onClick={() => setEditing(false)}>取消</button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
@@ -3444,6 +3767,22 @@ export default function App() {
   const [links, setLinks, lL] = useFS("links", DEFAULTS.links);
   const [footerTagline, setFooterTagline, ftL] = useFS("footerTagline", DEFAULTS.footerTagline);
   const [memberPassword, setMemberPassword, mpL] = useFS("memberPassword", DEFAULTS.memberPassword);
+  const [navLabels, setNavLabels, nvL] = useFS("navLabels", DEFAULTS.navLabels);
+  const [mobileTabLabels, setMobileTabLabels, mtL] = useFS("mobileTabLabels", DEFAULTS.mobileTabLabels);
+  const [footerLabels, setFooterLabels, flbL] = useFS("footerLabels", DEFAULTS.footerLabels);
+  const [subscriptionCopy, setSubscriptionCopy, scL] = useFS("subscriptionCopy", DEFAULTS.subscriptionCopy);
+  const [homeCopy, setHomeCopy, hcL] = useFS("homeCopy", DEFAULTS.homeCopy);
+  const [aboutCopy, setAboutCopy, acpL] = useFS("aboutCopy", DEFAULTS.aboutCopy);
+  const [shopCopy, setShopCopy, shcL] = useFS("shopCopy", DEFAULTS.shopCopy);
+  const [igCopy, setIgCopy, igcL] = useFS("igCopy", DEFAULTS.igCopy);
+  const [communityCopy, setCommunityCopy, ccpL] = useFS("communityCopy", DEFAULTS.communityCopy);
+  const [envelopeCopy, setEnvelopeCopy, ecpL] = useFS("envelopeCopy", DEFAULTS.envelopeCopy);
+  const [goodsCopy, setGoodsCopy, gcpL] = useFS("goodsCopy", DEFAULTS.goodsCopy);
+  const [resourcesCopy, setResourcesCopy, rcpL] = useFS("resourcesCopy", DEFAULTS.resourcesCopy);
+  const [demoStory, setDemoStory, dsL] = useFS("demoStory", DEFAULTS.demoStory);
+  const [termsContent, setTermsContent, tcL] = useFS("termsContent", DEFAULTS.termsContent);
+  const [privacyContent, setPrivacyContent, pcL] = useFS("privacyContent", DEFAULTS.privacyContent);
+  const [disclaimerContent, setDisclaimerContent, dcL] = useFS("disclaimerContent", DEFAULTS.disclaimerContent);
   const [resources, setResources, rlL] = useFS("resources", []);
   const [newsletter, setNewsletter, nlL] = useFS("newsletter", DEFAULTS.newsletter);
   const [appContent, setAppContent, acL] = useFS("appContent", DEFAULTS.appContent);
@@ -3576,30 +3915,30 @@ export default function App() {
   return (
     <div style={{ minHeight: "100vh", background: WHITE }}>
       <Toast />
-      <Nav page={page} setPage={nav} isAdmin={isAdmin} />
+      <Nav page={page} setPage={nav} isAdmin={isAdmin} navLabels={navLabels} setNavLabels={setNavLabels} mobileTabLabels={mobileTabLabels} setMobileTabLabels={setMobileTabLabels} />
       <div key={page} className="page-anim">
-        {page === "home" && <Home articles={articles} setPage={setPage} setId={setId} setArticles={setArticles} isAdmin={isAdmin} siteTitle={siteTitle} setSiteTitle={setSiteTitle} tags={tags} setTags={setTags} about={about} setAbout={setAbout} links={links} homeHero={homeHero} setHomeHero={setHomeHero} trustStats={trustStats} setTrustStats={setTrustStats} paths={paths} setPaths={setPaths} />}
-        {page === "about" && <About about={about} setAbout={setAbout} isAdmin={isAdmin} links={links} setLinks={setLinks} setPage={nav} />}
-        {page === "ig" && <IG igPosts={igPosts} setIgPosts={setIgPosts} isAdmin={isAdmin} links={links} />}
-        {page === "community" && <Community igPosts={igPosts} links={links} setPage={nav} isAdmin={isAdmin} communityHero={communityHero} setCommunityHero={setCommunityHero} />}
-        {page === "shop" && <Shop products={products} setProducts={setProducts} isAdmin={isAdmin} />}
-        {page === "envelope" && <Envelope products={products} setPage={nav} isAdmin={isAdmin} envelopeHero={envelopeHero} setEnvelopeHero={setEnvelopeHero} />}
-        {page === "goods" && <Goods goods={goods} setGoods={setGoods} isAdmin={isAdmin} goodsHero={goodsHero} setGoodsHero={setGoodsHero} />}
-        {page === "app" && <AppPage appContent={appContent} setAppContent={setAppContent} isAdmin={isAdmin} setPage={nav} />}
+        {page === "home" && <Home articles={articles} setPage={setPage} setId={setId} setArticles={setArticles} isAdmin={isAdmin} siteTitle={siteTitle} setSiteTitle={setSiteTitle} tags={tags} setTags={setTags} about={about} setAbout={setAbout} links={links} homeHero={homeHero} setHomeHero={setHomeHero} trustStats={trustStats} setTrustStats={setTrustStats} paths={paths} setPaths={setPaths} homeCopy={homeCopy} setHomeCopy={setHomeCopy} />}
+        {page === "about" && <About about={about} setAbout={setAbout} isAdmin={isAdmin} links={links} setLinks={setLinks} setPage={nav} aboutCopy={aboutCopy} setAboutCopy={setAboutCopy} />}
+        {page === "ig" && <IG igPosts={igPosts} setIgPosts={setIgPosts} isAdmin={isAdmin} links={links} igCopy={igCopy} setIgCopy={setIgCopy} />}
+        {page === "community" && <Community igPosts={igPosts} links={links} setPage={nav} isAdmin={isAdmin} communityHero={communityHero} setCommunityHero={setCommunityHero} communityCopy={communityCopy} setCommunityCopy={setCommunityCopy} />}
+        {page === "shop" && <Shop products={products} setProducts={setProducts} isAdmin={isAdmin} shopCopy={shopCopy} setShopCopy={setShopCopy} />}
+        {page === "envelope" && <Envelope products={products} setPage={nav} isAdmin={isAdmin} envelopeHero={envelopeHero} setEnvelopeHero={setEnvelopeHero} envelopeCopy={envelopeCopy} setEnvelopeCopy={setEnvelopeCopy} />}
+        {page === "goods" && <Goods goods={goods} setGoods={setGoods} isAdmin={isAdmin} goodsHero={goodsHero} setGoodsHero={setGoodsHero} goodsCopy={goodsCopy} setGoodsCopy={setGoodsCopy} />}
+        {page === "app" && <AppPage appContent={appContent} setAppContent={setAppContent} isAdmin={isAdmin} setPage={nav} demoStory={demoStory} setDemoStory={setDemoStory} />}
         {page === "guide" && <Guide appContent={appContent} isAdmin={isAdmin} setPage={nav} />}
-        {page === "resources" && <Resources resources={resources} setResources={setResources} isAdmin={isAdmin} articles={articles} setArticles={setArticles} setId={setId} setPage={setPage} resourcesHero={resourcesHero} setResourcesHero={setResourcesHero} memberPassword={memberPassword} setMemberPassword={setMemberPassword} />}
+        {page === "resources" && <Resources resources={resources} setResources={setResources} isAdmin={isAdmin} articles={articles} setArticles={setArticles} setId={setId} setPage={setPage} resourcesHero={resourcesHero} setResourcesHero={setResourcesHero} memberPassword={memberPassword} setMemberPassword={setMemberPassword} resourcesCopy={resourcesCopy} setResourcesCopy={setResourcesCopy} />}
         {page === "newsletter" && <Newsletter newsletter={newsletter} setNewsletter={setNewsletter} isAdmin={isAdmin} articles={articles} setArticles={setArticles} setId={setId} setPage={setPage} />}
         {page === "contact" && <Contact links={links} contactContent={contactContent} setContactContent={setContactContent} isAdmin={isAdmin} />}
         {page === "savings-quiz" && isAdmin && <SavingsBagQuizAdmin savingsBagQuiz={savingsBagQuiz} setSavingsBagQuiz={setSavingsBagQuiz} />}
         {page === "plans" && <PricingPage appContent={appContent} setPage={nav} />}
-        {page === "pricing" && <SubscriptionPage setPage={nav} isAdmin={isAdmin} />}
-        {page === "terms" && <TermsPage />}
-        {page === "privacy" && <PrivacyPage />}
-        {page === "disclaimer" && <DisclaimerPage />}
+        {page === "pricing" && <SubscriptionPage setPage={nav} isAdmin={isAdmin} appContent={appContent} subscriptionCopy={subscriptionCopy} setSubscriptionCopy={setSubscriptionCopy} />}
+        {page === "terms" && <TermsPage isAdmin={isAdmin} termsContent={termsContent} setTermsContent={setTermsContent} />}
+        {page === "privacy" && <PrivacyPage isAdmin={isAdmin} privacyContent={privacyContent} setPrivacyContent={setPrivacyContent} />}
+        {page === "disclaimer" && <DisclaimerPage isAdmin={isAdmin} disclaimerContent={disclaimerContent} setDisclaimerContent={setDisclaimerContent} />}
         {page === "article" && article && <Article article={article} onBack={() => nav("home")} setArticles={setArticles} isAdmin={isAdmin} tags={tags} links={links} setPage={nav} products={products} resources={resources} memberPassword={memberPassword} />}
         {page === "write" && isAdmin && <Write onSave={saveArticle} onBack={() => nav("home")} tags={tags} products={products} resources={resources} />}
       </div>
-      <Footer links={links} footerTagline={footerTagline} setFooterTagline={setFooterTagline} isAdmin={isAdmin} setPage={nav} />
+      <Footer links={links} footerTagline={footerTagline} setFooterTagline={setFooterTagline} isAdmin={isAdmin} setPage={nav} footerLabels={footerLabels} setFooterLabels={setFooterLabels} />
     </div>
   );
 }
