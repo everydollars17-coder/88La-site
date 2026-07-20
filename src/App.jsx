@@ -2055,9 +2055,9 @@ function AppPage({ appContent, setAppContent, isAdmin, setPage }) {
     <div>
       {/* Hero */}
       <div style={{ background: GRAD, padding: "80px 32px 64px" }}>
-        <div style={{ maxWidth: 1100, margin: "0 auto" }}>
+        <div style={{ maxWidth: 1100, margin: "0 auto", textAlign: "center" }}>
           {editHero ? (
-            <div style={{ background: WHITE, padding: 24, border: `1px solid ${BORDER}`, maxWidth: 560, marginBottom: 16 }}>
+            <div style={{ background: WHITE, padding: 24, border: `1px solid ${BORDER}`, maxWidth: 560, margin: "0 auto 16px", textAlign: "left" }}>
               <p style={{ fontSize: 11, color: MID, marginBottom: 16, letterSpacing: "1px" }}>編輯主標題</p>
               <div style={{ display: "flex", flexDirection: "column", gap: 14 }}>
                 <div><p style={{ fontSize: 12, color: MID, marginBottom: 6 }}>標題（第一行）</p><input value={tmpHero.heroTitle} onChange={e => setTmpHero(p => ({ ...p, heroTitle: e.target.value }))} /></div>
@@ -2069,11 +2069,11 @@ function AppPage({ appContent, setAppContent, isAdmin, setPage }) {
           ) : (
             <>
               <p className="section-label hero-stagger hs-1" style={{ marginBottom: 16 }}>88LA FINANCE · APP</p>
-              <h1 className="hero-stagger hs-2" style={{ fontSize: 48, fontWeight: 700, color: CHAR, lineHeight: 1.2, maxWidth: 580, marginBottom: 20 }}>
+              <h1 className="hero-stagger hs-2" style={{ fontSize: 48, fontWeight: 700, color: CHAR, lineHeight: 1.2, maxWidth: 620, margin: "0 auto 20px" }}>
                 {c.heroTitle}<br /><span style={{ color: O }}>{c.heroHighlight}</span>
               </h1>
-              <p className="hero-stagger hs-3" style={{ fontSize: 16, color: MID, lineHeight: 1.9, maxWidth: 480, marginBottom: 36, whiteSpace: "pre-wrap" }}>{c.heroSub}</p>
-              <div className="hero-stagger hs-4" style={{ display: "flex", gap: 12, flexWrap: "wrap", alignItems: "center" }}>
+              <p className="hero-stagger hs-3" style={{ fontSize: 16, color: MID, lineHeight: 1.9, maxWidth: 480, margin: "0 auto 36px", whiteSpace: "pre-wrap" }}>{c.heroSub}</p>
+              <div className="hero-stagger hs-4" style={{ display: "flex", gap: 12, flexWrap: "wrap", alignItems: "center", justifyContent: "center" }}>
                 <a href="#pricing" onClick={e => { e.preventDefault(); document.getElementById("app-pricing")?.scrollIntoView({ behavior: "smooth" }); }}><button className="pb" style={{ fontSize: 14, padding: "14px 32px" }}>了解方案 →</button></a>
                 {isAdmin && <button className="pg" style={{ fontSize: 12, padding: "6px 14px" }} onClick={() => { setTmpHero({ heroTitle: c.heroTitle, heroHighlight: c.heroHighlight, heroSub: c.heroSub }); setEditHero(true); }}>編輯標題</button>}
               </div>
@@ -2140,7 +2140,7 @@ function AppPage({ appContent, setAppContent, isAdmin, setPage }) {
               <div><p style={{ fontSize: 12, color: MID, marginBottom: 6 }}>標題</p><input value={featForm.title} onChange={e => setFeatForm(p => ({ ...p, title: e.target.value }))} /></div>
             </div>
             <div style={{ marginBottom: 12 }}><p style={{ fontSize: 12, color: MID, marginBottom: 6 }}>說明</p><textarea value={featForm.desc} onChange={e => setFeatForm(p => ({ ...p, desc: e.target.value }))} style={{ minHeight: 70 }} /></div>
-            <div style={{ marginBottom: 16 }}><ImgUploader label="圖片（選填）" value={featForm.img} onChange={v => setFeatForm(p => ({ ...p, img: v }))} aspect="16/9" /></div>
+            <div style={{ marginBottom: 16 }}><ImgUploader label="圖片（選填，建議直式手機截圖）" value={featForm.img} onChange={v => setFeatForm(p => ({ ...p, img: v }))} aspect="9/19" /></div>
             <div style={{ display: "flex", gap: 10 }}><button className="pb" onClick={saveFeat} disabled={!featForm.title.trim()}>儲存</button><button className="pg" onClick={() => setEditingFeat(null)}>取消</button></div>
           </div>
         )}
@@ -2149,8 +2149,8 @@ function AppPage({ appContent, setAppContent, isAdmin, setPage }) {
           {c.features.map((f, i) => (
             <Reveal key={f.id || i}>
             <div className={`feature-row-item ${i % 2 === 1 ? "feature-row-alt" : ""}`} style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 56, alignItems: "center", padding: "48px 0", borderBottom: i < c.features.length - 1 ? `1px solid ${BORDER}` : "none" }}>
-              <div style={{ background: O2, borderRadius: 24, aspectRatio: "4/3", overflow: "hidden", display: "flex", alignItems: "center", justifyContent: "center" }}>
-                {f.img ? <img src={f.img} alt={f.title} style={{ width: "100%", height: "100%", objectFit: "cover" }} loading="lazy" /> : <span style={{ fontSize: 13, color: O, fontWeight: 500 }}>{f.title || "功能"}畫面示意</span>}
+              <div style={{ background: O2, borderRadius: 32, aspectRatio: "9/19", maxWidth: 280, width: "100%", margin: "0 auto", overflow: "hidden", display: "flex", alignItems: "center", justifyContent: "center", boxShadow: `0 20px 40px -16px rgba(26,26,26,0.16), 0 0 0 1px ${BORDER}` }}>
+                {f.img ? <img src={f.img} alt={f.title} style={{ width: "100%", height: "100%", objectFit: "cover" }} loading="lazy" /> : <span style={{ fontSize: 13, color: O, fontWeight: 500, textAlign: "center", padding: "0 16px" }}>{f.title || "功能"}畫面示意</span>}
               </div>
               <div style={{ position: "relative" }}>
                 {isAdmin && <div style={{ position: "absolute", top: -8, right: 0, display: "flex", gap: 4, alignItems: "center" }}>
