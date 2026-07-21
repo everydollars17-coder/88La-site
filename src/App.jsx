@@ -114,6 +114,9 @@ button{font-family:inherit;cursor:pointer;border:none;border-radius:8px;}
   .hide-mob{display:none!important;}
   .mob-tab-bar{display:flex!important;}
   .site-footer{padding-bottom:calc(72px + env(safe-area-inset-bottom,0px))!important;}
+  .demo-sect{padding:40px 12px!important;}
+  .demo-card{padding:14px 8px 18px!important;}
+  .demo-phone{padding:8px 6px!important;}
 }
 @media(min-width:769px){
   .mob-menu{display:none!important;}
@@ -2546,7 +2549,7 @@ function AppPage({ appContent, setAppContent, isAdmin, setPage, demoStory, setDe
         </div>
       </div>
       {/* Demo */}
-      <div style={{ background: "#FFF8F4", borderTop: `1px solid ${BORDER}`, borderBottom: `1px solid ${BORDER}`, padding: "72px 32px" }}>
+      <div className="demo-sect" style={{ background: "#FFF8F4", borderTop: `1px solid ${BORDER}`, borderBottom: `1px solid ${BORDER}`, padding: "72px 32px" }}>
         <div style={{ maxWidth: 1100, margin: "0 auto" }}>
           <div style={{ textAlign: "center", marginBottom: 48 }}>
             <p className="section-label" style={{ marginBottom: 12 }}>{ds.label}</p>
@@ -2554,19 +2557,19 @@ function AppPage({ appContent, setAppContent, isAdmin, setPage, demoStory, setDe
             <p style={{ fontSize: 15, color: MID, lineHeight: 1.8, maxWidth: 480, margin: "0 auto" }}>{ds.intro}</p>
             {isAdmin && <span onClick={() => { setTmpDemoStory(ds); setEditDemoStory(true); }} style={{ fontSize: 11, color: O, cursor: "pointer", marginTop: 8, display: "inline-block" }}>編輯示範情境文字</span>}
           </div>
-          <div style={{ background: WHITE, border: `1px solid ${BORDER}`, borderRadius: 20, padding: "24px 20px 32px", boxShadow: "0 24px 48px -20px rgba(26,26,26,0.12)" }}>
+          <div className="demo-card" style={{ background: WHITE, border: `1px solid ${BORDER}`, borderRadius: 20, padding: "24px 20px 32px", boxShadow: "0 24px 48px -20px rgba(26,26,26,0.12)" }}>
             <div style={{ display: "flex", alignItems: "center", gap: 6, marginBottom: 20 }}>
               <span style={{ width: 6, height: 6, borderRadius: "50%", background: O, display: "inline-block", flexShrink: 0 }} />
               <span style={{ fontSize: 12, color: LIGHT }}>{ds.toolbarLabel}</span>
             </div>
             <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 20 }}>
-              <div style={{
+              <div className="demo-phone" style={{
                 width: "100%", maxWidth: 390,
                 background: "#1A1A1A", borderRadius: 40,
                 padding: "14px 12px",
                 boxShadow: "0 24px 80px rgba(0,0,0,0.28)",
               }}>
-                <div style={{ height: 28, display: "flex", justifyContent: "center", alignItems: "center", marginBottom: 4 }}>
+                <div className="hide-mob" style={{ height: 28, display: "flex", justifyContent: "center", alignItems: "center", marginBottom: 4 }}>
                   <div style={{ width: 100, height: 22, background: "#111", borderRadius: 12 }} />
                 </div>
                 <div style={{ borderRadius: 28, overflow: "hidden", height: 680 }}>
@@ -2577,7 +2580,7 @@ function AppPage({ appContent, setAppContent, isAdmin, setPage, demoStory, setDe
                     loading="lazy"
                   />
                 </div>
-                <div style={{ height: 24, display: "flex", justifyContent: "center", alignItems: "center" }}>
+                <div className="hide-mob" style={{ height: 24, display: "flex", justifyContent: "center", alignItems: "center" }}>
                   <div style={{ width: 100, height: 4, background: "#444", borderRadius: 2 }} />
                 </div>
               </div>
@@ -2666,7 +2669,11 @@ function AppPage({ appContent, setAppContent, isAdmin, setPage, demoStory, setDe
           {c.features.map((f, i) => (
             <Reveal key={f.id || i}>
             <div className={`feature-row-item ${i % 2 === 1 ? "feature-row-alt" : ""}`} style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 56, alignItems: "center", padding: "48px 0", borderBottom: i < c.features.length - 1 ? `1px solid ${BORDER}` : "none" }}>
-              <div style={{ background: O2, borderRadius: 32, aspectRatio: "9/19", maxWidth: 280, width: "100%", margin: "0 auto", overflow: "hidden", display: "flex", alignItems: "center", justifyContent: "center", boxShadow: `0 20px 40px -16px rgba(26,26,26,0.16), 0 0 0 1px ${BORDER}` }}>
+              <div
+                style={{ background: O2, borderRadius: 32, aspectRatio: "9/19", maxWidth: 280, width: "100%", margin: "0 auto", overflow: "hidden", display: "flex", alignItems: "center", justifyContent: "center", boxShadow: `0 4px 12px rgba(26,26,26,0.07), 0 28px 52px -20px rgba(26,26,26,0.26), 0 0 0 1px ${BORDER}`, transform: "translateY(0)", transition: "transform .35s cubic-bezier(.16,1,.3,1), box-shadow .35s cubic-bezier(.16,1,.3,1)" }}
+                onMouseEnter={e => { e.currentTarget.style.transform = "translateY(-8px)"; e.currentTarget.style.boxShadow = `0 12px 20px rgba(26,26,26,0.1), 0 36px 64px -20px rgba(26,26,26,0.32), 0 0 0 1px ${BORDER}`; }}
+                onMouseLeave={e => { e.currentTarget.style.transform = "translateY(0)"; e.currentTarget.style.boxShadow = `0 4px 12px rgba(26,26,26,0.07), 0 28px 52px -20px rgba(26,26,26,0.26), 0 0 0 1px ${BORDER}`; }}
+              >
                 {f.img ? <img src={f.img} alt={f.title} style={{ width: "100%", height: "100%", objectFit: "cover" }} loading="lazy" /> : <span style={{ fontSize: 13, color: O, fontWeight: 500, textAlign: "center", padding: "0 16px" }}>{f.title || "功能"}畫面示意</span>}
               </div>
               <div style={{ position: "relative" }}>
