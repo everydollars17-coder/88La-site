@@ -1227,7 +1227,8 @@ function Home({ articles, setPage, setId, setArticles, isAdmin, homeHero, setHom
               >
                 <div style={{ width: 40, height: 40, borderRadius: 12, background: O2, color: O, display: "flex", alignItems: "center", justifyContent: "center", marginBottom: 16 }}>{(() => { const PathIcon = PATH_ICONS[p.page]; return PathIcon ? <div style={{ width: 20, height: 20 }}><PathIcon /></div> : null; })()}</div>
                 <h3 style={{ fontSize: 17, fontWeight: 500, color: CHAR, marginBottom: 8 }}>{p.title}</h3>
-                <p style={{ fontSize: 13, color: MID, lineHeight: 1.8 }}>{p.desc}</p>
+                <p style={{ fontSize: 13, color: MID, lineHeight: 1.8, marginBottom: 14 }}>{p.desc}</p>
+                <span style={{ fontSize: 12, color: O, fontWeight: 500 }}>了解更多 →</span>
               </div>
             ))}
           </div>
@@ -1381,7 +1382,7 @@ function Journal({ articles, setArticles, setId, setPage, isAdmin, siteTitle, se
                 <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 12, alignItems: "flex-start", flexShrink: 0, gap: 8 }}>
                   <div style={{ display: "flex", gap: 6, alignItems: "center", flexWrap: "wrap" }}>
                     <span className="tag">{a.tag}</span>
-                    {isAdmin && a.member && <span style={{ fontSize: 10, padding: "2px 8px", borderRadius: 999, background: CORAL2, color: WHITE }}>會員限定</span>}
+                    {a.member && <span style={{ fontSize: 10, padding: "2px 8px", borderRadius: 999, background: CORAL2, color: WHITE }}>會員限定</span>}
                   </div>
                   <span style={{ fontSize: 11, color: LIGHT, flexShrink: 0, marginLeft: 8 }}>{a.date}</span>
                 </div>
@@ -2110,10 +2111,13 @@ function Community({ igPosts, links, setPage, isAdmin, communityHero, setCommuni
             <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill,minmax(240px,1fr))", gap: 20, marginBottom: 28 }} className="grid3">
               {previewPosts.map(p => (
                 <a key={p.id} href={p.url || l.instagram} target="_blank" rel="noopener noreferrer" style={{ display: "block" }}>
-                  <div style={{ background: WHITE, border: `1px solid ${BORDER}`, borderRadius: 12, overflow: "hidden", height: 200, transition: "transform .24s" }}
+                  <div style={{ position: "relative", background: WHITE, border: `1px solid ${BORDER}`, borderRadius: 12, overflow: "hidden", aspectRatio: "4/5", transition: "transform .24s" }}
                     onMouseEnter={e => e.currentTarget.style.transform = "translateY(-4px)"} onMouseLeave={e => e.currentTarget.style.transform = "translateY(0)"}
                   >
                     {p.thumb ? <img src={p.thumb} alt={p.title} style={{ width: "100%", height: "100%", objectFit: "cover" }} loading="lazy" /> : <div style={{ width: "100%", height: "100%", background: GRAY, display: "flex", alignItems: "center", justifyContent: "center" }}><span style={{ fontSize: 12, color: LIGHT, letterSpacing: "2px" }}>IG</span></div>}
+                    <div style={{ position: "absolute", bottom: 10, right: 10, width: 28, height: 28, borderRadius: "50%", background: "rgba(26,26,26,.55)", color: WHITE, display: "flex", alignItems: "center", justifyContent: "center" }}>
+                      <div style={{ width: 15, height: 15 }}><IcIG /></div>
+                    </div>
                   </div>
                 </a>
               ))}
