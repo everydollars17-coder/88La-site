@@ -2661,7 +2661,7 @@ function AppPage({ appContent, setAppContent, isAdmin, setPage, demoStory, setDe
                   <iframe
                     src={`${APP_URL}?demo=true`}
                     style={{ width: "100%", height: "100%", border: "none", display: "block" }}
-                    title="88La 理財導航器示範"
+                    aria-label="88La 理財導航器示範"
                     loading="lazy"
                   />
                 </div>
