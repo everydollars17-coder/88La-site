@@ -1,0 +1,514 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>斷捨離判斷工具｜88La</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@500;700;900&family=Noto+Sans+TC:wght@400;500;700&family=IBM+Plex+Mono:wght@500;600&display=swap');
+
+  :root{
+    --bg: #FAF6EE;
+    --card: #FFFFFF;
+    --ink: #2B241D;
+    --muted: #8A7C6C;
+    --line: #E7DECD;
+    --primary: #E8551E;
+    --primary-deep: #C9450F;
+    --accent: #D2321B;
+    --font-display: 'Noto Serif TC', serif;
+    --font-body: 'Noto Sans TC', sans-serif;
+    --font-mono: 'IBM Plex Mono', monospace;
+  }
+
+  * { box-sizing: border-box; }
+
+  body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--ink);
+    font-family: var(--font-body);
+    -webkit-font-smoothing: antialiased;
+  }
+
+  .wrap {
+    max-width: 640px;
+    margin: 0 auto;
+    padding: 32px 20px 64px;
+  }
+
+  .brand {
+    font-family: var(--font-mono);
+    font-size: 13px;
+    letter-spacing: 0.14em;
+    color: var(--muted);
+    text-transform: uppercase;
+    margin-bottom: 6px;
+  }
+
+  h1.title {
+    font-family: var(--font-display);
+    font-weight: 900;
+    font-size: 26px;
+    line-height: 1.45;
+    margin: 0 0 8px;
+  }
+
+  p.subtitle {
+    color: var(--muted);
+    font-size: 15px;
+    line-height: 1.7;
+    margin: 0 0 28px;
+  }
+
+  .progress {
+    display: flex;
+    gap: 6px;
+    margin-bottom: 28px;
+  }
+  .progress .dot {
+    flex: 1;
+    height: 3px;
+    background: var(--line);
+    border-radius: 2px;
+    overflow: hidden;
+  }
+  .progress .dot.done { background: var(--primary); }
+
+  .step-label {
+    font-family: var(--font-mono);
+    font-size: 12px;
+    color: var(--primary-deep);
+    letter-spacing: 0.08em;
+    margin-bottom: 10px;
+  }
+
+  .step { display: none; }
+  .step.active { display: block; animation: fade .35s ease; }
+  @keyframes fade { from { opacity: 0; transform: translateY(6px);} to { opacity:1; transform: translateY(0);} }
+
+  h2.q {
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: 21px;
+    line-height: 1.5;
+    margin: 0 0 20px;
+  }
+
+  .grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+    margin-bottom: 24px;
+  }
+
+  .option {
+    background: var(--card);
+    border: 1.5px solid var(--line);
+    border-radius: 14px;
+    padding: 18px 14px;
+    text-align: center;
+    font-size: 15px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: border-color .15s, transform .1s;
+    user-select: none;
+  }
+  .option:hover { border-color: var(--primary); }
+  .option:active { transform: scale(0.98); }
+  .option.selected {
+    border-color: var(--primary);
+    background: #FFF3EC;
+    color: var(--primary-deep);
+    font-weight: 700;
+  }
+
+  .option-list { display: flex; flex-direction: column; gap: 10px; margin-bottom: 24px; }
+  .option-row {
+    background: var(--card);
+    border: 1.5px solid var(--line);
+    border-radius: 12px;
+    padding: 15px 16px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    cursor: pointer;
+    font-size: 15px;
+    transition: border-color .15s;
+  }
+  .option-row:hover { border-color: var(--primary); }
+  .option-row.selected { border-color: var(--primary); background: #FFF3EC; }
+  .checkbox {
+    width: 18px; height: 18px;
+    border-radius: 5px;
+    border: 1.5px solid var(--muted);
+    flex-shrink: 0;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 12px;
+    color: white;
+  }
+  .option-row.selected .checkbox { background: var(--primary); border-color: var(--primary); }
+
+  .btn {
+    width: 100%;
+    padding: 16px;
+    border-radius: 12px;
+    border: none;
+    background: var(--primary);
+    color: white;
+    font-family: var(--font-body);
+    font-weight: 700;
+    font-size: 16px;
+    cursor: pointer;
+    transition: background .15s;
+  }
+  .btn:hover { background: var(--primary-deep); }
+  .btn:disabled { background: var(--line); color: var(--muted); cursor: not-allowed; }
+
+  .btn-ghost {
+    background: transparent;
+    color: var(--muted);
+    border: none;
+    font-family: var(--font-body);
+    font-size: 14px;
+    padding: 10px;
+    cursor: pointer;
+    text-decoration: underline;
+  }
+
+  .response-stack { margin-bottom: 20px; }
+  .response-line {
+    font-family: var(--font-display);
+    font-size: 16px;
+    line-height: 1.8;
+    padding: 14px 16px;
+    background: #FFF9F2;
+    border-left: 3px solid var(--primary);
+    border-radius: 4px;
+    margin-bottom: 8px;
+  }
+
+  .criteria-card {
+    background: var(--card);
+    border: 1.5px solid var(--line);
+    border-radius: 16px;
+    padding: 22px 20px;
+    margin-bottom: 24px;
+  }
+  .criteria-card .cat-label {
+    font-family: var(--font-mono);
+    font-size: 12px;
+    color: var(--primary-deep);
+    letter-spacing: 0.06em;
+    margin-bottom: 12px;
+  }
+  .criteria-item {
+    display: flex;
+    gap: 12px;
+    padding: 12px 0;
+    border-top: 1px solid var(--line);
+    font-size: 15px;
+    line-height: 1.6;
+  }
+  .criteria-item:first-of-type { border-top: none; }
+  .criteria-num {
+    font-family: var(--font-mono);
+    font-weight: 600;
+    color: var(--primary);
+    flex-shrink: 0;
+  }
+
+  .result-card {
+    background: var(--card);
+    border: 1.5px solid var(--line);
+    border-radius: 16px;
+    padding: 24px 20px;
+    margin-bottom: 20px;
+  }
+  .result-card h3 {
+    font-family: var(--font-display);
+    font-size: 19px;
+    margin: 0 0 12px;
+    line-height: 1.5;
+  }
+  .result-card p {
+    font-size: 15px;
+    line-height: 1.8;
+    color: var(--ink);
+    margin: 0 0 12px;
+  }
+  .result-card .muted-note {
+    font-size: 13px;
+    color: var(--muted);
+    line-height: 1.7;
+  }
+
+  .product-block {
+    background: linear-gradient(135deg, #FFF3EC, #FAF6EE);
+    border: 1.5px solid #F0C9AE;
+    border-radius: 16px;
+    padding: 22px 20px;
+    margin: 16px 0 20px;
+  }
+  .product-block .price {
+    font-family: var(--font-mono);
+    font-size: 24px;
+    font-weight: 600;
+    color: var(--accent);
+    margin: 4px 0 14px;
+  }
+  .product-block ul {
+    margin: 0 0 16px;
+    padding-left: 18px;
+    font-size: 14px;
+    line-height: 1.9;
+  }
+  .product-link {
+    display: block;
+    text-align: center;
+    padding: 14px;
+    background: var(--primary);
+    color: white;
+    border-radius: 10px;
+    text-decoration: none;
+    font-weight: 700;
+    font-size: 15px;
+  }
+  .product-link:hover { background: var(--primary-deep); }
+
+  .restart {
+    text-align: center;
+    margin-top: 8px;
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <div class="brand">88La ｜ 斷捨離判斷工具</div>
+  <h1 class="title" id="mainTitle">你現在最想斷捨離的是？</h1>
+  <p class="subtitle" id="mainSubtitle">選一個類別開始，我會給你我自己在用的判斷方法。</p>
+
+  <div class="progress">
+    <div class="dot" id="dot1"></div>
+    <div class="dot" id="dot2"></div>
+    <div class="dot" id="dot3"></div>
+  </div>
+
+  <!-- STEP 1 -->
+  <div class="step active" id="step1">
+    <div class="grid" id="categoryGrid"></div>
+  </div>
+
+  <!-- STEP 2 -->
+  <div class="step" id="step2">
+    <div class="step-label">STEP 02</div>
+    <h2 class="q">為什麼一直下不了手？（可複選）</h2>
+    <div class="option-list" id="reasonList"></div>
+    <button class="btn" id="toStep3" disabled>下一步</button>
+  </div>
+
+  <!-- STEP 3 -->
+  <div class="step" id="step3">
+    <div class="step-label">STEP 03</div>
+    <h2 class="q">在你丟之前，先看看這些</h2>
+    <div class="response-stack" id="responseStack"></div>
+    <div class="criteria-card" id="criteriaCard"></div>
+    <button class="btn" id="toStep4">看結果</button>
+  </div>
+
+  <!-- STEP 4 -->
+  <div class="step" id="step4">
+    <div class="step-label">STEP 04</div>
+    <div id="resultArea"></div>
+    <div class="restart">
+      <button class="btn-ghost" id="restartBtn">重新開始一次診斷</button>
+    </div>
+  </div>
+
+</div>
+
+<script>
+const categories = [
+  { id: 'clothes', label: '衣服', criteria: [
+    '跟現在的穿搭配不配，畢竟審美會變',
+    '過去一年有沒有真的穿過',
+    '同類型重複款式太多，高機率是衝動購物下的產物'
+  ]},
+  { id: 'bag', label: '包包', criteria: [
+    '跟現在的穿搭配不配，畢竟審美會變',
+    '過去一年有沒有真的用過',
+    '同類型重複款式太多，高機率是衝動購物下的產物'
+  ]},
+  { id: 'shoes', label: '鞋櫃', criteria: [
+    '穿起來會不會不舒服、磨腳',
+    '過去一年有沒有真的穿過',
+    '鞋底磨損或變形到修不了',
+    '同類型基本款是不是重複太多雙'
+  ]},
+  { id: 'makeup', label: '化妝品', criteria: [
+    '有沒有過期，或開封超過建議使用期限',
+    '用起來有沒有變質、變味、過敏',
+    '色號或現在的膚況還適不適合'
+  ]},
+  { id: 'clutter', label: '雜物區', criteria: [
+    '拿起來想不起來為什麼留著',
+    '過去一年有沒有真的用過',
+    '東西壞了、過期，或有替代品可以用',
+    '功能重複的備用品太多'
+  ]},
+  { id: 'keepsake', label: '紀念品區', criteria: [
+    '看到它，是開心，還是有負擔感',
+    '能不能用拍照存檔，取代留實體',
+    '只留最有代表性的一兩件，而不是全部留'
+  ]}
+];
+
+const reasons = [
+  { id: 'attach', label: '捨不得丟', response: '如果留著會有壓力，那可能不是捨不得，是習慣性不想面對。' },
+  { id: 'future', label: '怕之後會用到', response: '先看看過去一年有沒有真的用過，通常答案會說明一切。' },
+  { id: 'price', label: '當初很貴、很難買', response: '東西的價值不是看當初花多少，是看你現在還用不用。' },
+  { id: 'new', label: '還很新、沒壞', response: '還能用不代表你會用，這是兩件事。' },
+  { id: 'howto', label: '不知道怎麼處理', response: '先確定要不要留，怎麼處理是第二步，不用卡在這裡。' }
+];
+
+const state = { category: null, reasons: [] };
+
+// ---- render step 1 ----
+const categoryGrid = document.getElementById('categoryGrid');
+categories.forEach(cat => {
+  const el = document.createElement('div');
+  el.className = 'option';
+  el.textContent = cat.label;
+  el.onclick = () => {
+    state.category = cat.id;
+    goToStep(2);
+  };
+  categoryGrid.appendChild(el);
+});
+
+// ---- render step 2 ----
+const reasonList = document.getElementById('reasonList');
+reasons.forEach(r => {
+  const row = document.createElement('div');
+  row.className = 'option-row';
+  row.innerHTML = `<div class="checkbox">✓</div><div>${r.label}</div>`;
+  row.onclick = () => {
+    const idx = state.reasons.indexOf(r.id);
+    if (idx > -1) { state.reasons.splice(idx, 1); row.classList.remove('selected'); }
+    else { state.reasons.push(r.id); row.classList.add('selected'); }
+    document.getElementById('toStep3').disabled = state.reasons.length === 0;
+  };
+  reasonList.appendChild(row);
+});
+
+document.getElementById('toStep3').onclick = () => goToStep(3);
+document.getElementById('toStep4').onclick = () => goToStep(4);
+document.getElementById('restartBtn').onclick = () => {
+  state.category = null;
+  state.reasons = [];
+  document.querySelectorAll('.option').forEach(o => o.classList.remove('selected'));
+  document.querySelectorAll('.option-row').forEach(o => o.classList.remove('selected'));
+  document.getElementById('toStep3').disabled = true;
+  goToStep(1);
+};
+
+function goToStep(n) {
+  document.querySelectorAll('.step').forEach(s => s.classList.remove('active'));
+  document.getElementById('step' + n).classList.add('active');
+
+  document.getElementById('dot1').classList.toggle('done', n >= 1);
+  document.getElementById('dot2').classList.toggle('done', n >= 2);
+  document.getElementById('dot3').classList.toggle('done', n >= 3);
+
+  const title = document.getElementById('mainTitle');
+  const subtitle = document.getElementById('mainSubtitle');
+  if (n === 1) {
+    title.textContent = '你現在最想斷捨離的是？';
+    subtitle.textContent = '選一個類別開始，我會給你我自己在用的判斷方法。';
+  } else if (n === 2) {
+    title.textContent = '為什麼一直下不了手？';
+    subtitle.textContent = '可以選一個以上，這些都很常見。';
+  } else if (n === 3) {
+    title.textContent = '判斷準則';
+    subtitle.textContent = '照這個順序想一遍，答案通常會自己浮現。';
+    renderStep3();
+  } else if (n === 4) {
+    title.textContent = '診斷結果';
+    subtitle.textContent = '';
+    renderStep4();
+  }
+}
+
+function renderStep3() {
+  const stack = document.getElementById('responseStack');
+  stack.innerHTML = '';
+  reasons.filter(r => state.reasons.includes(r.id)).forEach(r => {
+    const line = document.createElement('div');
+    line.className = 'response-line';
+    line.textContent = r.response;
+    stack.appendChild(line);
+  });
+
+  const cat = categories.find(c => c.id === state.category);
+  const card = document.getElementById('criteriaCard');
+  card.innerHTML = `<div class="cat-label">${cat.label}的判斷準則</div>`;
+  cat.criteria.forEach((c, i) => {
+    const item = document.createElement('div');
+    item.className = 'criteria-item';
+    item.innerHTML = `<div class="criteria-num">${String(i + 1).padStart(2, '0')}</div><div>${c}</div>`;
+    card.appendChild(item);
+  });
+}
+
+function buildCriteriaListHTML(cat) {
+  return cat.criteria.map((c, i) =>
+    `<div class="criteria-item"><div class="criteria-num">${String(i + 1).padStart(2, '0')}</div><div>${c}</div></div>`
+  ).join('');
+}
+
+const productBulletsHTML = `
+  <li>外觀簡約，經典耐看</li>
+  <li>各種穿搭、場合都適合</li>
+  <li>重量輕</li>
+  <li>日常使用，不易刮傷</li>
+  <li>兩側內袋、容量大，好裝</li>
+`;
+
+function renderStep4() {
+  const cat = categories.find(c => c.id === state.category);
+  const area = document.getElementById('resultArea');
+
+  if (cat.id === 'bag') {
+    area.innerHTML = `
+      <div class="result-card">
+        <h3>這是你的${cat.label}斷捨離判斷準則</h3>
+        ${buildCriteriaListHTML(cat)}
+      </div>
+      <div class="result-card">
+        <h3>88La為什麼選擇留下包包？</h3>
+        <p>我的標準從來不是不能買，是買得更精準、更常使用！這個包包是我自己套用這些準則之後，決定留下的那個，我覺得很值得推薦給你～現在團購中，有興趣點擊連結逛逛看囉！</p>
+      </div>
+      <div class="product-block">
+        <p style="font-size:14px; margin-bottom: 12px;">它符合的地方：</p>
+        <ul>${productBulletsHTML}</ul>
+        <a href="https://myship.7-11.com.tw/general/detail/GM2607203160610" target="_blank" class="product-link">真皮餃子包 →</a>
+      </div>
+    `;
+  } else {
+    area.innerHTML = `
+      <div class="result-card">
+        <h3>這是你的${cat.label}斷捨離判斷準則</h3>
+        ${buildCriteriaListHTML(cat)}
+      </div>
+      <div class="product-block">
+        <p style="font-size:14px; margin-bottom: 12px;">不管是${cat.label}，還是其他東西，我看新東西的方式都一樣。我的標準從來不是不能買，是買得更精準、更常使用！這個真皮餃子包，是我自己套用這些準則之後，決定留下的那個，我覺得很值得推薦給你～現在團購中，有興趣點擊連結逛逛看囉！</p>
+        <ul>${productBulletsHTML}</ul>
+        <a href="https://myship.7-11.com.tw/general/detail/GM2607203160610" target="_blank" class="product-link">真皮餃子包 →</a>
+      </div>
+    `;
+  }
+}
+</script>
+</body>
+</html>
