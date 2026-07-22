@@ -148,7 +148,7 @@ const DEFAULTS = {
   siteTitle: "理財觀點與讀書筆記",
   footerTagline: "理財，是為了讓生活更自由。",
   memberPassword: "",
-  navLabels: { home: "首頁", app: "理財導航器", envelope: "存錢袋", goods: "推薦好物", community: "8友社群", resources: "資源中心", about: "關於我們" },
+  navLabels: { home: "首頁", journal: "理財觀點", app: "理財導航器", envelope: "存錢袋", goods: "推薦好物", community: "8友社群", resources: "資源中心", about: "關於我們" },
   mobileTabLabels: { home: "首頁", community: "社群", resources: "資源", app: "App", envelope: "存錢袋" },
   footerLabels: {
     colProduct: "產品", colAbout: "關於", colLegal: "法律資訊",
@@ -240,6 +240,8 @@ const DEFAULTS = {
     recentLabel: "最新動態",
     recentHeading: "Instagram 上的最新分享",
     moreLink: "查看更多動態 →",
+    feedbackLabel: "會員迴響",
+    feedbackHeading: "8友的真實回饋",
     ctaLabel: "下一步",
     ctaHeading: "先從追蹤開始",
     ctaDesc: "LINE 社群開放前，IG 是我們跟大家保持聯繫的地方，日常理財觀念也會先在這裡分享。",
@@ -310,9 +312,9 @@ const DEFAULTS = {
     { num: "5年+", label: "理財內容創作經驗" }
   ],
   paths: [
-    { icon: "A", title: "理財自動導航器", desc: "雲端記帳 Web App，自動診斷消費模式，幫你看懂錢的流向。", page: "app" },
-    { icon: "B", title: "存錢袋", desc: "手工製作的實體存錢工具，讓存錢這件事更有儀式感。", page: "envelope" },
-    { icon: "C", title: "8友社群", desc: "一群正在練習理財的人，互相打氣，不評判彼此的數字。", page: "community" }
+    { title: "理財自動導航器", desc: "雲端記帳 Web App，自動診斷消費模式，幫你看懂錢的流向。", page: "app" },
+    { title: "存錢袋", desc: "手工製作的實體存錢工具，讓存錢這件事更有儀式感。", page: "envelope" },
+    { title: "8友社群", desc: "一群正在練習理財的人，互相打氣，不評判彼此的數字。", page: "community" }
   ],
   envelopeHero: {
     eyebrow: "88La · 實體工具",
@@ -363,6 +365,7 @@ const DEFAULTS = {
     { id: 1, title: "假記帳的陷阱你中了嗎？", url: "https://www.instagram.com/every_dollars/", thumb: "", type: "post" },
     { id: 2, title: "存錢袋使用教學｜現金分配法", url: "https://www.instagram.com/every_dollars/", thumb: "", type: "post" }
   ],
+  memberFeedback: [],
   goods: [
     { id: 1, name: "精臣標籤機 D110", brand: "Niimbot 精臣", desc: "幫信封袋、存錢罐貼上標籤，讓分類理財更有儀式感。", url: "https://www.niimbot-tw.com/one-page-stores/every-dollars", img: "", active: true },
     { id: 2, name: "《富爸爸，窮爸爸》", brand: "羅勃特．乙．清崎", desc: "理財入門必讀經典，重新理解金錢、資產與負債的關係。", url: "", img: "", active: true },
@@ -810,9 +813,18 @@ const IcIG   = () => <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" 
 const IcRes  = () => <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg>;
 const IcApp  = () => <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8"><rect x="5" y="2" width="14" height="20" rx="2"/><circle cx="12" cy="17" r="1" fill="currentColor"/></svg>;
 const IcShop = () => <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>;
+const IcEye   = () => <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8"><path d="M1 12s4-7 11-7 11 7 11 7-4 7-11 7-11-7-11-7z"/><circle cx="12" cy="12" r="3"/></svg>;
+const IcSync  = () => <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8"><path d="M4 9a8 8 0 0 1 14-5l2 2"/><path d="M20 6V2m0 4h-4"/><path d="M20 15a8 8 0 0 1-14 5l-2-2"/><path d="M4 18v4m0-4h4"/></svg>;
+const IcCheck = () => <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8"><path d="M4 12l5 5L20 6"/></svg>;
 
 const MOBILE_TAB_ICONS = [["home",IcUser],["community",IcIG],["resources",IcRes],["app",IcApp],["envelope",IcShop]];
-const NAV_KEYS = ["home","app","envelope","goods","community","resources","about"];
+const PATH_ICONS = { app: IcApp, envelope: IcShop, community: IcIG };
+const WHY_ICONS = [IcEye, IcSync, IcCheck];
+const IcTarget = () => <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="5"/><circle cx="12" cy="12" r="1" fill="currentColor" stroke="none"/></svg>;
+const IcChart  = () => <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8"><line x1="4" y1="20" x2="4" y2="12"/><line x1="12" y1="20" x2="12" y2="6"/><line x1="20" y1="20" x2="20" y2="15"/></svg>;
+const IcHeart  = () => <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8"><path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.6l-1-1a5.5 5.5 0 0 0-7.8 7.8l1 1L12 21l7.8-7.8 1-1a5.5 5.5 0 0 0 0-7.8z"/></svg>;
+const ABOUT_ICONS = [IcTarget, IcChart, IcHeart];
+const NAV_KEYS = ["home","journal","app","envelope","goods","community","resources","about"];
 
 // ── Nav ──
 function Nav({ page, setPage, isAdmin, navLabels, setNavLabels, mobileTabLabels, setMobileTabLabels }) {
@@ -1157,34 +1169,11 @@ function HomeHero({ homeHero, setHomeHero, isAdmin, setPage }) {
   );
 }
 
-function Home({ articles, setPage, setId, setArticles, isAdmin, siteTitle, setSiteTitle, tags, setTags, about, setAbout, links, homeHero, setHomeHero, trustStats, setTrustStats, paths, setPaths, homeCopy, setHomeCopy }) {
+function Home({ articles, setPage, setId, setArticles, isAdmin, homeHero, setHomeHero, trustStats, setTrustStats, paths, setPaths, homeCopy, setHomeCopy }) {
   const hc = { ...DEFAULTS.homeCopy, ...(homeCopy || {}) };
   const [editHomeCopy, setEditHomeCopy] = useState(false);
   const [tmpHomeCopy, setTmpHomeCopy] = useState(hc);
-  const [filter, setFilter] = useState("全部");
-  const [sort, setSort] = useState("newest");
-  const [editTitle, setEditTitle] = useState(false);
-  const [tmpTitle, setTmpTitle] = useState(siteTitle);
-  const [editTags, setEditTags] = useState(false);
-  const [newTag, setNewTag] = useState("");
-  const filtered = articles.filter(a => filter === "全部" || a.tag === filter).slice().sort((a, b) => {
-    if (sort === "newest") return (b.date || "").localeCompare(a.date || "");
-    if (sort === "oldest") return (a.date || "").localeCompare(b.date || "");
-    if (sort === "views") return (b.views || 0) - (a.views || 0);
-    return 0;
-  });
   const open = id => { setArticles(prev => prev.map(a => a.id === id ? { ...a, views: (a.views || 0) + 1 } : a), { silent: true }); setId(id); setPage("article"); window.scrollTo({ top: 0, behavior: "instant" }); const a = articles.find(x => x.id === id); history.pushState({}, "", "?article=" + (a?.slug || id)); };
-  const addTag = () => { const t = newTag.trim(); if (t && !tags.includes(t)) setTags(prev => [...prev, t]); setNewTag(""); };
-  const delTag = t => { if (confirm("確定刪除標籤「" + t + "」？")) setTags(prev => prev.filter(x => x !== t)); };
-  const moveA = (idx, dir) => setArticles(prev => {
-    const ti = idx + dir;
-    if (ti < 0 || ti >= filtered.length) return prev;
-    const a = [...prev];
-    const ri = a.findIndex(x => x.id === filtered[idx].id);
-    const ni = a.findIndex(x => x.id === filtered[ti].id);
-    if (ri === -1 || ni === -1) return prev;
-    [a[ri], a[ni]] = [a[ni], a[ri]]; return a;
-  });
   const ts = trustStats && trustStats.length ? trustStats : DEFAULTS.trustStats;
   const ph = paths && paths.length ? paths : DEFAULTS.paths;
   const [editStats, setEditStats] = useState(false);
@@ -1236,7 +1225,7 @@ function Home({ articles, setPage, setId, setArticles, isAdmin, siteTitle, setSi
                 onMouseEnter={e => { e.currentTarget.style.transform = "translateY(-6px)"; e.currentTarget.style.boxShadow = "0 20px 40px rgba(0,0,0,.1)"; }}
                 onMouseLeave={e => { e.currentTarget.style.transform = "translateY(0)"; e.currentTarget.style.boxShadow = "0 2px 10px rgba(0,0,0,.06)"; }}
               >
-                <div style={{ width: 40, height: 40, borderRadius: 12, background: O2, color: O, display: "flex", alignItems: "center", justifyContent: "center", fontWeight: 700, marginBottom: 16 }}>{p.icon}</div>
+                <div style={{ width: 40, height: 40, borderRadius: 12, background: O2, color: O, display: "flex", alignItems: "center", justifyContent: "center", marginBottom: 16 }}>{(() => { const PathIcon = PATH_ICONS[p.page]; return PathIcon ? <div style={{ width: 20, height: 20 }}><PathIcon /></div> : null; })()}</div>
                 <h3 style={{ fontSize: 17, fontWeight: 500, color: CHAR, marginBottom: 8 }}>{p.title}</h3>
                 <p style={{ fontSize: 13, color: MID, lineHeight: 1.8 }}>{p.desc}</p>
               </div>
@@ -1265,6 +1254,7 @@ function Home({ articles, setPage, setId, setArticles, isAdmin, siteTitle, setSi
                 </div>
               ))}
             </div>
+            <p style={{ textAlign: "center", marginTop: 28 }}><span onClick={() => setPage("journal")} style={{ fontSize: 13, color: O, cursor: "pointer" }}>查看更多文章 →</span></p>
           </div>
         </div>
       )}
@@ -1292,8 +1282,40 @@ function Home({ articles, setPage, setId, setArticles, isAdmin, siteTitle, setSi
           </div>
         </div>
       )}
-      <div style={{ maxWidth: 1100, margin: "0 auto", padding: "72px 32px" }} className="page-wrap">
-        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-end", flexWrap: "wrap", gap: 16, marginBottom: 40 }}>
+    </div>
+  );
+}
+
+// ── Journal（理財觀點文章列表）──
+function Journal({ articles, setArticles, setId, setPage, isAdmin, siteTitle, setSiteTitle, tags, setTags }) {
+  const [filter, setFilter] = useState("全部");
+  const [sort, setSort] = useState("newest");
+  const [editTitle, setEditTitle] = useState(false);
+  const [tmpTitle, setTmpTitle] = useState(siteTitle);
+  const [editTags, setEditTags] = useState(false);
+  const [newTag, setNewTag] = useState("");
+  const filtered = articles.filter(a => filter === "全部" || a.tag === filter).slice().sort((a, b) => {
+    if (sort === "newest") return (b.date || "").localeCompare(a.date || "");
+    if (sort === "oldest") return (a.date || "").localeCompare(b.date || "");
+    if (sort === "views") return (b.views || 0) - (a.views || 0);
+    return 0;
+  });
+  const open = id => { setArticles(prev => prev.map(a => a.id === id ? { ...a, views: (a.views || 0) + 1 } : a), { silent: true }); setId(id); setPage("article"); window.scrollTo({ top: 0, behavior: "instant" }); const a = articles.find(x => x.id === id); history.pushState({}, "", "?article=" + (a?.slug || id)); };
+  const addTag = () => { const t = newTag.trim(); if (t && !tags.includes(t)) setTags(prev => [...prev, t]); setNewTag(""); };
+  const delTag = t => { if (confirm("確定刪除標籤「" + t + "」？")) setTags(prev => prev.filter(x => x !== t)); };
+  const moveA = (idx, dir) => setArticles(prev => {
+    const ti = idx + dir;
+    if (ti < 0 || ti >= filtered.length) return prev;
+    const a = [...prev];
+    const ri = a.findIndex(x => x.id === filtered[idx].id);
+    const ni = a.findIndex(x => x.id === filtered[ti].id);
+    if (ri === -1 || ni === -1) return prev;
+    [a[ri], a[ni]] = [a[ni], a[ri]]; return a;
+  });
+  return (
+    <div>
+      <div style={{ background: GRAD, padding: "52px 32px", borderBottom: `1px solid ${BORDER}` }}>
+        <div style={{ maxWidth: 1100, margin: "0 auto", display: "flex", justifyContent: "space-between", alignItems: "flex-end", flexWrap: "wrap", gap: 16 }}>
           <div>
             <p className="section-label" style={{ marginBottom: 10 }}>JOURNAL</p>
             {editTitle ? (
@@ -1304,7 +1326,7 @@ function Home({ articles, setPage, setId, setArticles, isAdmin, siteTitle, setSi
               </div>
             ) : (
               <div style={{ display: "flex", gap: 16, alignItems: "baseline", flexWrap: "wrap" }}>
-                <h2 style={{ fontSize: 30, fontWeight: 700, color: TITLE_COLOR }}>{siteTitle}</h2>
+                <h1 style={{ fontSize: 30, fontWeight: 700, color: TITLE_COLOR }}>{siteTitle}</h1>
                 {isAdmin && <span style={{ fontSize: 12, color: O, cursor: "pointer" }} onClick={() => { setTmpTitle(siteTitle); setEditTitle(true); }}>編輯</span>}
               </div>
             )}
@@ -1316,6 +1338,8 @@ function Home({ articles, setPage, setId, setArticles, isAdmin, siteTitle, setSi
             </div>
           )}
         </div>
+      </div>
+      <div style={{ maxWidth: 1100, margin: "0 auto", padding: "56px 32px 72px" }} className="page-wrap">
         <div style={{ display: "flex", gap: 8, flexWrap: "wrap", marginBottom: 16, alignItems: "center", justifyContent: "space-between" }}>
           <div style={{ display: "flex", gap: 8, flexWrap: "wrap", alignItems: "center" }}>
             {["全部", ...tags].map(t => (
@@ -1379,7 +1403,7 @@ function Home({ articles, setPage, setId, setArticles, isAdmin, siteTitle, setSi
 }
 
 // ── Article detail ──
-const PAGE_OPTIONS = [["home","文章列表"],["app","記帳 App"],["resources","免費資源"],["shop","商品"],["goods","推薦好物"],["newsletter","電子報"],["contact","合作洽談"]];
+const PAGE_OPTIONS = [["home","首頁"],["journal","理財觀點文章列表"],["app","記帳 App"],["resources","免費資源"],["shop","商品"],["goods","推薦好物"],["newsletter","電子報"],["contact","合作洽談"]];
 
 function RelatedLinkEditor({ relatedLinks, onChange, products, resources }) {
   const [type, setType] = useState("page");
@@ -1746,12 +1770,12 @@ function About({ about, setAbout, isAdmin, links, setLinks, setPage, aboutCopy, 
           <h2 style={{ fontSize: 20, fontWeight: 700, color: CHAR }}>{ac.beliefsHeading}</h2>
         </div>
         <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(240px,1fr))", gap: 20 }} className="grid3">
-          {ac.beliefs.map(b => (
+          {ac.beliefs.map((b, i) => (
             <div key={b.n} style={{ background: WHITE, border: `1px solid ${BORDER}`, borderRadius: 20, padding: 28, transition: "transform .3s, box-shadow .3s" }}
               onMouseEnter={e => { e.currentTarget.style.transform = "translateY(-6px)"; e.currentTarget.style.boxShadow = "0 20px 32px rgba(0,0,0,.1)"; }}
               onMouseLeave={e => { e.currentTarget.style.transform = "translateY(0)"; e.currentTarget.style.boxShadow = "none"; }}
             >
-              <div style={{ width: 44, height: 44, borderRadius: 14, background: O2, color: O, display: "flex", alignItems: "center", justifyContent: "center", fontWeight: 700, marginBottom: 18 }}>{b.n}</div>
+              <div style={{ width: 44, height: 44, borderRadius: 14, background: O2, color: O, display: "flex", alignItems: "center", justifyContent: "center", marginBottom: 18 }}>{(() => { const AboutIcon = ABOUT_ICONS[i]; return AboutIcon ? <div style={{ width: 22, height: 22 }}><AboutIcon /></div> : null; })()}</div>
               <h4 style={{ fontSize: 16, fontWeight: 500, color: CHAR, marginBottom: 8 }}>{b.title}</h4>
               <p style={{ fontSize: 13, color: MID, lineHeight: 1.8 }}>{b.desc}</p>
             </div>
@@ -2015,12 +2039,24 @@ const COMMUNITY_HERO_FIELDS = [
   { key: "subhead", label: "副標題", multiline: true }
 ];
 
-function Community({ igPosts, links, setPage, isAdmin, communityHero, setCommunityHero, communityCopy, setCommunityCopy }) {
+function Community({ igPosts, links, setPage, isAdmin, communityHero, setCommunityHero, communityCopy, setCommunityCopy, memberFeedback, setMemberFeedback }) {
   const l = links || DEFAULTS.links;
   const cc = { ...DEFAULTS.communityCopy, ...(communityCopy || {}) };
   const [editCopy, setEditCopy] = useState(false);
   const [tmpCopy, setTmpCopy] = useState(cc);
   const previewPosts = (igPosts || []).slice(0, 3);
+  const feedback = memberFeedback || [];
+  const [efEditing, setEfEditing] = useState(null);
+  const [efForm, setEfForm] = useState({ img: "", caption: "" });
+  const startAddFeedback = () => { setEfForm({ img: "", caption: "" }); setEfEditing("new"); };
+  const startEditFeedback = f => { setEfForm({ ...f }); setEfEditing(f.id); };
+  const saveFeedback = () => {
+    if (efEditing === "new") setMemberFeedback(prev => [...(prev || []), { ...efForm, id: Date.now() }]);
+    else setMemberFeedback(prev => (prev || []).map(f => f.id === efEditing ? { ...f, ...efForm } : f));
+    setEfEditing(null);
+  };
+  const delFeedback = id => { if (confirm("確定刪除？")) setMemberFeedback(prev => (prev || []).filter(f => f.id !== id)); };
+  const moveFeedback = (idx, dir) => setMemberFeedback(prev => moveItem(prev || [], idx, dir));
   return (
     <PageHero title="8友社群頁文字" fields={COMMUNITY_HERO_FIELDS} data={communityHero} setData={setCommunityHero} defaults={DEFAULTS.communityHero} isAdmin={isAdmin}>
       {(h, editLink) => (
@@ -2085,6 +2121,54 @@ function Community({ igPosts, links, setPage, isAdmin, communityHero, setCommuni
             <p style={{ textAlign: "center" }}><span onClick={() => setPage("ig")} style={{ fontSize: 13, color: O, cursor: "pointer" }}>{cc.moreLink}</span></p>
           </div>
         )}
+        {(feedback.length > 0 || isAdmin) && (
+          <div style={{ marginTop: previewPosts.length > 0 ? 80 : 0 }}>
+            <div style={{ textAlign: "center", marginBottom: 36 }}>
+              <p className="section-label" style={{ marginBottom: 12 }}>{cc.feedbackLabel}</p>
+              <h2 style={{ fontSize: 22, fontWeight: 700, color: CHAR }}>{cc.feedbackHeading}</h2>
+            </div>
+            {isAdmin && (
+              <div style={{ textAlign: "right", marginBottom: 16 }}>
+                <button className="pb" style={{ fontSize: 12, padding: "6px 14px" }} onClick={startAddFeedback}>＋ 新增</button>
+              </div>
+            )}
+            {efEditing && (
+              <div style={{ background: GRAY, padding: 24, marginBottom: 24, border: `1px solid ${BORDER}` }}>
+                <div style={{ marginBottom: 16 }}><ImgUploader label="回饋截圖" value={efForm.img} onChange={v => setEfForm(p => ({ ...p, img: v }))} aspect="1/1" /></div>
+                <div style={{ marginBottom: 16 }}><p style={{ fontSize: 12, color: MID, marginBottom: 8 }}>說明文字（例如會員暱稱或一句心得）</p><input value={efForm.caption} onChange={e => setEfForm(p => ({ ...p, caption: e.target.value }))} /></div>
+                <div style={{ display: "flex", gap: 10 }}>
+                  <button className="pb" onClick={saveFeedback} disabled={!efForm.img}>儲存</button>
+                  <button className="pg" onClick={() => setEfEditing(null)}>取消</button>
+                </div>
+              </div>
+            )}
+            {feedback.length === 0 ? (
+              isAdmin && <p style={{ textAlign: "center", fontSize: 13, color: LIGHT, padding: "24px 0" }}>還沒有回饋截圖，點上面「＋ 新增」上傳第一張。</p>
+            ) : (
+              <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill,minmax(220px,1fr))", gap: 20 }} className="grid3">
+                {feedback.map((f, idx) => (
+                  <div key={f.id} style={{ background: WHITE, border: `1px solid ${BORDER}`, borderRadius: 16, overflow: "hidden", boxShadow: "0 2px 10px rgba(0,0,0,.06)" }}>
+                    <div style={{ aspectRatio: "1/1", background: GRAY, overflow: "hidden" }}>
+                      <img src={f.img} alt={f.caption || "8友回饋"} style={{ width: "100%", height: "100%", objectFit: "cover" }} loading="lazy" />
+                    </div>
+                    <div style={{ padding: "12px 16px", display: "flex", justifyContent: "space-between", alignItems: "flex-start", gap: 8 }}>
+                      <p style={{ fontSize: 13, color: MID, lineHeight: 1.7 }}>{f.caption}</p>
+                      {isAdmin && (
+                        <div style={{ display: "flex", flexDirection: "column", gap: 4, alignItems: "flex-end", flexShrink: 0 }}>
+                          <OrdBtns idx={idx} total={feedback.length} onMove={moveFeedback} />
+                          <div style={{ display: "flex", gap: 8 }}>
+                            <span style={{ fontSize: 11, color: O, cursor: "pointer" }} onClick={() => startEditFeedback(f)}>編輯</span>
+                            <span style={{ fontSize: 11, color: "#E74C3C", cursor: "pointer" }} onClick={() => delFeedback(f.id)}>刪除</span>
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+        )}
       </div>
       <div style={{ background: CHAR, padding: "64px 32px", textAlign: "center" }}>
         <div style={{ maxWidth: 480, margin: "0 auto" }}>
@@ -2105,6 +2189,7 @@ function Community({ igPosts, links, setPage, isAdmin, communityHero, setCommuni
                 ["lineBadge", "LINE 卡片徽章"], ["lineTitle", "LINE 卡片標題"], ["lineDesc", "LINE 卡片說明"], ["linePill", "LINE 卡片按鈕（尚未開放狀態）"],
                 ["igBadge", "IG 卡片徽章"], ["igTitle", "IG 卡片標題"], ["igDesc", "IG 卡片說明"], ["igBtn", "IG 卡片按鈕"],
                 ["recentLabel", "「最新動態」標籤"], ["recentHeading", "「最新動態」標題"], ["moreLink", "查看更多連結文字"],
+                ["feedbackLabel", "「會員迴響」標籤"], ["feedbackHeading", "「會員迴響」標題"],
                 ["ctaLabel", "結尾標籤"], ["ctaHeading", "結尾標題"], ["ctaDesc", "結尾說明"], ["ctaBtn", "結尾按鈕"],
               ].map(([k, label]) => (
                 <div key={k}>
@@ -2205,7 +2290,7 @@ function Envelope({ products, setPage, isAdmin, envelopeHero, setEnvelopeHero, e
         <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(240px,1fr))", gap: 20 }} className="grid3">
           {ec.why.map((w, i) => (
             <div key={i} className="card" style={{ padding: 28 }}>
-              <div style={{ width: 44, height: 44, borderRadius: 14, background: O2, color: O, display: "flex", alignItems: "center", justifyContent: "center", fontWeight: 700, marginBottom: 18 }}>{i + 1}</div>
+              <div style={{ width: 44, height: 44, borderRadius: 14, background: O2, color: O, display: "flex", alignItems: "center", justifyContent: "center", marginBottom: 18 }}>{(() => { const WhyIcon = WHY_ICONS[i]; return WhyIcon ? <div style={{ width: 22, height: 22 }}><WhyIcon /></div> : null; })()}</div>
               <h4 style={{ fontSize: 16, fontWeight: 500, color: CHAR, marginBottom: 8 }}>{w.title}</h4>
               <p style={{ fontSize: 13, color: MID, lineHeight: 1.8 }}>{w.desc}</p>
             </div>
@@ -3115,7 +3200,7 @@ function Newsletter({ newsletter, setNewsletter, isAdmin, articles, setArticles,
         <div style={{ maxWidth: 1100, margin: "0 auto", padding: "56px 32px" }} className="page-wrap">
           <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 32 }}>
             <div><p className="section-label" style={{ marginBottom: 8 }}>{info.recentLabel}</p><h2 style={{ fontSize: 22, fontWeight: 700, color: CHAR }}>{info.recentHeading}</h2></div>
-            <span onClick={() => setPage("home")} style={{ fontSize: 13, color: O, cursor: "pointer" }}>{info.viewAllLink}</span>
+            <span onClick={() => setPage("journal")} style={{ fontSize: 13, color: O, cursor: "pointer" }}>{info.viewAllLink}</span>
           </div>
           <div style={{ display: "flex", flexDirection: "column" }}>
             {recent.map(a => (
@@ -3767,6 +3852,7 @@ export default function App() {
   const [articles, setArticles, aL] = useFS("articles", DEFAULTS.articles);
   const [products, setProducts, pL] = useFS("products", DEFAULTS.products);
   const [igPosts, setIgPosts, iL] = useFS("igPosts", DEFAULTS.igPosts);
+  const [memberFeedback, setMemberFeedback, mfL] = useFS("memberFeedback", DEFAULTS.memberFeedback);
   const [goods, setGoods, gL] = useFS("goods", DEFAULTS.goods);
   const [about, setAbout, abL] = useFS("about", DEFAULTS.about);
   const [siteTitle, setSiteTitle, tL] = useFS("siteTitle", DEFAULTS.siteTitle);
@@ -3907,7 +3993,7 @@ export default function App() {
     let slug = baseSlug, n = 2;
     while (taken.has(slug)) { slug = baseSlug + "-" + n; n++; }
     setArticles(prev => [...prev, { id: nid, slug, ...d, excerpt: d.excerpt || (stripHtml(d.content).slice(0, 80) + "⋯"), views: 0, comments: [], date: new Date().toISOString().slice(0, 10) }]);
-    setPage("home");
+    setPage("journal");
   };
 
   if (!loaded) return (
@@ -3924,10 +4010,11 @@ export default function App() {
       <Toast />
       <Nav page={page} setPage={nav} isAdmin={isAdmin} navLabels={navLabels} setNavLabels={setNavLabels} mobileTabLabels={mobileTabLabels} setMobileTabLabels={setMobileTabLabels} />
       <div key={page} className="page-anim">
-        {page === "home" && <Home articles={articles} setPage={setPage} setId={setId} setArticles={setArticles} isAdmin={isAdmin} siteTitle={siteTitle} setSiteTitle={setSiteTitle} tags={tags} setTags={setTags} about={about} setAbout={setAbout} links={links} homeHero={homeHero} setHomeHero={setHomeHero} trustStats={trustStats} setTrustStats={setTrustStats} paths={paths} setPaths={setPaths} homeCopy={homeCopy} setHomeCopy={setHomeCopy} />}
+        {page === "home" && <Home articles={articles} setPage={setPage} setId={setId} setArticles={setArticles} isAdmin={isAdmin} about={about} setAbout={setAbout} links={links} homeHero={homeHero} setHomeHero={setHomeHero} trustStats={trustStats} setTrustStats={setTrustStats} paths={paths} setPaths={setPaths} homeCopy={homeCopy} setHomeCopy={setHomeCopy} />}
+        {page === "journal" && <Journal articles={articles} setArticles={setArticles} setId={setId} setPage={setPage} isAdmin={isAdmin} siteTitle={siteTitle} setSiteTitle={setSiteTitle} tags={tags} setTags={setTags} />}
         {page === "about" && <About about={about} setAbout={setAbout} isAdmin={isAdmin} links={links} setLinks={setLinks} setPage={nav} aboutCopy={aboutCopy} setAboutCopy={setAboutCopy} />}
         {page === "ig" && <IG igPosts={igPosts} setIgPosts={setIgPosts} isAdmin={isAdmin} links={links} igCopy={igCopy} setIgCopy={setIgCopy} />}
-        {page === "community" && <Community igPosts={igPosts} links={links} setPage={nav} isAdmin={isAdmin} communityHero={communityHero} setCommunityHero={setCommunityHero} communityCopy={communityCopy} setCommunityCopy={setCommunityCopy} />}
+        {page === "community" && <Community igPosts={igPosts} links={links} setPage={nav} isAdmin={isAdmin} communityHero={communityHero} setCommunityHero={setCommunityHero} communityCopy={communityCopy} setCommunityCopy={setCommunityCopy} memberFeedback={memberFeedback} setMemberFeedback={setMemberFeedback} />}
         {page === "shop" && <Shop products={products} setProducts={setProducts} isAdmin={isAdmin} shopCopy={shopCopy} setShopCopy={setShopCopy} />}
         {page === "envelope" && <Envelope products={products} setPage={nav} isAdmin={isAdmin} envelopeHero={envelopeHero} setEnvelopeHero={setEnvelopeHero} envelopeCopy={envelopeCopy} setEnvelopeCopy={setEnvelopeCopy} />}
         {page === "goods" && <Goods goods={goods} setGoods={setGoods} isAdmin={isAdmin} goodsHero={goodsHero} setGoodsHero={setGoodsHero} goodsCopy={goodsCopy} setGoodsCopy={setGoodsCopy} />}
@@ -3942,8 +4029,8 @@ export default function App() {
         {page === "terms" && <TermsPage isAdmin={isAdmin} termsContent={termsContent} setTermsContent={setTermsContent} />}
         {page === "privacy" && <PrivacyPage isAdmin={isAdmin} privacyContent={privacyContent} setPrivacyContent={setPrivacyContent} />}
         {page === "disclaimer" && <DisclaimerPage isAdmin={isAdmin} disclaimerContent={disclaimerContent} setDisclaimerContent={setDisclaimerContent} />}
-        {page === "article" && article && <Article article={article} onBack={() => nav("home")} setArticles={setArticles} isAdmin={isAdmin} tags={tags} links={links} setPage={nav} products={products} resources={resources} memberPassword={memberPassword} />}
-        {page === "write" && isAdmin && <Write onSave={saveArticle} onBack={() => nav("home")} tags={tags} products={products} resources={resources} />}
+        {page === "article" && article && <Article article={article} onBack={() => nav("journal")} setArticles={setArticles} isAdmin={isAdmin} tags={tags} links={links} setPage={nav} products={products} resources={resources} memberPassword={memberPassword} />}
+        {page === "write" && isAdmin && <Write onSave={saveArticle} onBack={() => nav("journal")} tags={tags} products={products} resources={resources} />}
       </div>
       <Footer links={links} footerTagline={footerTagline} setFooterTagline={setFooterTagline} isAdmin={isAdmin} setPage={nav} footerLabels={footerLabels} setFooterLabels={setFooterLabels} />
     </div>
