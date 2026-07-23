@@ -3902,6 +3902,26 @@ export default function App() {
   useEffect(() => onAuthStateChanged(auth, (user) => setIsAdmin(!!user && ADMIN_EMAILS.includes(user.email))), []);
   useLayoutEffect(() => { window.scrollTo({ top: 0, behavior: "instant" }); }, [page]);
 
+  // GA4：站外連結一律送 outbound_click；連到理財導航器的按鈕額外標記 cta_click，方便分開看轉換成效
+  useEffect(() => {
+    const handler = e => {
+      const a = e.target.closest && e.target.closest("a[href]");
+      if (!a) return;
+      const href = a.getAttribute("href");
+      if (!href || !/^https?:\/\//.test(href)) return;
+      let url;
+      try { url = new URL(href); } catch { return; }
+      if (url.origin === window.location.origin || typeof window.gtag !== "function") return;
+      const isAppCta = url.origin === new URL(APP_URL).origin;
+      window.gtag("event", isAppCta ? "cta_click" : "outbound_click", {
+        link_url: href,
+        link_domain: url.hostname,
+      });
+    };
+    document.addEventListener("click", handler, true);
+    return () => document.removeEventListener("click", handler, true);
+  }, []);
+
   const loaded = aL && pL && iL && gL && abL && tL && taL && lL && ftL && rlL && nlL && acL && ccL && sbqL;
   const article = articles.find(a => a.id === id);
   const nav = p => { setPage(p); setId(null); history.pushState({}, "", window.location.pathname); };
