@@ -2114,10 +2114,10 @@ function Community({ igPosts, links, setPage, isAdmin, communityHero, setCommuni
             <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill,minmax(240px,1fr))", gap: 20, marginBottom: 28 }} className="grid-ig">
               {previewPosts.map(p => (
                 <a key={p.id} href={p.url || l.instagram} target="_blank" rel="noopener noreferrer" style={{ display: "block" }}>
-                  <div style={{ position: "relative", background: WHITE, border: `1px solid ${BORDER}`, borderRadius: 12, overflow: "hidden", aspectRatio: "4/5", transition: "transform .24s" }}
+                  <div style={{ position: "relative", background: WHITE, border: `1px solid ${BORDER}`, borderRadius: 12, overflow: "hidden", aspectRatio: "1/1", transition: "transform .24s" }}
                     onMouseEnter={e => e.currentTarget.style.transform = "translateY(-4px)"} onMouseLeave={e => e.currentTarget.style.transform = "translateY(0)"}
                   >
-                    {p.thumb ? <img src={p.thumb} alt={p.title} style={{ width: "100%", height: "100%", objectFit: "contain" }} loading="lazy" /> : <div style={{ width: "100%", height: "100%", background: GRAY, display: "flex", alignItems: "center", justifyContent: "center" }}><span style={{ fontSize: 12, color: LIGHT, letterSpacing: "2px" }}>IG</span></div>}
+                    {p.thumb ? <img src={p.thumb} alt={p.title} style={{ width: "100%", height: "100%", objectFit: "cover" }} loading="lazy" /> : <div style={{ width: "100%", height: "100%", background: GRAY, display: "flex", alignItems: "center", justifyContent: "center" }}><span style={{ fontSize: 12, color: LIGHT, letterSpacing: "2px" }}>IG</span></div>}
                     <div style={{ position: "absolute", bottom: 10, right: 10, width: 28, height: 28, borderRadius: "50%", background: "rgba(26,26,26,.55)", color: WHITE, display: "flex", alignItems: "center", justifyContent: "center" }}>
                       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" width="15" height="15"><rect x="2" y="2" width="20" height="20" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1" fill="currentColor" strokeWidth="0"/></svg>
                     </div>
