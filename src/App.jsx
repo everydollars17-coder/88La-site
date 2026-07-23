@@ -707,7 +707,7 @@ function CropModal({ src, aspect = "16/9", onConfirm, onCancel }) {
 }
 
 // ── Image Uploader ──
-function ImgUploader({ value, onChange, label = "圖片", aspect = "16/9" }) {
+function ImgUploader({ value, onChange, label = "圖片", aspect = "16/9", maxHeight = 200, boxMaxWidth }) {
   const inputRef = useRef();
   const [progress, setProgress] = useState(null);
   const [error, setError] = useState("");
@@ -736,7 +736,7 @@ function ImgUploader({ value, onChange, label = "圖片", aspect = "16/9" }) {
   return (
     <div>
       <p style={{ fontSize: 12, color: MID, marginBottom: 8 }}>{label}</p>
-      <div style={{ aspectRatio: aspect, background: GRAY, overflow: "hidden", display: "flex", alignItems: "center", justifyContent: "center", marginBottom: 10, maxHeight: 200 }}>
+      <div style={{ aspectRatio: aspect, background: GRAY, overflow: "hidden", display: "flex", alignItems: "center", justifyContent: "center", marginBottom: 10, maxHeight, maxWidth: boxMaxWidth }}>
         {value
           ? <img src={value} alt="preview" style={{ width: "100%", height: "100%", objectFit: "cover" }} />
           : <span style={{ fontSize: 12, color: LIGHT }}>尚無圖片</span>}
@@ -1249,7 +1249,10 @@ function Home({ articles, setPage, setId, setArticles, isAdmin, homeHero, setHom
                     {a.img && <img src={a.img} alt={a.title} style={{ width: "100%", height: "100%", objectFit: "cover" }} loading="lazy" />}
                   </div>
                   <div style={{ padding: 20 }}>
-                    <span className="tag" style={{ marginBottom: 10, display: "inline-block" }}>{a.tag}</span>
+                    <div style={{ display: "flex", gap: 6, alignItems: "center", flexWrap: "wrap", marginBottom: 10 }}>
+                      <span className="tag">{a.tag}</span>
+                      {a.member && <span style={{ fontSize: 10, padding: "2px 8px", borderRadius: 999, background: CORAL2, color: WHITE }}>會員限定</span>}
+                    </div>
                     <h4 style={{ fontSize: 15, fontWeight: 500, color: CHAR, lineHeight: 1.5, display: "-webkit-box", WebkitLineClamp: 2, WebkitBoxOrient: "vertical", overflow: "hidden" }}>{a.title}</h4>
                   </div>
                 </div>
@@ -2108,15 +2111,15 @@ function Community({ igPosts, links, setPage, isAdmin, communityHero, setCommuni
               <p className="section-label" style={{ marginBottom: 12 }}>{cc.recentLabel}</p>
               <h2 style={{ fontSize: 22, fontWeight: 700, color: CHAR }}>{cc.recentHeading}</h2>
             </div>
-            <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill,minmax(240px,1fr))", gap: 20, marginBottom: 28 }} className="grid3">
+            <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill,minmax(240px,1fr))", gap: 20, marginBottom: 28 }} className="grid-ig">
               {previewPosts.map(p => (
                 <a key={p.id} href={p.url || l.instagram} target="_blank" rel="noopener noreferrer" style={{ display: "block" }}>
                   <div style={{ position: "relative", background: WHITE, border: `1px solid ${BORDER}`, borderRadius: 12, overflow: "hidden", aspectRatio: "4/5", transition: "transform .24s" }}
                     onMouseEnter={e => e.currentTarget.style.transform = "translateY(-4px)"} onMouseLeave={e => e.currentTarget.style.transform = "translateY(0)"}
                   >
-                    {p.thumb ? <img src={p.thumb} alt={p.title} style={{ width: "100%", height: "100%", objectFit: "cover" }} loading="lazy" /> : <div style={{ width: "100%", height: "100%", background: GRAY, display: "flex", alignItems: "center", justifyContent: "center" }}><span style={{ fontSize: 12, color: LIGHT, letterSpacing: "2px" }}>IG</span></div>}
+                    {p.thumb ? <img src={p.thumb} alt={p.title} style={{ width: "100%", height: "100%", objectFit: "contain" }} loading="lazy" /> : <div style={{ width: "100%", height: "100%", background: GRAY, display: "flex", alignItems: "center", justifyContent: "center" }}><span style={{ fontSize: 12, color: LIGHT, letterSpacing: "2px" }}>IG</span></div>}
                     <div style={{ position: "absolute", bottom: 10, right: 10, width: 28, height: 28, borderRadius: "50%", background: "rgba(26,26,26,.55)", color: WHITE, display: "flex", alignItems: "center", justifyContent: "center" }}>
-                      <div style={{ width: 15, height: 15 }}><IcIG /></div>
+                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" width="15" height="15"><rect x="2" y="2" width="20" height="20" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1" fill="currentColor" strokeWidth="0"/></svg>
                     </div>
                   </div>
                 </a>
@@ -2138,7 +2141,7 @@ function Community({ igPosts, links, setPage, isAdmin, communityHero, setCommuni
             )}
             {efEditing && (
               <div style={{ background: GRAY, padding: 24, marginBottom: 24, border: `1px solid ${BORDER}` }}>
-                <div style={{ marginBottom: 16 }}><ImgUploader label="回饋截圖" value={efForm.img} onChange={v => setEfForm(p => ({ ...p, img: v }))} aspect="1/1" /></div>
+                <div style={{ marginBottom: 16 }}><ImgUploader label="回饋截圖" value={efForm.img} onChange={v => setEfForm(p => ({ ...p, img: v }))} aspect="3/4" maxHeight={420} boxMaxWidth={320} /></div>
                 <div style={{ marginBottom: 16 }}><p style={{ fontSize: 12, color: MID, marginBottom: 8 }}>說明文字（例如會員暱稱或一句心得）</p><input value={efForm.caption} onChange={e => setEfForm(p => ({ ...p, caption: e.target.value }))} /></div>
                 <div style={{ display: "flex", gap: 10 }}>
                   <button className="pb" onClick={saveFeedback} disabled={!efForm.img}>儲存</button>
@@ -2152,7 +2155,7 @@ function Community({ igPosts, links, setPage, isAdmin, communityHero, setCommuni
               <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill,minmax(220px,1fr))", gap: 20 }} className="grid3">
                 {feedback.map((f, idx) => (
                   <div key={f.id} style={{ background: WHITE, border: `1px solid ${BORDER}`, borderRadius: 16, overflow: "hidden", boxShadow: "0 2px 10px rgba(0,0,0,.06)" }}>
-                    <div style={{ aspectRatio: "1/1", background: GRAY, overflow: "hidden" }}>
+                    <div style={{ aspectRatio: "3/4", background: GRAY, overflow: "hidden" }}>
                       <img src={f.img} alt={f.caption || "8友回饋"} style={{ width: "100%", height: "100%", objectFit: "cover" }} loading="lazy" />
                     </div>
                     <div style={{ padding: "12px 16px", display: "flex", justifyContent: "space-between", alignItems: "flex-start", gap: 8 }}>
