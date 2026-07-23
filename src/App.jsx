@@ -2539,7 +2539,7 @@ function AppPage({ appContent, setAppContent, isAdmin, setPage, demoStory, setDe
   const [editNote, setEditNote] = useState(false);
   const [tmpNote, setTmpNote] = useState({ pricingNote: c.pricingNote, comingSoonTitle: c.comingSoonTitle, comingSoonSub: c.comingSoonSub });
   const [editGuide, setEditGuide] = useState(false);
-  const [tmpGuide, setTmpGuide] = useState({ title: "", json: "" });
+  const [tmpGuide, setTmpGuide] = useState({ title: "", faqs: [], advancedJson: "", showAdvanced: false });
   const saveFeat = () => {
     if (editingFeat === "new") upd({ features: [...c.features, { id: Date.now(), n: String(c.features.length + 1).padStart(2, "0"), ...featForm }] });
     else upd({ features: c.features.map(f => f.id === editingFeat ? { ...f, ...featForm } : f) });
@@ -2804,16 +2804,49 @@ function AppPage({ appContent, setAppContent, isAdmin, setPage, demoStory, setDe
           </div>
           {isAdmin && (
             <div style={{ marginTop: 36, textAlign: "right" }}>
-              {!editGuide && <button className="pg" style={{ fontSize: 12, padding: "6px 14px" }} onClick={() => { setTmpGuide({ title: c.guideTitle || "", json: JSON.stringify(c.guideData || DEFAULTS.appContent.guideData, null, 2) }); setEditGuide(true); }}>編輯使用說明</button>}
+              {!editGuide && <button className="pg" style={{ fontSize: 12, padding: "6px 14px" }} onClick={() => { const gd = c.guideData || DEFAULTS.appContent.guideData; setTmpGuide({ title: c.guideTitle || "", faqs: (gd.faqs || []).map(f => ({ ...f })), advancedJson: JSON.stringify({ phases: gd.phases, dataNote: gd.dataNote }, null, 2), showAdvanced: false }); setEditGuide(true); }}>編輯使用說明</button>}
               {editGuide && (
                 <div style={{ background: GRAY, padding: 24, border: `1px solid ${BORDER}`, textAlign: "left", marginTop: 16 }}>
                   <p style={{ fontSize: 11, color: MID, marginBottom: 16, letterSpacing: "1px" }}>編輯使用說明</p>
                   <div style={{ display: "flex", flexDirection: "column", gap: 14 }}>
                     <div><p style={{ fontSize: 12, color: MID, marginBottom: 6 }}>標題</p><input value={tmpGuide.title} onChange={e => setTmpGuide(p => ({ ...p, title: e.target.value }))} /></div>
-                    <div><p style={{ fontSize: 12, color: MID, marginBottom: 6 }}>內容資料（JSON）</p><textarea value={tmpGuide.json} onChange={e => setTmpGuide(p => ({ ...p, json: e.target.value }))} style={{ minHeight: 360, fontFamily: "monospace", fontSize: 11 }} /></div>
+                    <div>
+                      <p style={{ fontSize: 12, color: MID, marginBottom: 10 }}>常見問題（FAQ）</p>
+                      <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
+                        {tmpGuide.faqs.map((faq, fi) => (
+                          <div key={faq.id || fi} style={{ background: WHITE, border: `1px solid ${BORDER}`, borderRadius: 12, padding: 14 }}>
+                            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 8 }}>
+                              <span style={{ fontSize: 11, color: LIGHT }}>第 {fi + 1} 則</span>
+                              <span style={{ fontSize: 11, color: "#E74C3C", cursor: "pointer" }} onClick={() => setTmpGuide(p => ({ ...p, faqs: p.faqs.filter((_, i) => i !== fi) }))}>刪除這則</span>
+                            </div>
+                            <div style={{ marginBottom: 8 }}><p style={{ fontSize: 11, color: MID, marginBottom: 4 }}>問題</p><input value={faq.q} onChange={e => setTmpGuide(p => ({ ...p, faqs: p.faqs.map((f, i) => i === fi ? { ...f, q: e.target.value } : f) }))} placeholder="使用者常問的問題" /></div>
+                            <div><p style={{ fontSize: 11, color: MID, marginBottom: 4 }}>答案</p><textarea value={faq.a} onChange={e => setTmpGuide(p => ({ ...p, faqs: p.faqs.map((f, i) => i === fi ? { ...f, a: e.target.value } : f) }))} style={{ minHeight: 70 }} placeholder="回答內容" /></div>
+                          </div>
+                        ))}
+                      </div>
+                      <button className="pg" style={{ fontSize: 12, padding: "6px 14px", marginTop: 12 }} onClick={() => setTmpGuide(p => ({ ...p, faqs: [...p.faqs, { id: Date.now(), q: "", a: "" }] }))}>＋ 新增一則常見問題</button>
+                    </div>
+                    <div>
+                      <span onClick={() => setTmpGuide(p => ({ ...p, showAdvanced: !p.showAdvanced }))} style={{ fontSize: 11, color: O, cursor: "pointer" }}>{tmpGuide.showAdvanced ? "收合進階設定 ▲" : "進階設定（教學步驟內容，需要 JSON 格式）▼"}</span>
+                      {tmpGuide.showAdvanced && (
+                        <div style={{ marginTop: 10 }}>
+                          <p style={{ fontSize: 11, color: MID, marginBottom: 6 }}>教學步驟資料（phases）與資料說明（dataNote），JSON 格式，不熟悉的話不要動這裡</p>
+                          <textarea value={tmpGuide.advancedJson} onChange={e => setTmpGuide(p => ({ ...p, advancedJson: e.target.value }))} style={{ minHeight: 240, fontFamily: "monospace", fontSize: 11 }} />
+                        </div>
+                      )}
+                    </div>
                   </div>
                   <div style={{ display: "flex", gap: 10, marginTop: 16 }}>
-                    <button className="pb" onClick={() => { try { upd({ guideTitle: tmpGuide.title, guideData: JSON.parse(tmpGuide.json) }); setEditGuide(false); } catch { alert("JSON 格式有誤，請確認後再儲存"); } }}>儲存</button>
+                    <button className="pb" onClick={() => {
+                      const cleanFaqs = tmpGuide.faqs.filter(f => f.q.trim() || f.a.trim()).map(f => ({ id: f.id || (Date.now() + Math.random()), q: f.q.trim(), a: f.a.trim() }));
+                      let nextGuideData = { ...(c.guideData || DEFAULTS.appContent.guideData), faqs: cleanFaqs };
+                      if (tmpGuide.showAdvanced) {
+                        try { nextGuideData = { ...nextGuideData, ...JSON.parse(tmpGuide.advancedJson) }; }
+                        catch { alert("進階內容 JSON 格式有誤，請確認後再儲存"); return; }
+                      }
+                      upd({ guideTitle: tmpGuide.title, guideData: nextGuideData });
+                      setEditGuide(false);
+                    }}>儲存</button>
                     <button className="pg" onClick={() => setEditGuide(false)}>取消</button>
                   </div>
                 </div>
