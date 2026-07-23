@@ -2512,6 +2512,19 @@ function Guide({ appContent, isAdmin, setPage }) {
         <div style={{ background: O2, borderRadius: 16, padding: "20px 24px", margin: "40px 0", textAlign: "center" }}>
           <p style={{ fontSize: 13, color: CHAR, lineHeight: 1.85 }}>{guideData.dataNote}</p>
         </div>
+        {guideData.faqs?.length > 0 && (
+          <div style={{ padding: "40px 0 56px", borderTop: `1px solid ${BORDER}` }}>
+            <h2 style={{ fontSize: 24, fontWeight: 700, color: CHAR, marginBottom: 24, textAlign: "center" }}>常見問題</h2>
+            <div style={{ maxWidth: 720, margin: "0 auto", display: "flex", flexDirection: "column", gap: 14 }}>
+              {guideData.faqs.map(faq => (
+                <div key={faq.id} style={{ background: WHITE, border: `1px solid ${BORDER}`, borderRadius: 16, padding: "22px 26px" }}>
+                  <p style={{ fontSize: 15, fontWeight: 500, color: CHAR, marginBottom: 8 }}>{faq.q}</p>
+                  <p style={{ fontSize: 13, color: MID, lineHeight: 1.8 }}>{faq.a}</p>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
       </div>
       <div style={{ padding: "56px 32px", textAlign: "center" }}>
         <p style={{ fontSize: 14, color: MID, marginBottom: 16 }}>還有其他疑問嗎？</p>
