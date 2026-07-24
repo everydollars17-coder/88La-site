@@ -334,33 +334,57 @@ const categories = [
     '跟現在的穿搭配不配，畢竟審美會變',
     '過去一年有沒有真的穿過',
     '同類型重複款式太多，高機率是衝動購物下的產物'
+  ], disposal: [
+    '狀況還好的，拍照上二手平台賣，或送朋友、家人',
+    '款式過季但沒壞的，捐給二手衣回收箱或公益團體',
+    '髒污、破損不堪用的，送紡織回收，不要丟一般垃圾'
   ]},
   { id: 'bag', label: '包包', criteria: [
     '跟現在的穿搭配不配，畢竟審美會變',
     '過去一年有沒有真的用過',
     '同類型重複款式太多，高機率是衝動購物下的產物'
+  ], disposal: [
+    '狀況良好的，拍照上二手平台賣，或送朋友、家人',
+    '材質還可以但你不想留的，捐給二手衣物回收箱',
+    '磨損嚴重、不堪用的，直接丟棄，不用勉強留著'
   ]},
   { id: 'shoes', label: '鞋櫃', criteria: [
     '穿起來會不會不舒服、磨腳',
     '過去一年有沒有真的穿過',
     '鞋底磨損或變形到修不了',
     '同類型基本款是不是重複太多雙'
+  ], disposal: [
+    '還能穿的，二手拍賣或直接送朋友',
+    '鞋況普通但沒壞的，捐給二手衣物回收箱（多數也收鞋）',
+    '鞋底磨壞、變形的，直接丟棄，別留著等修'
   ]},
   { id: 'makeup', label: '化妝品', criteria: [
     '有沒有過期，或開封超過建議使用期限',
     '用起來有沒有變質、變味、過敏',
     '色號或現在的膚況還適不適合'
+  ], disposal: [
+    '未拆封、效期還夠的，可以轉送給朋友或捐贈',
+    '已經開封使用過的，不建議轉送或轉售，直接丟棄比較衛生',
+    '過期或變質的，直接丟棄，不要留著想「以後可能會用」'
   ]},
   { id: 'clutter', label: '雜物區', criteria: [
     '拿起來想不起來為什麼留著',
     '過去一年有沒有真的用過',
     '東西壞了、過期，或有替代品可以用',
     '功能重複的備用品太多'
+  ], disposal: [
+    '還能用的，先問問身邊朋友、家人需不需要，再考慮二手平台',
+    '充電線、舊 3C 等電子類，送電子回收，不要丟一般垃圾',
+    '真的想不起用途、放很久沒動的，直接捨棄，不用再糾結'
   ]},
   { id: 'keepsake', label: '紀念品區', criteria: [
     '看到它，是開心，還是有負擔感',
     '能不能用拍照存檔，取代留實體',
     '只留最有代表性的一兩件，而不是全部留'
+  ], disposal: [
+    '先拍照存檔，把回憶留下來，實體再決定去留',
+    '只挑最有代表性的一兩件留下來，其他的放手',
+    '是別人送的，可以考慮問對方要不要收回，或直接處理掉，不用有罪惡感'
   ]}
 ];
 
@@ -467,6 +491,12 @@ function buildCriteriaListHTML(cat) {
   ).join('');
 }
 
+function buildDisposalListHTML(cat) {
+  return cat.disposal.map((d, i) =>
+    `<div class="criteria-item"><div class="criteria-num">${String(i + 1).padStart(2, '0')}</div><div>${d}</div></div>`
+  ).join('');
+}
+
 const productBulletsHTML = `
   <li>外觀簡約，經典耐看</li>
   <li>各種穿搭、場合都適合</li>
@@ -486,6 +516,10 @@ function renderStep4() {
         ${buildCriteriaListHTML(cat)}
       </div>
       <div class="result-card">
+        <h3>決定捨棄後，怎麼處理？</h3>
+        ${buildDisposalListHTML(cat)}
+      </div>
+      <div class="result-card">
         <h3>88La為什麼選擇留下包包？</h3>
         <p>我的標準從來不是不能買，是買得更精準、更常使用！這個包包是我自己套用這些準則之後，決定留下的那個，我覺得很值得推薦給你～現在團購中，有興趣點擊連結逛逛看囉！</p>
       </div>
@@ -500,6 +534,10 @@ function renderStep4() {
       <div class="result-card">
         <h3>這是你的${cat.label}斷捨離判斷準則</h3>
         ${buildCriteriaListHTML(cat)}
+      </div>
+      <div class="result-card">
+        <h3>決定捨棄後，怎麼處理？</h3>
+        ${buildDisposalListHTML(cat)}
       </div>
       <div class="product-block">
         <p style="font-size:14px; margin-bottom: 12px;">不管是${cat.label}，還是其他東西，我看新東西的方式都一樣。我的標準從來不是不能買，是買得更精準、更常使用！這個真皮餃子包，是我自己套用這些準則之後，決定留下的那個，我覺得很值得推薦給你～現在團購中，有興趣點擊連結逛逛看囉！</p>
