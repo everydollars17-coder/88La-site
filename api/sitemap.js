@@ -1,6 +1,6 @@
+import { getSiteValue } from "./_security.js";
+
 const SITE = "https://88la-site.vercel.app";
-const FIRESTORE_URL =
-  "https://firestore.googleapis.com/v1/projects/barbara-760bb/databases/(default)/documents/site/articles";
 
 const STATIC_PAGES = [
   { loc: "/", changefreq: "weekly", priority: "1.0" },
@@ -15,22 +15,11 @@ function escapeXml(s) {
 export default async function handler(req, res) {
   let articles = [];
   try {
-    const r = await fetch(FIRESTORE_URL);
-    if (r.ok) {
-      const doc = await r.json();
-      const arr = doc?.fields?.value?.arrayValue?.values || [];
-      articles = arr
-        .map((v) => {
-          const m = v?.mapValue?.fields || {};
-          return {
-            slug: m.slug?.stringValue || null,
-            id: m.id?.integerValue || m.id?.stringValue || null,
-            date: m.date?.stringValue || null,
-          };
-        })
-        .filter((a) => a.slug || a.id);
-    }
-  } catch {}
+    const value = await getSiteValue("articles");
+    articles = Array.isArray(value) ? value.filter((a) => a.slug || a.id) : [];
+  } catch (e) {
+    console.error(e);
+  }
 
   let xml = `<?xml version="1.0" encoding="UTF-8"?>\n`;
   xml += `<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n`;

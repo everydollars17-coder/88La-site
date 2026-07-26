@@ -1,6 +1,6 @@
 import { useState, useEffect, useLayoutEffect, useRef } from "react";
 import { initializeApp } from "firebase/app";
-import { getFirestore, doc, getDoc, setDoc, collection, getDocs, query, orderBy, deleteDoc } from "firebase/firestore";
+import { getFirestore, doc, setDoc, collection, getDocs, query, orderBy, deleteDoc } from "firebase/firestore";
 import { getAuth, GoogleAuthProvider, signInWithPopup, onAuthStateChanged, signOut } from "firebase/auth";
 import DOMPurify from "dompurify";
 
@@ -12,6 +12,10 @@ const firebaseConfig = {
   messagingSenderId: "1039136998822",
   appId: "1:1039136998822:web:bde7ca93e95e149d4dfb67"
 };
+
+const isLocalPreviewHost = () => ["localhost", "127.0.0.1", "::1"].includes(window.location.hostname);
+const isLocalAdminPreviewMode = () => isLocalPreviewHost() && new URLSearchParams(window.location.search).get("dev_admin") === "true";
+const localPreviewStorageKey = key => `88la_site_preview_${key}`;
 
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
@@ -147,8 +151,7 @@ const DEFAULT_TAGS = ["理財觀念", "信用卡", "記帳", "投資", "讀書�
 const DEFAULTS = {
   siteTitle: "理財觀點與讀書筆記",
   footerTagline: "理財，是為了讓生活更自由。",
-  memberPassword: "",
-  navLabels: { home: "首頁", journal: "理財觀點", app: "理財導航器", envelope: "存錢袋", goods: "推薦好物", community: "8友社群", resources: "資源中心", about: "關於我們" },
+  navLabels: { home: "首頁", journal: "文章", app: "導航器", envelope: "存錢袋", goods: "推薦好物", community: "8友社群", resources: "免費資源", about: "關於" },
   mobileTabLabels: { home: "首頁", community: "社群", resources: "資源", app: "App", envelope: "存錢袋" },
   footerLabels: {
     colProduct: "產品", colAbout: "關於", colLegal: "法律資訊",
@@ -287,9 +290,9 @@ const DEFAULTS = {
   homeCopy: {
     latestLabel: "最新文章",
     latestHeading: "理財知識，用你聽得懂的方式說",
-    ctaHeading: "準備好開始了嗎？",
-    ctaSub: "免費體驗理財自動導航器，看懂自己的錢都去哪了。",
-    ctaBtn: "開始使用理財導航器 →"
+    ctaHeading: "先從一個入口開始",
+    ctaSub: "不知道要選哪個，就先看免費資源，再回來決定要不要開始記帳。",
+    ctaBtn: "先看免費資源"
   },
   subscriptionCopy: {
     heading: "選擇你的方案",
@@ -298,11 +301,11 @@ const DEFAULTS = {
     foundingNote: "感謝最早支持 88La 的 90 位創始成員，你們的定價永久保留：月訂閱 NT$109 ／ 年方案 NT$599 ／ 兩年方案 NT$998。此優惠僅適用於已取得創始會員資格之用戶，不開放新申請。"
   },
   homeHero: {
-    eyebrow: "給理財新手的自動導航器",
-    headline: "記帳不是壓力\n是看懂自己數字的開始",
-    subheadline: "88La 陪你用最輕鬆的方式，重新認識自己的錢。",
-    ctaText: "開始使用理財導航器",
-    cta2Text: "看看存錢袋",
+    eyebrow: "88La 犒賞系存錢",
+    headline: "先看懂錢去哪\n再決定怎麼存",
+    subheadline: "從免費工具、88La理財自動導航器到實體存錢袋，陪你用不緊繃的方式，把錢放回生活裡。",
+    ctaText: "我想開始記帳",
+    cta2Text: "先免費試試",
     screenshot: ""
   },
   trustStats: [
@@ -312,9 +315,11 @@ const DEFAULTS = {
     { num: "5年+", label: "理財內容創作經驗" }
   ],
   paths: [
-    { title: "理財自動導航器", desc: "雲端記帳 Web App，自動診斷消費模式，幫你看懂錢的流向。", page: "app" },
-    { title: "存錢袋", desc: "手工製作的實體存錢工具，讓存錢這件事更有儀式感。", page: "envelope" },
-    { title: "8友社群", desc: "一群正在練習理財的人，互相打氣，不評判彼此的數字。", page: "community" }
+    { title: "我不確定我目前需要什麼工具", desc: "用 2 分鐘從消費模式判斷，你現在比較需要 App、實體工具，還是先從免費資源開始。", page: "tool-quiz" },
+    { title: "我想先免費試試", desc: "先用測驗和免費工具抓出自己的財務位置，不用註冊也能開始。", page: "resources" },
+    { title: "我想開始記帳", desc: "用 88La理財自動導航器，把每天花的錢整理成看得懂的方向。", page: "app" },
+    { title: "我想用實體工具存錢", desc: "用實體存錢袋把目標放進不同位置，讓存錢變成看得見的動作。", page: "envelope" },
+    { title: "我想有人陪我", desc: "到 8友社群看大家怎麼練習理財，先感覺你不是一個人。", page: "community" }
   ],
   envelopeHero: {
     eyebrow: "88La · 實體工具",
@@ -496,18 +501,157 @@ const OLD_KEYS = ["ed_art", "ed_prod", "ed_ig", "ed_goods", "ed_about", "ed_titl
 OLD_KEYS.forEach(k => { try { localStorage.removeItem(k); } catch { } });
 
 async function fbGet(key) {
-  try { const s = await getDoc(doc(db, "site", key)); return s.exists() ? s.data().value : null; } catch { return null; }
+  try {
+    const r = await fetch(`/api/site-content?key=${encodeURIComponent(key)}`);
+    if (!r.ok) return null;
+    const d = await r.json();
+    return Object.prototype.hasOwnProperty.call(d, "value") ? d.value : null;
+  } catch { return null; }
 }
 async function fbSet(key, value) {
-  try { await setDoc(doc(db, "site", key), { value }); } catch { }
+  await setDoc(doc(db, "site", key), { value });
 }
 
 function useFS(key, def) {
   const [v, setV] = useState(def);
   const [loaded, setLoaded] = useState(false);
-  useEffect(() => { fbGet(key).then(val => { if (val !== null) setV(val); setLoaded(true); }); }, [key]);
-  const set = async (fn, opts) => { const n = typeof fn === "function" ? fn(v) : fn; setV(n); await fbSet(key, n); if (!opts?.silent) _showToast("儲存成功"); };
+  useEffect(() => {
+    if (isLocalAdminPreviewMode()) {
+      try {
+        const raw = localStorage.getItem(localPreviewStorageKey(key));
+        if (raw !== null) setV(JSON.parse(raw));
+      } catch { }
+      setLoaded(true);
+      return;
+    }
+    fbGet(key).then(val => { if (val !== null) setV(val); setLoaded(true); });
+  }, [key]);
+  const set = async (fn, opts) => {
+    const n = typeof fn === "function" ? fn(v) : fn;
+    const prev = v;
+    setV(n);
+    if (isLocalAdminPreviewMode()) {
+      try {
+        localStorage.setItem(localPreviewStorageKey(key), JSON.stringify(n));
+        if (!opts?.silent) _showToast("本地預覽已更新");
+      } catch (e) {
+        setV(prev);
+        console.error("Local preview save failed", e);
+        if (!opts?.silent) _showToast("本地預覽儲存失敗");
+        throw e;
+      }
+      return;
+    }
+    try {
+      await fbSet(key, n);
+      if (!opts?.silent) _showToast("儲存成功");
+    } catch (e) {
+      setV(prev);
+      console.error("Firestore save failed", e);
+      if (!opts?.silent) _showToast("儲存失敗，請稍後再試");
+      throw e;
+    }
+  };
   return [v, set, loaded];
+}
+
+const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
+const isValidEmail = value => EMAIL_RE.test(String(value || "").trim()) && String(value || "").trim().length <= 254;
+const fileToDataUrl = file => new Promise((resolve, reject) => {
+  const reader = new FileReader();
+  reader.onload = () => resolve(reader.result);
+  reader.onerror = reject;
+  reader.readAsDataURL(file);
+});
+
+function publicArticle(article) {
+  if (!article?.member) return article;
+  return { ...article, content: "", locked: true };
+}
+
+async function adminToken() {
+  const user = auth.currentUser;
+  if (!user || !ADMIN_EMAILS.includes(user.email)) throw new Error("請先以管理員登入");
+  return user.getIdToken();
+}
+
+async function uploadCloudinaryImage(file, onProgress) {
+  if (isLocalAdminPreviewMode()) {
+    if (onProgress) onProgress(100);
+    return fileToDataUrl(file);
+  }
+  const token = await adminToken();
+  const sigRes = await fetch("/api/cloudinary-signature", {
+    method: "POST",
+    headers: { Authorization: `Bearer ${token}` },
+  });
+  if (!sigRes.ok) throw new Error("圖片上傳尚未設定完成，請檢查 Cloudinary 環境變數");
+  const sig = await sigRes.json();
+
+  const fd = new FormData();
+  fd.append("file", file);
+  fd.append("api_key", sig.apiKey);
+  fd.append("timestamp", sig.timestamp);
+  fd.append("signature", sig.signature);
+  if (sig.folder) fd.append("folder", sig.folder);
+
+  return new Promise((resolve, reject) => {
+    const xhr = new XMLHttpRequest();
+    xhr.open("POST", `https://api.cloudinary.com/v1_1/${sig.cloudName}/image/upload`);
+    xhr.upload.onprogress = e => { if (e.lengthComputable && onProgress) onProgress(Math.round(e.loaded / e.total * 100)); };
+    xhr.onload = () => {
+      try {
+        const data = JSON.parse(xhr.responseText || "{}");
+        if (xhr.status >= 200 && xhr.status < 300 && data.secure_url) resolve(data.secure_url);
+        else reject(new Error(data.error?.message || "上傳失敗，請重試"));
+      } catch (e) { reject(e); }
+    };
+    xhr.onerror = () => reject(new Error("上傳失敗，請重試"));
+    xhr.send(fd);
+  });
+}
+
+async function fetchMemberArticleContent(articleId, password = "") {
+  if (isLocalAdminPreviewMode()) {
+    return localStorage.getItem(localPreviewStorageKey(`memberArticle_${articleId}`)) || "";
+  }
+  const headers = { "Content-Type": "application/json" };
+  if (!password) {
+    try { headers.Authorization = `Bearer ${await adminToken()}`; } catch { }
+  }
+  const r = await fetch("/api/member-article", {
+    method: "POST",
+    headers,
+    body: JSON.stringify({ articleId, password }),
+  });
+  const data = await r.json().catch(() => ({}));
+  if (!r.ok) throw new Error(data.error || "read_failed");
+  return data.content || "";
+}
+
+async function saveMemberArticleContent(articleId, content) {
+  if (isLocalAdminPreviewMode()) {
+    localStorage.setItem(localPreviewStorageKey(`memberArticle_${articleId}`), content || "");
+    return;
+  }
+  const token = await adminToken();
+  const r = await fetch("/api/member-article-save", {
+    method: "POST",
+    headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
+    body: JSON.stringify({ articleId, content }),
+  });
+  if (!r.ok) throw new Error("會員文章儲存失敗");
+}
+
+async function migrateMemberArticles() {
+  if (isLocalAdminPreviewMode()) return { migrated: 0 };
+  const token = await adminToken();
+  const r = await fetch("/api/member-articles-migrate", {
+    method: "POST",
+    headers: { Authorization: `Bearer ${token}` },
+  });
+  if (!r.ok) throw new Error("會員文章遷移失敗");
+  return r.json();
 }
 
 let _showToast = () => {};
@@ -668,14 +812,12 @@ function CropModal({ src, aspect = "16/9", onConfirm, onCancel }) {
       canvas.width = OUT; canvas.height = OUTH;
       canvas.getContext("2d").drawImage(img, -pos.x / scale, -pos.y / scale, CROPW / scale, CROPH / scale, 0, 0, OUT, OUTH);
       await new Promise((res, rej) => canvas.toBlob(async blob => {
-        const fd = new FormData();
-        fd.append("file", blob, "cropped.jpg");
-        fd.append("upload_preset", "88la-site");
-        const r = await fetch("https://api.cloudinary.com/v1_1/daiboggpp/image/upload", { method: "POST", body: fd });
-        const d = await r.json();
-        if (d.secure_url) { onConfirm(d.secure_url); res(); } else rej();
+        try {
+          const url = await uploadCloudinaryImage(blob);
+          onConfirm(url); res();
+        } catch (e) { rej(e); }
       }, "image/jpeg", 0.92));
-    } catch { setCropError("裁剪失敗（圖片可能不支援跨來源），請用上傳的圖片再試"); }
+    } catch (e) { setCropError(e?.message || "裁剪失敗（圖片可能不支援跨來源），請用上傳的圖片再試"); }
     setUploading(false);
   };
 
@@ -713,24 +855,20 @@ function ImgUploader({ value, onChange, label = "圖片", aspect = "16/9", maxHe
   const [error, setError] = useState("");
   const [showCrop, setShowCrop] = useState(false);
 
-  const upload = (file) => {
+  const upload = async (file) => {
     if (!file) return;
     if (!file.type.startsWith("image/")) { setError("請選擇圖片檔案"); return; }
     if (file.size > 5 * 1024 * 1024) { setError("檔案不能超過 5MB"); return; }
     setError("");
-    const fd = new FormData();
-    fd.append("file", file);
-    fd.append("upload_preset", "88la-site");
-    const xhr = new XMLHttpRequest();
-    xhr.open("POST", "https://api.cloudinary.com/v1_1/daiboggpp/image/upload");
-    xhr.upload.onprogress = e => { if (e.lengthComputable) setProgress(Math.round(e.loaded / e.total * 100)); };
-    xhr.onload = () => {
-      if (xhr.status === 200) { onChange(JSON.parse(xhr.responseText).secure_url); setProgress(null); }
-      else { setError("上傳失敗，請重試"); setProgress(null); }
-    };
-    xhr.onerror = () => { setError("上傳失敗，請重試"); setProgress(null); };
-    setProgress(0);
-    xhr.send(fd);
+    try {
+      setProgress(0);
+      const url = await uploadCloudinaryImage(file, setProgress);
+      onChange(url);
+    } catch (e) {
+      setError(e?.message || "上傳失敗，請重試");
+    } finally {
+      setProgress(null);
+    }
   };
 
   return (
@@ -818,13 +956,13 @@ const IcSync  = () => <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"
 const IcCheck = () => <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8"><path d="M4 12l5 5L20 6"/></svg>;
 
 const MOBILE_TAB_ICONS = [["home",IcUser],["community",IcIG],["resources",IcRes],["app",IcApp],["envelope",IcShop]];
-const PATH_ICONS = { app: IcApp, envelope: IcShop, community: IcIG };
+const PATH_ICONS = { app: IcApp, envelope: IcShop, community: IcIG, resources: IcRes, "tool-quiz": IcCheck };
 const WHY_ICONS = [IcEye, IcSync, IcCheck];
 const IcTarget = () => <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="5"/><circle cx="12" cy="12" r="1" fill="currentColor" stroke="none"/></svg>;
 const IcChart  = () => <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8"><line x1="4" y1="20" x2="4" y2="12"/><line x1="12" y1="20" x2="12" y2="6"/><line x1="20" y1="20" x2="20" y2="15"/></svg>;
 const IcHeart  = () => <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8"><path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.6l-1-1a5.5 5.5 0 0 0-7.8 7.8l1 1L12 21l7.8-7.8 1-1a5.5 5.5 0 0 0 0-7.8z"/></svg>;
 const ABOUT_ICONS = [IcTarget, IcChart, IcHeart];
-const NAV_KEYS = ["home","journal","app","envelope","goods","community","resources","about"];
+const NAV_KEYS = ["home","app","resources","envelope","journal","about"];
 
 // ── Nav ──
 function Nav({ page, setPage, isAdmin, navLabels, setNavLabels, mobileTabLabels, setMobileTabLabels }) {
@@ -1129,6 +1267,12 @@ function PageHero({ title, fields, data, setData, defaults, isAdmin, children })
 
 function HomeHero({ homeHero, setHomeHero, isAdmin, setPage }) {
   const h = { ...DEFAULTS.homeHero, ...(homeHero || {}) };
+  const quickRoutes = [
+    ["tool-quiz", "我不確定", "工具診斷"],
+    ["resources", "先免費試試", "測驗和工具"],
+    ["app", "開始記帳", "看懂錢流向"],
+    ["envelope", "實體存錢袋", "把目標分好"]
+  ];
   const [editing, setEditing] = useState(false);
   const [tmp, setTmp] = useState(h);
   const save = () => { setHomeHero(tmp); setEditing(false); };
@@ -1155,8 +1299,16 @@ function HomeHero({ homeHero, setHomeHero, isAdmin, setPage }) {
           <p style={{ fontSize: 15, color: MID, lineHeight: 1.85, marginBottom: 28, maxWidth: 440 }}>{h.subheadline}</p>
           <div style={{ display: "flex", gap: 12, flexWrap: "wrap", alignItems: "center" }}>
             <button className="pb" onClick={() => setPage("app")}>{h.ctaText} →</button>
-            <button className="pg" onClick={() => setPage("envelope")}>{h.cta2Text}</button>
+            <button className="pg" onClick={() => setPage("resources")}>{h.cta2Text}</button>
             {isAdmin && <span onClick={() => { setTmp(h); setEditing(true); }} style={{ fontSize: 12, color: O, cursor: "pointer", marginLeft: 4 }}>編輯</span>}
+          </div>
+          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(150px,1fr))", gap: 8, marginTop: 22, maxWidth: 560 }}>
+            {quickRoutes.map(([pageKey, label, sub]) => (
+              <button key={pageKey} onClick={() => setPage(pageKey)} style={{ textAlign: "left", background: "rgba(255,255,255,.58)", border: `1px solid ${O}26`, borderRadius: 14, padding: "12px 14px", cursor: "pointer", fontFamily: "inherit", color: CHAR }}>
+                <span style={{ display: "block", fontSize: 13, fontWeight: 700, marginBottom: 3 }}>{label}</span>
+                <span style={{ display: "block", fontSize: 11, color: MID }}>{sub}</span>
+              </button>
+            ))}
           </div>
         </div>
         <div style={{ display: "flex", justifyContent: "center" }}>
@@ -1208,6 +1360,11 @@ function Home({ articles, setPage, setId, setArticles, isAdmin, homeHero, setHom
           </div>
         )}
         {isAdmin && <div style={{ textAlign: "right", marginBottom: 12 }}>{!editPaths && <span onClick={() => { setTmpPaths(ph); setEditPaths(true); }} style={{ fontSize: 12, color: O, cursor: "pointer" }}>編輯分流路徑</span>}</div>}
+        <div style={{ textAlign: "center", marginBottom: 28 }}>
+          <p className="section-label" style={{ marginBottom: 12 }}>START HERE</p>
+          <h2 style={{ fontSize: 24, fontWeight: 700, color: CHAR, marginBottom: 10 }}>你現在最想解決哪件事？</h2>
+          <p style={{ fontSize: 14, color: MID, lineHeight: 1.8 }}>不用先懂理財，先選一個最像你的狀態。</p>
+        </div>
         {editPaths ? (
           <div style={{ background: GRAY, padding: 24, border: `1px solid ${BORDER}`, marginBottom: 20 }}>
             {tmpPaths.map((p, i) => (
@@ -1228,7 +1385,7 @@ function Home({ articles, setPage, setId, setArticles, isAdmin, homeHero, setHom
                 <div style={{ width: 40, height: 40, borderRadius: 12, background: O2, color: O, display: "flex", alignItems: "center", justifyContent: "center", marginBottom: 16 }}>{(() => { const PathIcon = PATH_ICONS[p.page]; return PathIcon ? <div style={{ width: 20, height: 20 }}><PathIcon /></div> : null; })()}</div>
                 <h3 style={{ fontSize: 17, fontWeight: 500, color: CHAR, marginBottom: 8 }}>{p.title}</h3>
                 <p style={{ fontSize: 13, color: MID, lineHeight: 1.8, marginBottom: 14 }}>{p.desc}</p>
-                <span style={{ fontSize: 12, color: O, fontWeight: 500 }}>了解更多 →</span>
+                <span style={{ fontSize: 12, color: O, fontWeight: 500 }}>選這個方向 →</span>
               </div>
             ))}
           </div>
@@ -1265,7 +1422,7 @@ function Home({ articles, setPage, setId, setArticles, isAdmin, homeHero, setHom
       <div style={{ background: CHAR, padding: "56px 32px", textAlign: "center" }}>
         <h2 style={{ fontSize: 22, fontWeight: 700, color: WHITE, marginBottom: 14 }}>{hc.ctaHeading}</h2>
         <p style={{ fontSize: 14, color: "rgba(255,255,255,.6)", marginBottom: 24 }}>{hc.ctaSub}</p>
-        <button className="pb" onClick={() => setPage("app")}>{hc.ctaBtn}</button>
+        <button className="pb" onClick={() => setPage("resources")}>{hc.ctaBtn}</button>
         {isAdmin && <div style={{ marginTop: 10 }}><span onClick={() => { setTmpHomeCopy(hc); setEditHomeCopy(true); }} style={{ fontSize: 11, color: "rgba(255,255,255,.5)", cursor: "pointer", textDecoration: "underline" }}>編輯</span></div>}
       </div>
       {editHomeCopy && (
@@ -1407,7 +1564,7 @@ function Journal({ articles, setArticles, setId, setPage, isAdmin, siteTitle, se
 }
 
 // ── Article detail ──
-const PAGE_OPTIONS = [["home","首頁"],["journal","理財觀點文章列表"],["app","記帳 App"],["resources","免費資源"],["shop","商品"],["goods","推薦好物"],["newsletter","電子報"],["contact","合作洽談"]];
+const PAGE_OPTIONS = [["home","首頁"],["tool-quiz","工具診斷"],["journal","理財觀點文章列表"],["app","記帳 App"],["resources","免費資源"],["shop","商品"],["goods","推薦好物"],["newsletter","電子報"],["contact","合作洽談"]];
 
 function RelatedLinkEditor({ relatedLinks, onChange, products, resources }) {
   const [type, setType] = useState("page");
@@ -1452,20 +1609,28 @@ function RelatedLinkEditor({ relatedLinks, onChange, products, resources }) {
   );
 }
 
-function Article({ article, onBack, setArticles, isAdmin, tags, links, setPage, products, resources, memberPassword }) {
+function Article({ article, onBack, setArticles, isAdmin, tags, links, setPage, products, resources }) {
   const [name, setName] = useState(""); const [text, setText] = useState(""); const [copied, setCopied] = useState(false);
   const [editing, setEditing] = useState(false);
-  const [unlocked, setUnlocked] = useState(() => localStorage.getItem("88la_member_unlocked") === "1");
+  const [memberContent, setMemberContent] = useState(article.member ? "" : article.content);
+  const [unlocking, setUnlocking] = useState(false);
   const [pwdInput, setPwdInput] = useState("");
   const [pwdErr, setPwdErr] = useState(false);
-  const locked = article.member && !isAdmin && !unlocked;
-  const tryUnlock = () => {
-    if (pwdInput.trim() && memberPassword && pwdInput.trim() === memberPassword.trim()) {
-      localStorage.setItem("88la_member_unlocked", "1");
-      setUnlocked(true); setPwdErr(false);
-    } else setPwdErr(true);
+  const locked = article.member && !isAdmin && !memberContent;
+  const displayContent = article.member ? memberContent : article.content;
+  const tryUnlock = async () => {
+    if (!pwdInput.trim() || unlocking) return;
+    setUnlocking(true); setPwdErr(false);
+    try {
+      const content = await fetchMemberArticleContent(article.id, pwdInput.trim());
+      setMemberContent(content);
+      setPwdInput("");
+    } catch {
+      setPwdErr(true);
+    }
+    setUnlocking(false);
   };
-  const [ed, setEd] = useState({ title: article.title, tag: article.tag, excerpt: article.excerpt, content: article.content, img: article.img || "", date: article.date || "", relatedLinks: article.relatedLinks || [], member: article.member || false });
+  const [ed, setEd] = useState({ title: article.title, tag: article.tag, excerpt: article.excerpt, content: displayContent || "", img: article.img || "", date: article.date || "", relatedLinks: article.relatedLinks || [], member: article.member || false });
   const l = links || DEFAULTS.links;
   const lastSubmit = useRef(0);
   const [cooldown, setCooldown] = useState(0);
@@ -1486,8 +1651,27 @@ function Article({ article, onBack, setArticles, isAdmin, tags, links, setPage, 
   };
   const articleUrl = `${window.location.origin}${window.location.pathname}?article=${article.slug || article.id}`;
   const copy = () => { navigator.clipboard.writeText(articleUrl); setCopied(true); setTimeout(() => setCopied(false), 2000); };
+  useEffect(() => {
+    setPwdInput(""); setPwdErr(false);
+    setMemberContent(article.member ? "" : article.content);
+  }, [article.id, article.member, article.content]);
+  useEffect(() => {
+    if (!article.member || !isAdmin) return;
+    fetchMemberArticleContent(article.id)
+      .then(content => setMemberContent(content))
+      .catch(() => setMemberContent(article.content || ""));
+  }, [article.id, article.member, isAdmin]);
+  useEffect(() => {
+    if (editing) return;
+    setEd({ title: article.title, tag: article.tag, excerpt: article.excerpt, content: displayContent || "", img: article.img || "", date: article.date || "", relatedLinks: article.relatedLinks || [], member: article.member || false });
+  }, [article.id, article.title, article.tag, article.excerpt, article.img, article.date, article.relatedLinks, article.member, displayContent, editing]);
   const del = () => { if (confirm("確定刪除此文章？")) { setArticles(prev => prev.filter(a => a.id !== article.id)); onBack(); } };
-  const saveEdit = () => { setArticles(prev => prev.map(a => a.id === article.id ? { ...a, ...ed } : a)); setEditing(false); };
+  const saveEdit = async () => {
+    if (ed.member) await saveMemberArticleContent(article.id, ed.content);
+    setArticles(prev => prev.map(a => a.id === article.id ? publicArticle({ ...a, ...ed, content: ed.member ? "" : ed.content }) : a));
+    setMemberContent(ed.member ? ed.content : "");
+    setEditing(false);
+  };
   const relLinks = article.relatedLinks || [];
   const handleRelNav = (rl) => {
     if (rl.type === "page") setPage(rl.key);
@@ -1537,24 +1721,22 @@ function Article({ article, onBack, setArticles, isAdmin, tags, links, setPage, 
         {locked ? (
           <div style={{ marginBottom: 56 }}>
             <p style={{ fontSize: 16, lineHeight: 1.8, color: CHAR, marginBottom: 24 }}>{article.excerpt}</p>
-            <div style={{ position: "relative", marginBottom: 28 }}>
-              <div className="article-content" style={{ fontSize: 16, lineHeight: 1.8, color: CHAR, maxHeight: 120, overflow: "hidden", filter: "blur(4px)", userSelect: "none", pointerEvents: "none" }}
-                dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(/<[a-z][\s\S]*>/i.test(article.content || "") ? article.content : (article.content || "").replace(/\n/g, "<br>")) }} />
-              <div style={{ position: "absolute", inset: 0, background: `linear-gradient(to bottom, transparent, ${WHITE} 90%)` }} />
+            <div style={{ background: O2, border: `1px solid ${O}25`, padding: "18px 20px", marginBottom: 28 }}>
+              <p style={{ fontSize: 13, color: MID, lineHeight: 1.8 }}>會員全文已鎖定，解鎖前不會載入到瀏覽器。</p>
             </div>
             <div style={{ background: GRAY, border: `1px solid ${BORDER}`, padding: "28px 28px", textAlign: "center" }}>
               <p style={{ fontSize: 14, fontWeight: 500, color: CHAR, marginBottom: 4 }}>🔒 這是會員限定文章</p>
               <p style={{ fontSize: 13, color: MID, marginBottom: 18 }}>輸入會員密碼即可閱讀全文</p>
               <div style={{ display: "flex", gap: 10, justifyContent: "center", flexWrap: "wrap" }}>
                 <input type="password" value={pwdInput} onChange={e => { setPwdInput(e.target.value); setPwdErr(false); }} onKeyDown={e => e.key === "Enter" && tryUnlock()} placeholder="請輸入密碼" style={{ maxWidth: 200 }} />
-                <button className="pb" onClick={tryUnlock}>解鎖</button>
+                <button className="pb" onClick={tryUnlock} disabled={unlocking}>{unlocking ? "確認中..." : "解鎖"}</button>
               </div>
               {pwdErr && <p style={{ fontSize: 12, color: "#C0392B", marginTop: 10 }}>密碼不正確，請再試一次</p>}
             </div>
           </div>
         ) : (
           <div className="article-content" style={{ fontSize: 16, lineHeight: 1.8, color: CHAR, marginBottom: 56 }}
-            dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(/<[a-z][\s\S]*>/i.test(article.content || "") ? article.content : (article.content || "").replace(/\n/g, "<br>")) }} />
+            dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(/<[a-z][\s\S]*>/i.test(displayContent || "") ? displayContent : (displayContent || "").replace(/\n/g, "<br>")) }} />
         )}
         {relLinks.length > 0 && (
           <div style={{ marginBottom: 48 }}>
@@ -1628,7 +1810,16 @@ function Article({ article, onBack, setArticles, isAdmin, tags, links, setPage, 
 // ── Write (admin new article) ──
 function Write({ onSave, onBack, tags, products, resources }) {
   const [d, setD] = useState({ title: "", tag: tags[0] || "", excerpt: "", content: "", img: "", relatedLinks: [], member: false });
+  const [saving, setSaving] = useState(false);
+  const [saveErr, setSaveErr] = useState("");
   const ok = d.title.trim() && d.content.trim();
+  const publish = async () => {
+    if (!ok || saving) return;
+    setSaving(true); setSaveErr("");
+    try { await onSave(d); }
+    catch { setSaveErr("發布失敗，請稍後再試"); }
+    setSaving(false);
+  };
   return (
     <div style={{ maxWidth: 740, margin: "0 auto", padding: "60px 32px" }} className="page-wrap">
       <button className="pg" onClick={onBack} style={{ marginBottom: 32 }}>← 返回</button>
@@ -1643,7 +1834,7 @@ function Write({ onSave, onBack, tags, products, resources }) {
         <label style={{ fontSize: 13, color: MID, display: "flex", gap: 8, alignItems: "center", cursor: "pointer" }}>
           <input type="checkbox" checked={d.member} onChange={e => setD(p => ({ ...p, member: e.target.checked }))} style={{ width: "auto" }} />會員限定文章
         </label>
-        <div style={{ display: "flex", gap: 10 }}><button className="pb" disabled={!ok} onClick={() => onSave(d)}>發布</button><button className="pg" onClick={onBack}>取消</button></div>
+        <div style={{ display: "flex", gap: 10, alignItems: "center", flexWrap: "wrap" }}><button className="pb" disabled={!ok || saving} onClick={publish}>{saving ? "發布中..." : "發布"}</button><button className="pg" onClick={onBack}>取消</button>{saveErr && <span style={{ fontSize: 12, color: "#C0392B" }}>{saveErr}</span>}</div>
       </div>
     </div>
   );
@@ -2526,10 +2717,6 @@ function Guide({ appContent, isAdmin, setPage }) {
           </div>
         )}
       </div>
-      <div style={{ padding: "56px 32px", textAlign: "center" }}>
-        <p style={{ fontSize: 14, color: MID, marginBottom: 16 }}>還有其他疑問嗎？</p>
-        <button className="pg" onClick={() => setPage("app")}>查看常見問題 FAQ</button>
-      </div>
     </div>
   );
 }
@@ -3002,13 +3189,242 @@ const RESOURCES_HERO_FIELDS = [
   { key: "subhead", label: "副標題", multiline: true }
 ];
 
-function Resources({ resources, setResources, isAdmin, articles, setArticles, setId, setPage, resourcesHero, setResourcesHero, memberPassword, setMemberPassword, resourcesCopy, setResourcesCopy }) {
+const TOOL_QUIZ_QUESTIONS = [
+  {
+    id: "state",
+    title: "你現在最常有哪種感覺？",
+    options: [
+      { id: "lost", label: "錢花到哪裡都說不清", desc: "想先看懂每天的錢流向", score: { app: 2 } },
+      { id: "leak", label: "知道要存，但常被日常花掉", desc: "需要一個看得見的阻力", score: { bag: 2 } },
+      { id: "break", label: "有記帳也有目標，但常常中斷", desc: "知道方向，可是習慣接不起來", score: { app: 1, bag: 1 } },
+      { id: "unsure", label: "只是覺得該整理，但還不知道從哪開始", desc: "想先低壓試試看", score: { free: 2 } }
+    ]
+  },
+  {
+    id: "tracking",
+    title: "你現在有固定記帳嗎？",
+    options: [
+      { id: "none", label: "幾乎沒有", desc: "想到才記，常常漏掉", score: { app: 2 } },
+      { id: "sometimes", label: "有時候會記", desc: "但很難連續一整個月", score: { app: 1, bag: 1 } },
+      { id: "yes_but", label: "有記，但看完不知道怎麼調整", desc: "資料有了，缺整理方向", score: { app: 2 } },
+      { id: "not_ready", label: "我還不想開始記帳", desc: "想先從簡單工具暖身", score: { free: 2 } }
+    ]
+  },
+  {
+    id: "blocker",
+    title: "你比較常卡在哪裡？",
+    options: [
+      { id: "number", label: "看不懂數字", desc: "不知道收入、支出和餘額怎麼連起來", score: { app: 2 } },
+      { id: "action", label: "看得懂，但做不到", desc: "預算寫好了，錢還是跑掉", score: { bag: 2 } },
+      { id: "both", label: "兩個都有", desc: "數字和行動都需要有人拉一把", score: { app: 2, bag: 2 } },
+      { id: "small", label: "還沒有明確卡點", desc: "只是想先建立一點感覺", score: { free: 2 } }
+    ]
+  },
+  {
+    id: "reminder",
+    title: "你比較需要哪種提醒？",
+    options: [
+      { id: "screen", label: "每天打開就看得到狀態", desc: "喜歡用手機或電腦整理", score: { app: 2 } },
+      { id: "touch", label: "摸得到、放得進去的儀式感", desc: "需要實體物提醒自己", score: { bag: 2 } },
+      { id: "combo", label: "兩種都需要", desc: "想看全局，也想要行動感", score: { app: 1, bag: 2 } },
+      { id: "soft", label: "先不要太多提醒", desc: "想先用文章和免費工具慢慢靠近", score: { free: 2 } }
+    ]
+  },
+  {
+    id: "pattern",
+    title: "你的消費模式比較像哪一種？",
+    options: [
+      { id: "many", label: "小額很多，月底才嚇到", desc: "需要把日常花費整理起來", score: { app: 2 } },
+      { id: "cash", label: "錢在身邊就容易被花掉", desc: "需要先把目標金額分開", score: { bag: 2 } },
+      { id: "mixed", label: "刷卡、轉帳、現金混在一起", desc: "需要一套整理方式，再加一點實體阻力", score: { app: 2, bag: 1 } },
+      { id: "unclear", label: "我還說不出模式", desc: "需要先找到自己的位置", score: { free: 1, app: 1 } }
+    ]
+  },
+  {
+    id: "goal",
+    title: "面對存錢目標，你比較常怎麼樣？",
+    options: [
+      { id: "no_goal", label: "沒有明確目標", desc: "只知道應該要存一點", score: { free: 2 } },
+      { id: "goal_number", label: "有目標，但不知道每月要怎麼拆", desc: "需要把大目標拆成日常數字", score: { app: 2 } },
+      { id: "goal_spend", label: "有目標，但錢常被別的事用掉", desc: "需要讓目標金額有自己的位置", score: { bag: 2 } },
+      { id: "goal_both", label: "目標明確，但執行不穩", desc: "需要數字規劃和行為提醒一起來", score: { app: 1, bag: 2 } }
+    ]
+  },
+  {
+    id: "first_step",
+    title: "你現在最想先跨出的第一步是什麼？",
+    options: [
+      { id: "try", label: "先免費試試看", desc: "還不想買東西，只想確認方向", score: { free: 3 } },
+      { id: "organize", label: "把錢流向整理清楚", desc: "想知道自己每個月怎麼花", score: { app: 2 } },
+      { id: "save", label: "先把錢存得住", desc: "想降低亂花掉的機率", score: { bag: 2 } },
+      { id: "full", label: "想一次把系統建起來", desc: "願意同時整理數字和行動", score: { app: 2, bag: 2 } }
+    ]
+  }
+];
+
+const TOOL_RESULTS = {
+  app: {
+    badge: "先整理錢流向",
+    title: "你適合先用 88La理財自動導航器",
+    lead: "你的卡點比較像看不懂錢流向。先把日常花費、預算和提醒整理起來，比急著買工具更有幫助。",
+    reasons: ["你需要每天看得到自己的狀態", "你比較需要整理資料和提醒", "先看懂數字，再決定怎麼存"],
+    primary: { label: "看導航器怎麼用", page: "app" },
+    secondary: { label: "先看免費資源", page: "resources" }
+  },
+  bag: {
+    badge: "先讓錢有位置",
+    title: "你適合先用實體存錢袋",
+    lead: "你的卡點比較像知道要存，但錢容易被日常花掉。實體工具可以幫你把目標金額先分開，降低亂用掉的機率。",
+    reasons: ["你需要摸得到的提醒", "你比較卡在行動而不是觀念", "把錢放進固定位置，會比只靠意志力穩"],
+    primary: { label: "看實體存錢袋", page: "envelope" },
+    secondary: { label: "細分適合哪款存錢袋", href: QUIZ_URL }
+  },
+  both: {
+    badge: "數字和行動一起處理",
+    title: "你適合導航器加存錢袋一起用",
+    lead: "你的回答同時出現看不懂錢流向和存不住的卡點。導航器負責看全局，存錢袋負責把行動變得具體。",
+    reasons: ["你需要先知道錢去哪", "你也需要把目標金額分出來", "一個工具整理全局，一個工具處理習慣"],
+    primary: { label: "先看導航器", page: "app" },
+    secondary: { label: "再看存錢袋", page: "envelope" }
+  },
+  free: {
+    badge: "先低壓暖身",
+    title: "你適合先從免費資源開始",
+    lead: "你現在比較像還在摸索階段。先不用急著買工具，先用免費測驗和文章找到自己的位置，再決定下一步。",
+    reasons: ["你還沒有明確卡點", "先降低壓力，比馬上建立系統更重要", "找到問題後，再選工具會更準"],
+    primary: { label: "看免費資源", page: "resources" },
+    secondary: { label: "看理財文章", page: "journal" }
+  }
+};
+
+function getToolQuizResult(answers) {
+  const scores = { app: 0, bag: 0, free: 0 };
+  TOOL_QUIZ_QUESTIONS.forEach(q => {
+    const opt = q.options.find(o => o.id === answers[q.id]);
+    Object.entries(opt?.score || {}).forEach(([key, value]) => { scores[key] += value; });
+  });
+  if (scores.free >= 6 && scores.app < 4 && scores.bag < 4) return { key: "free", scores };
+  if (scores.app >= 5 && scores.bag >= 5) return { key: "both", scores };
+  if (Math.abs(scores.app - scores.bag) <= 1 && scores.app + scores.bag >= 7) return { key: "both", scores };
+  if (scores.app >= scores.bag + 2 && scores.app >= 4) return { key: "app", scores };
+  if (scores.bag >= scores.app + 2 && scores.bag >= 4) return { key: "bag", scores };
+  return { key: "free", scores };
+}
+
+function ToolQuiz({ setPage }) {
+  const [step, setStep] = useState(0);
+  const [answers, setAnswers] = useState({});
+  const done = step >= TOOL_QUIZ_QUESTIONS.length;
+  const resultInfo = done ? getToolQuizResult(answers) : null;
+  const result = resultInfo ? TOOL_RESULTS[resultInfo.key] : null;
+  const q = TOOL_QUIZ_QUESTIONS[step];
+  const progress = Math.round((Math.min(step, TOOL_QUIZ_QUESTIONS.length) / TOOL_QUIZ_QUESTIONS.length) * 100);
+  const selected = q ? answers[q.id] : null;
+  const choose = id => setAnswers(prev => ({ ...prev, [q.id]: id }));
+  const restart = () => { setAnswers({}); setStep(0); };
+  const goAction = action => {
+    if (action.href) window.open(action.href, "_blank", "noopener,noreferrer");
+    else setPage(action.page);
+  };
+
+  return (
+    <div style={{ background: WHITE }}>
+      <div style={{ background: GRAD, padding: "64px 32px 40px", borderBottom: `1px solid ${BORDER}` }}>
+        <div style={{ maxWidth: 920, margin: "0 auto" }}>
+          <span className="tag" style={{ marginBottom: 18 }}>工具診斷</span>
+          <h1 style={{ fontSize: 34, fontWeight: 700, color: CHAR, lineHeight: 1.35, marginBottom: 14, maxWidth: 620 }}>我不確定我目前需要什麼工具</h1>
+          <p style={{ fontSize: 15, color: MID, lineHeight: 1.9, maxWidth: 600 }}>從你的消費模式和卡關點開始判斷，現在比較適合 88La理財自動導航器、實體存錢袋，還是先從免費資源開始。</p>
+        </div>
+      </div>
+
+      <div style={{ maxWidth: 920, margin: "0 auto", padding: "44px 32px 72px" }} className="page-wrap">
+        {!done && (
+          <div>
+            <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 16, marginBottom: 18 }}>
+              <span style={{ fontSize: 13, color: MID }}>第 {step + 1} 題，共 {TOOL_QUIZ_QUESTIONS.length} 題</span>
+              <span style={{ fontSize: 13, color: O, fontWeight: 700 }}>{progress}%</span>
+            </div>
+            <div style={{ height: 8, background: O2, borderRadius: 999, overflow: "hidden", marginBottom: 34 }}>
+              <div style={{ width: `${progress}%`, height: "100%", background: O, borderRadius: 999, transition: "width .24s ease" }} />
+            </div>
+
+            <div style={{ display: "grid", gridTemplateColumns: "0.9fr 1.1fr", gap: 34, alignItems: "start" }} className="grid2">
+              <div style={{ position: "sticky", top: 92 }}>
+                <h2 style={{ fontSize: 24, fontWeight: 700, color: CHAR, lineHeight: 1.45, marginBottom: 12 }}>{q.title}</h2>
+                <p style={{ fontSize: 14, color: MID, lineHeight: 1.9 }}>不用選最完美的答案，選最像你最近一個月狀態的那個就好。</p>
+              </div>
+              <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
+                {q.options.map(opt => {
+                  const active = selected === opt.id;
+                  return (
+                    <button key={opt.id} onClick={() => choose(opt.id)} style={{ textAlign: "left", background: active ? O2 : WHITE, border: `1px solid ${active ? O : BORDER}`, borderRadius: 12, padding: "18px 20px", color: CHAR, fontFamily: "inherit", boxShadow: active ? "none" : "0 1px 6px rgba(0,0,0,.04)", transition: "border-color .18s, background .18s" }}>
+                      <span style={{ display: "block", fontSize: 15, fontWeight: 700, marginBottom: 6 }}>{opt.label}</span>
+                      <span style={{ display: "block", fontSize: 13, color: MID, lineHeight: 1.7 }}>{opt.desc}</span>
+                    </button>
+                  );
+                })}
+                <div style={{ display: "flex", justifyContent: "space-between", gap: 12, marginTop: 14 }}>
+                  <button className="pg" onClick={() => step === 0 ? setPage("home") : setStep(s => s - 1)}>{step === 0 ? "回首頁" : "上一題"}</button>
+                  <button className="pb" disabled={!selected} onClick={() => setStep(s => s + 1)}>{step === TOOL_QUIZ_QUESTIONS.length - 1 ? "查看結果" : "下一題"}</button>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {done && result && (
+          <div style={{ display: "grid", gridTemplateColumns: "1fr 0.82fr", gap: 28, alignItems: "start" }} className="grid2">
+            <div style={{ background: O2, border: `1px solid ${O}22`, borderRadius: 16, padding: "34px 34px 32px" }}>
+              <span className="tag" style={{ background: WHITE, marginBottom: 18 }}>{result.badge}</span>
+              <h2 style={{ fontSize: 28, fontWeight: 700, color: CHAR, lineHeight: 1.4, marginBottom: 14 }}>{result.title}</h2>
+              <p style={{ fontSize: 15, color: MID, lineHeight: 1.95, marginBottom: 24 }}>{result.lead}</p>
+              <div style={{ display: "flex", flexDirection: "column", gap: 10, marginBottom: 28 }}>
+                {result.reasons.map(reason => (
+                  <div key={reason} style={{ display: "flex", gap: 10, alignItems: "flex-start" }}>
+                    <span style={{ width: 22, height: 22, borderRadius: 999, background: WHITE, color: O, display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0, fontSize: 13, fontWeight: 700 }}>✓</span>
+                    <span style={{ fontSize: 14, color: CHAR, lineHeight: 1.7 }}>{reason}</span>
+                  </div>
+                ))}
+              </div>
+              <div style={{ display: "flex", gap: 10, flexWrap: "wrap" }}>
+                <button className="pb" onClick={() => goAction(result.primary)}>{result.primary.label}</button>
+                <button className="pg" onClick={() => goAction(result.secondary)}>{result.secondary.label}</button>
+                <button className="pg" onClick={restart}>重新測一次</button>
+              </div>
+            </div>
+
+            <div style={{ background: WHITE, border: `1px solid ${BORDER}`, borderRadius: 16, padding: "24px 24px 22px" }}>
+              <h3 style={{ fontSize: 16, fontWeight: 700, color: CHAR, marginBottom: 14 }}>這個結果怎麼來的？</h3>
+              <p style={{ fontSize: 13, color: MID, lineHeight: 1.8, marginBottom: 18 }}>系統會看你的回答偏向「需要整理錢流向」、「需要讓錢有位置」或「先低壓暖身」。只有兩邊分數都高時，才會推薦兩種工具一起用。</p>
+              <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
+                {[["錢流向", resultInfo.scores.app], ["行動阻力", resultInfo.scores.bag], ["先暖身", resultInfo.scores.free]].map(([label, value]) => (
+                  <div key={label}>
+                    <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 5 }}>
+                      <span style={{ fontSize: 12, color: MID }}>{label}</span>
+                      <span style={{ fontSize: 12, color: O, fontWeight: 700 }}>{value}</span>
+                    </div>
+                    <div style={{ height: 7, background: GRAY, borderRadius: 999, overflow: "hidden" }}>
+                      <div style={{ height: "100%", width: `${Math.min(value * 10, 100)}%`, background: O, borderRadius: 999 }} />
+                    </div>
+                  </div>
+                ))}
+              </div>
+              <div style={{ marginTop: 24, paddingTop: 18, borderTop: `1px solid ${BORDER}` }}>
+                <p style={{ fontSize: 12, color: LIGHT, lineHeight: 1.8 }}>這不是財務建議，也不是要你立刻購買。它只是幫你先判斷，目前比較值得處理的卡點在哪裡。</p>
+              </div>
+            </div>
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}
+
+function Resources({ resources, setResources, isAdmin, articles, setArticles, setId, setPage, resourcesHero, setResourcesHero, resourcesCopy, setResourcesCopy }) {
   const rc = { ...DEFAULTS.resourcesCopy, ...(resourcesCopy || {}) };
   const [editCopy, setEditCopy] = useState(false);
   const [tmpCopy, setTmpCopy] = useState(rc);
   const [mainFilter, setMainFilter] = useState("all");
-  const [editingPwd, setEditingPwd] = useState(false);
-  const [tmpPwd, setTmpPwd] = useState(memberPassword || "");
   const showTools = mainFilter === "all" || mainFilter === "tools";
   const showArticles = mainFilter === "all" || mainFilter === "free" || mainFilter === "member";
   const articleList = [...(articles || [])].sort((a, b) => (b.date || "").localeCompare(a.date || ""));
@@ -3068,21 +3484,17 @@ function Resources({ resources, setResources, isAdmin, articles, setArticles, se
         )}
         {isAdmin && (
           <div style={{ marginTop: 20, background: GRAY, border: `1px solid ${BORDER}`, padding: "16px 20px" }}>
-            {!editingPwd ? (
-              <div style={{ display: "flex", alignItems: "center", gap: 12, flexWrap: "wrap" }}>
-                <p style={{ fontSize: 12, color: MID }}>會員限定文章密碼：{memberPassword ? <span style={{ color: CHAR, fontWeight: 500 }}>已設定（{"•".repeat(Math.min(memberPassword.length, 10))}）</span> : <span style={{ color: "#C0392B" }}>尚未設定，會員限定文章目前任何人都能看到全文</span>}</p>
-                <span onClick={() => { setTmpPwd(memberPassword || ""); setEditingPwd(true); }} style={{ fontSize: 12, color: O, cursor: "pointer" }}>{memberPassword ? "修改密碼" : "設定密碼"}</span>
-              </div>
-            ) : (
-              <div style={{ display: "flex", gap: 10, flexWrap: "wrap", alignItems: "center" }}>
-                <input value={tmpPwd} onChange={e => setTmpPwd(e.target.value)} placeholder="設定共用密碼" style={{ maxWidth: 240 }} />
-                <button className="pb" style={{ fontSize: 12, padding: "8px 16px" }} onClick={() => { setMemberPassword(tmpPwd.trim()); setEditingPwd(false); }}>儲存</button>
-                <button className="pg" style={{ fontSize: 12, padding: "8px 16px" }} onClick={() => setEditingPwd(false)}>取消</button>
-              </div>
-            )}
-            <p style={{ fontSize: 11, color: LIGHT, marginTop: 10, lineHeight: 1.6 }}>提醒：這是單一共用密碼，給所有會員限定文章共用，不是逐篇文章各自的密碼。此密碼儲存在網站公開內容中，只能防一般讀者，無法防真的想繞過的技術使用者。</p>
+            <p style={{ fontSize: 12, color: MID, lineHeight: 1.8 }}>會員文章密碼已改由伺服器環境變數 <strong>MEMBER_ARTICLE_PASSWORD</strong> 管理，不再儲存在 Firestore 或前端程式碼中。</p>
+            <p style={{ fontSize: 11, color: LIGHT, marginTop: 8, lineHeight: 1.6 }}>會員全文會透過受保護 API 讀取，解鎖前不會載入到瀏覽器 DOM。</p>
           </div>
         )}
+        <div style={{ marginTop: 26, background: O2, border: `1px solid ${O}24`, borderRadius: 16, padding: "22px 24px", display: "flex", alignItems: "center", justifyContent: "space-between", gap: 18, flexWrap: "wrap" }}>
+          <div style={{ flex: 1, minWidth: 240 }}>
+            <h2 style={{ fontSize: 18, color: CHAR, fontWeight: 700, marginBottom: 6 }}>不確定自己需要哪個工具？</h2>
+            <p style={{ fontSize: 13, color: MID, lineHeight: 1.8 }}>先用 2 分鐘診斷你的消費模式，看看現在比較適合導航器、存錢袋，還是先從免費資源開始。</p>
+          </div>
+          <button className="pb" onClick={() => setPage("tool-quiz")} style={{ flexShrink: 0 }}>開始工具診斷</button>
+        </div>
       </div>
       {showTools && (
       <div style={{ maxWidth: 1100, margin: "0 auto", padding: "48px 32px" }} className="page-wrap">
@@ -3194,13 +3606,27 @@ function Newsletter({ newsletter, setNewsletter, isAdmin, articles, setArticles,
   const [tmp, setTmp] = useState(info);
   const [email, setEmail] = useState("");
   const [submitted, setSubmitted] = useState(false);
+  const [submitting, setSubmitting] = useState(false);
+  const [subErr, setSubErr] = useState("");
   const save = () => { setNewsletter(tmp); setEditMode(false); };
   const recent = [...(articles || [])].sort((a, b) => b.date.localeCompare(a.date)).slice(0, 3);
   const open = id => { setArticles(prev => prev.map(a => a.id === id ? { ...a, views: (a.views || 0) + 1 } : a), { silent: true }); setId(id); setPage("article"); window.scrollTo({ top: 0, behavior: "instant" }); const a = (articles || []).find(x => x.id === id); history.pushState({}, "", "?article=" + (a?.slug || id)); };
   const handleSubscribe = async () => {
-    if (!email) return;
-    try { await fbSet("subscribers_" + Date.now(), email); } catch { }
-    setSubmitted(true);
+    const normalized = email.trim();
+    if (!isValidEmail(normalized) || submitting) { setSubErr("請輸入有效的 Email"); return; }
+    setSubmitting(true); setSubErr("");
+    try {
+      const r = await fetch("/api/newsletter-subscribe", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email: normalized }),
+      });
+      if (!r.ok) throw new Error("subscribe_failed");
+      setSubmitted(true);
+    } catch {
+      setSubErr("訂閱儲存失敗，請稍後再試");
+    }
+    setSubmitting(false);
   };
   if (editMode) return (
     <div style={{ maxWidth: 640, margin: "0 auto", padding: "60px 32px" }} className="page-wrap">
@@ -3242,10 +3668,11 @@ function Newsletter({ newsletter, setNewsletter, isAdmin, articles, setArticles,
             </div>
           ) : (
             <div style={{ display: "flex", gap: 0, maxWidth: 420 }}>
-              <input type="email" placeholder={info.emailPlaceholder} value={email} onChange={e => setEmail(e.target.value)} onKeyDown={e => e.key === "Enter" && handleSubscribe()} style={{ flex: 1, borderBottom: "none", border: `1px solid #D0D5DA`, padding: "12px 16px", fontSize: 14, background: WHITE }} />
-              <button className="pb" style={{ padding: "12px 22px", fontSize: 13, flexShrink: 0 }} onClick={handleSubscribe} disabled={!email}>{info.subscribeBtn}</button>
+              <input type="email" placeholder={info.emailPlaceholder} value={email} onChange={e => { setEmail(e.target.value); setSubErr(""); }} onKeyDown={e => e.key === "Enter" && handleSubscribe()} style={{ flex: 1, borderBottom: "none", border: `1px solid #D0D5DA`, padding: "12px 16px", fontSize: 14, background: WHITE }} />
+              <button className="pb" style={{ padding: "12px 22px", fontSize: 13, flexShrink: 0 }} onClick={handleSubscribe} disabled={!email.trim() || submitting}>{submitting ? "送出中..." : info.subscribeBtn}</button>
             </div>
           )}
+          {subErr && <p style={{ fontSize: 12, color: "#C0392B", marginTop: 10 }}>{subErr}</p>}
           <p style={{ fontSize: 11, color: LIGHT, marginTop: 10 }}>{info.archiveNote}</p>
         </div>
       </div>
@@ -3912,7 +4339,6 @@ export default function App() {
   const [tags, setTags, taL] = useFS("tags", DEFAULTS.tags);
   const [links, setLinks, lL] = useFS("links", DEFAULTS.links);
   const [footerTagline, setFooterTagline, ftL] = useFS("footerTagline", DEFAULTS.footerTagline);
-  const [memberPassword, setMemberPassword, mpL] = useFS("memberPassword", DEFAULTS.memberPassword);
   const [navLabels, setNavLabels, nvL] = useFS("navLabels", DEFAULTS.navLabels);
   const [mobileTabLabels, setMobileTabLabels, mtL] = useFS("mobileTabLabels", DEFAULTS.mobileTabLabels);
   const [footerLabels, setFooterLabels, flbL] = useFS("footerLabels", DEFAULTS.footerLabels);
@@ -3944,8 +4370,14 @@ export default function App() {
   const [page, setPage] = useState("home");
   const [id, setId] = useState(null);
   const [isAdmin, setIsAdmin] = useState(false);
+  const [isLocalAdminPreview, setIsLocalAdminPreview] = useState(false);
 
-  useEffect(() => onAuthStateChanged(auth, (user) => setIsAdmin(!!user && ADMIN_EMAILS.includes(user.email))), []);
+  useEffect(() => onAuthStateChanged(auth, (user) => {
+    const params = new URLSearchParams(window.location.search);
+    const localAdminPreview = isLocalPreviewHost() && params.get("dev_admin") === "true";
+    setIsLocalAdminPreview(localAdminPreview);
+    setIsAdmin(localAdminPreview || (!!user && ADMIN_EMAILS.includes(user.email)));
+  }), []);
   useLayoutEffect(() => { window.scrollTo({ top: 0, behavior: "instant" }); }, [page]);
 
   // GA4：站外連結一律送 outbound_click；連到理財導航器的按鈕額外標記 cta_click，方便分開看轉換成效
@@ -4010,7 +4442,7 @@ export default function App() {
     }
   }, [acL]);
   useEffect(() => {
-    if (!acL || !isAdmin) return;
+    if (!acL || !isAdmin || isLocalAdminPreview) return;
     const gd = appContent.guideData;
     if (!gd?.phases) return;
     const allTitles = gd.phases.flatMap(p => p.steps.map(s => s.title));
@@ -4038,7 +4470,7 @@ export default function App() {
     updated.phases.forEach(p => { if (p.isSetup) { p.steps.forEach((s, i) => { s.num = String(i + 1).padStart(2, "0"); }); } else { p.steps.forEach(s => { s.num = String(stepNum++).padStart(2, "0"); }); } });
     if (needsFaq) updated.faqs = [...(gd.faqs || []), { id: 8, q: "幫別人代墊刷卡，對方還現金，該怎麼記？", a: "一樣用信用卡記錄這筆消費，因為會跟著你的帳期出帳，金額比較準確。對方還你現金時，等於你已經把這筆卡費預留起來了。建議在備註欄寫上「代墊」方便辨識。" }];
     setAppContent(prev => ({ ...prev, guideData: updated }), { silent: true });
-  }, [acL, isAdmin]);
+  }, [acL, isAdmin, isLocalAdminPreview]);
   useEffect(() => {
     if (!gL) return;
     if ((!goods || goods.length === 0) && DEFAULTS.goods.length > 0) {
@@ -4046,7 +4478,7 @@ export default function App() {
     }
   }, [gL]);
   useEffect(() => {
-    if (!aL || !isAdmin) return;
+    if (!aL || !isAdmin || isLocalAdminPreview) return;
     const missing = articles.filter(a => !a.slug && a.title);
     if (missing.length === 0) return;
     const taken = new Set(articles.map(a => a.slug).filter(Boolean));
@@ -4058,14 +4490,23 @@ export default function App() {
       return { ...a, slug };
     });
     setArticles(updated);
-  }, [aL, isAdmin]);
-  const saveArticle = d => {
+  }, [aL, isAdmin, isLocalAdminPreview]);
+  useEffect(() => {
+    if (!aL || !isAdmin || isLocalAdminPreview) return;
+    migrateMemberArticles()
+      .then(result => {
+        if (result?.migrated > 0) setArticles(prev => prev.map(publicArticle), { silent: true });
+      })
+      .catch(e => console.error("Member article migration failed", e));
+  }, [aL, isAdmin, isLocalAdminPreview]);
+  const saveArticle = async d => {
     const nid = Math.max(...articles.map(a => a.id), 0) + 1;
     const baseSlug = toSlug(d.title);
     const taken = new Set(articles.map(a => a.slug).filter(Boolean));
     let slug = baseSlug, n = 2;
     while (taken.has(slug)) { slug = baseSlug + "-" + n; n++; }
-    setArticles(prev => [...prev, { id: nid, slug, ...d, excerpt: d.excerpt || (stripHtml(d.content).slice(0, 80) + "⋯"), views: 0, comments: [], date: new Date().toISOString().slice(0, 10) }]);
+    if (d.member) await saveMemberArticleContent(nid, d.content);
+    setArticles(prev => [...prev, publicArticle({ id: nid, slug, ...d, content: d.member ? "" : d.content, excerpt: d.excerpt || (stripHtml(d.content).slice(0, 80) + "⋯"), views: 0, comments: [], date: new Date().toISOString().slice(0, 10) })]);
     setPage("journal");
   };
 
@@ -4093,7 +4534,8 @@ export default function App() {
         {page === "goods" && <Goods goods={goods} setGoods={setGoods} isAdmin={isAdmin} goodsHero={goodsHero} setGoodsHero={setGoodsHero} goodsCopy={goodsCopy} setGoodsCopy={setGoodsCopy} />}
         {page === "app" && <AppPage appContent={appContent} setAppContent={setAppContent} isAdmin={isAdmin} setPage={nav} demoStory={demoStory} setDemoStory={setDemoStory} />}
         {page === "guide" && <Guide appContent={appContent} isAdmin={isAdmin} setPage={nav} />}
-        {page === "resources" && <Resources resources={resources} setResources={setResources} isAdmin={isAdmin} articles={articles} setArticles={setArticles} setId={setId} setPage={setPage} resourcesHero={resourcesHero} setResourcesHero={setResourcesHero} memberPassword={memberPassword} setMemberPassword={setMemberPassword} resourcesCopy={resourcesCopy} setResourcesCopy={setResourcesCopy} />}
+        {page === "tool-quiz" && <ToolQuiz setPage={nav} />}
+        {page === "resources" && <Resources resources={resources} setResources={setResources} isAdmin={isAdmin} articles={articles} setArticles={setArticles} setId={setId} setPage={setPage} resourcesHero={resourcesHero} setResourcesHero={setResourcesHero} resourcesCopy={resourcesCopy} setResourcesCopy={setResourcesCopy} />}
         {page === "newsletter" && <Newsletter newsletter={newsletter} setNewsletter={setNewsletter} isAdmin={isAdmin} articles={articles} setArticles={setArticles} setId={setId} setPage={setPage} />}
         {page === "contact" && <Contact links={links} contactContent={contactContent} setContactContent={setContactContent} isAdmin={isAdmin} />}
         {page === "savings-quiz" && isAdmin && <SavingsBagQuizAdmin savingsBagQuiz={savingsBagQuiz} setSavingsBagQuiz={setSavingsBagQuiz} />}
@@ -4102,7 +4544,7 @@ export default function App() {
         {page === "terms" && <TermsPage isAdmin={isAdmin} termsContent={termsContent} setTermsContent={setTermsContent} />}
         {page === "privacy" && <PrivacyPage isAdmin={isAdmin} privacyContent={privacyContent} setPrivacyContent={setPrivacyContent} />}
         {page === "disclaimer" && <DisclaimerPage isAdmin={isAdmin} disclaimerContent={disclaimerContent} setDisclaimerContent={setDisclaimerContent} />}
-        {page === "article" && article && <Article article={article} onBack={() => nav("journal")} setArticles={setArticles} isAdmin={isAdmin} tags={tags} links={links} setPage={nav} products={products} resources={resources} memberPassword={memberPassword} />}
+        {page === "article" && article && <Article article={article} onBack={() => nav("journal")} setArticles={setArticles} isAdmin={isAdmin} tags={tags} links={links} setPage={nav} products={products} resources={resources} />}
         {page === "write" && isAdmin && <Write onSave={saveArticle} onBack={() => nav("journal")} tags={tags} products={products} resources={resources} />}
       </div>
       <Footer links={links} footerTagline={footerTagline} setFooterTagline={setFooterTagline} isAdmin={isAdmin} setPage={nav} footerLabels={footerLabels} setFooterLabels={setFooterLabels} />
