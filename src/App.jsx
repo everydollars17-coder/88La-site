@@ -26,6 +26,22 @@ const ADMIN_EMAILS = ["everydollars17@gmail.com"];
 const APP_URL = "https://88la-finance.vercel.app";
 const QUIZ_URL = "https://88la-site.vercel.app/resources/savings-bag-quiz/";
 
+// 頁面 key ⇄ 網址路徑對照表，供瀏覽器網址列同步用。article 頁另用 /article/:slug 動態路徑處理。
+const PAGE_PATHS = {
+  home: "/", app: "/app", resources: "/resources", envelope: "/savings-bag", about: "/about",
+  journal: "/journal", community: "/community", shop: "/shop", goods: "/goods", ig: "/ig",
+  guide: "/guide", "tool-quiz": "/tool-quiz", newsletter: "/newsletter", contact: "/contact",
+  plans: "/plans", pricing: "/pricing", terms: "/terms", privacy: "/privacy", disclaimer: "/disclaimer",
+  write: "/write", "savings-quiz": "/savings-quiz"
+};
+const PATH_TO_PAGE = Object.fromEntries(Object.entries(PAGE_PATHS).map(([p, path]) => [path, p]));
+const pathForPage = p => PAGE_PATHS[p] || "/";
+const pageForPath = pathname => {
+  if (pathname.startsWith("/article/")) return "article";
+  return PATH_TO_PAGE[pathname] || "home";
+};
+const articleSlugFromPath = pathname => pathname.startsWith("/article/") ? decodeURIComponent(pathname.slice("/article/".length).replace(/\/$/, "")) : null;
+
 const O = "#C85A14";
 const O2 = "#FDF0E8";
 const CORAL = "#F19483";
@@ -164,7 +180,7 @@ const DEFAULTS = {
     eyebrow: "LEGAL",
     title: "88La 理財導航器\n服務條款與退款政策",
     lastUpdated: "最後更新：2026 年 7 月",
-    body: `<h2>一、服務說明</h2><p>88La 理財導航器（以下簡稱「本服務」）由 88La 提供，為個人理財記帳管理工具，提供收支記錄、預算規劃及桌面快速記帳等功能。本服務以訂閱制提供，訂閱期間內可無限制使用所有功能。</p><h2>二、訂閱方案與收費</h2><p>本服務提供以下訂閱方案：</p><ul><li>月訂閱：NT$149 / 月</li><li>年方案：NT$999 / 年</li><li>兩年方案：NT$1,899 / 兩年</li></ul><p>所有金額均為新台幣計價。付款由綠界科技股份有限公司代為處理，採信用卡定期定額方式進行。</p><h2>三、自動續約</h2><p>訂閱方案將於到期日自動續約，並依原方案金額扣款。如不希望續約，請於訂閱到期日前至帳戶設定頁面取消。取消後，服務仍可使用至當期訂閱到期日為止。</p><h2>四、退款政策</h2><p>本服務所販售之內容為數位服務，依消費者保護法第 19 條規定，數位內容於開通後不適用七天鑑賞期退換貨規定。</p><p>如有特殊情形，請聯繫 everydollars17@gmail.com，由 88La 個案審酌處理。</p><h2>五、帳戶與資料</h2><p>用戶須自行保管帳戶登入資訊。用戶的記帳資料儲存於個人 Google 雲端帳號中，訂閱取消後資料仍保留於用戶自己的 Google 試算表，88La 不持有用戶資料。</p><h2>六、服務變更</h2><p>88La 保留調整訂閱方案定價及功能內容之權利，並將提前 30 天以電子郵件通知用戶。現有訂閱者不受漲價影響，直至當期訂閱到期。</p><h2>七、帳號到期與資料保留</h2><ol><li>訂閱方案到期前三天，系統將透過 Email 及 App 推播通知提醒續訂。</li><li>方案到期後，帳號進入 7 天緩衝期：<ul><li>可瀏覽所有歷史記帳紀錄</li><li>可匯出個人資料</li><li>新增、編輯、刪除等寫入功能暫停使用</li></ul></li><li>緩衝期結束後（到期後第 8 天起），帳號功能將完全停用，但資料不會主動刪除。</li><li>如需恢復使用，續訂即可立即解鎖所有功能。</li></ol><h2>八、聯絡方式</h2><p>Email：everydollars17@gmail.com<br>官方網站：https://88la-site.vercel.app</p>`,
+    body: `<h2>一、服務說明</h2><p>88La 理財導航器（以下簡稱「本服務」）由 88La 提供，為個人理財記帳管理工具，提供收支記錄、預算規劃及桌面快速記帳等功能。本服務以訂閱制提供，訂閱期間內可無限制使用所有功能。</p><h2>二、訂閱方案與收費</h2><p>本服務提供以下訂閱方案：</p><ul><li>月訂閱：NT$139 / 月</li><li>年方案：NT$1,188 / 年</li><li>兩年方案：NT$1,899 / 兩年</li></ul><p>所有金額均為新台幣計價。付款由綠界科技股份有限公司代為處理，採信用卡定期定額方式進行。</p><h2>三、自動續約</h2><p>訂閱方案將於到期日自動續約，並依原方案金額扣款。如不希望續約，請於訂閱到期日前至帳戶設定頁面取消。取消後，服務仍可使用至當期訂閱到期日為止。</p><h2>四、退款政策</h2><p>本服務所販售之內容為數位服務，依消費者保護法第 19 條規定，數位內容於開通後不適用七天鑑賞期退換貨規定。</p><p>如有特殊情形，請聯繫 everydollars17@gmail.com，由 88La 個案審酌處理。</p><h2>五、帳戶與資料</h2><p>用戶須自行保管帳戶登入資訊。用戶的記帳資料儲存於個人 Google 雲端帳號中，訂閱取消後資料仍保留於用戶自己的 Google 試算表，88La 不持有用戶資料。</p><h2>六、服務變更</h2><p>88La 保留調整訂閱方案定價及功能內容之權利，並將提前 30 天以電子郵件通知用戶。現有訂閱者不受漲價影響，直至當期訂閱到期。</p><h2>七、帳號到期與資料保留</h2><ol><li>訂閱方案到期前三天，系統將透過 Email 及 App 推播通知提醒續訂。</li><li>方案到期後，帳號進入 7 天緩衝期：<ul><li>可瀏覽所有歷史記帳紀錄</li><li>可匯出個人資料</li><li>新增、編輯、刪除等寫入功能暫停使用</li></ul></li><li>緩衝期結束後（到期後第 8 天起），帳號功能將完全停用，但資料不會主動刪除。</li><li>如需恢復使用，續訂即可立即解鎖所有功能。</li></ol><h2>八、聯絡方式</h2><p>Email：everydollars17@gmail.com<br>官方網站：https://88la-site.vercel.app</p>`,
     footerNote: "使用本服務即代表你已閱讀並同意以上服務條款。\n如對條款有任何疑問，請於訂閱前透過 Email 與我們聯繫。"
   },
   privacyContent: {
@@ -423,8 +439,8 @@ const DEFAULTS = {
       { id: 6, n: "06", title: "PWA 支援", desc: "加到主畫面，iOS / Android 體驗接近原生 App。", img: "" },
     ],
     plans: [
-      { id: 1, name: "月訂閱", price: "NT$149", period: "/月", highlight: false, badge: "", features: ["88La 理財導航器完整功能", "桌面快速記帳", "隨時可取消"], detailTitle: "", detailImg: "", detailContent: "" },
-      { id: 2, name: "年方案", price: "NT$999", period: "/年", highlight: true, badge: "最多人選擇", features: ["88La 理財導航器完整功能", "桌面快速記帳", "省下約 35%", "相當於 NT$83/月"], detailTitle: "", detailImg: "", detailContent: "" },
+      { id: 1, name: "月訂閱", price: "NT$139", period: "/月", highlight: false, badge: "", features: ["88La 理財導航器完整功能", "桌面快速記帳", "隨時可取消"], detailTitle: "", detailImg: "", detailContent: "" },
+      { id: 2, name: "年方案", price: "NT$1,188", period: "/年", highlight: true, badge: "最多人選擇", features: ["88La 理財導航器完整功能", "桌面快速記帳", "省下約 29%", "相當於 NT$99/月"], detailTitle: "", detailImg: "", detailContent: "" },
       { id: 3, name: "兩年方案", price: "NT$1,899", period: "/兩年", highlight: false, badge: "", features: ["88La 理財導航器完整功能", "桌面快速記帳", "最划算方案", "相當於 NT$79/月"], detailTitle: "", detailImg: "", detailContent: "" },
     ],
     guideTitle: "88La 理財自動導航器，使用說明",
@@ -1267,12 +1283,6 @@ function PageHero({ title, fields, data, setData, defaults, isAdmin, children })
 
 function HomeHero({ homeHero, setHomeHero, isAdmin, setPage }) {
   const h = { ...DEFAULTS.homeHero, ...(homeHero || {}) };
-  const quickRoutes = [
-    ["tool-quiz", "我不確定", "工具診斷"],
-    ["resources", "先免費試試", "測驗和工具"],
-    ["app", "開始記帳", "看懂錢流向"],
-    ["envelope", "實體存錢袋", "把目標分好"]
-  ];
   const [editing, setEditing] = useState(false);
   const [tmp, setTmp] = useState(h);
   const save = () => { setHomeHero(tmp); setEditing(false); };
@@ -1302,14 +1312,6 @@ function HomeHero({ homeHero, setHomeHero, isAdmin, setPage }) {
             <button className="pg" onClick={() => setPage("resources")}>{h.cta2Text}</button>
             {isAdmin && <span onClick={() => { setTmp(h); setEditing(true); }} style={{ fontSize: 12, color: O, cursor: "pointer", marginLeft: 4 }}>編輯</span>}
           </div>
-          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(150px,1fr))", gap: 8, marginTop: 22, maxWidth: 560 }}>
-            {quickRoutes.map(([pageKey, label, sub]) => (
-              <button key={pageKey} onClick={() => setPage(pageKey)} style={{ textAlign: "left", background: "rgba(255,255,255,.58)", border: `1px solid ${O}26`, borderRadius: 14, padding: "12px 14px", cursor: "pointer", fontFamily: "inherit", color: CHAR }}>
-                <span style={{ display: "block", fontSize: 13, fontWeight: 700, marginBottom: 3 }}>{label}</span>
-                <span style={{ display: "block", fontSize: 11, color: MID }}>{sub}</span>
-              </button>
-            ))}
-          </div>
         </div>
         <div style={{ display: "flex", justifyContent: "center" }}>
           <div style={{ width: "100%", maxWidth: 260, aspectRatio: "9/19", borderRadius: 32, background: WHITE, border: `1px solid ${BORDER}`, boxShadow: "0 24px 60px rgba(0,0,0,.14)", overflow: "hidden", display: "flex", alignItems: "center", justifyContent: "center" }}>
@@ -1325,7 +1327,7 @@ function Home({ articles, setPage, setId, setArticles, isAdmin, homeHero, setHom
   const hc = { ...DEFAULTS.homeCopy, ...(homeCopy || {}) };
   const [editHomeCopy, setEditHomeCopy] = useState(false);
   const [tmpHomeCopy, setTmpHomeCopy] = useState(hc);
-  const open = id => { setArticles(prev => prev.map(a => a.id === id ? { ...a, views: (a.views || 0) + 1 } : a), { silent: true }); setId(id); setPage("article"); window.scrollTo({ top: 0, behavior: "instant" }); const a = articles.find(x => x.id === id); history.pushState({}, "", "?article=" + (a?.slug || id)); };
+  const open = id => { setArticles(prev => prev.map(a => a.id === id ? { ...a, views: (a.views || 0) + 1 } : a), { silent: true }); setId(id); setPage("article"); window.scrollTo({ top: 0, behavior: "instant" }); const a = articles.find(x => x.id === id); history.pushState({}, "", "/article/" + encodeURIComponent(a?.slug || id)); };
   const ts = trustStats && trustStats.length ? trustStats : DEFAULTS.trustStats;
   const ph = paths && paths.length ? paths : DEFAULTS.paths;
   const [editStats, setEditStats] = useState(false);
@@ -1461,7 +1463,7 @@ function Journal({ articles, setArticles, setId, setPage, isAdmin, siteTitle, se
     if (sort === "views") return (b.views || 0) - (a.views || 0);
     return 0;
   });
-  const open = id => { setArticles(prev => prev.map(a => a.id === id ? { ...a, views: (a.views || 0) + 1 } : a), { silent: true }); setId(id); setPage("article"); window.scrollTo({ top: 0, behavior: "instant" }); const a = articles.find(x => x.id === id); history.pushState({}, "", "?article=" + (a?.slug || id)); };
+  const open = id => { setArticles(prev => prev.map(a => a.id === id ? { ...a, views: (a.views || 0) + 1 } : a), { silent: true }); setId(id); setPage("article"); window.scrollTo({ top: 0, behavior: "instant" }); const a = articles.find(x => x.id === id); history.pushState({}, "", "/article/" + encodeURIComponent(a?.slug || id)); };
   const addTag = () => { const t = newTag.trim(); if (t && !tags.includes(t)) setTags(prev => [...prev, t]); setNewTag(""); };
   const delTag = t => { if (confirm("確定刪除標籤「" + t + "」？")) setTags(prev => prev.filter(x => x !== t)); };
   const moveA = (idx, dir) => setArticles(prev => {
@@ -1649,7 +1651,7 @@ function Article({ article, onBack, setArticles, isAdmin, tags, links, setPage, 
     setArticles(prev => prev.map(a => a.id === article.id ? { ...a, comments: [...a.comments, c] } : a));
     setName(""); setText(""); lastSubmit.current = now; setCooldown(0);
   };
-  const articleUrl = `${window.location.origin}${window.location.pathname}?article=${article.slug || article.id}`;
+  const articleUrl = `${window.location.origin}/article/${encodeURIComponent(article.slug || article.id)}`;
   const copy = () => { navigator.clipboard.writeText(articleUrl); setCopied(true); setTimeout(() => setCopied(false), 2000); };
   useEffect(() => {
     setPwdInput(""); setPwdErr(false);
@@ -3429,7 +3431,7 @@ function Resources({ resources, setResources, isAdmin, articles, setArticles, se
   const showArticles = mainFilter === "all" || mainFilter === "free" || mainFilter === "member";
   const articleList = [...(articles || [])].sort((a, b) => (b.date || "").localeCompare(a.date || ""));
   const filteredArticles = articleList.filter(a => mainFilter === "member" ? a.member : mainFilter === "free" ? !a.member : true);
-  const openArticle = id => { setArticles(prev => prev.map(a => a.id === id ? { ...a, views: (a.views || 0) + 1 } : a), { silent: true }); setId(id); setPage("article"); window.scrollTo({ top: 0, behavior: "instant" }); const a = (articles || []).find(x => x.id === id); history.pushState({}, "", "?article=" + (a?.slug || id)); };
+  const openArticle = id => { setArticles(prev => prev.map(a => a.id === id ? { ...a, views: (a.views || 0) + 1 } : a), { silent: true }); setId(id); setPage("article"); window.scrollTo({ top: 0, behavior: "instant" }); const a = (articles || []).find(x => x.id === id); history.pushState({}, "", "/article/" + encodeURIComponent(a?.slug || id)); };
   const [editing, setEditing] = useState(null);
   const [form, setForm] = useState({ name: "", type: "模板", desc: "", url: "", img: "", active: true });
   const [resUrlErr, setResUrlErr] = useState("");
@@ -3610,7 +3612,7 @@ function Newsletter({ newsletter, setNewsletter, isAdmin, articles, setArticles,
   const [subErr, setSubErr] = useState("");
   const save = () => { setNewsletter(tmp); setEditMode(false); };
   const recent = [...(articles || [])].sort((a, b) => b.date.localeCompare(a.date)).slice(0, 3);
-  const open = id => { setArticles(prev => prev.map(a => a.id === id ? { ...a, views: (a.views || 0) + 1 } : a), { silent: true }); setId(id); setPage("article"); window.scrollTo({ top: 0, behavior: "instant" }); const a = (articles || []).find(x => x.id === id); history.pushState({}, "", "?article=" + (a?.slug || id)); };
+  const open = id => { setArticles(prev => prev.map(a => a.id === id ? { ...a, views: (a.views || 0) + 1 } : a), { silent: true }); setId(id); setPage("article"); window.scrollTo({ top: 0, behavior: "instant" }); const a = (articles || []).find(x => x.id === id); history.pushState({}, "", "/article/" + encodeURIComponent(a?.slug || id)); };
   const handleSubscribe = async () => {
     const normalized = email.trim();
     if (!isValidEmail(normalized) || submitting) { setSubErr("請輸入有效的 Email"); return; }
@@ -4367,7 +4369,14 @@ export default function App() {
   const [goodsHero, setGoodsHero, ghL] = useFS("goodsHero", DEFAULTS.goodsHero);
   const [resourcesHero, setResourcesHero, rhL] = useFS("resourcesHero", DEFAULTS.resourcesHero);
   const [communityHero, setCommunityHero, chL] = useFS("communityHero", DEFAULTS.communityHero);
-  const [page, setPage] = useState("home");
+  const [page, setPageState] = useState("home");
+  const setPage = p => {
+    setPageState(p);
+    if (p !== "article") {
+      const path = pathForPage(p);
+      if (window.location.pathname !== path) history.pushState({}, "", path);
+    }
+  };
   const [id, setId] = useState(null);
   const [isAdmin, setIsAdmin] = useState(false);
   const [isLocalAdminPreview, setIsLocalAdminPreview] = useState(false);
@@ -4402,28 +4411,37 @@ export default function App() {
 
   const loaded = aL && pL && iL && gL && abL && tL && taL && lL && ftL && rlL && nlL && acL && ccL && sbqL;
   const article = articles.find(a => a.id === id);
-  const nav = p => { setPage(p); setId(null); history.pushState({}, "", window.location.pathname); };
+  const nav = p => { setPage(p); setId(null); };
 
+  // 初次載入：以網址路徑決定要顯示哪一頁；相容舊版 ?article= query 分享連結
   useEffect(() => {
     if (!loaded) return;
-    const params = new URLSearchParams(window.location.search);
-    const ap = params.get("article");
-    if (ap) {
-      const a = articles.find(x => x.slug === ap || String(x.id) === ap);
-      if (a) { setId(a.id); setPage("article"); }
+    const path = window.location.pathname;
+    const legacyArticleSlug = new URLSearchParams(window.location.search).get("article");
+    const slug = articleSlugFromPath(path) || legacyArticleSlug;
+    if (slug) {
+      const a = articles.find(x => x.slug === slug || String(x.id) === slug);
+      if (a) {
+        setId(a.id); setPageState("article");
+        if (path !== "/article/" + encodeURIComponent(a.slug || a.id)) {
+          history.replaceState({}, "", "/article/" + encodeURIComponent(a.slug || a.id));
+        }
+        return;
+      }
     }
-    const pg = params.get("page");
-    if (pg) { setPage(pg); }
+    const p = pageForPath(path);
+    if (p !== "home") setPageState(p);
   }, [loaded]);
 
   useEffect(() => {
     const onPop = () => {
-      const params = new URLSearchParams(window.location.search);
-      const ap = params.get("article");
-      if (ap) {
-        const a = articles.find(x => x.slug === ap || String(x.id) === ap);
-        if (a) { setId(a.id); setPage("article"); window.scrollTo({ top: 0, behavior: "instant" }); }
-      } else { setPage("home"); setId(null); window.scrollTo({ top: 0, behavior: "instant" }); }
+      const path = window.location.pathname;
+      const slug = articleSlugFromPath(path);
+      if (slug) {
+        const a = articles.find(x => x.slug === slug || String(x.id) === slug);
+        if (a) { setId(a.id); setPageState("article"); window.scrollTo({ top: 0, behavior: "instant" }); return; }
+      }
+      setPageState(pageForPath(path)); setId(null); window.scrollTo({ top: 0, behavior: "instant" });
     };
     window.addEventListener("popstate", onPop);
     return () => window.removeEventListener("popstate", onPop);
