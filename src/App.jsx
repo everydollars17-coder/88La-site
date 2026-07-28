@@ -1019,15 +1019,16 @@ const normalizeFooterLabels = labels => {
   return next;
 };
 const appPlanDefaults = {
-  monthly: { price: "NT$139", period: "/月", features: ["88La財務導航完整功能", "桌面快速記帳", "隨時可取消"] },
-  yearly: { price: "NT$1,188", period: "/年", features: ["88La財務導航完整功能", "桌面快速記帳", "省下約 29%", "相當於 NT$99/月"] },
-  twoYear: { price: "NT$2,199", period: "/兩年", features: ["88La財務導航完整功能", "桌面快速記帳", "最划算方案", "相當於 NT$92/月"] },
+  monthly: { id: 1, name: "月訂閱", price: "NT$139", period: "/月", highlight: false, badge: "", features: ["88La財務導航完整功能", "桌面快速記帳", "隨時可取消"] },
+  yearly: { id: 2, name: "年方案", price: "NT$1,188", period: "/年", highlight: true, badge: "最多人選擇", features: ["88La財務導航完整功能", "桌面快速記帳", "省下約 29%", "相當於 NT$99/月"] },
+  twoYear: { id: 3, name: "兩年方案", price: "NT$2,199", period: "/兩年", highlight: false, badge: "", features: ["88La財務導航完整功能", "桌面快速記帳", "最划算方案", "相當於 NT$92/月"] },
 };
 const planKind = plan => {
-  const text = `${plan?.id || ""} ${plan?.name || ""}`.toLowerCase();
-  if (text.includes("2year") || text.includes("兩") || text.includes("二年") || text.includes("2 年") || text.includes("2年")) return "twoYear";
-  if (text.includes("1year") || text.includes("年") || text.includes("1 年") || text.includes("1年")) return "yearly";
-  if (text.includes("monthly") || text.includes("月")) return "monthly";
+  const id = String(plan?.id || "").toLowerCase();
+  const name = String(plan?.name || "").toLowerCase();
+  if (id === "2year" || name.includes("兩") || name.includes("二年") || name.includes("2 年") || name.includes("2年")) return "twoYear";
+  if (id === "1year" || name.includes("年") || name.includes("1 年") || name.includes("1年")) return "yearly";
+  if (id === "monthly" || name.includes("月")) return "monthly";
   if (plan?.id === 3) return "twoYear";
   if (plan?.id === 2) return "yearly";
   return "monthly";
@@ -1036,12 +1037,24 @@ const normalizePlan = plan => {
   const defaults = appPlanDefaults[planKind(plan)];
   return {
     ...plan,
+    id: defaults.id,
+    name: defaults.name,
     price: defaults.price,
     period: defaults.period,
+    highlight: defaults.highlight,
+    badge: plan?.badge || defaults.badge,
     features: defaults.features,
     detailTitle: normalizeProductText(plan?.detailTitle || ""),
     detailContent: normalizeProductText(plan?.detailContent || ""),
   };
+};
+const normalizePlans = plans => {
+  const byKind = {};
+  (plans || []).forEach(plan => {
+    const kind = planKind(plan);
+    if (!byKind[kind]) byKind[kind] = plan;
+  });
+  return ["monthly", "yearly", "twoYear"].map(kind => normalizePlan(byKind[kind] || appPlanDefaults[kind]));
 };
 const normalizeAppContent = raw => {
   const content = { ...DEFAULTS.appContent, ...(raw || {}) };
@@ -1053,7 +1066,7 @@ const normalizeAppContent = raw => {
   ];
   const next = { ...content };
   textKeys.forEach(key => { next[key] = normalizeProductText(next[key]); });
-  next.plans = (content.plans || DEFAULTS.appContent.plans).map(normalizePlan);
+  next.plans = normalizePlans(content.plans || DEFAULTS.appContent.plans);
   return next;
 };
 const normalizeLegalContent = content => Object.fromEntries(
