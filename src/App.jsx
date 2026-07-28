@@ -128,6 +128,7 @@ button{font-family:inherit;cursor:pointer;border:none;border-radius:8px;}
   .footer-grid4{grid-template-columns:1fr 1fr!important;}
   .legacy-card{flex-direction:column!important;align-items:flex-start!important;}
   .grid-ig{grid-template-columns:1fr 1fr!important;}
+  .feedback-slide{flex-basis:78vw!important;}
   .about-grid{grid-template-columns:1fr!important;}
   .about-img{aspect-ratio:4/3!important;}
   .banner-h{height:460px!important;}
@@ -142,6 +143,9 @@ button{font-family:inherit;cursor:pointer;border:none;border-radius:8px;}
   .mob-menu{display:none!important;}
   .mob-panel{display:none!important;}
 }
+.feedback-carousel-track{scrollbar-width:none;-ms-overflow-style:none;}
+.feedback-carousel-track::-webkit-scrollbar{display:none;}
+.feedback-slide{scroll-snap-align:center;flex:0 0 clamp(220px,28vw,300px);}
 .article-content h2,.rich-ed h2{font-size:22px;font-weight:700;color:#1A1A1A;margin:32px 0 12px;line-height:1.4;}
 .article-content h3,.rich-ed h3{font-size:18px;font-weight:600;color:#1A1A1A;margin:24px 0 10px;line-height:1.4;}
 .rich-ed p{margin-bottom:18px;line-height:1.8;}
@@ -167,34 +171,34 @@ const DEFAULT_TAGS = ["理財觀念", "信用卡", "記帳", "投資", "讀書�
 const DEFAULTS = {
   siteTitle: "理財觀點與讀書筆記",
   footerTagline: "理財，是為了讓生活更自由。",
-  navLabels: { home: "首頁", journal: "文章", app: "導航器", envelope: "存錢袋", goods: "推薦好物", community: "8友社群", resources: "免費資源", about: "關於" },
+  navLabels: { home: "首頁", journal: "文章", app: "88La財務導航", envelope: "存錢袋", goods: "推薦好物", community: "8友社群", resources: "免費資源", about: "關於" },
   mobileTabLabels: { home: "首頁", community: "社群", resources: "資源", app: "App", envelope: "存錢袋" },
   footerLabels: {
     colProduct: "產品", colAbout: "關於", colLegal: "法律資訊",
-    fApp: "理財導航器", fEnvelope: "存錢袋", fGoods: "推薦好物", fPricing: "訂閱方案",
+    fApp: "88La財務導航", fEnvelope: "存錢袋", fGoods: "推薦好物", fPricing: "訂閱方案",
     fAbout: "關於我們", fCommunity: "8友社群", fResources: "資源中心", fNewsletter: "電子報", fContact: "合作洽談",
     fTerms: "服務條款", fPrivacy: "隱私政策", fDisclaimer: "免責聲明",
     copyright: "© 2026 88La 版權所有"
   },
   termsContent: {
     eyebrow: "LEGAL",
-    title: "88La 理財導航器\n服務條款與退款政策",
+    title: "88La財務導航\n服務條款與退款政策",
     lastUpdated: "最後更新：2026 年 7 月",
-    body: `<h2>一、服務說明</h2><p>88La 理財導航器（以下簡稱「本服務」）由 88La 提供，為個人理財記帳管理工具，提供收支記錄、預算規劃及桌面快速記帳等功能。本服務以訂閱制提供，訂閱期間內可無限制使用所有功能。</p><h2>二、訂閱方案與收費</h2><p>本服務提供以下訂閱方案：</p><ul><li>月訂閱：NT$139 / 月</li><li>年方案：NT$1,188 / 年</li><li>兩年方案：NT$1,899 / 兩年</li></ul><p>所有金額均為新台幣計價。付款由綠界科技股份有限公司代為處理，採信用卡定期定額方式進行。</p><h2>三、自動續約</h2><p>訂閱方案將於到期日自動續約，並依原方案金額扣款。如不希望續約，請於訂閱到期日前至帳戶設定頁面取消。取消後，服務仍可使用至當期訂閱到期日為止。</p><h2>四、退款政策</h2><p>本服務所販售之內容為數位服務，依消費者保護法第 19 條規定，數位內容於開通後不適用七天鑑賞期退換貨規定。</p><p>如有特殊情形，請聯繫 everydollars17@gmail.com，由 88La 個案審酌處理。</p><h2>五、帳戶與資料</h2><p>用戶須自行保管帳戶登入資訊。用戶的記帳資料儲存於個人 Google 雲端帳號中，訂閱取消後資料仍保留於用戶自己的 Google 試算表，88La 不持有用戶資料。</p><h2>六、服務變更</h2><p>88La 保留調整訂閱方案定價及功能內容之權利，並將提前 30 天以電子郵件通知用戶。現有訂閱者不受漲價影響，直至當期訂閱到期。</p><h2>七、帳號到期與資料保留</h2><ol><li>訂閱方案到期前三天，系統將透過 Email 及 App 推播通知提醒續訂。</li><li>方案到期後，帳號進入 7 天緩衝期：<ul><li>可瀏覽所有歷史記帳紀錄</li><li>可匯出個人資料</li><li>新增、編輯、刪除等寫入功能暫停使用</li></ul></li><li>緩衝期結束後（到期後第 8 天起），帳號功能將完全停用，但資料不會主動刪除。</li><li>如需恢復使用，續訂即可立即解鎖所有功能。</li></ol><h2>八、聯絡方式</h2><p>Email：everydollars17@gmail.com<br>官方網站：https://88la-site.vercel.app</p>`,
+    body: `<h2>一、服務說明</h2><p>88La財務導航（以下簡稱「本服務」）由 88La 提供，為個人理財記帳管理工具，提供收支記錄、預算規劃及桌面快速記帳等功能。本服務以訂閱制提供，訂閱期間內可無限制使用所有功能。</p><h2>二、訂閱方案與收費</h2><p>本服務提供以下訂閱方案：</p><ul><li>月訂閱：NT$139 / 月</li><li>年方案：NT$1,188 / 年</li><li>兩年方案：NT$2,199 / 兩年</li></ul><p>所有金額均為新台幣計價。付款由綠界科技股份有限公司代為處理，採信用卡定期定額方式進行。</p><h2>三、自動續約</h2><p>訂閱方案將於到期日自動續約，並依原方案金額扣款。如不希望續約，請於訂閱到期日前至帳戶設定頁面取消。取消後，服務仍可使用至當期訂閱到期日為止。</p><h2>四、退款政策</h2><p>本服務所販售之內容為數位服務，依消費者保護法第 19 條規定，數位內容於開通後不適用七天鑑賞期退換貨規定。</p><p>如有特殊情形，請聯繫 everydollars17@gmail.com，由 88La 個案審酌處理。</p><h2>五、帳戶與資料</h2><p>用戶須自行保管帳戶登入資訊。用戶的記帳資料儲存於個人 Google 雲端帳號中，訂閱取消後資料仍保留於用戶自己的 Google 試算表，88La 不持有用戶資料。</p><h2>六、服務變更</h2><p>88La 保留調整訂閱方案定價及功能內容之權利，並將提前 30 天以電子郵件通知用戶。現有訂閱者不受漲價影響，直至當期訂閱到期。</p><h2>七、帳號到期與資料保留</h2><ol><li>訂閱方案到期前三天，系統將透過 Email 及 App 推播通知提醒續訂。</li><li>方案到期後，帳號進入 7 天緩衝期：<ul><li>可瀏覽所有歷史記帳紀錄</li><li>可匯出個人資料</li><li>新增、編輯、刪除等寫入功能暫停使用</li></ul></li><li>緩衝期結束後（到期後第 8 天起），帳號功能將完全停用，但資料不會主動刪除。</li><li>如需恢復使用，續訂即可立即解鎖所有功能。</li></ol><h2>八、聯絡方式</h2><p>Email：everydollars17@gmail.com<br>官方網站：https://88la-site.vercel.app</p>`,
     footerNote: "使用本服務即代表你已閱讀並同意以上服務條款。\n如對條款有任何疑問，請於訂閱前透過 Email 與我們聯繫。"
   },
   privacyContent: {
     eyebrow: "PRIVACY",
-    title: "88La 理財導航器\n隱私政策",
+    title: "88La財務導航\n隱私政策",
     lastUpdated: "最後更新：2026 年 7 月",
     intro: "88La 由個人創作者獨立營運，我們深知理財記帳涉及您最私密的財務細節，因此特別撰寫此份隱私政策，以清楚說明本服務蒐集何種資料、如何運用、儲存於何處，以及哪些人能夠接觸這些資訊。",
-    body: `<h2>一、適用範圍</h2><p>本隱私政策適用於 88La 理財自動導航器（官網與網頁應用程式），說明本服務如何處理您於使用過程中提供或產生之個人資料。本政策不適用於本服務以外之外部連結網站，亦不適用於非本服務委託或參與管理之第三方。</p><h2>二、我們蒐集的資料</h2><p><strong>【登入時】</strong><br>本服務採用 Google 帳號登入機制，系統將取得您的電子郵件位址，作為識別您帳號身分之唯一依據。您無需另行設定獨立的帳號密碼。</p><p><strong>【使用記帳功能時】</strong><br>您於使用過程中主動輸入之內容，包括每一筆記帳明細（金額、類別、付款方式、備註、消費當下之心情記錄）、月度預算規劃、信用卡與帳戶設定、負債資料，以及理財筆記，皆屬於您所提供之資料範疇。</p><p><strong>【付款時】</strong><br>訂閱費用係由綠界科技股份有限公司代為收取，您的信用卡卡號、有效期限等付款資訊將直接於綠界之付款頁面輸入，88La 不會接觸、亦不會儲存任何與您的付款工具相關之資訊。本服務僅會收到付款是否成功之通知，以憑此開通您的訂閱權限。</p><p><strong>【瀏覽網站時（自動蒐集）】</strong><br>本服務官網使用 Vercel Web Analytics 統計流量，此工具不使用第三方 cookie，而是以傳入請求產生的雜湊值識別訪客，所記錄之資料皆為匿名性質，不會與任何個人、客戶或 IP 位址綁定或關聯，相關瀏覽紀錄亦不會永久保存，將於 24 小時後自動清除。我們僅藉此瞭解整體網站使用狀況（如頁面瀏覽量），不會用來識別您的個人身分。</p><h2>三、未成年使用者</h2><p>本服務之受眾可能包含未滿 18 歲之學生族群。若您未滿 18 歲，建議於監護人知悉並同意之情況下使用本服務。若您是未滿 18 歲使用者之監護人，並認為您的子女未經同意提供了個人資料，請透過第七條所列聯絡方式與我們聯繫，我們將協助處理相關資料之刪除或更正事宜。</p><h2>四、資料儲存之處所</h2><table style="width:100%;border-collapse:collapse;font-size:13px;"><thead><tr style="background:#FDF0E8;"><th style="padding:10px 14px;text-align:left;font-weight:600;border-bottom:2px solid #C85A14;font-size:12px;">資料類型</th><th style="padding:10px 14px;text-align:left;font-weight:600;border-bottom:2px solid #C85A14;font-size:12px;">儲存位置</th><th style="padding:10px 14px;text-align:left;font-weight:600;border-bottom:2px solid #C85A14;font-size:12px;">說明</th></tr></thead><tbody><tr style="border-bottom:1px solid rgba(0,0,0,0.07);"><td style="padding:12px 14px;vertical-align:top;">記帳明細、預算、筆記</td><td style="padding:12px 14px;vertical-align:top;">您個人之 Google 試算表</td><td style="padding:12px 14px;vertical-align:top;">登入後，系統將自動於您的 Google 雲端硬碟建立專屬檔案，相關資料即時寫入其中</td></tr><tr style="border-bottom:1px solid rgba(0,0,0,0.07);"><td style="padding:12px 14px;vertical-align:top;">帳號狀態、到期日、帳戶與信用卡及負債設定</td><td style="padding:12px 14px;vertical-align:top;">Firebase（本服務之後端資料庫）</td><td style="padding:12px 14px;vertical-align:top;">用於驗證您訂閱之有效性，並儲存您的個人化功能設定</td></tr><tr style="border-bottom:1px solid rgba(0,0,0,0.07);"><td style="padding:12px 14px;vertical-align:top;">最近一次驗證之時間戳記</td><td style="padding:12px 14px;vertical-align:top;">您裝置之本機儲存空間（localStorage）</td><td style="padding:12px 14px;vertical-align:top;">僅用於判斷離線狀態下之暫時可用性，不含任何記帳內容</td></tr><tr style="border-bottom:1px solid rgba(0,0,0,0.07);"><td style="padding:12px 14px;vertical-align:top;">匿名瀏覽統計</td><td style="padding:12px 14px;vertical-align:top;">Vercel Web Analytics</td><td style="padding:12px 14px;vertical-align:top;">不可識別個人身分，24 小時後自動清除</td></tr></tbody></table><p>換言之，您的記帳流水帳實際上是存放於「您個人」之 Google 雲端硬碟內，而非本服務之伺服器。即便本服務有朝一日終止運作，該份試算表仍歸屬於您本人，您可隨時開啟、複製或刪除。</p><h2>五、資料之存取權限</h2><ul><li>您的記帳明細存放於您個人之 Google 試算表中，僅您本人得以查閱，本服務不具備、亦未申請主動讀取或瀏覽該試算表內容之權限</li><li>本服務所申請之 Google 授權範圍，僅限於「本應用程式所建立之檔案」（技術上稱為 drive.file），絕不涉及您 Google 雲端硬碟中既有之其他檔案</li><li>帳號狀態與設定資料存放於 Firebase，僅供系統驗證訂閱狀態之用，本服務不會將其提供、洩露或出售予任何第三方</li><li>金流相關資訊由綠界科技依其自身隱私規範處理，本服務全程不接觸您的付款資料</li></ul><p>本服務承諾，絕不將您的資料出售予廣告主，亦不會將您的記帳內容用於任何行銷分析或對外提供。</p><h2>六、資料之運用目的</h2><ul><li>呈現您的記帳記錄、預算對比分析、月度診斷報告等您主動使用之功能</li><li>驗證您的訂閱是否仍屬有效期間</li><li>於您與客服聯繫時，協助核對您的帳號狀況</li><li>透過匿名流量統計瞭解網站整體使用狀況，藉以優化服務內容</li></ul><p>凡未經您同意或非屬您主動使用之功能範疇，本服務絕不擅自運用您的資料，例如分析您的消費習慣以投放廣告。</p><h2>七、資料安全與外洩通知</h2><p>本服務已採取合理之技術與管理措施，保護您的資料免於未經授權之存取、使用或揭露。惟若不幸發生資料安全事件（例如後端系統遭未經授權存取），本服務將於知悉後之合理期限內，透過您註冊時所使用之電子郵件通知您，並說明事件性質、可能受影響之資料範圍，以及本服務已採取或將採取之應變措施。</p><h2>八、資料保留期限</h2><ul><li>訂閱使用期間，資料持續妥善保存</li><li>訂閱取消或到期後，依本服務之服務條款，資料將保留七日供您匯出（CSV 或 PDF 格式），逾期後系統可能予以清除</li><li>至於存放於您個人 Google 試算表內之資料，縱使本服務端之紀錄遭清除，惟若您未自行刪除，該份試算表仍將留存於您的 Google 雲端硬碟之中</li></ul><h2>九、您所享有之權利</h2><p>依個人資料保護法相關規定，您對於本服務所持有之個人資料，得行使下列權利：</p><ul><li>查詢或請求閱覽</li><li>請求製給複製本</li><li>請求補充或更正</li><li>請求停止蒐集、處理或利用</li><li>請求刪除</li></ul><p>您可隨時匯出您完整之記帳資料（CSV 或 PDF 格式），亦可隨時開啟您的 Google 試算表自行查閱、複製或備份原始資料。如欲行使上述權利或取消訂閱，敬請致信 everydollars17@gmail.com 提出申請，我們將於合理期限內處理回覆。</p><h2>十、政策之修改</h2><p>本政策內容如有修改，將於本網站公告並更新最後修改日期。重大變更將透過電子郵件另行通知您。</p><h2>十一、聯絡方式</h2><p>如有任何關於本隱私政策之疑問，敬請致信 everydollars17@gmail.com，我們將竭誠為您回覆。</p>`
+    body: `<h2>一、適用範圍</h2><p>本隱私政策適用於 88La財務導航（官網與網頁應用程式），說明本服務如何處理您於使用過程中提供或產生之個人資料。本政策不適用於本服務以外之外部連結網站，亦不適用於非本服務委託或參與管理之第三方。</p><h2>二、我們蒐集的資料</h2><p><strong>【登入時】</strong><br>本服務採用 Google 帳號登入機制，系統將取得您的電子郵件位址，作為識別您帳號身分之唯一依據。您無需另行設定獨立的帳號密碼。</p><p><strong>【使用記帳功能時】</strong><br>您於使用過程中主動輸入之內容，包括每一筆記帳明細（金額、類別、付款方式、備註、消費當下之心情記錄）、月度預算規劃、信用卡與帳戶設定、負債資料，以及理財筆記，皆屬於您所提供之資料範疇。</p><p><strong>【付款時】</strong><br>訂閱費用係由綠界科技股份有限公司代為收取，您的信用卡卡號、有效期限等付款資訊將直接於綠界之付款頁面輸入，88La 不會接觸、亦不會儲存任何與您的付款工具相關之資訊。本服務僅會收到付款是否成功之通知，以憑此開通您的訂閱權限。</p><p><strong>【瀏覽網站時（自動蒐集）】</strong><br>本服務官網使用 Vercel Web Analytics 統計流量，此工具不使用第三方 cookie，而是以傳入請求產生的雜湊值識別訪客，所記錄之資料皆為匿名性質，不會與任何個人、客戶或 IP 位址綁定或關聯，相關瀏覽紀錄亦不會永久保存，將於 24 小時後自動清除。我們僅藉此瞭解整體網站使用狀況（如頁面瀏覽量），不會用來識別您的個人身分。</p><h2>三、未成年使用者</h2><p>本服務之受眾可能包含未滿 18 歲之學生族群。若您未滿 18 歲，建議於監護人知悉並同意之情況下使用本服務。若您是未滿 18 歲使用者之監護人，並認為您的子女未經同意提供了個人資料，請透過第七條所列聯絡方式與我們聯繫，我們將協助處理相關資料之刪除或更正事宜。</p><h2>四、資料儲存之處所</h2><table style="width:100%;border-collapse:collapse;font-size:13px;"><thead><tr style="background:#FDF0E8;"><th style="padding:10px 14px;text-align:left;font-weight:600;border-bottom:2px solid #C85A14;font-size:12px;">資料類型</th><th style="padding:10px 14px;text-align:left;font-weight:600;border-bottom:2px solid #C85A14;font-size:12px;">儲存位置</th><th style="padding:10px 14px;text-align:left;font-weight:600;border-bottom:2px solid #C85A14;font-size:12px;">說明</th></tr></thead><tbody><tr style="border-bottom:1px solid rgba(0,0,0,0.07);"><td style="padding:12px 14px;vertical-align:top;">記帳明細、預算、筆記</td><td style="padding:12px 14px;vertical-align:top;">您個人之 Google 試算表</td><td style="padding:12px 14px;vertical-align:top;">登入後，系統將自動於您的 Google 雲端硬碟建立專屬檔案，相關資料即時寫入其中</td></tr><tr style="border-bottom:1px solid rgba(0,0,0,0.07);"><td style="padding:12px 14px;vertical-align:top;">帳號狀態、到期日、帳戶與信用卡及負債設定</td><td style="padding:12px 14px;vertical-align:top;">Firebase（本服務之後端資料庫）</td><td style="padding:12px 14px;vertical-align:top;">用於驗證您訂閱之有效性，並儲存您的個人化功能設定</td></tr><tr style="border-bottom:1px solid rgba(0,0,0,0.07);"><td style="padding:12px 14px;vertical-align:top;">最近一次驗證之時間戳記</td><td style="padding:12px 14px;vertical-align:top;">您裝置之本機儲存空間（localStorage）</td><td style="padding:12px 14px;vertical-align:top;">僅用於判斷離線狀態下之暫時可用性，不含任何記帳內容</td></tr><tr style="border-bottom:1px solid rgba(0,0,0,0.07);"><td style="padding:12px 14px;vertical-align:top;">匿名瀏覽統計</td><td style="padding:12px 14px;vertical-align:top;">Vercel Web Analytics</td><td style="padding:12px 14px;vertical-align:top;">不可識別個人身分，24 小時後自動清除</td></tr></tbody></table><p>換言之，您的記帳流水帳實際上是存放於「您個人」之 Google 雲端硬碟內，而非本服務之伺服器。即便本服務有朝一日終止運作，該份試算表仍歸屬於您本人，您可隨時開啟、複製或刪除。</p><h2>五、資料之存取權限</h2><ul><li>您的記帳明細存放於您個人之 Google 試算表中，僅您本人得以查閱，本服務不具備、亦未申請主動讀取或瀏覽該試算表內容之權限</li><li>本服務所申請之 Google 授權範圍，僅限於「本應用程式所建立之檔案」（技術上稱為 drive.file），絕不涉及您 Google 雲端硬碟中既有之其他檔案</li><li>帳號狀態與設定資料存放於 Firebase，僅供系統驗證訂閱狀態之用，本服務不會將其提供、洩露或出售予任何第三方</li><li>金流相關資訊由綠界科技依其自身隱私規範處理，本服務全程不接觸您的付款資料</li></ul><p>本服務承諾，絕不將您的資料出售予廣告主，亦不會將您的記帳內容用於任何行銷分析或對外提供。</p><h2>六、資料之運用目的</h2><ul><li>呈現您的記帳記錄、預算對比分析、月度診斷報告等您主動使用之功能</li><li>驗證您的訂閱是否仍屬有效期間</li><li>於您與客服聯繫時，協助核對您的帳號狀況</li><li>透過匿名流量統計瞭解網站整體使用狀況，藉以優化服務內容</li></ul><p>凡未經您同意或非屬您主動使用之功能範疇，本服務絕不擅自運用您的資料，例如分析您的消費習慣以投放廣告。</p><h2>七、資料安全與外洩通知</h2><p>本服務已採取合理之技術與管理措施，保護您的資料免於未經授權之存取、使用或揭露。惟若不幸發生資料安全事件（例如後端系統遭未經授權存取），本服務將於知悉後之合理期限內，透過您註冊時所使用之電子郵件通知您，並說明事件性質、可能受影響之資料範圍，以及本服務已採取或將採取之應變措施。</p><h2>八、資料保留期限</h2><ul><li>訂閱使用期間，資料持續妥善保存</li><li>訂閱取消或到期後，依本服務之服務條款，資料將保留七日供您匯出（CSV 或 PDF 格式），逾期後系統可能予以清除</li><li>至於存放於您個人 Google 試算表內之資料，縱使本服務端之紀錄遭清除，惟若您未自行刪除，該份試算表仍將留存於您的 Google 雲端硬碟之中</li></ul><h2>九、您所享有之權利</h2><p>依個人資料保護法相關規定，您對於本服務所持有之個人資料，得行使下列權利：</p><ul><li>查詢或請求閱覽</li><li>請求製給複製本</li><li>請求補充或更正</li><li>請求停止蒐集、處理或利用</li><li>請求刪除</li></ul><p>您可隨時匯出您完整之記帳資料（CSV 或 PDF 格式），亦可隨時開啟您的 Google 試算表自行查閱、複製或備份原始資料。如欲行使上述權利或取消訂閱，敬請致信 everydollars17@gmail.com 提出申請，我們將於合理期限內處理回覆。</p><h2>十、政策之修改</h2><p>本政策內容如有修改，將於本網站公告並更新最後修改日期。重大變更將透過電子郵件另行通知您。</p><h2>十一、聯絡方式</h2><p>如有任何關於本隱私政策之疑問，敬請致信 everydollars17@gmail.com，我們將竭誠為您回覆。</p>`
   },
   disclaimerContent: {
     eyebrow: "DISCLAIMER",
-    title: "88La 理財導航器\n免責聲明",
+    title: "88La財務導航\n免責聲明",
     lastUpdated: "最後更新：2026 年 7 月",
-    body: `<h2>一、服務性質聲明</h2><p>88La 理財自動導航器（以下簡稱「本服務」）為個人記帳、支出追蹤與儲蓄習慣建立之輔助工具，其核心功能在於協助使用者記錄日常收支、設定個人預算目標，以及建立規律的儲蓄行為。</p><p>本服務所提供之收支診斷報告，係依據使用者自行輸入之數據，結合本服務創作者之個人實務理財經驗所設計之參考框架自動產生。本服務創作者並非持有任何金融相關執照之財務顧問，所有內容均屬個人實務經驗之分享，不構成專業財務顧問服務，亦不涉及任何有價證券、基金、期貨、外匯、加密貨幣或其他金融商品之投資策略建議、推介或勸誘行為。</p><h2>二、資訊僅供參考</h2><p>本服務所提供之預算建議、收支診斷分析、儲蓄目標試算及相關數字呈現，均係依據使用者自行輸入之個人資料，結合創作者個人實務理財經驗所設計之參考框架，由系統自動運算後呈現之參考資訊。</p><p>診斷報告中所呈現之支出比例建議、預算配置方向等內容，均源自創作者個人實務經驗之歸納，不同使用者之財務狀況、收入結構、家庭背景與生活條件各異，上述建議未必適用於每一位使用者的個別情況。</p><p>上述資訊：</p><ul><li>係創作者個人實務經驗之分享，不代表對您財務狀況之專業個人化評估</li><li>不構成任何具法律效力之財務建議或投資意見</li><li>不保證使用本服務後必然達成特定儲蓄金額或財務目標</li><li>如您的財務狀況較為複雜（如負債重組、保險規劃、稅務安排等），建議另行諮詢具有合法執照之專業人士</li></ul><h2>三、使用者自行負責原則</h2><p>使用者在參考本服務所提供之任何資訊、數據或分析結果後，所作出之一切財務決策，均應由使用者本人獨立評估、審慎判斷，並自行承擔相應之後果與責任。</p><p>如需專業之財務規劃建議，建議您諮詢具有合法執照之財務顧問或相關專業人士。</p><h2>四、系統資料準確性</h2><p>本服務之所有計算與分析結果，均以使用者自行輸入之資料為基礎。若輸入資料有誤、不完整或未即時更新，系統所呈現之結果可能與您的實際財務狀況有所落差，本服務對此不負任何責任。</p><h2>五、服務中斷與資料完整性</h2><p>本服務係透過網際網路提供，可能因伺服器維護、網路異常、第三方服務（包括 Google、Firebase、綠界科技等）故障，或其他不可抗力因素，導致服務暫時中斷或資料暫時無法存取。本服務對上述情形所造成之不便，不負任何賠償責任，但將盡合理努力維持服務之穩定運行。</p><h2>六、本聲明之修改</h2><p>本服務得隨時修訂本免責聲明，修訂後之內容將公告於本頁面並更新修改日期。繼續使用本服務，即視為接受修訂後之條款。</p><h2>七、聯絡方式</h2><p>如對本聲明有任何疑問，歡迎透過以下方式與我們聯繫：</p><p>Email：everydollars17@gmail.com<br>Instagram：@every_dollars</p>`,
+    body: `<h2>一、服務性質聲明</h2><p>88La財務導航（以下簡稱「本服務」）為個人記帳、支出追蹤與儲蓄習慣建立之輔助工具，其核心功能在於協助使用者記錄日常收支、設定個人預算目標，以及建立規律的儲蓄行為。</p><p>本服務所提供之收支診斷報告，係依據使用者自行輸入之數據，結合本服務創作者之個人實務理財經驗所設計之參考框架自動產生。本服務創作者並非持有任何金融相關執照之財務顧問，所有內容均屬個人實務經驗之分享，不構成專業財務顧問服務，亦不涉及任何有價證券、基金、期貨、外匯、加密貨幣或其他金融商品之投資策略建議、推介或勸誘行為。</p><h2>二、資訊僅供參考</h2><p>本服務所提供之預算建議、收支診斷分析、儲蓄目標試算及相關數字呈現，均係依據使用者自行輸入之個人資料，結合創作者個人實務理財經驗所設計之參考框架，由系統自動運算後呈現之參考資訊。</p><p>診斷報告中所呈現之支出比例建議、預算配置方向等內容，均源自創作者個人實務經驗之歸納，不同使用者之財務狀況、收入結構、家庭背景與生活條件各異，上述建議未必適用於每一位使用者的個別情況。</p><p>上述資訊：</p><ul><li>係創作者個人實務經驗之分享，不代表對您財務狀況之專業個人化評估</li><li>不構成任何具法律效力之財務建議或投資意見</li><li>不保證使用本服務後必然達成特定儲蓄金額或財務目標</li><li>如您的財務狀況較為複雜（如負債重組、保險規劃、稅務安排等），建議另行諮詢具有合法執照之專業人士</li></ul><h2>三、使用者自行負責原則</h2><p>使用者在參考本服務所提供之任何資訊、數據或分析結果後，所作出之一切財務決策，均應由使用者本人獨立評估、審慎判斷，並自行承擔相應之後果與責任。</p><p>如需專業之財務規劃建議，建議您諮詢具有合法執照之財務顧問或相關專業人士。</p><h2>四、系統資料準確性</h2><p>本服務之所有計算與分析結果，均以使用者自行輸入之資料為基礎。若輸入資料有誤、不完整或未即時更新，系統所呈現之結果可能與您的實際財務狀況有所落差，本服務對此不負任何責任。</p><h2>五、服務中斷與資料完整性</h2><p>本服務係透過網際網路提供，可能因伺服器維護、網路異常、第三方服務（包括 Google、Firebase、綠界科技等）故障，或其他不可抗力因素，導致服務暫時中斷或資料暫時無法存取。本服務對上述情形所造成之不便，不負任何賠償責任，但將盡合理努力維持服務之穩定運行。</p><h2>六、本聲明之修改</h2><p>本服務得隨時修訂本免責聲明，修訂後之內容將公告於本頁面並更新修改日期。繼續使用本服務，即視為接受修訂後之條款。</p><h2>七、聯絡方式</h2><p>如對本聲明有任何疑問，歡迎透過以下方式與我們聯繫：</p><p>Email：everydollars17@gmail.com<br>Instagram：@every_dollars</p>`,
     footerNote: "本服務為個人記帳與儲蓄習慣建立工具。診斷報告內容係創作者個人實務理財經驗之分享，僅供參考，不構成專業財務顧問服務或投資建議。使用者應依據自身狀況獨立判斷，並自行承擔相應責任。"
   },
   demoStory: {
@@ -236,7 +240,7 @@ const DEFAULTS = {
     whyHeading: "不是每個人都適合純數位記帳",
     why: [
       { title: "看得到、摸得到", desc: "數位數字有時候不夠有感，實體存錢袋讓存錢變成一個具體的動作。" },
-      { title: "跟 App 互補使用", desc: "日常花費用理財導航器記錄，存錢目標用存錢袋實體累積，兩者不衝突。" },
+      { title: "跟 App 互補使用", desc: "日常花費用88La財務導航記錄，存錢目標用存錢袋實體累積，兩者不衝突。" },
       { title: "不需要學習成本", desc: "不用研究功能怎麼用，拿到就能開始，適合想簡單開始的人。" },
     ],
     ctaLabel: "開始存錢",
@@ -290,7 +294,7 @@ const DEFAULTS = {
     timeline: [
       { year: "起點", title: "一份免費的 Google Sheets 記帳範本", desc: "從「先存後花」的概念出發，幫助超過 4,000 人下載使用。" },
       { year: "進化", title: "推出付費 2.0 版本", desc: "加入五種儲蓄模式、支出追蹤、信用卡分析、診斷報告與行事曆檢視，超過百人使用。" },
-      { year: "現在", title: "理財自動導航器 + 8友社群", desc: "把範本升級成完整的 Web App，同時也有一群人一起練習理財，不是一個人硬撐。" },
+      { year: "現在", title: "88La財務導航 + 8友社群", desc: "把範本升級成完整的 Web App，同時也有一群人一起練習理財，不是一個人硬撐。" },
     ],
     beliefsLabel: "我們相信",
     beliefsHeading: "做法可以不一樣，但方向很清楚",
@@ -300,28 +304,28 @@ const DEFAULTS = {
       { n: "3", title: "不說教的陪伴", desc: "理財很個人，每個人的節奏不一樣，我們不會用同一套標準要求所有人。" },
     ],
     helloLabel: "HELLO",
-    ctaBtn1: "開始使用理財導航器",
+    ctaBtn1: "開始使用88La財務導航",
     ctaBtn2: "認識 8友社群"
   },
   homeCopy: {
-    latestLabel: "最新文章",
-    latestHeading: "理財知識，用你聽得懂的方式說",
-    ctaHeading: "先從一個入口開始",
-    ctaSub: "不知道要選哪個，就先看免費資源，再回來決定要不要開始記帳。",
-    ctaBtn: "先看免費資源"
+    latestLabel: "卡關導讀",
+    latestHeading: "你可能正在卡這些",
+    ctaHeading: "還不知道選哪個？",
+    ctaSub: "做 2 分鐘診斷，網站會帶你到適合的入口。",
+    ctaBtn: "開始工具診斷"
   },
   subscriptionCopy: {
     heading: "選擇你的方案",
-    intro: "用 88La 理財導航器，把記帳這件事變成每天兩分鐘的習慣。\n所有方案皆包含桌面快速記帳功能。",
+    intro: "用 88La財務導航，把記帳這件事變成每天兩分鐘的習慣。\n所有方案皆包含桌面快速記帳功能。",
     notes: "所有金額均為新台幣計價，含稅\n訂閱將於到期日自動續約，可於到期前至帳戶設定取消\n付款方式：信用卡定期定額（由綠界科技處理）\n到期前三天將寄送提醒通知。到期後提供 7 天資料匯出緩衝期，期間可瀏覽歷史紀錄，續訂即可立即恢復完整功能",
     foundingNote: "感謝最早支持 88La 的 90 位創始成員，你們的定價永久保留：月訂閱 NT$109 ／ 年方案 NT$599 ／ 兩年方案 NT$998。此優惠僅適用於已取得創始會員資格之用戶，不開放新申請。"
   },
   homeHero: {
     eyebrow: "88La 犒賞系存錢",
     headline: "先看懂錢去哪\n再決定怎麼存",
-    subheadline: "從免費工具、88La理財自動導航器到實體存錢袋，陪你用不緊繃的方式，把錢放回生活裡。",
-    ctaText: "我想開始記帳",
-    cta2Text: "先免費試試",
+    subheadline: "從免費工具、88La財務導航到實體存錢袋，陪你用不緊繃的方式，把錢放回生活裡。",
+    ctaText: "先看我適合哪個入口",
+    cta2Text: "先看免費資源",
     screenshot: ""
   },
   trustStats: [
@@ -331,12 +335,9 @@ const DEFAULTS = {
     { num: "5年+", label: "理財內容創作經驗" }
   ],
   paths: [
-    { title: "我不清楚要怎麼開始理財", desc: "先從免費資源開始，不用註冊也能看。", page: "resources" },
-    { title: "我有記帳但記完就沒有然後了", desc: "用 88La理財自動導航器，把記帳變成看得懂的方向。", page: "app" },
-    { title: "我的錢總是很快花完", desc: "用 2 分鐘測驗，找到適合你的理財方法。", page: "tool-quiz" },
-    { title: "我存了錢但很快就花掉", desc: "用實體存錢袋把錢分類收好，看得見比較守得住。", page: "envelope" },
-    { title: "我想找人一起練習理財", desc: "來 Instagram 看日常分享，先感覺你不是一個人。", page: "https://www.instagram.com/every_dollars/" },
-    { title: "我想看88La說理財知識", desc: "看文章庫，理財觀念用聊天的方式講給你聽。", page: "journal" }
+    { title: "我還不知道怎麼開始", desc: "先用免費資源找方向，不用註冊也能看。", page: "resources" },
+    { title: "我有記帳，但看不出方向", desc: "用 88La財務導航，把記錄變成提醒和判斷。", page: "app" },
+    { title: "我想把錢真的存下來", desc: "用實體存錢袋把錢分好，看得見比較守得住。", page: "envelope" }
   ],
   envelopeHero: {
     eyebrow: "88La · 實體工具",
@@ -440,11 +441,11 @@ const DEFAULTS = {
       { id: 6, n: "06", title: "PWA 支援", desc: "加到主畫面，iOS / Android 體驗接近原生 App。", img: "" },
     ],
     plans: [
-      { id: 1, name: "月訂閱", price: "NT$139", period: "/月", highlight: false, badge: "", features: ["88La 理財導航器完整功能", "桌面快速記帳", "隨時可取消"], detailTitle: "", detailImg: "", detailContent: "" },
-      { id: 2, name: "年方案", price: "NT$1,188", period: "/年", highlight: true, badge: "最多人選擇", features: ["88La 理財導航器完整功能", "桌面快速記帳", "省下約 29%", "相當於 NT$99/月"], detailTitle: "", detailImg: "", detailContent: "" },
-      { id: 3, name: "兩年方案", price: "NT$1,899", period: "/兩年", highlight: false, badge: "", features: ["88La 理財導航器完整功能", "桌面快速記帳", "最划算方案", "相當於 NT$79/月"], detailTitle: "", detailImg: "", detailContent: "" },
+      { id: 1, name: "月訂閱", price: "NT$139", period: "/月", highlight: false, badge: "", features: ["88La財務導航完整功能", "桌面快速記帳", "隨時可取消"], detailTitle: "", detailImg: "", detailContent: "" },
+      { id: 2, name: "年方案", price: "NT$1,188", period: "/年", highlight: true, badge: "最多人選擇", features: ["88La財務導航完整功能", "桌面快速記帳", "省下約 29%", "相當於 NT$99/月"], detailTitle: "", detailImg: "", detailContent: "" },
+      { id: 3, name: "兩年方案", price: "NT$2,199", period: "/兩年", highlight: false, badge: "", features: ["88La財務導航完整功能", "桌面快速記帳", "最划算方案", "相當於 NT$92/月"], detailTitle: "", detailImg: "", detailContent: "" },
     ],
-    guideTitle: "88La 理財自動導航器，使用說明",
+    guideTitle: "88La財務導航，使用說明",
     guideData: {
       phases: [
         { id: 0, label: "初次設定", sub: "開始使用，設定一次即可", isSetup: true, steps: [
@@ -976,16 +977,139 @@ const IcArticle = () => <svg viewBox="0 0 24 24" fill="none" stroke="currentColo
 
 const MOBILE_TAB_ICONS = [["home",IcUser],["community",IcIG],["resources",IcRes],["app",IcApp],["envelope",IcShop]];
 const PATH_ICONS = { app: IcApp, envelope: IcShop, community: IcIG, resources: IcRes, "tool-quiz": IcCheck, journal: IcArticle };
+const HOME_GUIDED_PATHS = [
+  { label: "先免費探索", title: "我還不知道怎麼開始", desc: "先用免費資源找方向，不用註冊也能看。", page: "resources" },
+  { label: "整理日常金流", title: "我有記帳，但看不出方向", desc: "用 88La財務導航，把記錄變成提醒和判斷。", page: "app" },
+  { label: "把錢留下來", title: "我想把錢真的存下來", desc: "用實體存錢袋把錢分好，看得見比較守得住。", page: "envelope" }
+];
+const HOME_ARTICLE_TOPICS = [
+  { label: "存不到錢", keywords: ["存不到錢", "月光", "存錢"] },
+  { label: "記帳沒用", keywords: ["記帳", "記完", "照妖鏡"] },
+  { label: "錢很快花完", keywords: ["花錢", "行動支付", "零阻力", "衝動"] }
+];
 const WHY_ICONS = [IcEye, IcSync, IcCheck];
 const IcTarget = () => <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="5"/><circle cx="12" cy="12" r="1" fill="currentColor" stroke="none"/></svg>;
 const IcChart  = () => <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8"><line x1="4" y1="20" x2="4" y2="12"/><line x1="12" y1="20" x2="12" y2="6"/><line x1="20" y1="20" x2="20" y2="15"/></svg>;
 const IcHeart  = () => <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8"><path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.6l-1-1a5.5 5.5 0 0 0-7.8 7.8l1 1L12 21l7.8-7.8 1-1a5.5 5.5 0 0 0 0-7.8z"/></svg>;
 const ABOUT_ICONS = [IcTarget, IcChart, IcHeart];
 const NAV_KEYS = ["home","app","resources","envelope","journal","about"];
+const APP_PRODUCT_NAME = "88La財務導航";
+const PRODUCT_NAME_PATTERNS = [
+  "88La 理財自動導航器",
+  "88La理財自動導航器",
+  "88La 理財導航器",
+  "88La理財導航器",
+];
+const normalizeProductText = value => {
+  if (typeof value !== "string") return value;
+  return PRODUCT_NAME_PATTERNS.reduce((text, pattern) => text.split(pattern).join(APP_PRODUCT_NAME), value)
+    .replaceAll("NT$1,899", "NT$2,199")
+    .replaceAll("相當於 NT$79/月", "相當於 NT$92/月")
+    .replaceAll("省下約 35%", "省下約 29%")
+    .replaceAll("相當於 NT$83/月", "相當於 NT$99/月");
+};
+const normalizeNavLabels = labels => {
+  const next = { ...DEFAULTS.navLabels, ...(labels || {}) };
+  if (["導航器", "理財導航器", "理財自動導航器"].includes(next.app)) next.app = APP_PRODUCT_NAME;
+  return next;
+};
+const normalizeFooterLabels = labels => {
+  const next = { ...DEFAULTS.footerLabels, ...(labels || {}) };
+  if (["理財導航器", "理財自動導航器"].includes(next.fApp)) next.fApp = APP_PRODUCT_NAME;
+  return next;
+};
+const appPlanDefaults = {
+  monthly: { price: "NT$139", period: "/月", features: ["88La財務導航完整功能", "桌面快速記帳", "隨時可取消"] },
+  yearly: { price: "NT$1,188", period: "/年", features: ["88La財務導航完整功能", "桌面快速記帳", "省下約 29%", "相當於 NT$99/月"] },
+  twoYear: { price: "NT$2,199", period: "/兩年", features: ["88La財務導航完整功能", "桌面快速記帳", "最划算方案", "相當於 NT$92/月"] },
+};
+const planKind = plan => {
+  const text = `${plan?.id || ""} ${plan?.name || ""}`.toLowerCase();
+  if (text.includes("2year") || text.includes("兩") || text.includes("二年") || text.includes("2 年") || text.includes("2年")) return "twoYear";
+  if (text.includes("1year") || text.includes("年") || text.includes("1 年") || text.includes("1年")) return "yearly";
+  if (text.includes("monthly") || text.includes("月")) return "monthly";
+  if (plan?.id === 3) return "twoYear";
+  if (plan?.id === 2) return "yearly";
+  return "monthly";
+};
+const normalizePlan = plan => {
+  const defaults = appPlanDefaults[planKind(plan)];
+  return {
+    ...plan,
+    price: defaults.price,
+    period: defaults.period,
+    features: defaults.features,
+    detailTitle: normalizeProductText(plan?.detailTitle || ""),
+    detailContent: normalizeProductText(plan?.detailContent || ""),
+  };
+};
+const normalizeAppContent = raw => {
+  const content = { ...DEFAULTS.appContent, ...(raw || {}) };
+  const textKeys = [
+    "heroTitle", "heroHighlight", "heroSub", "pricingNote", "comingSoonTitle", "comingSoonSub",
+    "heroEyebrow", "heroCtaBtn", "featuresLabel", "featuresHeading", "pricingLabel", "pricingHeading",
+    "loginNote", "loginLink", "planDetailBackBtn", "planDetailLabel", "planDetailFeaturesLabel",
+    "planDetailBuyBtn", "planLearnMoreBtn", "faqLabel", "faqHeading", "faqCountNote", "faqGuideBtn", "guideTitle",
+  ];
+  const next = { ...content };
+  textKeys.forEach(key => { next[key] = normalizeProductText(next[key]); });
+  next.plans = (content.plans || DEFAULTS.appContent.plans).map(normalizePlan);
+  return next;
+};
+const normalizeLegalContent = content => Object.fromEntries(
+  Object.entries(content || {}).map(([key, value]) => [key, normalizeProductText(value)])
+);
+const normalizeSubscriptionCopy = raw => {
+  const copy = { ...DEFAULTS.subscriptionCopy, ...(raw || {}) };
+  return {
+    ...copy,
+    heading: normalizeProductText(copy.heading),
+    intro: normalizeProductText(copy.intro),
+    notes: normalizeProductText(copy.notes),
+  };
+};
+
+const normalizeHomeHero = h => ({
+  ...h,
+  subheadline: normalizeProductText(h.subheadline),
+  ctaText: ["我想開始記帳", "開始使用理財導航器"].includes(h.ctaText) ? "先看我適合哪個入口" : h.ctaText,
+  cta2Text: ["先免費試試", "看看存錢袋"].includes(h.cta2Text) ? "先看免費資源" : h.cta2Text
+});
+
+const normalizeHomeCopy = hc => ({
+  ...hc,
+  latestLabel: hc.latestLabel === "最新文章" ? "卡關導讀" : hc.latestLabel,
+  latestHeading: (hc.latestHeading || "").startsWith("理財知識") ? "你可能正在卡這些" : hc.latestHeading,
+  ctaHeading: ["先從一個入口開始", "準備好開始了嗎？"].includes(hc.ctaHeading) ? "還不知道選哪個？" : hc.ctaHeading,
+  ctaSub: (hc.ctaSub || "").includes("理財自動導航器") || (hc.ctaSub || "").includes("免費資源")
+    ? "做 2 分鐘診斷，網站會帶你到適合的入口。"
+    : hc.ctaSub,
+  ctaBtn: ["先看免費資源", "開始使用理財導航器"].includes(hc.ctaBtn) ? "開始工具診斷" : hc.ctaBtn
+});
+
+const pickHomeArticles = articles => {
+  const sorted = [...articles].sort((a, b) => (b.date || "").localeCompare(a.date || ""));
+  const used = new Set();
+  const picked = HOME_ARTICLE_TOPICS.map(topic => {
+    const article = sorted.find(a => {
+      if (used.has(a.id)) return false;
+      const haystack = `${a.title || ""} ${a.excerpt || ""} ${a.content || ""}`;
+      return topic.keywords.some(k => haystack.includes(k));
+    });
+    if (!article) return null;
+    used.add(article.id);
+    return { ...article, topicLabel: topic.label };
+  }).filter(Boolean);
+  for (const article of sorted) {
+    if (picked.length >= 3) break;
+    if (!used.has(article.id)) picked.push(article);
+  }
+  return picked.slice(0, 3);
+};
 
 // ── Nav ──
 function Nav({ page, setPage, isAdmin, navLabels, setNavLabels, mobileTabLabels, setMobileTabLabels }) {
-  const nl = { ...DEFAULTS.navLabels, ...(navLabels || {}) };
+  const nl = normalizeNavLabels(navLabels);
   const mtl = { ...DEFAULTS.mobileTabLabels, ...(mobileTabLabels || {}) };
   const [showL, setShowL] = useState(false);
   const [mob, setMob] = useState(false);
@@ -1101,7 +1225,7 @@ function Nav({ page, setPage, isAdmin, navLabels, setNavLabels, mobileTabLabels,
 // ── Footer ──
 function Footer({ links, footerTagline, setFooterTagline, isAdmin, setPage, footerLabels, setFooterLabels }) {
   const l = links || DEFAULTS.links;
-  const fl = { ...DEFAULTS.footerLabels, ...(footerLabels || {}) };
+  const fl = normalizeFooterLabels(footerLabels);
   const [editing, setEditing] = useState(false);
   const [tmp, setTmp] = useState(footerTagline || DEFAULTS.footerTagline);
   const save = () => { setFooterTagline(tmp); setEditing(false); };
@@ -1113,7 +1237,7 @@ function Footer({ links, footerTagline, setFooterTagline, isAdmin, setPage, foot
     </li>
   );
   const LABEL_ROWS = [
-    ["colProduct", "「產品」欄標題"], ["fApp", "理財導航器連結文字"], ["fEnvelope", "存錢袋連結文字"], ["fGoods", "推薦好物連結文字"], ["fPricing", "訂閱方案連結文字"],
+    ["colProduct", "「產品」欄標題"], ["fApp", "88La財務導航連結文字"], ["fEnvelope", "存錢袋連結文字"], ["fGoods", "推薦好物連結文字"], ["fPricing", "訂閱方案連結文字"],
     ["colAbout", "「關於」欄標題"], ["fAbout", "關於我們連結文字"], ["fCommunity", "8友社群連結文字"], ["fResources", "資源中心連結文字"], ["fNewsletter", "電子報連結文字"], ["fContact", "合作洽談連結文字"],
     ["colLegal", "「法律資訊」欄標題"], ["fTerms", "服務條款連結文字"], ["fPrivacy", "隱私政策連結文字"], ["fDisclaimer", "免責聲明連結文字"],
     ["copyright", "版權宣告文字"],
@@ -1285,7 +1409,7 @@ function PageHero({ title, fields, data, setData, defaults, isAdmin, children })
 }
 
 function HomeHero({ homeHero, setHomeHero, isAdmin, setPage }) {
-  const h = { ...DEFAULTS.homeHero, ...(homeHero || {}) };
+  const h = normalizeHomeHero({ ...DEFAULTS.homeHero, ...(homeHero || {}) });
   const [editing, setEditing] = useState(false);
   const [tmp, setTmp] = useState(h);
   const save = () => { setHomeHero(tmp); setEditing(false); };
@@ -1311,7 +1435,7 @@ function HomeHero({ homeHero, setHomeHero, isAdmin, setPage }) {
           <h1 style={{ fontSize: 40, fontWeight: 700, color: CHAR, lineHeight: 1.35, marginBottom: 18, whiteSpace: "pre-wrap" }}>{h.headline}</h1>
           <p style={{ fontSize: 15, color: MID, lineHeight: 1.85, marginBottom: 28, maxWidth: 440 }}>{h.subheadline}</p>
           <div style={{ display: "flex", gap: 12, flexWrap: "wrap", alignItems: "center" }}>
-            <button className="pb" onClick={() => setPage("app")}>{h.ctaText} →</button>
+            <button className="pb" onClick={() => setPage("tool-quiz")}>{h.ctaText} →</button>
             <button className="pg" onClick={() => setPage("resources")}>{h.cta2Text}</button>
             {isAdmin && <span onClick={() => { setTmp(h); setEditing(true); }} style={{ fontSize: 12, color: O, cursor: "pointer", marginLeft: 4 }}>編輯</span>}
           </div>
@@ -1327,12 +1451,14 @@ function HomeHero({ homeHero, setHomeHero, isAdmin, setPage }) {
 }
 
 function Home({ articles, setPage, setId, setArticles, isAdmin, homeHero, setHomeHero, trustStats, setTrustStats, paths, setPaths, homeCopy, setHomeCopy }) {
-  const hc = { ...DEFAULTS.homeCopy, ...(homeCopy || {}) };
+  const hc = normalizeHomeCopy({ ...DEFAULTS.homeCopy, ...(homeCopy || {}) });
   const [editHomeCopy, setEditHomeCopy] = useState(false);
   const [tmpHomeCopy, setTmpHomeCopy] = useState(hc);
   const open = id => { setArticles(prev => prev.map(a => a.id === id ? { ...a, views: (a.views || 0) + 1 } : a), { silent: true }); setId(id); setPage("article"); window.scrollTo({ top: 0, behavior: "instant" }); const a = articles.find(x => x.id === id); history.pushState({}, "", "/article/" + encodeURIComponent(a?.slug || id)); };
   const ts = trustStats && trustStats.length ? trustStats : DEFAULTS.trustStats;
   const ph = paths && paths.length ? paths : DEFAULTS.paths;
+  const guidedPaths = HOME_GUIDED_PATHS;
+  const homeArticles = pickHomeArticles(articles);
   const [editStats, setEditStats] = useState(false);
   const [tmpStats, setTmpStats] = useState(ts);
   const [editPaths, setEditPaths] = useState(false);
@@ -1367,8 +1493,8 @@ function Home({ articles, setPage, setId, setArticles, isAdmin, homeHero, setHom
         {isAdmin && <div style={{ textAlign: "right", marginBottom: 12 }}>{!editPaths && <span onClick={() => { setTmpPaths(ph); setEditPaths(true); }} style={{ fontSize: 12, color: O, cursor: "pointer" }}>編輯分流路徑</span>}</div>}
         <div style={{ textAlign: "center", marginBottom: 28 }}>
           <p className="section-label" style={{ marginBottom: 12 }}>START HERE</p>
-          <h2 style={{ fontSize: 24, fontWeight: 700, color: CHAR, marginBottom: 10 }}>你現在最想解決哪件事？</h2>
-          <p style={{ fontSize: 14, color: MID, lineHeight: 1.8 }}>不用先懂理財，先選一個最像你的狀態。</p>
+          <h2 style={{ fontSize: 24, fontWeight: 700, color: CHAR, marginBottom: 10 }}>先選一個最像你的狀態</h2>
+          <p style={{ fontSize: 14, color: MID, lineHeight: 1.8 }}>不用先懂產品，從現在的卡關點開始就好。</p>
         </div>
         {editPaths ? (
           <div style={{ background: GRAY, padding: 24, border: `1px solid ${BORDER}`, marginBottom: 20 }}>
@@ -1387,26 +1513,27 @@ function Home({ articles, setPage, setId, setArticles, isAdmin, homeHero, setHom
           </div>
         ) : (
           <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(260px,1fr))", gap: 20, marginBottom: 20 }} className="grid3">
-            {ph.map((p, i) => {
+            {guidedPaths.map((p, i) => {
               const isExternal = /^https?:\/\//.test(p.page || "");
               const goTo = () => { if (isExternal) window.open(p.page, "_blank", "noopener,noreferrer"); else setPage(p.page); };
               const PathIcon = isExternal ? (p.page.includes("instagram") ? IcIG : null) : PATH_ICONS[p.page];
               return (
-                <div key={i} onClick={goTo} style={{ background: WHITE, border: `1px solid ${BORDER}`, borderRadius: 20, padding: 28, cursor: "pointer", boxShadow: "0 2px 10px rgba(0,0,0,.06)", transition: "transform .3s, box-shadow .3s" }}
+                <div key={i} onClick={goTo} style={{ background: WHITE, border: `1px solid ${BORDER}`, borderRadius: 16, padding: 28, cursor: "pointer", boxShadow: "0 2px 8px rgba(0,0,0,.04)", transition: "transform .3s, box-shadow .3s" }}
                   onMouseEnter={e => { e.currentTarget.style.transform = "translateY(-6px)"; e.currentTarget.style.boxShadow = "0 20px 40px rgba(0,0,0,.1)"; }}
-                  onMouseLeave={e => { e.currentTarget.style.transform = "translateY(0)"; e.currentTarget.style.boxShadow = "0 2px 10px rgba(0,0,0,.06)"; }}
+                  onMouseLeave={e => { e.currentTarget.style.transform = "translateY(0)"; e.currentTarget.style.boxShadow = "0 2px 8px rgba(0,0,0,.04)"; }}
                 >
+                  <p style={{ fontSize: 11, color: O, fontWeight: 700, marginBottom: 12 }}>{p.label}</p>
                   <div style={{ width: 40, height: 40, borderRadius: 12, background: O2, color: O, display: "flex", alignItems: "center", justifyContent: "center", marginBottom: 16 }}>{PathIcon ? <div style={{ width: 20, height: 20 }}><PathIcon /></div> : null}</div>
                   <h3 style={{ fontSize: 17, fontWeight: 500, color: CHAR, marginBottom: 8 }}>{p.title}</h3>
                   <p style={{ fontSize: 13, color: MID, lineHeight: 1.8, marginBottom: 14 }}>{p.desc}</p>
-                  <span style={{ fontSize: 12, color: O, fontWeight: 500 }}>選這個方向 →</span>
+                  <span style={{ fontSize: 12, color: O, fontWeight: 500 }}>選這個入口 →</span>
                 </div>
               );
             })}
           </div>
         )}
       </div>
-      {articles.length > 0 && (
+      {homeArticles.length > 0 && (
         <div style={{ background: WHITE, padding: "64px 32px", borderTop: `1px solid ${BORDER}` }}>
           <div style={{ maxWidth: 1100, margin: "0 auto" }}>
             <div style={{ textAlign: "center", marginBottom: 40 }}>
@@ -1415,14 +1542,14 @@ function Home({ articles, setPage, setId, setArticles, isAdmin, homeHero, setHom
               {isAdmin && <span onClick={() => { setTmpHomeCopy(hc); setEditHomeCopy(true); }} style={{ fontSize: 11, color: O, cursor: "pointer", marginTop: 6, display: "inline-block" }}>編輯</span>}
             </div>
             <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(260px,1fr))", gap: 20 }} className="grid3">
-              {[...articles].sort((a, b) => (b.date || "").localeCompare(a.date || "")).slice(0, 3).map(a => (
+              {homeArticles.map(a => (
                 <div key={a.id} className="card" onClick={() => open(a.id)}>
                   <div style={{ height: 140, background: O2, overflow: "hidden" }}>
                     {a.img && <img src={a.img} alt={a.title} style={{ width: "100%", height: "100%", objectFit: "cover" }} loading="lazy" />}
                   </div>
                   <div style={{ padding: 20 }}>
                     <div style={{ display: "flex", gap: 6, alignItems: "center", flexWrap: "wrap", marginBottom: 10 }}>
-                      <span className="tag">{a.tag}</span>
+                      <span className="tag">{a.topicLabel || a.tag}</span>
                       {a.member && <span style={{ fontSize: 10, padding: "2px 8px", borderRadius: 999, background: CORAL2, color: WHITE }}>會員限定</span>}
                     </div>
                     <h4 style={{ fontSize: 15, fontWeight: 500, color: CHAR, lineHeight: 1.5, display: "-webkit-box", WebkitLineClamp: 2, WebkitBoxOrient: "vertical", overflow: "hidden" }}>{a.title}</h4>
@@ -1430,14 +1557,14 @@ function Home({ articles, setPage, setId, setArticles, isAdmin, homeHero, setHom
                 </div>
               ))}
             </div>
-            <p style={{ textAlign: "center", marginTop: 28 }}><span onClick={() => setPage("journal")} style={{ fontSize: 13, color: O, cursor: "pointer" }}>查看更多文章 →</span></p>
+            <p style={{ textAlign: "center", marginTop: 28 }}><span onClick={() => setPage("journal")} style={{ fontSize: 13, color: O, cursor: "pointer" }}>看更多卡關解法 →</span></p>
           </div>
         </div>
       )}
       <div style={{ background: CHAR, padding: "56px 32px", textAlign: "center" }}>
         <h2 style={{ fontSize: 22, fontWeight: 700, color: WHITE, marginBottom: 14 }}>{hc.ctaHeading}</h2>
         <p style={{ fontSize: 14, color: "rgba(255,255,255,.6)", marginBottom: 24 }}>{hc.ctaSub}</p>
-        <button className="pb" onClick={() => setPage("resources")}>{hc.ctaBtn}</button>
+        <button className="pb" onClick={() => setPage("tool-quiz")}>{hc.ctaBtn}</button>
         {isAdmin && <div style={{ marginTop: 10 }}><span onClick={() => { setTmpHomeCopy(hc); setEditHomeCopy(true); }} style={{ fontSize: 11, color: "rgba(255,255,255,.5)", cursor: "pointer", textDecoration: "underline" }}>編輯</span></div>}
       </div>
       {editHomeCopy && (
@@ -2256,6 +2383,8 @@ function Community({ igPosts, links, setPage, isAdmin, communityHero, setCommuni
   const [tmpCopy, setTmpCopy] = useState(cc);
   const previewPosts = (igPosts || []).slice(0, 3);
   const feedback = memberFeedback || [];
+  const feedbackTrackRef = useRef(null);
+  const [feedbackIndex, setFeedbackIndex] = useState(0);
   const [efEditing, setEfEditing] = useState(null);
   const [efForm, setEfForm] = useState({ img: "", caption: "" });
   const startAddFeedback = () => { setEfForm({ img: "", caption: "" }); setEfEditing("new"); };
@@ -2267,6 +2396,37 @@ function Community({ igPosts, links, setPage, isAdmin, communityHero, setCommuni
   };
   const delFeedback = id => { if (confirm("確定刪除？")) setMemberFeedback(prev => (prev || []).filter(f => f.id !== id)); };
   const moveFeedback = (idx, dir) => setMemberFeedback(prev => moveItem(prev || [], idx, dir));
+  const scrollFeedback = dir => {
+    const track = feedbackTrackRef.current;
+    if (!track) return;
+    const slide = track.querySelector(".feedback-slide");
+    const step = slide ? slide.getBoundingClientRect().width + 20 : track.clientWidth * 0.8;
+    track.scrollBy({ left: dir * step, behavior: "smooth" });
+  };
+  const scrollFeedbackTo = idx => {
+    const track = feedbackTrackRef.current;
+    const slide = track?.querySelectorAll(".feedback-slide")[idx];
+    if (!track || !slide) return;
+    slide.scrollIntoView({ behavior: "smooth", inline: "center", block: "nearest" });
+  };
+  const updateFeedbackIndex = () => {
+    const track = feedbackTrackRef.current;
+    if (!track) return;
+    const slides = Array.from(track.querySelectorAll(".feedback-slide"));
+    if (!slides.length) return;
+    const trackCenter = track.getBoundingClientRect().left + track.clientWidth / 2;
+    let nearest = 0;
+    let nearestDist = Infinity;
+    slides.forEach((slide, idx) => {
+      const rect = slide.getBoundingClientRect();
+      const dist = Math.abs(rect.left + rect.width / 2 - trackCenter);
+      if (dist < nearestDist) {
+        nearest = idx;
+        nearestDist = dist;
+      }
+    });
+    setFeedbackIndex(nearest);
+  };
   return (
     <PageHero title="8友社群頁文字" fields={COMMUNITY_HERO_FIELDS} data={communityHero} setData={setCommunityHero} defaults={DEFAULTS.communityHero} isAdmin={isAdmin}>
       {(h, editLink) => (
@@ -2358,26 +2518,52 @@ function Community({ igPosts, links, setPage, isAdmin, communityHero, setCommuni
             {feedback.length === 0 ? (
               isAdmin && <p style={{ textAlign: "center", fontSize: 13, color: LIGHT, padding: "24px 0" }}>還沒有回饋截圖，點上面「＋ 新增」上傳第一張。</p>
             ) : (
-              <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill,minmax(220px,1fr))", gap: 20 }} className="grid3">
-                {feedback.map((f, idx) => (
-                  <div key={f.id} style={{ background: WHITE, border: `1px solid ${BORDER}`, borderRadius: 16, overflow: "hidden", boxShadow: "0 2px 10px rgba(0,0,0,.06)" }}>
-                    <div style={{ aspectRatio: "3/4", background: GRAY, overflow: "hidden" }}>
-                      <img src={f.img} alt={f.caption || "8友回饋"} style={{ width: "100%", height: "100%", objectFit: "cover" }} loading="lazy" />
-                    </div>
-                    <div style={{ padding: "12px 16px", display: "flex", justifyContent: "space-between", alignItems: "flex-start", gap: 8 }}>
-                      <p style={{ fontSize: 13, color: MID, lineHeight: 1.7 }}>{f.caption}</p>
-                      {isAdmin && (
-                        <div style={{ display: "flex", flexDirection: "column", gap: 4, alignItems: "flex-end", flexShrink: 0 }}>
-                          <OrdBtns idx={idx} total={feedback.length} onMove={moveFeedback} />
-                          <div style={{ display: "flex", gap: 8 }}>
-                            <span style={{ fontSize: 11, color: O, cursor: "pointer" }} onClick={() => startEditFeedback(f)}>編輯</span>
-                            <span style={{ fontSize: 11, color: "#E74C3C", cursor: "pointer" }} onClick={() => delFeedback(f.id)}>刪除</span>
-                          </div>
-                        </div>
-                      )}
-                    </div>
+              <div>
+                {feedback.length > 1 && (
+                  <div style={{ display: "flex", justifyContent: "flex-end", gap: 8, marginBottom: 14 }}>
+                    <button type="button" aria-label="上一則回饋" className="pg" onClick={() => scrollFeedback(-1)} style={{ width: 40, height: 40, padding: 0, borderRadius: "50%", fontSize: 18, color: O }}>←</button>
+                    <button type="button" aria-label="下一則回饋" className="pg" onClick={() => scrollFeedback(1)} style={{ width: 40, height: 40, padding: 0, borderRadius: "50%", fontSize: 18, color: O }}>→</button>
                   </div>
-                ))}
+                )}
+                <div
+                  ref={feedbackTrackRef}
+                  className="feedback-carousel-track"
+                  onScroll={updateFeedbackIndex}
+                  style={{ display: "flex", gap: 20, overflowX: "auto", scrollSnapType: "x mandatory", scrollPadding: "0 24px", padding: "4px 4px 18px", WebkitOverflowScrolling: "touch" }}
+                >
+                  {feedback.map((f, idx) => (
+                    <div key={f.id} className="feedback-slide" style={{ background: WHITE, border: `1px solid ${BORDER}`, borderRadius: 16, overflow: "hidden", boxShadow: "0 2px 10px rgba(0,0,0,.06)" }}>
+                      <div style={{ aspectRatio: "3/4", background: GRAY, overflow: "hidden" }}>
+                        <img src={f.img} alt={f.caption || "8友回饋"} style={{ width: "100%", height: "100%", objectFit: "cover" }} loading="lazy" />
+                      </div>
+                      <div style={{ minHeight: isAdmin ? 72 : 54, padding: "12px 16px", display: "flex", justifyContent: "space-between", alignItems: "flex-start", gap: 8 }}>
+                        <p style={{ fontSize: 13, color: MID, lineHeight: 1.7 }}>{f.caption}</p>
+                        {isAdmin && (
+                          <div style={{ display: "flex", flexDirection: "column", gap: 4, alignItems: "flex-end", flexShrink: 0 }}>
+                            <OrdBtns idx={idx} total={feedback.length} onMove={moveFeedback} />
+                            <div style={{ display: "flex", gap: 8 }}>
+                              <span style={{ fontSize: 11, color: O, cursor: "pointer" }} onClick={() => startEditFeedback(f)}>編輯</span>
+                              <span style={{ fontSize: 11, color: "#E74C3C", cursor: "pointer" }} onClick={() => delFeedback(f.id)}>刪除</span>
+                            </div>
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+                {feedback.length > 1 && (
+                  <div style={{ display: "flex", justifyContent: "center", gap: 8, marginTop: 4 }}>
+                    {feedback.map((f, idx) => (
+                      <button
+                        key={f.id}
+                        type="button"
+                        aria-label={`前往第 ${idx + 1} 則回饋`}
+                        onClick={() => scrollFeedbackTo(idx)}
+                        style={{ width: feedbackIndex === idx ? 18 : 7, height: 7, borderRadius: 999, padding: 0, background: feedbackIndex === idx ? O : "rgba(200,90,20,.22)", transition: "width .2s, background .2s" }}
+                      />
+                    ))}
+                  </div>
+                )}
               </div>
             )}
           </div>
@@ -2674,7 +2860,7 @@ function Goods({ goods, setGoods, isAdmin, goodsHero, setGoodsHero, goodsCopy, s
 // ── NEW: App 介紹頁 ──
 // ── 使用說明 (Guide, standalone) ──
 function Guide({ appContent, isAdmin, setPage }) {
-  const c = { ...DEFAULTS.appContent, ...(appContent || {}) };
+  const c = normalizeAppContent(appContent);
   const guideData = c.guideData || DEFAULTS.appContent.guideData;
   const phases = guideData.phases || [];
   const scrollTo = id => document.getElementById(id)?.scrollIntoView({ behavior: "smooth" });
@@ -2682,9 +2868,9 @@ function Guide({ appContent, isAdmin, setPage }) {
     <div>
       <div style={{ padding: "56px 32px 32px", textAlign: "center" }}>
         <p className="section-label" style={{ marginBottom: 12 }}>使用說明</p>
-        <h1 style={{ fontSize: 28, fontWeight: 700, color: CHAR, marginBottom: 10 }}>{c.guideTitle || "88La 理財自動導航器，完整使用說明"}</h1>
+        <h1 style={{ fontSize: 28, fontWeight: 700, color: CHAR, marginBottom: 10 }}>{c.guideTitle || "88La財務導航，完整使用說明"}</h1>
         <p style={{ fontSize: 14, color: MID }}>從初次設定到每個月的節奏，一步步帶你熟悉整個系統</p>
-        {isAdmin && <p style={{ marginTop: 12 }}><span onClick={() => setPage("app")} style={{ fontSize: 12, color: O, cursor: "pointer" }}>在理財導航器頁編輯內容 →</span></p>}
+        {isAdmin && <p style={{ marginTop: 12 }}><span onClick={() => setPage("app")} style={{ fontSize: 12, color: O, cursor: "pointer" }}>在88La財務導航頁編輯內容 →</span></p>}
       </div>
       <div style={{ position: "sticky", top: 60, zIndex: 9, background: WHITE, padding: "16px 0", display: "flex", gap: 10, justifyContent: "center", flexWrap: "wrap", borderBottom: `1px solid ${BORDER}` }}>
         {phases.map(phase => (
@@ -2737,7 +2923,7 @@ function Guide({ appContent, isAdmin, setPage }) {
 }
 
 function AppPage({ appContent, setAppContent, isAdmin, setPage, demoStory, setDemoStory }) {
-  const c = { ...DEFAULTS.appContent, ...(appContent || {}) };
+  const c = normalizeAppContent(appContent);
   const ds = { ...DEFAULTS.demoStory, ...(demoStory || {}) };
   const upd = patch => setAppContent(prev => ({ ...DEFAULTS.appContent, ...(prev || {}), ...patch }));
   const [detailPlan, setDetailPlan] = useState(null);
@@ -2883,7 +3069,7 @@ function AppPage({ appContent, setAppContent, isAdmin, setPage, demoStory, setDe
                   <iframe
                     src={`${APP_URL}?demo=true`}
                     style={{ width: "100%", height: "100%", border: "none", display: "block" }}
-                    aria-label="88La 理財導航器示範"
+                    aria-label="88La財務導航示範"
                     loading="lazy"
                   />
                 </div>
@@ -3280,7 +3466,7 @@ const TOOL_QUIZ_QUESTIONS = [
 const TOOL_RESULTS = {
   app: {
     badge: "先整理錢流向",
-    title: "你適合先用 88La理財自動導航器",
+    title: "你適合先用 88La財務導航",
     lead: "你的卡點比較像看不懂錢流向。先把日常花費、預算和提醒整理起來，比急著買工具更有幫助。",
     reasons: ["你需要每天看得到自己的狀態", "你比較需要整理資料和提醒", "先看懂數字，再決定怎麼存"],
     primary: { label: "看導航器怎麼用", page: "app" },
@@ -3348,7 +3534,7 @@ function ToolQuiz({ setPage }) {
         <div style={{ maxWidth: 920, margin: "0 auto" }}>
           <span className="tag" style={{ marginBottom: 18 }}>工具診斷</span>
           <h1 style={{ fontSize: 34, fontWeight: 700, color: CHAR, lineHeight: 1.35, marginBottom: 14, maxWidth: 620 }}>我不確定我目前需要什麼工具</h1>
-          <p style={{ fontSize: 15, color: MID, lineHeight: 1.9, maxWidth: 600 }}>從你的消費模式和卡關點開始判斷，現在比較適合 88La理財自動導航器、實體存錢袋，還是先從免費資源開始。</p>
+          <p style={{ fontSize: 15, color: MID, lineHeight: 1.9, maxWidth: 600 }}>從你的消費模式和卡關點開始判斷，現在比較適合 88La財務導航、實體存錢袋，還是先從免費資源開始。</p>
         </div>
       </div>
 
@@ -4071,7 +4257,7 @@ function SavingsBagQuizAdmin({ savingsBagQuiz, setSavingsBagQuiz }) {
 
 // ── 方案說明 ──
 function PricingPage({ appContent, setPage }) {
-  const c = appContent || DEFAULTS.appContent;
+  const c = normalizeAppContent(appContent);
   const plans = c.plans || [];
 
   const ALL_FEATURES = [
@@ -4163,7 +4349,7 @@ function PricingPage({ appContent, setPage }) {
 
 // ── 服務條款 ──
 function LegalPage({ isAdmin, content, setContent, defaults, hasIntro }) {
-  const c = { ...defaults, ...(content || {}) };
+  const c = normalizeLegalContent({ ...defaults, ...(content || {}) });
   const [editing, setEditing] = useState(false);
   const [tmp, setTmp] = useState(c);
   const titleLines = (c.title || "").split("\n");
@@ -4230,8 +4416,8 @@ function DisclaimerPage({ isAdmin, disclaimerContent, setDisclaimerContent }) {
 
 // ── 訂閱方案 ──
 function SubscriptionPage({ setPage, isAdmin, appContent, subscriptionCopy, setSubscriptionCopy }) {
-  const c = { ...DEFAULTS.appContent, ...(appContent || {}) };
-  const sc = { ...DEFAULTS.subscriptionCopy, ...(subscriptionCopy || {}) };
+  const c = normalizeAppContent(appContent);
+  const sc = normalizeSubscriptionCopy(subscriptionCopy);
   const [editing, setEditing] = useState(false);
   const [tmp, setTmp] = useState(sc);
   if (!isAdmin) return (
