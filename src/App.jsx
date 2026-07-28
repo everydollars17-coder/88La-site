@@ -331,11 +331,12 @@ const DEFAULTS = {
     { num: "5年+", label: "理財內容創作經驗" }
   ],
   paths: [
-    { title: "我不確定我目前需要什麼工具", desc: "用 2 分鐘從消費模式判斷，你現在比較需要 App、實體工具，還是先從免費資源開始。", page: "tool-quiz" },
-    { title: "我想先免費試試", desc: "先用測驗和免費工具抓出自己的財務位置，不用註冊也能開始。", page: "resources" },
-    { title: "我想開始記帳", desc: "用 88La理財自動導航器，把每天花的錢整理成看得懂的方向。", page: "app" },
-    { title: "我想用實體工具存錢", desc: "用實體存錢袋把目標放進不同位置，讓存錢變成看得見的動作。", page: "envelope" },
-    { title: "我想有人陪我", desc: "到 8友社群看大家怎麼練習理財，先感覺你不是一個人。", page: "community" }
+    { title: "我不清楚要怎麼開始理財", desc: "先從免費資源開始，不用註冊也能看。", page: "resources" },
+    { title: "我有記帳但記完就沒有然後了", desc: "用 88La理財自動導航器，把記帳變成看得懂的方向。", page: "app" },
+    { title: "我的錢總是很快花完", desc: "用 2 分鐘測驗，找到適合你的理財方法。", page: "tool-quiz" },
+    { title: "我存了錢但很快就花掉", desc: "用實體存錢袋把錢分類收好，看得見比較守得住。", page: "envelope" },
+    { title: "我想找人一起練習理財", desc: "來 Instagram 看日常分享，先感覺你不是一個人。", page: "https://www.instagram.com/every_dollars/" },
+    { title: "我想看88La說理財知識", desc: "看文章庫，理財觀念用聊天的方式講給你聽。", page: "journal" }
   ],
   envelopeHero: {
     eyebrow: "88La · 實體工具",
@@ -970,9 +971,10 @@ const IcShop = () => <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" 
 const IcEye   = () => <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8"><path d="M1 12s4-7 11-7 11 7 11 7-4 7-11 7-11-7-11-7z"/><circle cx="12" cy="12" r="3"/></svg>;
 const IcSync  = () => <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8"><path d="M4 9a8 8 0 0 1 14-5l2 2"/><path d="M20 6V2m0 4h-4"/><path d="M20 15a8 8 0 0 1-14 5l-2-2"/><path d="M4 18v4m0-4h4"/></svg>;
 const IcCheck = () => <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8"><path d="M4 12l5 5L20 6"/></svg>;
+const IcArticle = () => <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/><line x1="8" y1="13" x2="16" y2="13"/><line x1="8" y1="17" x2="13" y2="17"/></svg>;
 
 const MOBILE_TAB_ICONS = [["home",IcUser],["community",IcIG],["resources",IcRes],["app",IcApp],["envelope",IcShop]];
-const PATH_ICONS = { app: IcApp, envelope: IcShop, community: IcIG, resources: IcRes, "tool-quiz": IcCheck };
+const PATH_ICONS = { app: IcApp, envelope: IcShop, community: IcIG, resources: IcRes, "tool-quiz": IcCheck, journal: IcArticle };
 const WHY_ICONS = [IcEye, IcSync, IcCheck];
 const IcTarget = () => <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="5"/><circle cx="12" cy="12" r="1" fill="currentColor" stroke="none"/></svg>;
 const IcChart  = () => <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8"><line x1="4" y1="20" x2="4" y2="12"/><line x1="12" y1="20" x2="12" y2="6"/><line x1="20" y1="20" x2="20" y2="15"/></svg>;
@@ -1372,24 +1374,34 @@ function Home({ articles, setPage, setId, setArticles, isAdmin, homeHero, setHom
             {tmpPaths.map((p, i) => (
               <div key={i} style={{ marginBottom: 16, paddingBottom: 16, borderBottom: i < tmpPaths.length - 1 ? `1px solid ${BORDER}` : "none" }}>
                 <input value={p.title} onChange={e => setTmpPaths(pp => pp.map((x, xi) => xi === i ? { ...x, title: e.target.value } : x))} placeholder="標題" style={{ marginBottom: 6 }} />
-                <textarea value={p.desc} onChange={e => setTmpPaths(pp => pp.map((x, xi) => xi === i ? { ...x, desc: e.target.value } : x))} placeholder="說明" style={{ minHeight: 50 }} />
+                <textarea value={p.desc} onChange={e => setTmpPaths(pp => pp.map((x, xi) => xi === i ? { ...x, desc: e.target.value } : x))} placeholder="說明" style={{ minHeight: 50, marginBottom: 6 }} />
+                <input value={p.page} onChange={e => setTmpPaths(pp => pp.map((x, xi) => xi === i ? { ...x, page: e.target.value } : x))} placeholder="頁面代號（如 app、resources）或完整網址（https://...）" style={{ marginBottom: 6 }} />
+                <span onClick={() => setTmpPaths(pp => pp.filter((_, xi) => xi !== i))} style={{ fontSize: 12, color: MID, cursor: "pointer" }}>刪除這張卡片</span>
               </div>
             ))}
+            <div style={{ display: "flex", gap: 10, marginBottom: 16 }}>
+              <span onClick={() => setTmpPaths(pp => [...pp, { title: "", desc: "", page: "resources" }])} style={{ fontSize: 12, color: O, cursor: "pointer" }}>+ 新增卡片</span>
+            </div>
             <div style={{ display: "flex", gap: 10 }}><button className="pb" onClick={() => { setPaths(tmpPaths); setEditPaths(false); }}>儲存</button><button className="pg" onClick={() => setEditPaths(false)}>取消</button></div>
           </div>
         ) : (
           <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(260px,1fr))", gap: 20, marginBottom: 20 }} className="grid3">
-            {ph.map((p, i) => (
-              <div key={i} onClick={() => setPage(p.page)} style={{ background: WHITE, border: `1px solid ${BORDER}`, borderRadius: 20, padding: 28, cursor: "pointer", boxShadow: "0 2px 10px rgba(0,0,0,.06)", transition: "transform .3s, box-shadow .3s" }}
-                onMouseEnter={e => { e.currentTarget.style.transform = "translateY(-6px)"; e.currentTarget.style.boxShadow = "0 20px 40px rgba(0,0,0,.1)"; }}
-                onMouseLeave={e => { e.currentTarget.style.transform = "translateY(0)"; e.currentTarget.style.boxShadow = "0 2px 10px rgba(0,0,0,.06)"; }}
-              >
-                <div style={{ width: 40, height: 40, borderRadius: 12, background: O2, color: O, display: "flex", alignItems: "center", justifyContent: "center", marginBottom: 16 }}>{(() => { const PathIcon = PATH_ICONS[p.page]; return PathIcon ? <div style={{ width: 20, height: 20 }}><PathIcon /></div> : null; })()}</div>
-                <h3 style={{ fontSize: 17, fontWeight: 500, color: CHAR, marginBottom: 8 }}>{p.title}</h3>
-                <p style={{ fontSize: 13, color: MID, lineHeight: 1.8, marginBottom: 14 }}>{p.desc}</p>
-                <span style={{ fontSize: 12, color: O, fontWeight: 500 }}>選這個方向 →</span>
-              </div>
-            ))}
+            {ph.map((p, i) => {
+              const isExternal = /^https?:\/\//.test(p.page || "");
+              const goTo = () => { if (isExternal) window.open(p.page, "_blank", "noopener,noreferrer"); else setPage(p.page); };
+              const PathIcon = isExternal ? (p.page.includes("instagram") ? IcIG : null) : PATH_ICONS[p.page];
+              return (
+                <div key={i} onClick={goTo} style={{ background: WHITE, border: `1px solid ${BORDER}`, borderRadius: 20, padding: 28, cursor: "pointer", boxShadow: "0 2px 10px rgba(0,0,0,.06)", transition: "transform .3s, box-shadow .3s" }}
+                  onMouseEnter={e => { e.currentTarget.style.transform = "translateY(-6px)"; e.currentTarget.style.boxShadow = "0 20px 40px rgba(0,0,0,.1)"; }}
+                  onMouseLeave={e => { e.currentTarget.style.transform = "translateY(0)"; e.currentTarget.style.boxShadow = "0 2px 10px rgba(0,0,0,.06)"; }}
+                >
+                  <div style={{ width: 40, height: 40, borderRadius: 12, background: O2, color: O, display: "flex", alignItems: "center", justifyContent: "center", marginBottom: 16 }}>{PathIcon ? <div style={{ width: 20, height: 20 }}><PathIcon /></div> : null}</div>
+                  <h3 style={{ fontSize: 17, fontWeight: 500, color: CHAR, marginBottom: 8 }}>{p.title}</h3>
+                  <p style={{ fontSize: 13, color: MID, lineHeight: 1.8, marginBottom: 14 }}>{p.desc}</p>
+                  <span style={{ fontSize: 12, color: O, fontWeight: 500 }}>選這個方向 →</span>
+                </div>
+              );
+            })}
           </div>
         )}
       </div>
