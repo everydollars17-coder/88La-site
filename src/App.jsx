@@ -518,14 +518,13 @@ const OLD_KEYS = ["ed_art", "ed_prod", "ed_ig", "ed_goods", "ed_about", "ed_titl
 OLD_KEYS.forEach(k => { try { localStorage.removeItem(k); } catch { } });
 
 async function fbGet(key) {
-  try {
-    const r = await fetch(`/api/site-content?key=${encodeURIComponent(key)}`);
-    if (!r.ok) return null;
-    const d = await r.json();
-    return Object.prototype.hasOwnProperty.call(d, "value") ? d.value : null;
-  } catch { return null; }
+  const r = await fetch(`/api/site-content?key=${encodeURIComponent(key)}`);
+  if (!r.ok) throw new Error(`site-content fetch failed (${r.status})`);
+  const d = await r.json();
+  return Object.prototype.hasOwnProperty.call(d, "value") ? d.value : null;
 }
 async function fbSet(key, value) {
+  if (isLocalPreviewHost()) throw new Error("本機環境（localhost）禁止寫入正式 Firestore，請用 ?dev_admin=true 走本地預覽模式");
   await setDoc(doc(db, "site", key), { value });
 }
 
@@ -541,7 +540,9 @@ function useFS(key, def) {
       setLoaded(true);
       return;
     }
-    fbGet(key).then(val => { if (val !== null) setV(val); setLoaded(true); });
+    fbGet(key)
+      .then(val => { if (val !== null) setV(val); setLoaded(true); })
+      .catch(e => console.error(`fbGet(${key}) failed, 保留在畫面上不視為已載入`, e));
   }, [key]);
   const set = async (fn, opts) => {
     const n = typeof fn === "function" ? fn(v) : fn;
@@ -4507,20 +4508,6 @@ export default function App() {
       setGoods(DEFAULTS.goods, { silent: true });
     }
   }, [gL]);
-  useEffect(() => {
-    if (!aL || !isAdmin || isLocalAdminPreview) return;
-    const missing = articles.filter(a => !a.slug && a.title);
-    if (missing.length === 0) return;
-    const taken = new Set(articles.map(a => a.slug).filter(Boolean));
-    const updated = articles.map(a => {
-      if (a.slug || !a.title) return a;
-      let slug = toSlug(a.title), n = 2;
-      while (taken.has(slug)) { slug = toSlug(a.title) + "-" + n; n++; }
-      taken.add(slug);
-      return { ...a, slug };
-    });
-    setArticles(updated);
-  }, [aL, isAdmin, isLocalAdminPreview]);
   useEffect(() => {
     if (!aL || !isAdmin || isLocalAdminPreview) return;
     migrateMemberArticles()
