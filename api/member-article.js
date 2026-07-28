@@ -39,7 +39,7 @@ export default async function handler(req, res) {
 
   const admin = await isAdminRequest(req);
   if (!admin) {
-    const password = process.env.MEMBER_ARTICLE_PASSWORD;
+    const password = (await getSiteValue("memberPassword")) || process.env.MEMBER_ARTICLE_PASSWORD;
     if (!password) return res.status(503).json({ error: "member_password_not_configured" });
     if (!safeEqual(req.body?.password, password)) return res.status(403).json({ error: "invalid_password" });
   }

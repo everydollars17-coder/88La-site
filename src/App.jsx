@@ -662,6 +662,21 @@ async function saveMemberArticleContent(articleId, content) {
   if (!r.ok) throw new Error("會員文章儲存失敗");
 }
 
+async function setMemberArticlePassword(password) {
+  if (isLocalAdminPreviewMode()) {
+    localStorage.setItem(localPreviewStorageKey("memberPassword"), password || "");
+    return;
+  }
+  const token = await adminToken();
+  const r = await fetch("/api/member-password-set", {
+    method: "POST",
+    headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
+    body: JSON.stringify({ password }),
+  });
+  const data = await r.json().catch(() => ({}));
+  if (!r.ok) throw new Error(data.error || "密碼儲存失敗");
+}
+
 async function migrateMemberArticles() {
   if (isLocalAdminPreviewMode()) return { migrated: 0 };
   const token = await adminToken();
@@ -3638,6 +3653,23 @@ function Resources({ resources, setResources, isAdmin, articles, setArticles, se
   const rc = { ...DEFAULTS.resourcesCopy, ...(resourcesCopy || {}) };
   const [editCopy, setEditCopy] = useState(false);
   const [tmpCopy, setTmpCopy] = useState(rc);
+  const [editPwd, setEditPwd] = useState(false);
+  const [pwdVal, setPwdVal] = useState("");
+  const [pwdSaving, setPwdSaving] = useState(false);
+  const [pwdMsg, setPwdMsg] = useState("");
+  const savePwd = async () => {
+    if (pwdVal.trim().length < 4) { setPwdMsg("密碼至少要 4 個字元"); return; }
+    setPwdSaving(true); setPwdMsg("");
+    try {
+      await setMemberArticlePassword(pwdVal.trim());
+      setPwdMsg("已更新，下次會員登入即生效");
+      setPwdVal(""); setEditPwd(false);
+    } catch (e) {
+      setPwdMsg(e.message || "儲存失敗，請再試一次");
+    } finally {
+      setPwdSaving(false);
+    }
+  };
   const [mainFilter, setMainFilter] = useState("all");
   const showTools = mainFilter === "all" || mainFilter === "tools";
   const showArticles = mainFilter === "all" || mainFilter === "free" || mainFilter === "member";
@@ -3698,8 +3730,18 @@ function Resources({ resources, setResources, isAdmin, articles, setArticles, se
         )}
         {isAdmin && (
           <div style={{ marginTop: 20, background: GRAY, border: `1px solid ${BORDER}`, padding: "16px 20px" }}>
-            <p style={{ fontSize: 12, color: MID, lineHeight: 1.8 }}>會員文章密碼已改由伺服器環境變數 <strong>MEMBER_ARTICLE_PASSWORD</strong> 管理，不再儲存在 Firestore 或前端程式碼中。</p>
-            <p style={{ fontSize: 11, color: LIGHT, marginTop: 8, lineHeight: 1.6 }}>會員全文會透過受保護 API 讀取，解鎖前不會載入到瀏覽器 DOM。</p>
+            <p style={{ fontSize: 12, color: MID, lineHeight: 1.8 }}>會員文章密碼，讀者需輸入此密碼才能看到會員限定文章全文。</p>
+            <p style={{ fontSize: 11, color: LIGHT, marginTop: 6, marginBottom: 12, lineHeight: 1.6 }}>會員全文會透過受保護 API 讀取，解鎖前不會載入到瀏覽器 DOM。密碼儲存後不會在畫面上顯示原始內容。</p>
+            {!editPwd ? (
+              <span onClick={() => { setEditPwd(true); setPwdVal(""); setPwdMsg(""); }} style={{ fontSize: 12, color: O, cursor: "pointer", textDecoration: "underline" }}>修改密碼</span>
+            ) : (
+              <div style={{ display: "flex", gap: 10, flexWrap: "wrap", alignItems: "center" }}>
+                <input type="text" value={pwdVal} onChange={e => setPwdVal(e.target.value)} placeholder="輸入新密碼" style={{ maxWidth: 220 }} />
+                <button className="pb" disabled={pwdSaving} onClick={savePwd}>{pwdSaving ? "儲存中..." : "儲存"}</button>
+                <button className="pg" onClick={() => { setEditPwd(false); setPwdVal(""); setPwdMsg(""); }}>取消</button>
+              </div>
+            )}
+            {pwdMsg && <p style={{ fontSize: 12, color: pwdMsg.includes("已更新") ? "#4a8c5c" : "#C0392B", marginTop: 8 }}>{pwdMsg}</p>}
           </div>
         )}
         <div style={{ marginTop: 26, background: O2, border: `1px solid ${O}24`, borderRadius: 16, padding: "22px 24px", display: "flex", alignItems: "center", justifyContent: "space-between", gap: 18, flexWrap: "wrap" }}>
