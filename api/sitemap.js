@@ -4,8 +4,17 @@ const SITE = "https://88la-site.vercel.app";
 
 const STATIC_PAGES = [
   { loc: "/", changefreq: "weekly", priority: "1.0" },
-  { loc: "/resources/spending-check/", changefreq: "monthly", priority: "0.7" },
-  { loc: "/resources/golden-circle/", changefreq: "monthly", priority: "0.7" },
+  { loc: "/app", changefreq: "monthly", priority: "0.9" },
+  { loc: "/plans", changefreq: "monthly", priority: "0.9" },
+  { loc: "/savings-bag", changefreq: "weekly", priority: "0.9" },
+  { loc: "/tool-quiz", changefreq: "monthly", priority: "0.8" },
+  { loc: "/resources", changefreq: "weekly", priority: "0.8" },
+  { loc: "/journal", changefreq: "weekly", priority: "0.8" },
+  { loc: "/about", changefreq: "monthly", priority: "0.6" },
+  { loc: "/resources/savings-bag-quiz/index.html", changefreq: "monthly", priority: "0.8" },
+  { loc: "/resources/emergency-fund-quiz/index.html", changefreq: "monthly", priority: "0.7" },
+  { loc: "/resources/spending-check/index.html", changefreq: "monthly", priority: "0.7" },
+  { loc: "/resources/golden-circle/index.html", changefreq: "monthly", priority: "0.7" },
 ];
 
 function escapeXml(s) {
@@ -35,7 +44,7 @@ export default async function handler(req, res) {
   for (const a of articles) {
     const key = a.slug || a.id;
     xml += `  <url>\n`;
-    xml += `    <loc>${SITE}/?article=${escapeXml(String(key))}</loc>\n`;
+    xml += `    <loc>${SITE}/article/${encodeURIComponent(String(key))}</loc>\n`;
     if (a.date) xml += `    <lastmod>${escapeXml(a.date)}</lastmod>\n`;
     xml += `    <changefreq>monthly</changefreq>\n`;
     xml += `    <priority>0.8</priority>\n`;

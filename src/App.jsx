@@ -24,7 +24,7 @@ const googleProvider = new GoogleAuthProvider();
 const ADMIN_EMAILS = ["everydollars17@gmail.com"];
 
 const APP_URL = "https://88la-finance.vercel.app";
-const QUIZ_URL = "https://88la-site.vercel.app/resources/savings-bag-quiz/";
+const QUIZ_URL = "/resources/savings-bag-quiz/index.html";
 
 // 頁面 key ⇄ 網址路徑對照表，供瀏覽器網址列同步用。article 頁另用 /article/:slug 動態路徑處理。
 const PAGE_PATHS = {
@@ -35,6 +35,22 @@ const PAGE_PATHS = {
   write: "/write", "savings-quiz": "/savings-quiz"
 };
 const PATH_TO_PAGE = Object.fromEntries(Object.entries(PAGE_PATHS).map(([p, path]) => [path, p]));
+const APP_MONTHLY_AMOUNT = 139;
+const APP_YEARLY_AMOUNT = 1188;
+const APP_MONTHLY_PRICE = `NT$${APP_MONTHLY_AMOUNT.toLocaleString("en-US")}`;
+const APP_YEARLY_PRICE = `NT$${APP_YEARLY_AMOUNT.toLocaleString("en-US")}`;
+const APP_YEARLY_DISCOUNT = Math.round((1 - APP_YEARLY_AMOUNT / (APP_MONTHLY_AMOUNT * 12)) * 100);
+const APP_YEARLY_MONTHLY_EQUIVALENT = Math.round(APP_YEARLY_AMOUNT / 12);
+const PAGE_META = {
+  home: ["88La 犒賞系存錢", "先看懂錢去哪，再決定怎麼存。"],
+  app: ["88La財務導航｜88La", "從月初分配、平常記錄到月底診斷，找到下一步。"],
+  plans: ["88La財務導航方案｜88La", `月方案 ${APP_MONTHLY_PRICE}，年方案 ${APP_YEARLY_PRICE}。`],
+  envelope: ["存錢袋與實體理財工具｜88La", "依照日常支出、月初分配、目標儲蓄與年度預存找到適合的工具。"],
+  resources: ["免費理財工具與文章｜88La", "先用免費工具找出目前的財務卡點。"],
+  "tool-quiz": ["用 60 秒找到理財起點｜88La", "用三個問題找到目前最值得先處理的卡點。"],
+  journal: ["理財文章｜88La", "寫給理財新手的台灣生活財務內容。"],
+  about: ["關於 88La", "認識 88La 犒賞系存錢的理念與做法。"],
+};
 const pathForPage = p => PAGE_PATHS[p] || "/";
 const pageForPath = pathname => {
   if (pathname.startsWith("/article/")) return "article";
@@ -101,6 +117,172 @@ button{font-family:inherit;cursor:pointer;border:none;border-radius:8px;}
 .hs-2 { animation-delay: 0.12s; }
 .hs-3 { animation-delay: 0.24s; }
 .hs-4 { animation-delay: 0.36s; }
+@keyframes homeEcosystemEnter {
+  from { opacity: 0; transform: translate(var(--home-enter-x, 0), 18px) scale(.98); }
+  to { opacity: 1; transform: translate(0, 0) scale(1); }
+}
+@keyframes homeEcosystemFloat {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(var(--home-float-y, -5px)); }
+}
+.home-ecosystem-entry {
+  opacity: 0;
+  animation: homeEcosystemEnter .7s cubic-bezier(.16,1,.3,1) forwards;
+}
+.home-ecosystem-entry-left { --home-enter-x: -18px; animation-delay: .12s; }
+.home-ecosystem-entry-center { --home-enter-x: 0; animation-delay: 0s; }
+.home-ecosystem-entry-right { --home-enter-x: 18px; animation-delay: .12s; }
+.home-ecosystem-float {
+  --home-float-y: -5px;
+  animation: homeEcosystemFloat 4.8s ease-in-out .9s infinite;
+  will-change: transform;
+}
+.home-ecosystem-entry-left .home-ecosystem-float,
+.home-ecosystem-entry-right .home-ecosystem-float {
+  --home-float-y: -3px;
+  animation-duration: 5.4s;
+}
+.home-ecosystem-entry-right .home-ecosystem-float { animation-delay: 1.35s; }
+.home-ecosystem-object { transition: transform .24s ease, filter .24s ease; }
+.home-ecosystem-stage {
+  position: relative;
+  isolation: isolate;
+  display: grid;
+  grid-template-columns: .92fr 1.16fr .92fr;
+  gap: 18px;
+  align-items: end;
+  width: min(100%, 660px);
+  padding: 44px 16px 22px;
+}
+.home-ecosystem-stage::before {
+  content: '';
+  position: absolute;
+  z-index: -2;
+  width: 60%;
+  aspect-ratio: 1;
+  left: 50%;
+  top: 48%;
+  transform: translate(-50%,-50%);
+  border-radius: 50%;
+  background: rgba(232,128,110,.2);
+  filter: blur(54px);
+  pointer-events: none;
+}
+.home-ecosystem-links {
+  position: absolute;
+  z-index: -1;
+  inset: 22% 8% auto;
+  width: 84%;
+  height: 42%;
+  color: rgba(200,90,20,.2);
+  pointer-events: none;
+}
+.home-product-preview {
+  min-width: 0;
+  padding: 0;
+  background: transparent;
+  color: inherit;
+  text-align: left;
+}
+.home-product-preview:hover .home-ecosystem-object { transform: translateY(-4px) scale(1.012); }
+.home-product-copy { padding: 18px 6px 0; }
+.home-product-tag {
+  display: inline-flex;
+  align-items: center;
+  min-height: 24px;
+  margin-bottom: 9px;
+  padding: 3px 9px;
+  border-radius: 999px;
+  background: rgba(255,255,255,.72);
+  color: #9B4611;
+  font-size: 11px;
+  font-weight: 700;
+}
+.home-product-title { color: #2D1A0E; font-size: 17px; line-height: 1.4; font-weight: 700; text-wrap: balance; }
+.home-product-desc { margin-top: 7px; color: #694737; font-size: 12px; line-height: 1.65; text-wrap: pretty; }
+.home-product-action { display: inline-block; margin-top: 10px; color: #A94C13; font-size: 12px; font-weight: 700; }
+.home-free-visual { position: relative; height: 238px; }
+.home-free-sheet {
+  position: absolute;
+  width: 88%;
+  height: 186px;
+  left: 6%;
+  bottom: 8px;
+  border: 1px solid #E8CDBB;
+  border-radius: 14px;
+  background: #FFFDFB;
+  box-shadow: 0 5px 8px rgba(90,48,21,.08);
+}
+.home-free-sheet-back { transform: rotate(-3deg) translate(-8px,-16px); background: #FFF6E8; }
+.home-free-sheet-mid { transform: rotate(2.5deg) translate(8px,-8px); background: #FCEBDD; }
+.home-free-sheet-front { padding: 18px 16px; }
+.home-mini-kicker { color: #A94C13; font-size: 10px; font-weight: 700; }
+.home-mini-answer { margin-top: 7px; color: #2D1A0E; font-size: 15px; line-height: 1.45; font-weight: 700; }
+.home-mini-track { height: 6px; margin: 15px 0 14px; overflow: hidden; border-radius: 99px; background: #F2DDD0; }
+.home-mini-track span { display: block; width: 68%; height: 100%; border-radius: inherit; background: #C85A14; }
+.home-mini-check { display: flex; align-items: center; gap: 7px; margin-top: 8px; color: #704C39; font-size: 10px; }
+.home-mini-check i { width: 16px; height: 16px; display: grid; place-items: center; border-radius: 50%; background: #F8DCCA; color: #A94C13; font-size: 9px; font-style: normal; }
+.home-app-visual { position: relative; height: 292px; }
+.home-app-phone {
+  position: absolute;
+  inset: 0 8px;
+  overflow: hidden;
+  border-radius: 24px;
+  background: #F0EDE9;
+  box-shadow: 0 20px 38px rgba(66,37,20,.18);
+}
+.home-app-phone::before { content: ''; display: block; width: 36px; height: 4px; margin: 10px auto 4px; border-radius: 99px; background: rgba(45,26,14,.18); }
+.home-app-screen { height: calc(100% - 18px); padding: 12px; background: #F0EDE9; }
+.home-app-top { display: flex; align-items: center; justify-content: space-between; color: #2D1A0E; font-size: 10px; font-weight: 700; }
+.home-app-month { color: #7A5B49; font-size: 9px; font-weight: 500; }
+.home-app-tabs { display: grid; grid-template-columns: repeat(3,1fr); gap: 3px; margin-top: 10px; padding: 3px; border-radius: 9px; background: #E5DDD6; color: #846958; font-size: 8px; text-align: center; }
+.home-app-tabs span:first-child { padding: 5px 3px; border-radius: 7px; background: #FFF; color: #2D1A0E; box-shadow: 0 2px 6px rgba(45,26,14,.08); }
+.home-app-tabs span:not(:first-child) { padding: 5px 3px; }
+.home-app-balance { margin-top: 10px; padding: 12px; border-radius: 12px; background: #FFF; }
+.home-app-balance-label { color: #80624F; font-size: 8px; }
+.home-app-balance-line { width: 62%; height: 10px; margin-top: 7px; border-radius: 99px; background: #C85A14; opacity: .82; }
+.home-app-metrics { display: grid; grid-template-columns: repeat(3,1fr); gap: 5px; margin-top: 7px; }
+.home-app-metric { min-width: 0; padding: 8px 6px; border-radius: 9px; background: #FFF; }
+.home-app-metric span { display: block; color: #775B4A; font-size: 7px; white-space: nowrap; }
+.home-app-metric i { display: block; width: 64%; height: 5px; margin-top: 6px; border-radius: 99px; background: #E7C4AD; font-style: normal; }
+.home-app-focus { margin-top: 7px; padding: 10px; border-radius: 10px; background: #FFF5EC; color: #2D1A0E; }
+.home-app-focus small { display: block; color: #A94C13; font-size: 7px; font-weight: 700; }
+.home-app-focus strong { display: block; margin-top: 4px; font-size: 9px; line-height: 1.45; }
+.home-physical-visual { position: relative; height: 238px; }
+.home-paper-tab {
+  position: absolute;
+  z-index: 1;
+  width: 72%;
+  height: 148px;
+  left: 14%;
+  bottom: 28px;
+  padding: 12px;
+  border-radius: 8px;
+  background: #F8E7D5;
+  box-shadow: 0 8px 16px rgba(66,37,20,.11);
+  color: #7A4524;
+  font-size: 10px;
+  font-weight: 700;
+}
+.home-paper-tab-one { transform: rotate(-9deg) translate(-26px,-13px); background: #F6DDC2; }
+.home-paper-tab-two { transform: rotate(8deg) translate(26px,-10px); background: #F3E9D4; text-align: right; }
+.home-physical-photo {
+  position: absolute;
+  z-index: 2;
+  width: 90%;
+  height: 174px;
+  left: 5%;
+  bottom: 4px;
+  overflow: hidden;
+  border-radius: 10px;
+  background: #FFF;
+  box-shadow: 0 16px 28px rgba(66,37,20,.16);
+  transform: rotate(1.5deg);
+}
+.home-physical-photo img { width: 180%; height: 180%; object-fit: cover; object-position: 62% 50%; transform: translate(-22%,-20%); }
+@media(hover:hover) and (pointer:fine){
+  .home-product-preview:hover .home-ecosystem-object { transform: translateY(-4px) scale(1.012); }
+}
 .mob-tab-bar{
   display:none;position:fixed;bottom:0;left:0;right:0;
   height:60px;background:${WHITE};border-top:1px solid ${BORDER};
@@ -138,6 +320,33 @@ button{font-family:inherit;cursor:pointer;border:none;border-radius:8px;}
   .demo-sect{padding:40px 12px!important;}
   .demo-card{padding:14px 8px 18px!important;}
   .demo-phone{padding:8px 6px!important;}
+  .home-ecosystem-float{--home-float-y:-3px;}
+  .home-ecosystem-entry-left .home-ecosystem-float,
+  .home-ecosystem-entry-right .home-ecosystem-float{--home-float-y:-2px;}
+  .home-ecosystem-stage{
+    display:grid;
+    grid-template-columns:1fr;
+    gap:52px;
+    width:100%;
+    max-width:100%;
+    margin-inline:0;
+    padding:22px 0 12px;
+    overflow:visible;
+  }
+  .home-ecosystem-stage::before{width:120%;top:42%;filter:blur(68px);}
+  .home-ecosystem-links{display:none;}
+  .home-product-preview{
+    width:min(100%,360px);
+    max-width:100%;
+    justify-self:center;
+  }
+  .home-ecosystem-entry-left,
+  .home-ecosystem-entry-right{--home-enter-x:0;}
+  .home-free-visual,.home-physical-visual{height:220px;}
+  .home-app-visual{height:270px;}
+  .home-product-copy{padding:16px 4px 0;}
+  .home-product-title{font-size:18px;}
+  .home-product-desc{font-size:13px;}
 }
 @media(min-width:769px){
   .mob-menu{display:none!important;}
@@ -163,6 +372,9 @@ button:focus-visible{border-radius:4px;}
   *,*::before,*::after{animation-duration:0.01ms!important;animation-iteration-count:1!important;transition-duration:0.01ms!important;}
   .page-anim{animation:none;}
   .card:hover{transform:none;}
+  .home-ecosystem-entry{opacity:1;animation:none;transform:none;}
+  .home-ecosystem-float{animation:none;will-change:auto;}
+  .home-product-preview:hover .home-ecosystem-object{transform:none;}
 }
 `;
 
@@ -171,11 +383,11 @@ const DEFAULT_TAGS = ["理財觀念", "信用卡", "記帳", "投資", "讀書�
 const DEFAULTS = {
   siteTitle: "理財觀點與讀書筆記",
   footerTagline: "理財，是為了讓生活更自由。",
-  navLabels: { home: "首頁", journal: "文章", app: "88La財務導航", envelope: "存錢袋", goods: "推薦好物", community: "8友社群", resources: "免費資源", about: "關於" },
+  navLabels: { home: "找到起點", journal: "文章", app: "88La財務導航", envelope: "實體理財工具", goods: "推薦好物", community: "8友社群", resources: "免費資源", about: "關於 88La" },
   mobileTabLabels: { home: "首頁", community: "社群", resources: "資源", app: "App", envelope: "存錢袋" },
   footerLabels: {
     colProduct: "產品", colAbout: "關於", colLegal: "法律資訊",
-    fApp: "88La財務導航", fEnvelope: "存錢袋", fGoods: "推薦好物", fPricing: "訂閱方案",
+    fApp: "88La財務導航", fEnvelope: "實體理財工具", fGoods: "推薦好物", fPricing: "訂閱方案",
     fAbout: "關於我們", fCommunity: "8友社群", fResources: "資源中心", fNewsletter: "電子報", fContact: "合作洽談",
     fTerms: "服務條款", fPrivacy: "隱私政策", fDisclaimer: "免責聲明",
     copyright: "© 2026 88La 版權所有"
@@ -184,7 +396,7 @@ const DEFAULTS = {
     eyebrow: "LEGAL",
     title: "88La財務導航\n服務條款與退款政策",
     lastUpdated: "最後更新：2026 年 7 月",
-    body: `<h2>一、服務說明</h2><p>88La財務導航（以下簡稱「本服務」）由 88La 提供，為個人理財記帳管理工具，提供收支記錄、預算規劃及桌面快速記帳等功能。本服務以訂閱制提供，訂閱期間內可無限制使用所有功能。</p><h2>二、訂閱方案與收費</h2><p>本服務提供以下訂閱方案：</p><ul><li>月訂閱：NT$139 / 月</li><li>年方案：NT$1,188 / 年</li><li>兩年方案：NT$2,199 / 兩年</li></ul><p>所有金額均為新台幣計價。付款由綠界科技股份有限公司代為處理，採信用卡定期定額方式進行。</p><h2>三、自動續約</h2><p>訂閱方案將於到期日自動續約，並依原方案金額扣款。如不希望續約，請於訂閱到期日前至帳戶設定頁面取消。取消後，服務仍可使用至當期訂閱到期日為止。</p><h2>四、退款政策</h2><p>本服務所販售之內容為數位服務，依消費者保護法第 19 條規定，數位內容於開通後不適用七天鑑賞期退換貨規定。</p><p>如有特殊情形，請聯繫 everydollars17@gmail.com，由 88La 個案審酌處理。</p><h2>五、帳戶與資料</h2><p>用戶須自行保管帳戶登入資訊。用戶的記帳資料儲存於個人 Google 雲端帳號中，訂閱取消後資料仍保留於用戶自己的 Google 試算表，88La 不持有用戶資料。</p><h2>六、服務變更</h2><p>88La 保留調整訂閱方案定價及功能內容之權利，並將提前 30 天以電子郵件通知用戶。現有訂閱者不受漲價影響，直至當期訂閱到期。</p><h2>七、帳號到期與資料保留</h2><ol><li>訂閱方案到期前三天，系統將透過 Email 及 App 推播通知提醒續訂。</li><li>方案到期後，帳號進入 7 天緩衝期：<ul><li>可瀏覽所有歷史記帳紀錄</li><li>可匯出個人資料</li><li>新增、編輯、刪除等寫入功能暫停使用</li></ul></li><li>緩衝期結束後（到期後第 8 天起），帳號功能將完全停用，但資料不會主動刪除。</li><li>如需恢復使用，續訂即可立即解鎖所有功能。</li></ol><h2>八、聯絡方式</h2><p>Email：everydollars17@gmail.com<br>官方網站：https://88la-site.vercel.app</p>`,
+    body: `<h2>一、服務說明</h2><p>88La財務導航（以下簡稱「本服務」）由 88La 提供，為個人理財記帳管理工具，提供收支記錄、預算規劃及桌面快速記帳等功能。本服務以訂閱制提供，訂閱期間內可無限制使用所有功能。</p><h2>二、訂閱方案與收費</h2><p>本服務提供以下訂閱方案：</p><ul><li>月訂閱：${APP_MONTHLY_PRICE} / 月</li><li>年方案：${APP_YEARLY_PRICE} / 年</li></ul><p>所有金額均為新台幣計價。付款由綠界科技股份有限公司代為處理，月訂閱採信用卡定期定額，年方案採單筆付款。</p><h2>三、續約方式</h2><p>月訂閱將依原方案金額定期扣款，如不希望續約，請於下次扣款日前至帳戶設定頁面取消。年方案不會自動續約，到期前將另行提醒。方案到期前仍可使用當期服務。</p><h2>四、退款政策</h2><p>本服務所販售之內容為數位服務，依消費者保護法第 19 條規定，數位內容於開通後不適用七天鑑賞期退換貨規定。</p><p>如有特殊情形，請聯繫 everydollars17@gmail.com，由 88La 個案審酌處理。</p><h2>五、帳戶與資料</h2><p>用戶須自行保管帳戶登入資訊。用戶的記帳資料儲存於個人 Google 雲端帳號中，訂閱取消後資料仍保留於用戶自己的 Google 試算表，88La 不持有用戶資料。</p><h2>六、服務變更</h2><p>88La 保留調整訂閱方案定價及功能內容之權利，並將提前 30 天以電子郵件通知用戶。現有訂閱者不受漲價影響，直至當期訂閱到期。</p><h2>七、帳號到期與資料保留</h2><ol><li>訂閱方案到期前三天，系統將透過 Email 及 App 推播通知提醒續訂。</li><li>方案到期後，帳號進入 7 天緩衝期：<ul><li>可瀏覽所有歷史記帳紀錄</li><li>可匯出個人資料</li><li>新增、編輯、刪除等寫入功能暫停使用</li></ul></li><li>緩衝期結束後（到期後第 8 天起），帳號功能將完全停用，但資料不會主動刪除。</li><li>如需恢復使用，續訂即可立即解鎖所有功能。</li></ol><h2>八、聯絡方式</h2><p>Email：everydollars17@gmail.com<br>官方網站：https://88la-site.vercel.app</p>`,
     footerNote: "使用本服務即代表你已閱讀並同意以上服務條款。\n如對條款有任何疑問，請於訂閱前透過 Email 與我們聯繫。"
   },
   privacyContent: {
@@ -311,20 +523,20 @@ const DEFAULTS = {
     latestLabel: "卡關導讀",
     latestHeading: "你可能正在卡這些",
     ctaHeading: "還不知道選哪個？",
-    ctaSub: "做 2 分鐘診斷，網站會帶你到適合的入口。",
-    ctaBtn: "開始工具診斷"
+    ctaSub: "用 60 秒找到目前最值得先處理的卡點。",
+    ctaBtn: "用 60 秒找到我的起點"
   },
   subscriptionCopy: {
     heading: "選擇你的方案",
     intro: "用 88La財務導航，把記帳這件事變成每天兩分鐘的習慣。\n所有方案皆包含桌面快速記帳功能。",
-    notes: "所有金額均為新台幣計價，含稅\n訂閱將於到期日自動續約，可於到期前至帳戶設定取消\n付款方式：信用卡定期定額（由綠界科技處理）\n到期前三天將寄送提醒通知。到期後提供 7 天資料匯出緩衝期，期間可瀏覽歷史紀錄，續訂即可立即恢復完整功能",
+    notes: "所有金額均為新台幣計價，含稅\n月訂閱採信用卡定期定額，可於下次扣款日前取消\n年方案採單筆付款，不會自動續約\n到期前三天將寄送提醒通知。到期後提供 7 天資料匯出緩衝期，期間可瀏覽歷史紀錄，續訂即可立即恢復完整功能",
     foundingNote: "感謝最早支持 88La 的 90 位創始成員，你們的定價永久保留：月訂閱 NT$109 ／ 年方案 NT$599 ／ 兩年方案 NT$998。此優惠僅適用於已取得創始會員資格之用戶，不開放新申請。"
   },
   homeHero: {
     eyebrow: "88La 犒賞系存錢",
     headline: "先看懂錢去哪\n再決定怎麼存",
-    subheadline: "從免費工具、88La財務導航到實體存錢袋，陪你用不緊繃的方式，把錢放回生活裡。",
-    ctaText: "先看我適合哪個入口",
+    subheadline: "不是逼自己什麼都不能買，而是先安排好，讓想花的錢花得安心、該留下的錢留得住。",
+    ctaText: "用 60 秒找到我的起點",
     cta2Text: "先看免費資源",
     screenshot: ""
   },
@@ -335,9 +547,9 @@ const DEFAULTS = {
     { num: "5年+", label: "理財內容創作經驗" }
   ],
   paths: [
-    { title: "我還不知道怎麼開始", desc: "先用免費資源找方向，不用註冊也能看。", page: "resources" },
-    { title: "我有記帳，但看不出方向", desc: "用 88La財務導航，把記錄變成提醒和判斷。", page: "app" },
-    { title: "我想把錢真的存下來", desc: "用實體存錢袋把錢分好，看得見比較守得住。", page: "envelope" }
+    { label: "免費工具", title: "我不知道錢都去哪了", desc: "先用免費工具找出目前的財務卡點。", page: "resources" },
+    { label: "88La財務導航", title: "我有記帳，但月底還是不知道怎麼調", desc: "用 88La財務導航整理分配、記錄、卡費、預存與月底診斷。", page: "app" },
+    { label: "實體理財工具", title: "我知道想存什麼，但錢總是被花掉", desc: "用看得見、摸得到的實體工具，把目標拆成能持續的行動。", page: "envelope" }
   ],
   envelopeHero: {
     eyebrow: "88La · 實體工具",
@@ -370,7 +582,7 @@ const DEFAULTS = {
     email: "everydollars17@gmail.com"
   },
   about: {
-    intro: "嗨，我是 88La。\n\n我從信封分類法開始認識理財——不是從書本，是從自己每個月真實的薪水開始。\n\n我相信理財不是讓自己活得緊繃，而是讓你對生活有更多掌控感和自由度。",
+    intro: "嗨，我是 88La。\n\n我從信封分類法開始認識理財，不是從書本，而是從自己每個月真實的薪水開始。\n\n我相信理財不是讓自己活得緊繃，而是讓你對生活有更多掌控感和自由度。",
     img: "", bannerImg: "",
     bannerTitle: "理財，是為了讓生活更自由。",
     bannerSub: "88La 帶你用最真實的方式，重新認識金錢。",
@@ -408,8 +620,8 @@ const DEFAULTS = {
     heroHighlight: "存到錢",
     heroSub: "雲端同步 Google Sheets，智慧診斷消費模式，支援家庭記帳。不只記帳，更幫你看懂錢的流向。",
     pricingNote: "所有方案皆包含桌面快速記帳功能，選擇最適合你的方案",
-    comingSoonTitle: "訂閱方案即將開放",
-    comingSoonSub: "預計 7 月下旬上市，敬請期待",
+    comingSoonTitle: "目前開放第二批內測",
+    comingSoonSub: "正式開放時間另行公告，功能介紹可以先查看。",
     heroEyebrow: "88LA FINANCE · APP",
     heroCtaBtn: "了解方案 →",
     featuresLabel: "FEATURES",
@@ -441,9 +653,8 @@ const DEFAULTS = {
       { id: 6, n: "06", title: "PWA 支援", desc: "加到主畫面，iOS / Android 體驗接近原生 App。", img: "" },
     ],
     plans: [
-      { id: 1, name: "月訂閱", price: "NT$139", period: "/月", highlight: false, badge: "", features: ["88La財務導航完整功能", "桌面快速記帳", "隨時可取消"], detailTitle: "", detailImg: "", detailContent: "" },
-      { id: 2, name: "年方案", price: "NT$1,188", period: "/年", highlight: true, badge: "最多人選擇", features: ["88La財務導航完整功能", "桌面快速記帳", "省下約 29%", "相當於 NT$99/月"], detailTitle: "", detailImg: "", detailContent: "" },
-      { id: 3, name: "兩年方案", price: "NT$2,199", period: "/兩年", highlight: false, badge: "", features: ["88La財務導航完整功能", "桌面快速記帳", "最划算方案", "相當於 NT$92/月"], detailTitle: "", detailImg: "", detailContent: "" },
+      { id: 1, name: "月訂閱", price: APP_MONTHLY_PRICE, period: "/月", highlight: false, badge: "", features: ["88La財務導航完整功能", "桌面快速記帳", "隨時可取消"], detailTitle: "", detailImg: "", detailContent: "" },
+      { id: 2, name: "年方案", price: APP_YEARLY_PRICE, period: "/年", highlight: true, badge: "最多人選擇", features: ["88La財務導航完整功能", "桌面快速記帳", `省下約 ${APP_YEARLY_DISCOUNT}%`, `相當於 NT$${APP_YEARLY_MONTHLY_EQUIVALENT}/月`], detailTitle: "", detailImg: "", detailContent: "" },
     ],
     guideTitle: "88La財務導航，使用說明",
     guideData: {
@@ -495,7 +706,7 @@ const DEFAULTS = {
     nameLabel: "姓名 / 稱呼 *", companyLabel: "公司 / 品牌（選填）", emailLabel: "Email *",
     typeLabel: "合作類型", typePlaceholder: "請選擇", typeOptions: "品牌贊助\n內容合作\n講座/課程\n媒體採訪\n其他",
     messageLabel: "合作說明 *", messagePlaceholder: "請簡單描述合作方向⋯", submitBtn: "送出合作申請",
-    successTitle: "訊息已送出", successSub: "感謝你的來信，我會盡快回覆。"
+    successTitle: "已開啟郵件程式", successSub: "請確認內容後，再按下寄送。"
   },
   savingsBagQuiz: {
     showSeasonal: false,
@@ -542,8 +753,9 @@ function useFS(key, def) {
       return;
     }
     fbGet(key)
-      .then(val => { if (val !== null) setV(val); setLoaded(true); })
-      .catch(e => console.error(`fbGet(${key}) failed, 保留在畫面上不視為已載入`, e));
+      .then(val => { if (val !== null) setV(val); })
+      .catch(e => console.error(`fbGet(${key}) failed, 使用預設內容繼續顯示`, e))
+      .finally(() => setLoaded(true));
   }, [key]);
   const set = async (fn, opts) => {
     const n = typeof fn === "function" ? fn(v) : fn;
@@ -806,7 +1018,7 @@ function OrdBtns({ idx, total, onMove, style = {} }) {
   );
 }
 
-// ── Crop Modal ──
+//  Crop Modal
 function CropModal({ src, aspect = "16/9", onConfirm, onCancel }) {
   const [aW, aH] = aspect.split("/").map(Number);
   const CROPW = 360, CROPH = Math.round(CROPW * aH / aW);
@@ -882,7 +1094,7 @@ function CropModal({ src, aspect = "16/9", onConfirm, onCancel }) {
   );
 }
 
-// ── Image Uploader ──
+//  Image Uploader
 function ImgUploader({ value, onChange, label = "圖片", aspect = "16/9", maxHeight = 200, boxMaxWidth }) {
   const inputRef = useRef();
   const [progress, setProgress] = useState(null);
@@ -927,7 +1139,7 @@ function ImgUploader({ value, onChange, label = "圖片", aspect = "16/9", maxHe
   );
 }
 
-// ── Rich Text Editor ──
+//  Rich Text Editor
 function RichEditor({ value, onChange }) {
   const ref = useRef();
   const init = useRef(false);
@@ -979,8 +1191,7 @@ function RichEditor({ value, onChange }) {
   );
 }
 
-// ── SVG icons for mobile tab bar ──
-const IcUser = () => <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>;
+//  SVG icons for mobile tab bar
 const IcIG   = () => <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8"><rect x="2" y="2" width="20" height="20" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1" fill="currentColor" strokeWidth="0"/></svg>;
 const IcRes  = () => <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg>;
 const IcApp  = () => <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8"><rect x="5" y="2" width="14" height="20" rx="2"/><circle cx="12" cy="17" r="1" fill="currentColor"/></svg>;
@@ -990,13 +1201,7 @@ const IcSync  = () => <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"
 const IcCheck = () => <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8"><path d="M4 12l5 5L20 6"/></svg>;
 const IcArticle = () => <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/><line x1="8" y1="13" x2="16" y2="13"/><line x1="8" y1="17" x2="13" y2="17"/></svg>;
 
-const MOBILE_TAB_ICONS = [["home",IcUser],["community",IcIG],["resources",IcRes],["app",IcApp],["envelope",IcShop]];
 const PATH_ICONS = { app: IcApp, envelope: IcShop, community: IcIG, resources: IcRes, "tool-quiz": IcCheck, journal: IcArticle };
-const HOME_GUIDED_PATHS = [
-  { label: "先免費探索", title: "我還不知道怎麼開始", desc: "先用免費資源找方向，不用註冊也能看。", page: "resources" },
-  { label: "整理日常金流", title: "我有記帳，但看不出方向", desc: "用 88La財務導航，把記錄變成提醒和判斷。", page: "app" },
-  { label: "把錢留下來", title: "我想把錢真的存下來", desc: "用實體存錢袋把錢分好，看得見比較守得住。", page: "envelope" }
-];
 const HOME_ARTICLE_TOPICS = [
   { label: "存不到錢", keywords: ["存不到錢", "月光", "存錢"] },
   { label: "記帳沒用", keywords: ["記帳", "記完", "照妖鏡"] },
@@ -1007,7 +1212,7 @@ const IcTarget = () => <svg viewBox="0 0 24 24" fill="none" stroke="currentColor
 const IcChart  = () => <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8"><line x1="4" y1="20" x2="4" y2="12"/><line x1="12" y1="20" x2="12" y2="6"/><line x1="20" y1="20" x2="20" y2="15"/></svg>;
 const IcHeart  = () => <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8"><path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.6l-1-1a5.5 5.5 0 0 0-7.8 7.8l1 1L12 21l7.8-7.8 1-1a5.5 5.5 0 0 0 0-7.8z"/></svg>;
 const ABOUT_ICONS = [IcTarget, IcChart, IcHeart];
-const NAV_KEYS = ["home","app","resources","envelope","journal","about"];
+const NAV_KEYS = ["home","app","envelope","resources","about"];
 const APP_PRODUCT_NAME = "88La財務導航";
 const PRODUCT_NAME_PATTERNS = [
   "88La 理財自動導航器",
@@ -1018,25 +1223,30 @@ const PRODUCT_NAME_PATTERNS = [
 const normalizeProductText = value => {
   if (typeof value !== "string") return value;
   return PRODUCT_NAME_PATTERNS.reduce((text, pattern) => text.split(pattern).join(APP_PRODUCT_NAME), value)
-    .replaceAll("NT$1,899", "NT$2,199")
-    .replaceAll("相當於 NT$79/月", "相當於 NT$92/月")
-    .replaceAll("省下約 35%", "省下約 29%")
-    .replaceAll("相當於 NT$83/月", "相當於 NT$99/月");
+    .replaceAll("省下約 35%", `省下約 ${APP_YEARLY_DISCOUNT}%`)
+    .replaceAll("相當於 NT$83/月", `相當於 NT$${APP_YEARLY_MONTHLY_EQUIVALENT}/月`);
+};
+const normalizeResourceUrl = value => {
+  if (typeof value !== "string") return value;
+  return value.replace(/(\/resources\/[^/?#]+)\/(?=([?#].*)?$)/, "$1/index.html");
 };
 const normalizeNavLabels = labels => {
   const next = { ...DEFAULTS.navLabels, ...(labels || {}) };
   if (["導航器", "理財導航器", "理財自動導航器"].includes(next.app)) next.app = APP_PRODUCT_NAME;
+  if (["首頁", "開始這裡"].includes(next.home)) next.home = "找到起點";
+  if (next.envelope === "存錢袋") next.envelope = "實體理財工具";
+  if (next.about === "關於") next.about = "關於 88La";
   return next;
 };
 const normalizeFooterLabels = labels => {
   const next = { ...DEFAULTS.footerLabels, ...(labels || {}) };
   if (["理財導航器", "理財自動導航器"].includes(next.fApp)) next.fApp = APP_PRODUCT_NAME;
+  if (next.fEnvelope === "存錢袋") next.fEnvelope = "實體理財工具";
   return next;
 };
 const appPlanDefaults = {
-  monthly: { id: 1, name: "月訂閱", price: "NT$139", period: "/月", highlight: false, badge: "", features: ["88La財務導航完整功能", "桌面快速記帳", "隨時可取消"] },
-  yearly: { id: 2, name: "年方案", price: "NT$1,188", period: "/年", highlight: true, badge: "最多人選擇", features: ["88La財務導航完整功能", "桌面快速記帳", "省下約 29%", "相當於 NT$99/月"] },
-  twoYear: { id: 3, name: "兩年方案", price: "NT$2,199", period: "/兩年", highlight: false, badge: "", features: ["88La財務導航完整功能", "桌面快速記帳", "最划算方案", "相當於 NT$92/月"] },
+  monthly: { id: 1, name: "月訂閱", price: APP_MONTHLY_PRICE, period: "/月", highlight: false, badge: "", features: ["88La財務導航完整功能", "桌面快速記帳", "隨時可取消"] },
+  yearly: { id: 2, name: "年方案", price: APP_YEARLY_PRICE, period: "/年", highlight: true, badge: "最多人選擇", features: ["88La財務導航完整功能", "桌面快速記帳", `省下約 ${APP_YEARLY_DISCOUNT}%`, `相當於 NT$${APP_YEARLY_MONTHLY_EQUIVALENT}/月`] },
 };
 const planKind = plan => {
   const id = String(plan?.id || "").toLowerCase();
@@ -1069,7 +1279,7 @@ const normalizePlans = plans => {
     const kind = planKind(plan);
     if (!byKind[kind]) byKind[kind] = plan;
   });
-  return ["monthly", "yearly", "twoYear"].map(kind => normalizePlan(byKind[kind] || appPlanDefaults[kind]));
+  return ["monthly", "yearly"].map(kind => normalizePlan(byKind[kind] || appPlanDefaults[kind]));
 };
 const normalizeAppContent = raw => {
   const content = { ...DEFAULTS.appContent, ...(raw || {}) };
@@ -1081,26 +1291,58 @@ const normalizeAppContent = raw => {
   ];
   const next = { ...content };
   textKeys.forEach(key => { next[key] = normalizeProductText(next[key]); });
+  if ((next.comingSoonSub || "").includes("7 月下旬")) {
+    next.comingSoonTitle = "目前開放第二批內測";
+    next.comingSoonSub = "正式開放時間另行公告，功能介紹可以先查看。";
+  }
   next.plans = normalizePlans(content.plans || DEFAULTS.appContent.plans);
   return next;
 };
 const normalizeLegalContent = content => Object.fromEntries(
-  Object.entries(content || {}).map(([key, value]) => [key, normalizeProductText(value)])
+  Object.entries(content || {}).map(([key, value]) => {
+    const normalized = normalizeProductText(value);
+    if (typeof normalized !== "string" || !normalized.includes("Vercel Web Analytics")) return [key, normalized];
+    return [key, normalized
+      .replace(
+        /本服務官網使用 Vercel Web Analytics[\s\S]*?不會用來識別您的個人身分。/,
+        "本服務官網使用 Google Analytics 4 統計頁面瀏覽與互動事件，可能包含裝置類型、瀏覽器、概略地區與匿名識別資料，用於了解整體使用狀況並改善內容與流程。我們不會在分析事件中主動傳送您的記帳明細、付款資訊或本測驗答案。Google 將依其隱私政策處理相關資料。"
+      )
+      .replaceAll("Vercel Web Analytics", "Google Analytics 4")
+      .replace("不可識別個人身分，24 小時後自動清除", "用於統計網站整體使用狀況，保存方式依 Google 隱私政策辦理")];
+  })
 );
+const normalizeTermsContent = content => {
+  const next = normalizeLegalContent(content);
+  if (typeof next.body !== "string") return next;
+  next.body = next.body
+    .replace(/<li>兩年方案：NT\$[^<]+<\/li>/g, "")
+    .replace(/月訂閱：NT\$[\d,]+ \/ 月/g, `月訂閱：${APP_MONTHLY_PRICE} / 月`)
+    .replace(/年方案：NT\$[\d,]+ \/ 年/g, `年方案：${APP_YEARLY_PRICE} / 年`)
+    .replace(
+      "所有金額均為新台幣計價。付款由綠界科技股份有限公司代為處理，採信用卡定期定額方式進行。",
+      "所有金額均為新台幣計價。付款由綠界科技股份有限公司代為處理，月訂閱採信用卡定期定額，年方案採單筆付款。"
+    )
+    .replace(
+      "<h2>三、自動續約</h2><p>訂閱方案將於到期日自動續約，並依原方案金額扣款。如不希望續約，請於訂閱到期日前至帳戶設定頁面取消。取消後，服務仍可使用至當期訂閱到期日為止。</p>",
+      "<h2>三、續約方式</h2><p>月訂閱將依原方案金額定期扣款，如不希望續約，請於下次扣款日前至帳戶設定頁面取消。年方案不會自動續約，到期前將另行提醒。方案到期前仍可使用當期服務。</p>"
+    );
+  return next;
+};
 const normalizeSubscriptionCopy = raw => {
   const copy = { ...DEFAULTS.subscriptionCopy, ...(raw || {}) };
   return {
     ...copy,
     heading: normalizeProductText(copy.heading),
     intro: normalizeProductText(copy.intro),
-    notes: normalizeProductText(copy.notes),
+    notes: normalizeProductText(copy.notes)
+      .replace("訂閱將於到期日自動續約，可於到期前至帳戶設定取消\n付款方式：信用卡定期定額（由綠界科技處理）", "月訂閱採信用卡定期定額，可於下次扣款日前取消\n年方案採單筆付款，不會自動續約"),
   };
 };
 
 const normalizeHomeHero = h => ({
   ...h,
   subheadline: normalizeProductText(h.subheadline),
-  ctaText: ["我想開始記帳", "開始使用理財導航器"].includes(h.ctaText) ? "先看我適合哪個入口" : h.ctaText,
+  ctaText: ["我想開始記帳", "開始使用理財導航器", "先看我適合哪個入口"].includes(h.ctaText) ? "用 60 秒找到我的起點" : h.ctaText,
   cta2Text: ["先免費試試", "看看存錢袋"].includes(h.cta2Text) ? "先看免費資源" : h.cta2Text
 });
 
@@ -1109,10 +1351,10 @@ const normalizeHomeCopy = hc => ({
   latestLabel: hc.latestLabel === "最新文章" ? "卡關導讀" : hc.latestLabel,
   latestHeading: (hc.latestHeading || "").startsWith("理財知識") ? "你可能正在卡這些" : hc.latestHeading,
   ctaHeading: ["先從一個入口開始", "準備好開始了嗎？"].includes(hc.ctaHeading) ? "還不知道選哪個？" : hc.ctaHeading,
-  ctaSub: (hc.ctaSub || "").includes("理財自動導航器") || (hc.ctaSub || "").includes("免費資源")
-    ? "做 2 分鐘診斷，網站會帶你到適合的入口。"
+  ctaSub: (hc.ctaSub || "").includes("理財自動導航器") || (hc.ctaSub || "").includes("免費資源") || (hc.ctaSub || "").includes("2 分鐘")
+    ? "用 60 秒找到目前最值得先處理的卡點。"
     : hc.ctaSub,
-  ctaBtn: ["先看免費資源", "開始使用理財導航器"].includes(hc.ctaBtn) ? "開始工具診斷" : hc.ctaBtn
+  ctaBtn: ["先看免費資源", "開始使用理財導航器", "開始工具診斷"].includes(hc.ctaBtn) ? "用 60 秒找到我的起點" : hc.ctaBtn
 });
 
 const pickHomeArticles = articles => {
@@ -1135,17 +1377,15 @@ const pickHomeArticles = articles => {
   return picked.slice(0, 3);
 };
 
-// ── Nav ──
-function Nav({ page, setPage, isAdmin, navLabels, setNavLabels, mobileTabLabels, setMobileTabLabels }) {
+//  Nav
+function Nav({ page, setPage, isAdmin, navLabels, setNavLabels }) {
   const nl = normalizeNavLabels(navLabels);
-  const mtl = { ...DEFAULTS.mobileTabLabels, ...(mobileTabLabels || {}) };
   const [showL, setShowL] = useState(false);
   const [mob, setMob] = useState(false);
   const [logging, setLogging] = useState(false);
   const [err, setErr] = useState("");
   const [editingNav, setEditingNav] = useState(false);
   const [tmpNav, setTmpNav] = useState(nl);
-  const [tmpMob, setTmpMob] = useState(mtl);
   const login = async () => {
     if (logging) return;
     setLogging(true); setErr("");
@@ -1183,7 +1423,7 @@ function Nav({ page, setPage, isAdmin, navLabels, setNavLabels, mobileTabLabels,
             {NAV_KEYS.map(k => (
               <span key={k} onClick={() => go(k)} style={{ fontSize: 12, letterSpacing: ".8px", color: page === k ? WHITE : "rgba(255,255,255,.7)", cursor: "pointer", fontWeight: page === k ? "700" : "400", borderBottom: page === k ? `2px solid ${WHITE}` : "2px solid transparent", paddingBottom: 2, transition: "color .15s" }}>{nl[k]}</span>
             ))}
-            {isAdmin && <><span onClick={() => go("write")} style={{ fontSize: 12, color: WHITE, cursor: "pointer", letterSpacing: ".5px" }}>＋ 撰文</span><span onClick={() => go("savings-quiz")} style={{ fontSize: 12, color: "rgba(255,255,255,.7)", cursor: "pointer", letterSpacing: ".5px", marginLeft: 6 }}>存錢袋測驗</span><span onClick={() => { setTmpNav(nl); setTmpMob(mtl); setEditingNav(true); }} style={{ fontSize: 11, color: "rgba(255,255,255,.6)", cursor: "pointer", letterSpacing: ".5px", marginLeft: 6, textDecoration: "underline" }}>編輯選單文字</span><span onClick={() => signOut(auth)} style={{ fontSize: 11, color: "rgba(255,255,255,.5)", cursor: "pointer", marginLeft: 6 }}>登出</span></>}
+            {isAdmin && <><span onClick={() => go("write")} style={{ fontSize: 12, color: WHITE, cursor: "pointer", letterSpacing: ".5px" }}>＋ 撰文</span><span onClick={() => go("savings-quiz")} style={{ fontSize: 12, color: "rgba(255,255,255,.7)", cursor: "pointer", letterSpacing: ".5px", marginLeft: 6 }}>存錢袋測驗</span><span onClick={() => { setTmpNav(nl); setEditingNav(true); }} style={{ fontSize: 11, color: "rgba(255,255,255,.6)", cursor: "pointer", letterSpacing: ".5px", marginLeft: 6, textDecoration: "underline" }}>編輯選單文字</span><span onClick={() => signOut(auth)} style={{ fontSize: 11, color: "rgba(255,255,255,.5)", cursor: "pointer", marginLeft: 6 }}>登出</span></>}
           </nav>
           <button className="mob-menu" onClick={() => setMob(p => !p)} aria-label={mob ? "關閉選單" : "開啟選單"} style={{ background: "none", border: "none", color: WHITE, fontSize: 22, cursor: "pointer", display: "flex", alignItems: "center" }}>
             {mob ? "✕" : "☰"}
@@ -1198,15 +1438,6 @@ function Nav({ page, setPage, isAdmin, navLabels, setNavLabels, mobileTabLabels,
           </div>
         )}
       </header>
-      {/* Mobile bottom tab bar */}
-      <nav className="mob-tab-bar">
-        {MOBILE_TAB_ICONS.map(([k, Icon]) => (
-          <button key={k} className={`tab-item ${page === k ? "active" : ""}`} onClick={() => go(k)}>
-            <Icon />
-            <span>{mtl[k]}</span>
-          </button>
-        ))}
-      </nav>
       {editingNav && (
         <div style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,.6)", zIndex: 61, display: "flex", alignItems: "center", justifyContent: "center", padding: "20px" }}>
           <div style={{ background: WHITE, padding: 32, width: "100%", maxWidth: 480, maxHeight: "80vh", overflowY: "auto" }}>
@@ -1217,14 +1448,8 @@ function Nav({ page, setPage, isAdmin, navLabels, setNavLabels, mobileTabLabels,
                 <input key={k} value={tmpNav[k] ?? ""} onChange={e => setTmpNav(p => ({ ...p, [k]: e.target.value }))} />
               ))}
             </div>
-            <p style={{ fontSize: 12, color: MID, marginBottom: 10, fontWeight: 500 }}>手機底部分頁</p>
-            <div style={{ display: "flex", flexDirection: "column", gap: 10, marginBottom: 24 }}>
-              {MOBILE_TAB_ICONS.map(([k]) => (
-                <input key={k} value={tmpMob[k] ?? ""} onChange={e => setTmpMob(p => ({ ...p, [k]: e.target.value }))} />
-              ))}
-            </div>
             <div style={{ display: "flex", gap: 10 }}>
-              <button className="pb" onClick={() => { setNavLabels(tmpNav); setMobileTabLabels(tmpMob); setEditingNav(false); }}>儲存</button>
+              <button className="pb" onClick={() => { setNavLabels(tmpNav); setEditingNav(false); }}>儲存</button>
               <button className="pg" onClick={() => setEditingNav(false)}>取消</button>
             </div>
           </div>
@@ -1250,7 +1475,7 @@ function Nav({ page, setPage, isAdmin, navLabels, setNavLabels, mobileTabLabels,
   );
 }
 
-// ── Footer ──
+//  Footer
 function Footer({ links, footerTagline, setFooterTagline, isAdmin, setPage, footerLabels, setFooterLabels }) {
   const l = links || DEFAULTS.links;
   const fl = normalizeFooterLabels(footerLabels);
@@ -1259,9 +1484,14 @@ function Footer({ links, footerTagline, setFooterTagline, isAdmin, setPage, foot
   const save = () => { setFooterTagline(tmp); setEditing(false); };
   const [editingLabels, setEditingLabels] = useState(false);
   const [tmpLabels, setTmpLabels] = useState(fl);
+  const navigateFooter = page => {
+    if (!setPage) return;
+    setPage(page);
+    window.scrollTo({ top: 0, behavior: "instant" });
+  };
   const FLink = ({ page, children }) => (
     <li style={{ marginBottom: 10 }}>
-      <span onClick={() => setPage && setPage(page)} style={{ fontSize: 13, color: "rgba(255,255,255,.7)", cursor: "pointer", transition: "color .15s" }} onMouseEnter={e => e.currentTarget.style.color = CORAL} onMouseLeave={e => e.currentTarget.style.color = "rgba(255,255,255,.7)"}>{children}</span>
+      <button type="button" onClick={() => navigateFooter(page)} style={{ padding: 0, background: "transparent", border: "none", fontSize: 13, color: "rgba(255,255,255,.7)", cursor: "pointer", transition: "color .15s", textAlign: "left" }} onMouseEnter={e => e.currentTarget.style.color = CORAL} onMouseLeave={e => e.currentTarget.style.color = "rgba(255,255,255,.7)"}>{children}</button>
     </li>
   );
   const LABEL_ROWS = [
@@ -1353,7 +1583,7 @@ function Footer({ links, footerTagline, setFooterTagline, isAdmin, setPage, foot
   );
 }
 
-// ── Hero Banner ──
+//  Hero Banner
 function Hero({ about, isAdmin, setAbout, links }) {
   const l = links || DEFAULTS.links;
   const [editBanner, setEditBanner] = useState(false);
@@ -1406,8 +1636,8 @@ function Hero({ about, isAdmin, setAbout, links }) {
   );
 }
 
-// ── Home (article list) ──
-// ── Homepage Hero (marketing) ──
+//  Home (article list)
+//  Homepage Hero (marketing)
 function PageHero({ title, fields, data, setData, defaults, isAdmin, children }) {
   const h = { ...defaults, ...(data || {}) };
   const [editing, setEditing] = useState(false);
@@ -1457,7 +1687,7 @@ function HomeHero({ homeHero, setHomeHero, isAdmin, setPage }) {
   );
   return (
     <div style={{ background: O2, padding: "72px 32px" }}>
-      <div style={{ maxWidth: 1100, margin: "0 auto", display: "grid", gridTemplateColumns: "1.1fr 0.9fr", gap: 48, alignItems: "center" }} className="grid2">
+      <div style={{ maxWidth: 1180, margin: "0 auto", display: "grid", gridTemplateColumns: "0.78fr 1.22fr", gap: 64, alignItems: "center" }} className="grid2">
         <div>
           <p style={{ fontSize: 12, letterSpacing: "2px", color: O, fontWeight: 600, marginBottom: 16 }}>{h.eyebrow}</p>
           <h1 style={{ fontSize: 40, fontWeight: 700, color: CHAR, lineHeight: 1.35, marginBottom: 18, whiteSpace: "pre-wrap" }}>{h.headline}</h1>
@@ -1468,9 +1698,79 @@ function HomeHero({ homeHero, setHomeHero, isAdmin, setPage }) {
             {isAdmin && <span onClick={() => { setTmp(h); setEditing(true); }} style={{ fontSize: 12, color: O, cursor: "pointer", marginLeft: 4 }}>編輯</span>}
           </div>
         </div>
-        <div style={{ display: "flex", justifyContent: "center" }}>
-          <div style={{ width: "100%", maxWidth: 260, aspectRatio: "9/19", borderRadius: 32, background: WHITE, border: `1px solid ${BORDER}`, boxShadow: "0 24px 60px rgba(0,0,0,.14)", overflow: "hidden", display: "flex", alignItems: "center", justifyContent: "center" }}>
-            {h.screenshot ? <img src={h.screenshot} alt="88La App" style={{ width: "100%", height: "100%", objectFit: "cover" }} /> : <span style={{ fontSize: 12, color: LIGHT, textAlign: "center", padding: 20 }}>App 截圖<br />（待上傳）</span>}
+        <div style={{ display: "flex", justifyContent: "center", width: "100%", minWidth: 0 }}>
+          <div className="home-ecosystem-stage" aria-label="88La 三種理財入口">
+            <svg className="home-ecosystem-links" viewBox="0 0 600 180" fill="none" aria-hidden="true">
+              <path d="M40 122C122 42 198 42 287 100" stroke="currentColor" strokeWidth="1.5" strokeDasharray="4 8" />
+              <path d="M312 100C400 42 478 48 560 122" stroke="currentColor" strokeWidth="1.5" strokeDasharray="4 8" />
+              <circle cx="40" cy="122" r="3" fill="currentColor" /><circle cx="300" cy="94" r="3" fill="currentColor" /><circle cx="560" cy="122" r="3" fill="currentColor" />
+            </svg>
+
+            <button type="button" className="home-product-preview home-ecosystem-entry home-ecosystem-entry-left" onClick={() => setPage("resources")} aria-label="前往免費工具">
+              <div className="home-ecosystem-float">
+                <div className="home-ecosystem-object home-free-visual" aria-hidden="true">
+                  <div className="home-free-sheet home-free-sheet-back" />
+                  <div className="home-free-sheet home-free-sheet-mid" />
+                  <div className="home-free-sheet home-free-sheet-front">
+                    <p className="home-mini-kicker">你的檢查結果</p>
+                    <p className="home-mini-answer">目前最容易卡在<br />日常支出</p>
+                    <div className="home-mini-track"><span /></div>
+                    <p className="home-mini-check"><i>✓</i>先看懂支出位置</p>
+                    <p className="home-mini-check"><i>✓</i>找到一個下一步</p>
+                  </div>
+                </div>
+              </div>
+              <div className="home-product-copy">
+                <span className="home-product-tag">免費起步</span>
+                <h3 className="home-product-title">免費工具</h3>
+                <p className="home-product-desc">先看懂自己卡在哪</p>
+                <span className="home-product-action">開始免費檢查 →</span>
+              </div>
+            </button>
+
+            <button type="button" className="home-product-preview home-ecosystem-entry home-ecosystem-entry-center" onClick={() => setPage("app")} aria-label="了解88La財務導航">
+              <div className="home-ecosystem-float">
+                <div className="home-ecosystem-object home-app-visual">
+                  <div className="home-app-phone">
+                    {h.screenshot ? <img src={h.screenshot} alt="88La財務導航實際畫面" style={{ width: "100%", height: "100%", objectFit: "cover" }} /> : (
+                      <div className="home-app-screen" aria-label="88La財務導航功能預覽">
+                        <div className="home-app-top"><span>88La</span><span className="home-app-month">本月</span></div>
+                        <div className="home-app-tabs"><span>個人</span><span>公費</span><span>家庭</span></div>
+                        <div className="home-app-balance"><p className="home-app-balance-label">本月可用餘額</p><div className="home-app-balance-line" /></div>
+                        <div className="home-app-metrics">
+                          <div className="home-app-metric"><span>卡費預留</span><i /></div>
+                          <div className="home-app-metric"><span>固定支出</span><i /></div>
+                          <div className="home-app-metric"><span>儲蓄進度</span><i /></div>
+                        </div>
+                        <div className="home-app-focus"><small>本月最值得處理</small><strong>看懂差多少，再決定去哪裡調</strong></div>
+                      </div>
+                    )}
+                  </div>
+                </div>
+              </div>
+              <div className="home-product-copy">
+                <span className="home-product-tag">核心服務</span>
+                <h3 className="home-product-title" aria-label="88La財務導航"><span>88La</span> 財務導航</h3>
+                <p className="home-product-desc">從月初分配，到月底知道怎麼調整</p>
+                <span className="home-product-action">看看怎麼運作 →</span>
+              </div>
+            </button>
+
+            <button type="button" className="home-product-preview home-ecosystem-entry home-ecosystem-entry-right" onClick={() => setPage("envelope")} aria-label="前往實體理財工具">
+              <div className="home-ecosystem-float">
+                <div className="home-ecosystem-object home-physical-visual">
+                  <div className="home-paper-tab home-paper-tab-one">每日預算</div>
+                  <div className="home-paper-tab home-paper-tab-two">旅遊目標</div>
+                  <div className="home-physical-photo"><img src="/商品圖｜存錢袋.png" alt="88La 實體理財工具實拍" /></div>
+                </div>
+              </div>
+              <div className="home-product-copy">
+                <span className="home-product-tag">實體執行</span>
+                <h3 className="home-product-title">實體理財工具</h3>
+                <p className="home-product-desc">把預算與目標，變成看得見的行動</p>
+                <span className="home-product-action">找到適合我的工具 →</span>
+              </div>
+            </button>
           </div>
         </div>
       </div>
@@ -1485,7 +1785,7 @@ function Home({ articles, setPage, setId, setArticles, isAdmin, homeHero, setHom
   const open = id => { setArticles(prev => prev.map(a => a.id === id ? { ...a, views: (a.views || 0) + 1 } : a), { silent: true }); setId(id); setPage("article"); window.scrollTo({ top: 0, behavior: "instant" }); const a = articles.find(x => x.id === id); history.pushState({}, "", "/article/" + encodeURIComponent(a?.slug || id)); };
   const ts = trustStats && trustStats.length ? trustStats : DEFAULTS.trustStats;
   const ph = paths && paths.length ? paths : DEFAULTS.paths;
-  const guidedPaths = HOME_GUIDED_PATHS;
+  const guidedPaths = ph;
   const homeArticles = pickHomeArticles(articles);
   const [editStats, setEditStats] = useState(false);
   const [tmpStats, setTmpStats] = useState(ts);
@@ -1494,7 +1794,7 @@ function Home({ articles, setPage, setId, setArticles, isAdmin, homeHero, setHom
   return (
     <div>
       <HomeHero homeHero={homeHero} setHomeHero={setHomeHero} isAdmin={isAdmin} setPage={setPage} />
-      <div style={{ maxWidth: 1100, margin: "0 auto", padding: "56px 32px" }} className="page-wrap">
+      <div style={{ maxWidth: 1100, margin: "0 auto", padding: "56px 32px", display: "flex", flexDirection: "column" }} className="page-wrap">
         {isAdmin && <div style={{ textAlign: "right", marginBottom: 12 }}>{!editStats && <span onClick={() => { setTmpStats(ts); setEditStats(true); }} style={{ fontSize: 12, color: O, cursor: "pointer" }}>編輯信任數據</span>}</div>}
         {editStats ? (
           <div style={{ background: GRAY, padding: 24, border: `1px solid ${BORDER}`, marginBottom: 20 }}>
@@ -1509,7 +1809,7 @@ function Home({ articles, setPage, setId, setArticles, isAdmin, homeHero, setHom
             <div style={{ display: "flex", gap: 10 }}><button className="pb" onClick={() => { setTrustStats(tmpStats); setEditStats(false); }}>儲存</button><button className="pg" onClick={() => setEditStats(false)}>取消</button></div>
           </div>
         ) : (
-          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(160px,1fr))", gap: 20, marginBottom: 64, textAlign: "center" }} className="grid4">
+          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(160px,1fr))", gap: 20, marginTop: 56, textAlign: "center", order: 4 }} className="grid4">
             {ts.map((s, i) => (
               <div key={i}>
                 <p style={{ fontSize: 28, fontWeight: 700, color: O }}>{s.num}</p>
@@ -1528,6 +1828,7 @@ function Home({ articles, setPage, setId, setArticles, isAdmin, homeHero, setHom
           <div style={{ background: GRAY, padding: 24, border: `1px solid ${BORDER}`, marginBottom: 20 }}>
             {tmpPaths.map((p, i) => (
               <div key={i} style={{ marginBottom: 16, paddingBottom: 16, borderBottom: i < tmpPaths.length - 1 ? `1px solid ${BORDER}` : "none" }}>
+                <input value={p.label || ""} onChange={e => setTmpPaths(pp => pp.map((x, xi) => xi === i ? { ...x, label: e.target.value } : x))} placeholder="入口類型，例如免費工具" style={{ marginBottom: 6 }} />
                 <input value={p.title} onChange={e => setTmpPaths(pp => pp.map((x, xi) => xi === i ? { ...x, title: e.target.value } : x))} placeholder="標題" style={{ marginBottom: 6 }} />
                 <textarea value={p.desc} onChange={e => setTmpPaths(pp => pp.map((x, xi) => xi === i ? { ...x, desc: e.target.value } : x))} placeholder="說明" style={{ minHeight: 50, marginBottom: 6 }} />
                 <input value={p.page} onChange={e => setTmpPaths(pp => pp.map((x, xi) => xi === i ? { ...x, page: e.target.value } : x))} placeholder="頁面代號（如 app、resources）或完整網址（https://...）" style={{ marginBottom: 6 }} />
@@ -1550,11 +1851,11 @@ function Home({ articles, setPage, setId, setArticles, isAdmin, homeHero, setHom
                   onMouseEnter={e => { e.currentTarget.style.transform = "translateY(-6px)"; e.currentTarget.style.boxShadow = "0 20px 40px rgba(0,0,0,.1)"; }}
                   onMouseLeave={e => { e.currentTarget.style.transform = "translateY(0)"; e.currentTarget.style.boxShadow = "0 2px 8px rgba(0,0,0,.04)"; }}
                 >
-                  <p style={{ fontSize: 11, color: O, fontWeight: 700, marginBottom: 12 }}>{p.label}</p>
+                  <p style={{ fontSize: 11, color: O, fontWeight: 700, marginBottom: 12 }}>{p.label || (p.page === "resources" ? "免費工具" : p.page === "app" ? APP_PRODUCT_NAME : "實體理財工具")}</p>
                   <div style={{ width: 40, height: 40, borderRadius: 12, background: O2, color: O, display: "flex", alignItems: "center", justifyContent: "center", marginBottom: 16 }}>{PathIcon ? <div style={{ width: 20, height: 20 }}><PathIcon /></div> : null}</div>
                   <h3 style={{ fontSize: 17, fontWeight: 500, color: CHAR, marginBottom: 8 }}>{p.title}</h3>
                   <p style={{ fontSize: 13, color: MID, lineHeight: 1.8, marginBottom: 14 }}>{p.desc}</p>
-                  <span style={{ fontSize: 12, color: O, fontWeight: 500 }}>選這個入口 →</span>
+                  <span style={{ fontSize: 12, color: O, fontWeight: 500 }}>{p.page === "resources" ? "先免費檢查" : p.page === "app" ? "看看財務導航" : "找到實體工具"} →</span>
                 </div>
               );
             })}
@@ -1617,7 +1918,7 @@ function Home({ articles, setPage, setId, setArticles, isAdmin, homeHero, setHom
   );
 }
 
-// ── Journal（理財觀點文章列表）──
+//  Journal（理財觀點文章列表）
 function Journal({ articles, setArticles, setId, setPage, isAdmin, siteTitle, setSiteTitle, tags, setTags }) {
   const [filter, setFilter] = useState("全部");
   const [sort, setSort] = useState("newest");
@@ -1733,7 +2034,7 @@ function Journal({ articles, setArticles, setId, setPage, isAdmin, siteTitle, se
   );
 }
 
-// ── Article detail ──
+//  Article detail
 const PAGE_OPTIONS = [["home","首頁"],["tool-quiz","工具診斷"],["journal","理財觀點文章列表"],["app","記帳 App"],["resources","免費資源"],["shop","商品"],["goods","推薦好物"],["newsletter","電子報"],["contact","合作洽談"]];
 
 function RelatedLinkEditor({ relatedLinks, onChange, products, resources }) {
@@ -1977,7 +2278,7 @@ function Article({ article, onBack, setArticles, isAdmin, tags, links, setPage, 
   );
 }
 
-// ── Write (admin new article) ──
+//  Write (admin new article)
 function Write({ onSave, onBack, tags, products, resources }) {
   const [d, setD] = useState({ title: "", tag: tags[0] || "", excerpt: "", content: "", img: "", relatedLinks: [], member: false });
   const [saving, setSaving] = useState(false);
@@ -2010,7 +2311,7 @@ function Write({ onSave, onBack, tags, products, resources }) {
   );
 }
 
-// ── About ──
+//  About
 function About({ about, setAbout, isAdmin, links, setLinks, setPage, aboutCopy, setAboutCopy }) {
   const ac = { ...DEFAULTS.aboutCopy, ...(aboutCopy || {}) };
   const [editing, setEditing] = useState(false);
@@ -2180,7 +2481,7 @@ function About({ about, setAbout, isAdmin, links, setLinks, setPage, aboutCopy, 
   );
 }
 
-// ── Shop ──
+//  Shop
 function Shop({ products, setProducts, isAdmin, shopCopy, setShopCopy }) {
   const sc = { ...DEFAULTS.shopCopy, ...(shopCopy || {}) };
   const [editCopy, setEditCopy] = useState(false);
@@ -2282,7 +2583,7 @@ function Shop({ products, setProducts, isAdmin, shopCopy, setShopCopy }) {
   );
 }
 
-// ── IG / 最新消息 ──
+//  IG / 最新消息
 function IG({ igPosts, setIgPosts, isAdmin, links, igCopy, setIgCopy }) {
   const igc = { ...DEFAULTS.igCopy, ...(igCopy || {}) };
   const [editCopy, setEditCopy] = useState(false);
@@ -2397,7 +2698,7 @@ function IG({ igPosts, setIgPosts, isAdmin, links, igCopy, setIgCopy }) {
   );
 }
 
-// ── Community (8友社群) ──
+//  Community (8友社群)
 const COMMUNITY_HERO_FIELDS = [
   { key: "eyebrow", label: "小標籤（Eyebrow）" },
   { key: "headline", label: "主標題" },
@@ -2638,7 +2939,7 @@ function Community({ igPosts, links, setPage, isAdmin, communityHero, setCommuni
   );
 }
 
-// ── 存錢袋 (Envelope) ──
+//  存錢袋 (Envelope)
 const ENVELOPE_HERO_FIELDS = [
   { key: "eyebrow", label: "小標籤（Eyebrow）" },
   { key: "headline", label: "主標題" },
@@ -2768,7 +3069,7 @@ function Envelope({ products, setPage, isAdmin, envelopeHero, setEnvelopeHero, e
   );
 }
 
-// ── Goods ──
+//  Goods
 const GOODS_HERO_FIELDS = [
   { key: "eyebrow", label: "小標籤（Eyebrow）" },
   { key: "headline", label: "主標題" },
@@ -2885,8 +3186,8 @@ function Goods({ goods, setGoods, isAdmin, goodsHero, setGoodsHero, goodsCopy, s
   );
 }
 
-// ── NEW: App 介紹頁 ──
-// ── 使用說明 (Guide, standalone) ──
+//  NEW: App 介紹頁
+//  使用說明 (Guide, standalone)
 function Guide({ appContent, isAdmin, setPage }) {
   const c = normalizeAppContent(appContent);
   const guideData = c.guideData || DEFAULTS.appContent.guideData;
@@ -2983,7 +3284,7 @@ function AppPage({ appContent, setAppContent, isAdmin, setPage, demoStory, setDe
   };
   const delPlan = id => { if (confirm("確定刪除？")) upd({ plans: c.plans.filter(p => p.id !== id) }); };
 
-  // ── Plan detail page ──
+  //  Plan detail page
   if (detailPlan !== null) {
     const plan = c.plans.find(p => p.id === detailPlan);
     if (!plan) { setDetailPlan(null); return null; }
@@ -3320,7 +3621,7 @@ function AppPage({ appContent, setAppContent, isAdmin, setPage, demoStory, setDe
                 <input type="checkbox" checked={planForm.highlight} onChange={e => setPlanForm(p => ({ ...p, highlight: e.target.checked }))} style={{ width: "auto" }} />醒目方案（橘色背景）
               </label>
               <div style={{ marginBottom: 12 }}><p style={{ fontSize: 12, color: MID, marginBottom: 6 }}>功能列表（每行一項）</p><textarea value={(planForm.features || []).join("\n")} onChange={e => setPlanForm(p => ({ ...p, features: e.target.value.split("\n") }))} style={{ minHeight: 100 }} /></div>
-              <p style={{ fontSize: 11, color: MID, marginBottom: 12, marginTop: 4, letterSpacing: ".5px" }}>── 詳情頁內容 ──</p>
+              <p style={{ fontSize: 11, color: MID, marginBottom: 12, marginTop: 4, letterSpacing: ".5px" }}> 詳情頁內容 </p>
               <div style={{ display: "flex", flexDirection: "column", gap: 12, marginBottom: 16 }}>
                 <div><p style={{ fontSize: 12, color: MID, marginBottom: 6 }}>詳情頁標題（選填）</p><input value={planForm.detailTitle} onChange={e => setPlanForm(p => ({ ...p, detailTitle: e.target.value }))} /></div>
                 <ImgUploader label="詳情頁圖片" value={planForm.detailImg} onChange={v => setPlanForm(p => ({ ...p, detailImg: v }))} aspect="16/9" />
@@ -3411,7 +3712,7 @@ function AppPage({ appContent, setAppContent, isAdmin, setPage, demoStory, setDe
   );
 }
 
-// ── NEW: 免費資源 ──
+//  NEW: 免費資源
 const RESOURCES_HERO_FIELDS = [
   { key: "eyebrow", label: "小標籤（Eyebrow）" },
   { key: "headline", label: "主標題" },
@@ -3420,73 +3721,30 @@ const RESOURCES_HERO_FIELDS = [
 
 const TOOL_QUIZ_QUESTIONS = [
   {
-    id: "state",
-    title: "你現在最常有哪種感覺？",
+    id: "need",
+    title: "你現在最想先處理哪件事？",
     options: [
-      { id: "lost", label: "錢花到哪裡都說不清", desc: "想先看懂每天的錢流向", score: { app: 2 } },
-      { id: "leak", label: "知道要存，但常被日常花掉", desc: "需要一個看得見的阻力", score: { bag: 2 } },
-      { id: "break", label: "有記帳也有目標，但常常中斷", desc: "知道方向，可是習慣接不起來", score: { app: 1, bag: 1 } },
-      { id: "unsure", label: "只是覺得該整理，但還不知道從哪開始", desc: "想先低壓試試看", score: { free: 2 } }
+      { id: "free", label: "我不知道錢都去哪了", desc: "想先免費找出目前的財務卡點", score: { free: 3 } },
+      { id: "app", label: "我有記帳，但月底還是不知道怎麼調", desc: "需要把記錄變成提醒和下一步", score: { app: 3 } },
+      { id: "bag", label: "我知道想存什麼，但錢總是被花掉", desc: "需要看得見、摸得到的行動提醒", score: { bag: 3 } }
     ]
   },
   {
-    id: "tracking",
-    title: "你現在有固定記帳嗎？",
+    id: "format",
+    title: "哪種方式比較容易讓你開始？",
     options: [
-      { id: "none", label: "幾乎沒有", desc: "想到才記，常常漏掉", score: { app: 2 } },
-      { id: "sometimes", label: "有時候會記", desc: "但很難連續一整個月", score: { app: 1, bag: 1 } },
-      { id: "yes_but", label: "有記，但看完不知道怎麼調整", desc: "資料有了，缺整理方向", score: { app: 2 } },
-      { id: "not_ready", label: "我還不想開始記帳", desc: "想先從簡單工具暖身", score: { free: 2 } }
+      { id: "try", label: "先用免費工具確認方向", desc: "現在還不想買東西", score: { free: 2 } },
+      { id: "digital", label: "用手機或電腦整理", desc: "希望資料和提醒集中在同一處", score: { app: 2 } },
+      { id: "physical", label: "用實體工具做出行動", desc: "看到進度會比較有感", score: { bag: 2 } }
     ]
   },
   {
-    id: "blocker",
-    title: "你比較常卡在哪裡？",
+    id: "payment",
+    title: "你平常主要怎麼付款？",
     options: [
-      { id: "number", label: "看不懂數字", desc: "不知道收入、支出和餘額怎麼連起來", score: { app: 2 } },
-      { id: "action", label: "看得懂，但做不到", desc: "預算寫好了，錢還是跑掉", score: { bag: 2 } },
-      { id: "both", label: "兩個都有", desc: "數字和行動都需要有人拉一把", score: { app: 2, bag: 2 } },
-      { id: "small", label: "還沒有明確卡點", desc: "只是想先建立一點感覺", score: { free: 2 } }
-    ]
-  },
-  {
-    id: "reminder",
-    title: "你比較需要哪種提醒？",
-    options: [
-      { id: "screen", label: "每天打開就看得到狀態", desc: "喜歡用手機或電腦整理", score: { app: 2 } },
-      { id: "touch", label: "摸得到、放得進去的儀式感", desc: "需要實體物提醒自己", score: { bag: 2 } },
-      { id: "combo", label: "兩種都需要", desc: "想看全局，也想要行動感", score: { app: 1, bag: 2 } },
-      { id: "soft", label: "先不要太多提醒", desc: "想先用文章和免費工具慢慢靠近", score: { free: 2 } }
-    ]
-  },
-  {
-    id: "pattern",
-    title: "你的消費模式比較像哪一種？",
-    options: [
-      { id: "many", label: "小額很多，月底才嚇到", desc: "需要把日常花費整理起來", score: { app: 2 } },
-      { id: "cash", label: "錢在身邊就容易被花掉", desc: "需要先把目標金額分開", score: { bag: 2 } },
-      { id: "mixed", label: "刷卡、轉帳、現金混在一起", desc: "需要一套整理方式，再加一點實體阻力", score: { app: 2, bag: 1 } },
-      { id: "unclear", label: "我還說不出模式", desc: "需要先找到自己的位置", score: { free: 1, app: 1 } }
-    ]
-  },
-  {
-    id: "goal",
-    title: "面對存錢目標，你比較常怎麼樣？",
-    options: [
-      { id: "no_goal", label: "沒有明確目標", desc: "只知道應該要存一點", score: { free: 2 } },
-      { id: "goal_number", label: "有目標，但不知道每月要怎麼拆", desc: "需要把大目標拆成日常數字", score: { app: 2 } },
-      { id: "goal_spend", label: "有目標，但錢常被別的事用掉", desc: "需要讓目標金額有自己的位置", score: { bag: 2 } },
-      { id: "goal_both", label: "目標明確，但執行不穩", desc: "需要數字規劃和行為提醒一起來", score: { app: 1, bag: 2 } }
-    ]
-  },
-  {
-    id: "first_step",
-    title: "你現在最想先跨出的第一步是什麼？",
-    options: [
-      { id: "try", label: "先免費試試看", desc: "還不想買東西，只想確認方向", score: { free: 3 } },
-      { id: "organize", label: "把錢流向整理清楚", desc: "想知道自己每個月怎麼花", score: { app: 2 } },
-      { id: "save", label: "先把錢存得住", desc: "想降低亂花掉的機率", score: { bag: 2 } },
-      { id: "full", label: "想一次把系統建起來", desc: "願意同時整理數字和行動", score: { app: 2, bag: 2 } }
+      { id: "cash", label: "以現金為主", desc: "實體分配和剩餘金額比較容易掌握", score: { bag: 2 } },
+      { id: "mixed", label: "現金與數位支付都有", desc: "兩種工具都能使用", score: { app: 1, bag: 1 } },
+      { id: "digital", label: "幾乎都是信用卡或行動支付", desc: "數位整理的使用阻力比較低", score: { app: 2 } }
     ]
   }
 ];
@@ -3508,14 +3766,6 @@ const TOOL_RESULTS = {
     primary: { label: "看實體存錢袋", page: "envelope" },
     secondary: { label: "細分適合哪款存錢袋", href: QUIZ_URL }
   },
-  both: {
-    badge: "數字和行動一起處理",
-    title: "你適合導航器加存錢袋一起用",
-    lead: "你的回答同時出現看不懂錢流向和存不住的卡點。導航器負責看全局，存錢袋負責把行動變得具體。",
-    reasons: ["你需要先知道錢去哪", "你也需要把目標金額分出來", "一個工具整理全局，一個工具處理習慣"],
-    primary: { label: "先看導航器", page: "app" },
-    secondary: { label: "再看存錢袋", page: "envelope" }
-  },
   free: {
     badge: "先低壓暖身",
     title: "你適合先從免費資源開始",
@@ -3532,12 +3782,11 @@ function getToolQuizResult(answers) {
     const opt = q.options.find(o => o.id === answers[q.id]);
     Object.entries(opt?.score || {}).forEach(([key, value]) => { scores[key] += value; });
   });
-  if (scores.free >= 6 && scores.app < 4 && scores.bag < 4) return { key: "free", scores };
-  if (scores.app >= 5 && scores.bag >= 5) return { key: "both", scores };
-  if (Math.abs(scores.app - scores.bag) <= 1 && scores.app + scores.bag >= 7) return { key: "both", scores };
-  if (scores.app >= scores.bag + 2 && scores.app >= 4) return { key: "app", scores };
-  if (scores.bag >= scores.app + 2 && scores.bag >= 4) return { key: "bag", scores };
-  return { key: "free", scores };
+  const highest = Math.max(scores.app, scores.bag, scores.free);
+  const tied = Object.keys(scores).filter(key => scores[key] === highest);
+  const primaryNeed = answers.need;
+  const key = tied.includes(primaryNeed) ? primaryNeed : tied[0];
+  return { key, scores };
 }
 
 function ToolQuiz({ setPage }) {
@@ -3562,7 +3811,7 @@ function ToolQuiz({ setPage }) {
         <div style={{ maxWidth: 920, margin: "0 auto" }}>
           <span className="tag" style={{ marginBottom: 18 }}>工具診斷</span>
           <h1 style={{ fontSize: 34, fontWeight: 700, color: CHAR, lineHeight: 1.35, marginBottom: 14, maxWidth: 620 }}>我不確定我目前需要什麼工具</h1>
-          <p style={{ fontSize: 15, color: MID, lineHeight: 1.9, maxWidth: 600 }}>從你的消費模式和卡關點開始判斷，現在比較適合 88La財務導航、實體存錢袋，還是先從免費資源開始。</p>
+          <p style={{ fontSize: 15, color: MID, lineHeight: 1.9, maxWidth: 600 }}>用 3 個問題找到目前最值得先處理的卡點，結果只給你一個主要入口。</p>
         </div>
       </div>
 
@@ -3624,7 +3873,7 @@ function ToolQuiz({ setPage }) {
 
             <div style={{ background: WHITE, border: `1px solid ${BORDER}`, borderRadius: 16, padding: "24px 24px 22px" }}>
               <h3 style={{ fontSize: 16, fontWeight: 700, color: CHAR, marginBottom: 14 }}>這個結果怎麼來的？</h3>
-              <p style={{ fontSize: 13, color: MID, lineHeight: 1.8, marginBottom: 18 }}>系統會看你的回答偏向「需要整理錢流向」、「需要讓錢有位置」或「先低壓暖身」。只有兩邊分數都高時，才會推薦兩種工具一起用。</p>
+              <p style={{ fontSize: 13, color: MID, lineHeight: 1.8, marginBottom: 18 }}>系統會看你的主要需求、偏好的使用方式與付款習慣。分數相同時，以第一題最想解決的問題為準。</p>
               <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
                 {[["錢流向", resultInfo.scores.app], ["行動阻力", resultInfo.scores.bag], ["先暖身", resultInfo.scores.free]].map(([label, value]) => (
                   <div key={label}>
@@ -3747,7 +3996,7 @@ function Resources({ resources, setResources, isAdmin, articles, setArticles, se
         <div style={{ marginTop: 26, background: O2, border: `1px solid ${O}24`, borderRadius: 16, padding: "22px 24px", display: "flex", alignItems: "center", justifyContent: "space-between", gap: 18, flexWrap: "wrap" }}>
           <div style={{ flex: 1, minWidth: 240 }}>
             <h2 style={{ fontSize: 18, color: CHAR, fontWeight: 700, marginBottom: 6 }}>不確定自己需要哪個工具？</h2>
-            <p style={{ fontSize: 13, color: MID, lineHeight: 1.8 }}>先用 2 分鐘診斷你的消費模式，看看現在比較適合導航器、存錢袋，還是先從免費資源開始。</p>
+            <p style={{ fontSize: 13, color: MID, lineHeight: 1.8 }}>用 60 秒找到目前最值得先處理的卡點，結果只給一個主要入口。</p>
           </div>
           <button className="pb" onClick={() => setPage("tool-quiz")} style={{ flexShrink: 0 }}>開始工具診斷</button>
         </div>
@@ -3796,7 +4045,7 @@ function Resources({ resources, setResources, isAdmin, articles, setArticles, se
                   <p style={{ fontSize: 13, color: MID, lineHeight: 1.85, marginBottom: 18, whiteSpace: "pre-wrap", flex: 1, display: "-webkit-box", WebkitLineClamp: 3, WebkitBoxOrient: "vertical", overflow: "hidden" }}>{r.desc}</p>
                   <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", flexShrink: 0 }}>
                     <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
-                      {r.url && <a href={r.url} target="_blank" rel="noopener noreferrer" onClick={() => setResources(prev => (prev || []).map(x => x.id === r.id ? { ...x, clicks: (x.clicks || 0) + 1 } : x), { silent: true })}><button className="pb" style={{ fontSize: 12, padding: "8px 16px" }}>下載 / 查看 →</button></a>}
+                      {r.url && <a href={normalizeResourceUrl(r.url)} target="_blank" rel="noopener noreferrer" onClick={() => setResources(prev => (prev || []).map(x => x.id === r.id ? { ...x, clicks: (x.clicks || 0) + 1 } : x), { silent: true })}><button className="pb" style={{ fontSize: 12, padding: "8px 16px" }}>下載 / 查看 →</button></a>}
                       {isAdmin && <span style={{ fontSize: 11, color: LIGHT }}>{r.clicks || 0} 次點擊</span>}
                     </div>
                     {isAdmin && <div style={{ display: "flex", gap: 8 }}>
@@ -3855,7 +4104,7 @@ function Resources({ resources, setResources, isAdmin, articles, setArticles, se
   );
 }
 
-// ── NEW: 電子報訂閱 ──
+//  NEW: 電子報訂閱
 function Newsletter({ newsletter, setNewsletter, isAdmin, articles, setArticles, setId, setPage }) {
   const info = { ...DEFAULTS.newsletter, ...(newsletter || {}) };
   const [editMode, setEditMode] = useState(false);
@@ -3958,10 +4207,15 @@ function Newsletter({ newsletter, setNewsletter, isAdmin, articles, setArticles,
   );
 }
 
-// ── NEW: 合作洽談 ──
+//  NEW: 合作洽談
 function Contact({ links, contactContent, setContactContent, isAdmin }) {
   const l = links || DEFAULTS.links;
-  const c = { ...DEFAULTS.contactContent, ...(contactContent || {}) };
+  const rawContact = { ...DEFAULTS.contactContent, ...(contactContent || {}) };
+  const c = {
+    ...rawContact,
+    successTitle: rawContact.successTitle === "訊息已送出" ? "已開啟郵件程式" : rawContact.successTitle,
+    successSub: rawContact.successSub === "感謝你的來信，我會盡快回覆。" ? "請確認內容後，再按下寄送。" : rawContact.successSub,
+  };
   const [editIntro, setEditIntro] = useState(false);
   const [tmpIntro, setTmpIntro] = useState(c.intro);
   const [editCopy, setEditCopy] = useState(false);
@@ -3970,10 +4224,10 @@ function Contact({ links, contactContent, setContactContent, isAdmin }) {
   const [submitted, setSubmitted] = useState(false);
   const sf = k => e => setForm(p => ({ ...p, [k]: e.target.value }));
   const submit = () => {
-    if (!form.name || !form.message || !form.email) return;
+    if (!form.name || !form.message || !isValidEmail(form.email)) return;
     const subject = `合作申請 - ${form.type || "一般洽詢"}`;
     const body = `姓名：${form.name}\n公司：${form.company}\nEmail：${form.email}\n合作類型：${form.type}\n\n${form.message}`;
-    window.open(`mailto:${l.email}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`);
+    window.location.href = `mailto:${l.email}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
     setSubmitted(true);
   };
   return (
@@ -4069,7 +4323,7 @@ function Contact({ links, contactContent, setContactContent, isAdmin }) {
                 </select>
               </div>
               <div><p style={{ fontSize: 12, color: MID, marginBottom: 8 }}>{c.messageLabel}</p><textarea placeholder={c.messagePlaceholder} value={form.message} onChange={sf("message")} style={{ minHeight: 120, border: "none", background: GRAY, padding: "12px 14px", borderBottom: `1px solid #D0D5DA` }} /></div>
-              <button className="pb" onClick={submit} disabled={!form.name || !form.message || !form.email} style={{ alignSelf: "flex-start", padding: "13px 32px" }}>{c.submitBtn}</button>
+              <button className="pb" onClick={submit} disabled={!form.name || !form.message || !isValidEmail(form.email)} style={{ alignSelf: "flex-start", padding: "13px 32px" }}>{c.submitBtn}</button>
             </div>
           )}
         </div>
@@ -4083,7 +4337,7 @@ const QUIZ_Q_LABELS = {
   q5: "卡關點", q6: "實體儀式感", q7: "支付方式",
 };
 
-// ── 存錢袋測驗回答紀錄 ──
+//  存錢袋測驗回答紀錄
 function QuizResponsesAdmin() {
   const [responses, setResponses] = useState(null);
   const [error, setError] = useState(false);
@@ -4104,7 +4358,7 @@ function QuizResponsesAdmin() {
   };
 
   const fmtTime = (r) => {
-    if (!r.createdAt?.toDate) return "—";
+    if (!r.createdAt?.toDate) return "，";
     return r.createdAt.toDate().toLocaleString("zh-TW", { year: "numeric", month: "2-digit", day: "2-digit", hour: "2-digit", minute: "2-digit" });
   };
 
@@ -4156,14 +4410,14 @@ function QuizResponsesAdmin() {
               <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 8, gap: 12 }}>
                 <div style={{ display: "flex", alignItems: "center", gap: 10, flexWrap: "wrap" }}>
                   <span style={{ fontSize: 12, color: MID }}>{fmtTime(r)}</span>
-                  <span style={{ fontSize: 13, fontWeight: 700, color: CHAR }}>{r.persona || "—"}</span>
+                  <span style={{ fontSize: 13, fontWeight: 700, color: CHAR }}>{r.persona || "，"}</span>
                 </div>
                 <span onClick={() => del(r.id)} style={{ fontSize: 11, color: "#E74C3C", cursor: "pointer", flexShrink: 0 }}>刪除</span>
               </div>
               <div style={{ display: "flex", flexWrap: "wrap", gap: "4px 14px" }}>
                 {Object.keys(QUIZ_Q_LABELS).map(k => (
                   <span key={k} style={{ fontSize: 11, color: MID }}>
-                    {QUIZ_Q_LABELS[k]}：<b style={{ color: CHAR }}>{r.answers?.[k] || "—"}</b>
+                    {QUIZ_Q_LABELS[k]}：<b style={{ color: CHAR }}>{r.answers?.[k] || "，"}</b>
                   </span>
                 ))}
               </div>
@@ -4175,7 +4429,7 @@ function QuizResponsesAdmin() {
   );
 }
 
-// ── 存錢袋測驗管理 ──
+//  存錢袋測驗管理
 function SavingsBagQuizAdmin({ savingsBagQuiz, setSavingsBagQuiz }) {
   const data = savingsBagQuiz || DEFAULTS.savingsBagQuiz;
   const [editingKey, setEditingKey] = useState(null);
@@ -4277,7 +4531,7 @@ function SavingsBagQuizAdmin({ savingsBagQuiz, setSavingsBagQuiz }) {
               {(item.imgs?.[0] || item.img) ? <img src={item.imgs?.[0] || item.img} alt={item.name} style={{ width: 44, height: 44, objectFit: "cover", borderRadius: 6, flexShrink: 0 }} /> : <span style={{ fontSize: 26, flexShrink: 0, width: 44, textAlign: "center" }}>{item.icon}</span>}
               <div style={{ flex: 1, minWidth: 0 }}>
                 <p style={{ fontSize: 14, fontWeight: 600, color: CHAR }}>{item.name || PRODUCT_LABELS[key]}</p>
-                <p style={{ fontSize: 11, color: MID, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{item.scene || "—"}</p>
+                <p style={{ fontSize: 11, color: MID, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{item.scene || "，"}</p>
               </div>
               <button className="pg" style={{ fontSize: 11, padding: "4px 12px", flexShrink: 0 }} onClick={() => isEditing ? setEditingKey(null) : startEdit("products", key)}>{isEditing ? "收起" : "編輯"}</button>
             </div>
@@ -4297,7 +4551,7 @@ function SavingsBagQuizAdmin({ savingsBagQuiz, setSavingsBagQuiz }) {
               {(item.imgs?.[0] || item.img) ? <img src={item.imgs?.[0] || item.img} alt={item.name} style={{ width: 44, height: 44, objectFit: "cover", borderRadius: 6, flexShrink: 0 }} /> : <span style={{ fontSize: 26, flexShrink: 0, width: 44, textAlign: "center" }}>{item.icon}</span>}
               <div style={{ flex: 1, minWidth: 0 }}>
                 <p style={{ fontSize: 14, fontWeight: 600, color: CHAR }}>{item.name || SEASONAL_LABELS[key]}</p>
-                <p style={{ fontSize: 11, color: MID, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{item.scene || "—"}</p>
+                <p style={{ fontSize: 11, color: MID, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{item.scene || "，"}</p>
               </div>
               <button className="pg" style={{ fontSize: 11, padding: "4px 12px", flexShrink: 0 }} onClick={() => isEditing ? setEditingKey(null) : startEdit("seasonal", key)}>{isEditing ? "收起" : "編輯"}</button>
             </div>
@@ -4310,7 +4564,7 @@ function SavingsBagQuizAdmin({ savingsBagQuiz, setSavingsBagQuiz }) {
   );
 }
 
-// ── 方案說明 ──
+//  方案說明
 function PricingPage({ appContent, setPage }) {
   const c = normalizeAppContent(appContent);
   const plans = c.plans || [];
@@ -4402,7 +4656,7 @@ function PricingPage({ appContent, setPage }) {
   );
 }
 
-// ── 服務條款 ──
+//  服務條款
 function LegalPage({ isAdmin, content, setContent, defaults, hasIntro }) {
   const c = normalizeLegalContent({ ...defaults, ...(content || {}) });
   const [editing, setEditing] = useState(false);
@@ -4456,20 +4710,20 @@ function LegalPage({ isAdmin, content, setContent, defaults, hasIntro }) {
 }
 
 function TermsPage({ isAdmin, termsContent, setTermsContent }) {
-  return <LegalPage isAdmin={isAdmin} content={termsContent} setContent={setTermsContent} defaults={DEFAULTS.termsContent} />;
+  return <LegalPage isAdmin={isAdmin} content={normalizeTermsContent(termsContent)} setContent={setTermsContent} defaults={DEFAULTS.termsContent} />;
 }
 
-// ── 隱私政策 ──
+//  隱私政策
 function PrivacyPage({ isAdmin, privacyContent, setPrivacyContent }) {
   return <LegalPage isAdmin={isAdmin} content={privacyContent} setContent={setPrivacyContent} defaults={DEFAULTS.privacyContent} hasIntro />;
 }
 
-// ── 免責聲明 ──
+//  免責聲明
 function DisclaimerPage({ isAdmin, disclaimerContent, setDisclaimerContent }) {
   return <LegalPage isAdmin={isAdmin} content={disclaimerContent} setContent={setDisclaimerContent} defaults={DEFAULTS.disclaimerContent} />;
 }
 
-// ── 訂閱方案 ──
+//  訂閱方案
 function SubscriptionPage({ setPage, isAdmin, appContent, subscriptionCopy, setSubscriptionCopy }) {
   const c = normalizeAppContent(appContent);
   const sc = normalizeSubscriptionCopy(subscriptionCopy);
@@ -4497,7 +4751,7 @@ function SubscriptionPage({ setPage, isAdmin, appContent, subscriptionCopy, setS
 
       <div style={{ background: GRAY, padding: "64px 32px 48px" }}>
         <div style={{ maxWidth: 920, margin: "0 auto" }}>
-          <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 20 }} className="grid3">
+          <div style={{ display: "grid", gridTemplateColumns: `repeat(${Math.max(plans.length, 1)}, 1fr)`, gap: 20 }} className="grid3">
             {plans.map(plan => (
               <div key={plan.id} style={{
                 background: plan.highlight ? O : WHITE,
@@ -4583,7 +4837,7 @@ function SubscriptionPage({ setPage, isAdmin, appContent, subscriptionCopy, setS
   );
 }
 
-// ── App root ──
+//  App root
 export default function App() {
   const [articles, setArticles, aL] = useFS("articles", DEFAULTS.articles);
   const [products, setProducts, pL] = useFS("products", DEFAULTS.products);
@@ -4666,6 +4920,23 @@ export default function App() {
   const loaded = aL && pL && iL && gL && abL && tL && taL && lL && ftL && rlL && nlL && acL && ccL && sbqL;
   const article = articles.find(a => a.id === id);
   const nav = p => { setPage(p); setId(null); };
+
+  useEffect(() => {
+    const [title, description] = page === "article" && article
+      ? [`${article.title}｜88La`, article.excerpt || "88La 理財文章"]
+      : PAGE_META[page] || PAGE_META.home;
+    document.title = title;
+    const descriptionTag = document.querySelector('meta[name="description"]');
+    if (descriptionTag) descriptionTag.setAttribute("content", description);
+    const canonical = document.querySelector('link[rel="canonical"]');
+    if (canonical) canonical.setAttribute("href", `https://88la-site.vercel.app${window.location.pathname}`);
+    const ogTitle = document.querySelector('meta[property="og:title"]');
+    const ogDescription = document.querySelector('meta[property="og:description"]');
+    const ogUrl = document.querySelector('meta[property="og:url"]');
+    if (ogTitle) ogTitle.setAttribute("content", title);
+    if (ogDescription) ogDescription.setAttribute("content", description);
+    if (ogUrl) ogUrl.setAttribute("content", `https://88la-site.vercel.app${window.location.pathname}`);
+  }, [page, article]);
 
   // 初次載入：以網址路徑決定要顯示哪一頁；相容舊版 ?article= query 分享連結
   useEffect(() => {
