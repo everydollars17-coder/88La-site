@@ -1,0 +1,569 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>信用卡費預留試算表｜88La</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@500;700;900&family=Noto+Sans+TC:wght@400;500;700&family=IBM+Plex+Mono:wght@500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#F6F3EC;
+    --card:#FFFFFF;
+    --line:#E7E0D2;
+    --ink:#2B2620;
+    --muted:#928C7C;
+    --orange:#E8551E;
+    --orange-deep:#C23F13;
+    --red:#D2321B;
+    --sand:#EDE6D4;
+    --sand-deep:#D8CFB6;
+    --radius:14px;
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{
+    background:var(--bg);
+    color:var(--ink);
+    font-family:'Noto Sans TC', sans-serif;
+    line-height:1.7;
+    -webkit-font-smoothing:antialiased;
+  }
+  .wrap{max-width:720px;margin:0 auto;padding:0 24px;}
+
+  header.top{
+    padding:28px 0 8px;
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+  }
+  .brand{
+    font-family:'Noto Serif TC', serif;
+    font-weight:900;
+    font-size:20px;
+    letter-spacing:0.04em;
+    color:var(--ink);
+  }
+  .brand span{color:var(--orange);}
+  .tag{
+    font-size:12px;
+    color:var(--muted);
+    border:1px solid var(--line);
+    padding:4px 10px;
+    border-radius:100px;
+    letter-spacing:0.05em;
+    background:var(--card);
+  }
+
+  .hero{padding:56px 0 40px;}
+  .eyebrow{
+    font-size:13px;
+    color:var(--red);
+    font-weight:700;
+    letter-spacing:0.12em;
+    margin-bottom:14px;
+  }
+  h1{
+    font-family:'Noto Serif TC', serif;
+    font-weight:900;
+    font-size:clamp(28px, 6vw, 40px);
+    line-height:1.45;
+    margin:0 0 20px;
+    color:var(--ink);
+  }
+  h1 em{
+    font-style:normal;
+    color:var(--orange);
+    position:relative;
+  }
+  .hero p{
+    color:#6B6455;
+    font-size:16px;
+    max-width:52ch;
+    margin:0 0 8px;
+  }
+
+  .line-motif{
+    display:flex;
+    align-items:center;
+    gap:12px;
+    margin:32px 0 4px;
+  }
+  .line-motif .seg{height:3px;background:var(--sand-deep);flex:2;border-radius:2px;}
+  .line-motif .seg.gold{background:var(--orange);flex:3;}
+  .line-motif .dot{
+    width:9px;height:9px;border-radius:50%;background:var(--red);
+    box-shadow:0 0 0 4px var(--bg), 0 0 0 5px var(--line);
+  }
+  .line-caption{
+    display:flex;justify-content:space-between;
+    font-size:12px;color:var(--muted);letter-spacing:0.03em;margin-top:6px;
+  }
+
+  .calc{
+    background:var(--card);
+    border:1px solid var(--line);
+    border-radius:var(--radius);
+    padding:28px 24px 32px;
+    margin:36px 0;
+    box-shadow:0 2px 14px rgba(43,38,32,0.04);
+  }
+  .calc h2{
+    font-family:'Noto Serif TC', serif;
+    font-size:20px;
+    margin:0 0 4px;
+    color:var(--ink);
+  }
+  .calc .sub{
+    font-size:13px;color:var(--muted);margin-bottom:24px;
+  }
+
+  .group-label{
+    font-size:12px;
+    color:var(--orange-deep);
+    font-weight:700;
+    letter-spacing:0.08em;
+    margin:22px 0 10px;
+    text-transform:uppercase;
+  }
+  .group-label:first-of-type{margin-top:0;}
+
+  .field-row{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:14px;
+    padding:9px 0;
+    border-bottom:1px solid var(--line);
+  }
+  .field-row:last-child{border-bottom:none;}
+  .field-row label{
+    font-size:14px;
+    color:var(--ink);
+    flex:1;
+  }
+  .field-row .hint{
+    display:block;
+    font-size:11px;
+    color:var(--muted);
+    margin-top:2px;
+  }
+  .field-row .input-box{
+    display:flex;
+    align-items:center;
+    background:var(--bg);
+    border:1px solid var(--line);
+    border-radius:8px;
+    padding:6px 10px;
+    width:132px;
+    flex-shrink:0;
+  }
+  .field-row .input-box span{
+    font-size:13px;color:var(--muted);margin-right:4px;
+  }
+  .field-row input{
+    width:100%;
+    background:transparent;
+    border:none;
+    outline:none;
+    color:var(--ink);
+    font-family:'IBM Plex Mono', monospace;
+    font-size:15px;
+    text-align:right;
+  }
+  .field-row input::placeholder{color:#C7C0AE;}
+
+  .results{
+    margin-top:28px;
+    display:flex;
+    flex-direction:column;
+    gap:0;
+  }
+  .result-card.full{width:100%;}
+  .flow-arrow{
+    text-align:center;
+    font-size:12px;
+    color:var(--muted);
+    padding:8px 0;
+  }
+  .results-secondary{
+    margin-top:14px;
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:12px;
+  }
+  .result-card{
+    background:var(--bg);
+    border:1px solid var(--line);
+    border-radius:10px;
+    padding:16px 14px;
+  }
+  .result-card .rlabel{
+    font-size:11px;color:var(--muted);letter-spacing:0.04em;margin-bottom:6px;
+  }
+  .result-card .rsub{
+    display:block;
+    font-size:11px;
+    color:var(--muted);
+    font-weight:400;
+    letter-spacing:0;
+    margin-top:3px;
+    line-height:1.5;
+  }
+  .result-card.highlight .rsub{color:var(--orange-deep);opacity:0.75;}
+  .result-card .rvalue{
+    font-family:'IBM Plex Mono', monospace;
+    font-size:20px;
+    font-weight:600;
+    color:var(--ink);
+  }
+  .result-card.highlight{background:#FDEDE4;border-color:#F3CBB3;}
+  .result-card.highlight .rvalue{color:var(--orange-deep);}
+  .result-card.warn .rvalue{color:var(--red);}
+
+  .status-line{
+    margin-top:16px;
+    padding:14px 16px;
+    border-radius:10px;
+    font-size:13.5px;
+    background:var(--bg);
+    border:1px solid var(--line);
+    color:var(--ink);
+  }
+  .status-line.warn{
+    background:#FBE2DD;
+    border-color:var(--red);
+    color:var(--red);
+  }
+  .status-line.ok{
+    background:#FDEDE4;
+    border-color:#F3CBB3;
+    color:var(--orange-deep);
+  }
+
+  .notes-box{
+    margin-top:24px;
+    background:var(--bg);
+    border:1px dashed var(--sand-deep);
+    border-radius:10px;
+    padding:16px;
+  }
+  .notes-box label{
+    font-size:13px;
+    color:var(--orange-deep);
+    font-weight:700;
+    display:block;
+    margin-bottom:10px;
+  }
+  .notes-box textarea{
+    width:100%;
+    min-height:70px;
+    background:transparent;
+    border:none;
+    outline:none;
+    resize:vertical;
+    color:var(--ink);
+    font-family:'Noto Sans TC', sans-serif;
+    font-size:13.5px;
+    line-height:1.7;
+  }
+  .notes-box textarea::placeholder{color:#B3AC9B;}
+
+  .steps{margin:52px 0;}
+  .steps h2{
+    font-family:'Noto Serif TC', serif;
+    font-size:22px;
+    margin:0 0 24px;
+    color:var(--ink);
+  }
+  .step{
+    display:flex;
+    gap:16px;
+    padding:16px 0;
+    border-top:1px solid var(--line);
+  }
+  .step:last-child{border-bottom:1px solid var(--line);}
+  .step .num{
+    font-family:'IBM Plex Mono', monospace;
+    font-size:14px;
+    color:var(--orange);
+    font-weight:600;
+    padding-top:2px;
+  }
+  .step .txt strong{
+    display:block;font-size:15px;color:var(--ink);margin-bottom:4px;
+  }
+  .step .txt p{
+    margin:0;font-size:13.5px;color:var(--muted);
+  }
+
+  .quote{
+    font-family:'Noto Serif TC', serif;
+    font-size:18px;
+    line-height:1.9;
+    color:var(--ink);
+    border-left:3px solid var(--orange);
+    padding:4px 0 4px 20px;
+    margin:40px 0;
+  }
+  .quote span{color:var(--muted);font-size:13px;display:block;margin-top:10px;font-family:'Noto Sans TC',sans-serif;}
+
+  footer{
+    padding:40px 0 60px;
+    text-align:center;
+    border-top:1px solid var(--line);
+    margin-top:20px;
+  }
+  footer .cta-title{
+    font-family:'Noto Serif TC', serif;
+    font-size:18px;
+    margin-bottom:8px;
+    color:var(--ink);
+  }
+  footer .cta-sub{
+    font-size:13px;color:var(--muted);margin-bottom:20px;
+  }
+  .ig-btn{
+    display:inline-block;
+    background:var(--orange);
+    color:#FFFFFF;
+    text-decoration:none;
+    font-size:14px;
+    font-weight:700;
+    padding:12px 28px;
+    border-radius:100px;
+    transition:background 0.2s ease;
+  }
+  .ig-btn:hover{background:var(--orange-deep);}
+  .fineprint{margin-top:24px;font-size:11px;color:#B3AC9B;}
+  .account-tag{margin-top:6px;font-size:11px;color:#D8CFB6;letter-spacing:0.03em;}
+  .pdf-btn-wrap{
+    text-align:center;
+    margin:0 0 40px;
+  }
+  .pdf-cta{
+    font-size:14.5px;
+    font-weight:700;
+    color:var(--ink);
+    margin-bottom:14px;
+  }
+  .pdf-btn{
+    display:inline-flex;
+    align-items:center;
+    gap:8px;
+    background:var(--orange);
+    color:#FFFFFF;
+    border:none;
+    font-size:14px;
+    font-weight:700;
+    padding:13px 26px;
+    border-radius:100px;
+    cursor:pointer;
+    font-family:'Noto Sans TC', sans-serif;
+    box-shadow:0 4px 14px rgba(232,85,30,0.22);
+    transition:background 0.2s ease;
+  }
+  .pdf-btn:hover{background:var(--orange-deep);}
+  .pdf-note{
+    font-size:11.5px;
+    color:var(--muted);
+    margin-top:10px;
+  }
+
+  @media print{
+    .no-print{display:none !important;}
+    body{background:#FFFFFF;}
+    .calc{box-shadow:none;border:1px solid var(--line);}
+  }
+
+  @media (max-width:480px){
+    .field-row .input-box{width:118px;}
+    .results-secondary{grid-template-columns:1fr;}
+  }
+</style>
+</head>
+<body>
+
+<div class="wrap">
+
+  <header class="top">
+    <div class="brand">88<span>La</span></div>
+    <div class="tag">資源工具</div>
+  </header>
+
+  <section class="hero">
+    <div class="eyebrow">刷多少，就先留多少</div>
+    <h1>算出你這個月<br>該<em>預留</em>多少卡費</h1>
+    <p>被卡費追著跑，很多時候不是花太多，而是這個月刷的錢，一直留給下個月薪水繳。填入三個數字，先看清楚真正能動用的錢剩多少。</p>
+
+    <div class="line-motif">
+      <div class="seg"></div>
+      <div class="dot"></div>
+      <div class="seg gold"></div>
+    </div>
+    <div class="line-caption">
+      <span>已刷卡費</span>
+      <span>真正可動用</span>
+    </div>
+  </section>
+
+  <section class="calc">
+    <h2>卡費預留試算</h2>
+    <div class="sub">填入這個月的刷卡狀況，馬上看出還剩多少能花</div>
+
+    <div class="group-label">這個月的數字</div>
+
+    <div class="field-row">
+      <label>這個月信用卡已經刷了多少<span class="hint">從月初累加到現在的刷卡金額</span></label>
+      <div class="input-box"><span>$</span><input type="number" inputmode="numeric" id="spent" placeholder="0"></div>
+    </div>
+
+    <div class="field-row">
+      <label>距離下次發薪還有幾天</label>
+      <div class="input-box"><input type="number" inputmode="numeric" id="days" placeholder="0"><span style="margin-left:4px;">天</span></div>
+    </div>
+
+    <div class="field-row">
+      <label>帳戶目前餘額<span class="hint">選填，填了才能算出真正可動用的錢</span></label>
+      <div class="input-box"><span>$</span><input type="number" inputmode="numeric" id="balance" placeholder="0"></div>
+    </div>
+
+    <div class="results">
+      <div class="result-card highlight full">
+        <div class="rlabel">建議預留卡費<span class="rsub">從現在開始，就把這筆錢當成已經花掉了</span></div>
+        <div class="rvalue" id="r-reserve">$0</div>
+      </div>
+      <div class="flow-arrow" id="flow-arrow" style="display:none;">↓ 帳戶餘額扣掉這筆預留</div>
+      <div class="results-secondary" id="secondary-results" style="display:none;">
+        <div class="result-card">
+          <div class="rlabel">真正可動用的錢</div>
+          <div class="rvalue" id="r-available">$0</div>
+        </div>
+        <div class="result-card warn">
+          <div class="rlabel">距離發薪，平均每天可花</div>
+          <div class="rvalue" id="r-daily">$0</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="status-line ok" id="status-line">把「這個月已刷金額」當成已經花掉的錢，先預留起來，就能避免卡費追著薪水跑。</div>
+
+    <div class="notes-box">
+      <label>給下個月的自己</label>
+      <textarea placeholder="例如：開一個專用帳戶放卡費／每天記得看刷卡通知／這個月開始每週轉一次預留金額"></textarea>
+    </div>
+  </section>
+
+  <section class="steps">
+    <h2>想跳出卡費循環，可以先做三件事</h2>
+    <div class="step">
+      <div class="num">01</div>
+      <div class="txt"><strong>準備一個帳戶，專門放卡費</strong><p>刷卡的當下，錢雖然還沒從帳戶扣掉，但其實已經花掉了。先把預留的卡費轉進專用帳戶，帳單來的時候就不用再從下個月薪水挖錢繳。</p></div>
+    </div>
+    <div class="step">
+      <div class="num">02</div>
+      <div class="txt"><strong>先設定這個月信用卡可以刷多少</strong><p>不是等額度刷到上限才踩煞車，而是先幫自己畫一條線，這個月最多刷到哪裡。</p></div>
+    </div>
+    <div class="step">
+      <div class="num">03</div>
+      <div class="txt"><strong>刷卡通知打開，每天整理一次花費</strong><p>目標不是立刻停卡，而是讓新刷的金額越來越少，預留下來的卡費越來越多，循環就會慢慢縮小。</p></div>
+    </div>
+  </section>
+
+  <div class="quote">
+    信用卡是工具，不要讓它變成你每個月最大的壓力。
+    <span>88La</span>
+  </div>
+
+  <div class="pdf-btn-wrap no-print">
+    <div class="pdf-cta">把試算結果存下來，下次領薪水回來看很方便～</div>
+    <button class="pdf-btn" id="save-pdf-btn" type="button">📄 保存成 PDF</button>
+    <div class="pdf-note">備註：用外部瀏覽器開啟才能成功保存唷</div>
+  </div>
+
+  <footer>
+    <div class="cta-title">想讓這個自動幫你算？</div>
+    <div class="cta-sub">88La財務導航會直接幫你算出該預留多少卡費</div>
+    <a href="https://88la-site.vercel.app/app" class="ig-btn" target="_blank" rel="noopener">前往 88La財務導航 →</a>
+    <div style="margin-top:14px;">
+      <a href="https://www.instagram.com/every_dollars/" style="font-size:12px;color:var(--muted);text-decoration:underline;" target="_blank" rel="noopener">追蹤 Instagram</a>
+    </div>
+    <div class="fineprint">本工具僅供個人預算試算參考，實際財務規劃請依個人狀況調整。</div>
+    <div class="account-tag">@every_dollars</div>
+  </footer>
+
+</div>
+
+<script>
+  const spentInput = document.getElementById('spent');
+  const daysInput = document.getElementById('days');
+  const balanceInput = document.getElementById('balance');
+
+  const rReserve = document.getElementById('r-reserve');
+  const rAvailable = document.getElementById('r-available');
+  const rDaily = document.getElementById('r-daily');
+  const secondaryResults = document.getElementById('secondary-results');
+  const flowArrow = document.getElementById('flow-arrow');
+  const statusLine = document.getElementById('status-line');
+
+  function fmt(n){
+    const v = Math.round(n);
+    // 負數把錢字號放在負號後面，避免出現 $-5,000 這種怪格式
+    return (v < 0 ? '-$' : '$') + Math.abs(v).toLocaleString('zh-Hant-TW');
+  }
+
+  function recalc(){
+    const spent = Number(spentInput.value) || 0;
+    const days = Number(daysInput.value) || 0;
+    const balanceRaw = balanceInput.value;
+
+    rReserve.textContent = fmt(spent);
+
+    if(balanceRaw !== ''){
+      const balance = Number(balanceRaw) || 0;
+      const available = balance - spent;
+
+      secondaryResults.style.display = 'grid';
+      flowArrow.style.display = 'block';
+      rAvailable.textContent = fmt(available);
+
+      if(available < 0){
+        // 可動用是負的，算平均每天可花沒有意義
+        rDaily.textContent = '已透支';
+      } else if(days > 0){
+        rDaily.textContent = fmt(available / days);
+      } else {
+        rDaily.textContent = '未填天數';
+      }
+
+      if(available < 0){
+        statusLine.className = 'status-line warn';
+        statusLine.textContent = '目前已刷金額超過帳戶餘額，這個月的卡費已經在借用下個月的薪水了，建議先暫緩非必要消費。';
+      } else if(days > 0 && (available / days) < 200){
+        statusLine.className = 'status-line warn';
+        statusLine.textContent = '預留卡費之後，剩下天數平均每天可花的錢偏緊，這幾天要多留意非必要支出。';
+      } else {
+        statusLine.className = 'status-line ok';
+        statusLine.textContent = '目前狀況還算穩定，記得把這筆建議預留卡費實際轉進專用帳戶，下個月帳單來就不會措手不及。';
+      }
+    } else {
+      secondaryResults.style.display = 'none';
+      flowArrow.style.display = 'none';
+      statusLine.className = 'status-line ok';
+      statusLine.textContent = '把「這個月已刷金額」當成已經花掉的錢，先預留起來，就能避免卡費追著薪水跑。';
+    }
+  }
+
+  [spentInput, daysInput, balanceInput].forEach(el => el.addEventListener('input', recalc));
+
+  const savePdfBtn = document.getElementById('save-pdf-btn');
+  savePdfBtn.addEventListener('click', () => {
+    window.print();
+  });
+
+  recalc();
+</script>
+
+</body>
+</html>
