@@ -421,11 +421,16 @@ const DEFAULTS = {
     note: "直接點擊畫面裡的按鈕操作，跟實際 App 一樣的流程",
     personaLabel: "示範帳戶人設",
     personaName: "小琳，28 歲，行銷企劃",
-    personaFacts: "月薪 NT$42,000，台北租屋，每月房租 NT$13,000\n兩張信用卡：日常消費卡 ＋ 網購回饋卡\n目標：一年內存到 NT$150,000 頭期款基金\n有記帳習慣但常常「記了，然後呢？」月初信心滿滿，月中容易失控（聚餐、網購），月底發現目標又落後",
+    // 這三段的數字必須跟 88la-finance/src/demoData.js 的示範帳戶對得上。
+    // 改動 demo 資料的金額時，這裡要一起改（驗算見該專案的
+    // scripts/demo_persona_verification.mjs）。2026-08-17 對照的版本：
+    // 固定超支 3,489／購物 4,540 對預算 2,500／衝動 4 筆 1,950／
+    // 卡費預留 13,794／可用餘額 2,876／儲蓄 4,000 對目標 8,000
+    personaFacts: "月薪 NT$42,000，台北租屋，每月房租 NT$13,000\n兩張信用卡加一張簽帳卡，結帳日都是 20 號\n目標：緊急備用金存到 NT$60,000，同時累積 NT$80,000 頭期款\n有記帳習慣但常常「記了，然後呢？」月初信心滿滿，月中容易失控，月底發現目標又落後",
     findingsLabel: "系統怎麼看",
-    findings: "系統偵測到：本月網購類別支出比預算高出 62%\n信用卡預留卡費已超過本月現金結餘，出現負值缺口\n儲蓄目標進度落後，以目前速度需要多花 4 個月才能達標",
+    findings: "固定支出超出預算 NT$3,489，主因是半年繳的車險 NT$3,600 沒編進預算\n購物類別花了 NT$4,540，比預算高出 82%\n衝動消費 4 筆共 NT$1,950，其中星期五就佔了 NT$1,850\n扣掉本期要預留的卡費 NT$13,794，這個月只剩 NT$2,876 可以動用\n儲蓄目標 NT$8,000 只做到 NT$4,000，照這個速度緊急備用金要多花 5 個月",
     suggestionsLabel: "給小琳的建議",
-    suggestions: "建議下個月網購類別預算下修 NT$3,000，轉移到卡費預留\n聚餐類別出現 3 次非計畫性支出，建議設定週間現金額度提醒自己",
+    suggestions: "半年繳的車險攤成每月 NT$600 編進預算，下次就不會被打亂\n購物超出 NT$2,040，下個月決定是把預算調到符合實際，還是從這一類找回來\n衝動消費集中在星期五，出門前先想好當天的額度",
     lockNote: "🔒 完整月度診斷報告與帳單明細，登入後查看"
   },
   resourcesCopy: {
@@ -747,13 +752,13 @@ function useFS(key, def) {
     if (isLocalAdminPreviewMode()) {
       try {
         const raw = localStorage.getItem(localPreviewStorageKey(key));
-        if (raw !== null) setV(JSON.parse(raw));
+        if (raw !== null) setV(normalizeStoredContent(JSON.parse(raw)));
       } catch { }
       setLoaded(true);
       return;
     }
     fbGet(key)
-      .then(val => { if (val !== null) setV(val); })
+      .then(val => { if (val !== null) setV(normalizeStoredContent(val)); })
       .catch(e => console.error(`fbGet(${key}) failed, 使用預設內容繼續顯示`, e))
       .finally(() => setLoaded(true));
   }, [key]);
@@ -1220,11 +1225,53 @@ const PRODUCT_NAME_PATTERNS = [
   "88La 理財導航器",
   "88La理財導航器",
 ];
+// 沒有 88La 前綴的裸名（例如 /app 頁的主標就是「理財自動導航器」），
+// 但「理財自動導航器 2.0」是 Google Sheets 模板，跟 Web App 是兩個產品，必須排除
+const BARE_APP_NAME = /理財自動導航器(?!\s*2\.0)/g;
 const normalizeProductText = value => {
   if (typeof value !== "string") return value;
   return PRODUCT_NAME_PATTERNS.reduce((text, pattern) => text.split(pattern).join(APP_PRODUCT_NAME), value)
+    .replace(BARE_APP_NAME, APP_PRODUCT_NAME)
     .replaceAll("省下約 35%", `省下約 ${APP_YEARLY_DISCOUNT}%`)
     .replaceAll("相當於 NT$83/月", `相當於 NT$${APP_YEARLY_MONTHLY_EQUIVALENT}/月`);
+};
+// Firestore 裡存的是 Barbara 在後台編輯過的文字，可能還留著 App 的舊名。
+// 那些字改不到（只能在後台一頁一頁改），所以改成讀取時就換掉，畫面上永遠是新名。
+// 只比對帶「88La」前綴的舊名，所以模板產品「理財自動導航器 2.0」不會被誤改，
+// 它跟 Web App 是兩個不同的產品。
+const normalizeStoredContent = value => {
+  if (typeof value === "string") return normalizeProductText(value);
+  if (Array.isArray(value)) return value.map(normalizeStoredContent);
+  if (value && typeof value === "object" && Object.getPrototypeOf(value) === Object.prototype) {
+    const out = {};
+    for (const k of Object.keys(value)) out[k] = normalizeStoredContent(value[k]);
+    return out;
+  }
+  return value;
+};
+// demoStory 的三段內容講的是 88la-finance 示範帳戶的實際數字。示範帳戶在
+// 2026-08-17 重新配平過（逾期畫面、儲蓄率自相矛盾、餘額逼近 0 都修掉了），
+// 舊文案的每一句都對不上：說網購超支 62%（實際是購物 82%）、說可用餘額出現
+// 負值缺口（實際是 +$2,876）、建議把只有 $2,500 的預算下修 $3,000。
+//
+// 這些字存在 Firestore，改程式碼的預設值對線上沒有效果，所以在讀取時逐欄
+// 比對：只有當存的還是那份對不上的舊文案（用它獨有的句子辨識）才換成新的。
+// 認舊句子而不是「跟預設值不同就換」，Barbara 之後自己改寫過的版本才不會被蓋掉；
+// 她下次在後台儲存時，新文案就會寫回 Firestore，這段判斷之後自然失效。
+const STALE_DEMO_STORY_MARKERS = {
+  personaFacts: ["NT$150,000 頭期款基金", "日常消費卡"],
+  findings: ["高出 62%", "出現負值缺口"],
+  suggestions: ["網購類別預算下修", "聚餐類別出現 3 次"],
+};
+const normalizeDemoStory = story => {
+  const next = { ...DEFAULTS.demoStory, ...(story || {}) };
+  for (const [field, markers] of Object.entries(STALE_DEMO_STORY_MARKERS)) {
+    const stored = next[field];
+    if (typeof stored === "string" && markers.some(marker => stored.includes(marker))) {
+      next[field] = DEFAULTS.demoStory[field];
+    }
+  }
+  return next;
 };
 const normalizeResourceUrl = value => {
   if (typeof value !== "string") return value;
@@ -3253,7 +3300,7 @@ function Guide({ appContent, isAdmin, setPage }) {
 
 function AppPage({ appContent, setAppContent, isAdmin, setPage, demoStory, setDemoStory }) {
   const c = normalizeAppContent(appContent);
-  const ds = { ...DEFAULTS.demoStory, ...(demoStory || {}) };
+  const ds = normalizeDemoStory(demoStory);
   const upd = patch => setAppContent(prev => ({ ...DEFAULTS.appContent, ...(prev || {}), ...patch }));
   const [detailPlan, setDetailPlan] = useState(null);
   const [editHero, setEditHero] = useState(false);
