@@ -747,13 +747,13 @@ function useFS(key, def) {
     if (isLocalAdminPreviewMode()) {
       try {
         const raw = localStorage.getItem(localPreviewStorageKey(key));
-        if (raw !== null) setV(JSON.parse(raw));
+        if (raw !== null) setV(normalizeStoredContent(JSON.parse(raw)));
       } catch { }
       setLoaded(true);
       return;
     }
     fbGet(key)
-      .then(val => { if (val !== null) setV(val); })
+      .then(val => { if (val !== null) setV(normalizeStoredContent(val)); })
       .catch(e => console.error(`fbGet(${key}) failed, 使用預設內容繼續顯示`, e))
       .finally(() => setLoaded(true));
   }, [key]);
@@ -1220,11 +1220,29 @@ const PRODUCT_NAME_PATTERNS = [
   "88La 理財導航器",
   "88La理財導航器",
 ];
+// 沒有 88La 前綴的裸名（例如 /app 頁的主標就是「理財自動導航器」），
+// 但「理財自動導航器 2.0」是 Google Sheets 模板，跟 Web App 是兩個產品，必須排除
+const BARE_APP_NAME = /理財自動導航器(?!\s*2\.0)/g;
 const normalizeProductText = value => {
   if (typeof value !== "string") return value;
   return PRODUCT_NAME_PATTERNS.reduce((text, pattern) => text.split(pattern).join(APP_PRODUCT_NAME), value)
+    .replace(BARE_APP_NAME, APP_PRODUCT_NAME)
     .replaceAll("省下約 35%", `省下約 ${APP_YEARLY_DISCOUNT}%`)
     .replaceAll("相當於 NT$83/月", `相當於 NT$${APP_YEARLY_MONTHLY_EQUIVALENT}/月`);
+};
+// Firestore 裡存的是 Barbara 在後台編輯過的文字，可能還留著 App 的舊名。
+// 那些字改不到（只能在後台一頁一頁改），所以改成讀取時就換掉，畫面上永遠是新名。
+// 只比對帶「88La」前綴的舊名，所以模板產品「理財自動導航器 2.0」不會被誤改，
+// 它跟 Web App 是兩個不同的產品。
+const normalizeStoredContent = value => {
+  if (typeof value === "string") return normalizeProductText(value);
+  if (Array.isArray(value)) return value.map(normalizeStoredContent);
+  if (value && typeof value === "object" && Object.getPrototypeOf(value) === Object.prototype) {
+    const out = {};
+    for (const k of Object.keys(value)) out[k] = normalizeStoredContent(value[k]);
+    return out;
+  }
+  return value;
 };
 const normalizeResourceUrl = value => {
   if (typeof value !== "string") return value;
