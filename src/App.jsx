@@ -3570,7 +3570,10 @@ function AppPage({ appContent, setAppContent, isAdmin, setPage, demoStory, setDe
             <div className={`feature-row-item ${i % 2 === 1 ? "feature-row-alt" : ""}`} style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 56, alignItems: "center", padding: "48px 0", borderBottom: i < c.features.length - 1 ? `1px solid ${BORDER}` : "none" }}>
               <div
                 style={f.noFrame
-                  ? { maxWidth: 280, width: "100%", margin: "0 auto", transform: "translateY(0)", transition: "transform .35s cubic-bezier(.16,1,.3,1)" }
+                  // 自製外框圖四周會留白，手機本身只佔畫布的一半左右（實測 51.3%），
+                  // 沿用 280px 會讓手機只剩 144px，比其他列小一半。放寬到 480（左欄可用寬 490），
+                  // 手機約 246px，跟裸截圖的 280px 接近。
+                  ? { maxWidth: 480, width: "100%", margin: "0 auto", transform: "translateY(0)", transition: "transform .35s cubic-bezier(.16,1,.3,1)" }
                   : { background: O2, borderRadius: 32, maxWidth: 280, width: "100%", margin: "0 auto", overflow: "hidden", display: "flex", alignItems: "center", justifyContent: "center", boxShadow: `0 4px 12px rgba(26,26,26,0.07), 0 28px 52px -20px rgba(26,26,26,0.26), 0 0 0 1px ${BORDER}`, transform: "translateY(0)", transition: "transform .35s cubic-bezier(.16,1,.3,1), box-shadow .35s cubic-bezier(.16,1,.3,1)", ...(f.img ? null : { aspectRatio: "9/19" }) }}
                 onMouseEnter={e => { e.currentTarget.style.transform = "translateY(-8px)"; if (!f.noFrame) e.currentTarget.style.boxShadow = `0 12px 20px rgba(26,26,26,0.1), 0 36px 64px -20px rgba(26,26,26,0.32), 0 0 0 1px ${BORDER}`; }}
                 onMouseLeave={e => { e.currentTarget.style.transform = "translateY(0)"; if (!f.noFrame) e.currentTarget.style.boxShadow = `0 4px 12px rgba(26,26,26,0.07), 0 28px 52px -20px rgba(26,26,26,0.26), 0 0 0 1px ${BORDER}`; }}
