@@ -3336,7 +3336,7 @@ function AppPage({ appContent, setAppContent, isAdmin, setPage, demoStory, setDe
   const [editDemoStory, setEditDemoStory] = useState(false);
   const [tmpDemoStory, setTmpDemoStory] = useState(ds);
   const [editingFeat, setEditingFeat] = useState(null);
-  const [featForm, setFeatForm] = useState({ n: "", title: "", desc: "", img: "" });
+  const [featForm, setFeatForm] = useState({ n: "", title: "", desc: "", img: "", noFrame: false });
   const [editingPlan, setEditingPlan] = useState(null);
   const [planForm, setPlanForm] = useState({ name: "", price: "", period: "", highlight: false, badge: "", features: [], detailTitle: "", detailImg: "", detailContent: "" });
   const [editNote, setEditNote] = useState(false);
@@ -3555,26 +3555,36 @@ function AppPage({ appContent, setAppContent, isAdmin, setPage, demoStory, setDe
               <div><p style={{ fontSize: 12, color: MID, marginBottom: 6 }}>標題</p><input value={featForm.title} onChange={e => setFeatForm(p => ({ ...p, title: e.target.value }))} /></div>
             </div>
             <div style={{ marginBottom: 12 }}><p style={{ fontSize: 12, color: MID, marginBottom: 6 }}>說明</p><textarea value={featForm.desc} onChange={e => setFeatForm(p => ({ ...p, desc: e.target.value }))} style={{ minHeight: 70 }} /></div>
-            <div style={{ marginBottom: 16 }}><ImgUploader label="圖片（選填，建議直式手機截圖）" value={featForm.img} onChange={v => setFeatForm(p => ({ ...p, img: v }))} aspect="9/19" /></div>
+            <div style={{ marginBottom: 10 }}><ImgUploader label="圖片（選填，建議直式手機截圖）" value={featForm.img} onChange={v => setFeatForm(p => ({ ...p, img: v }))} aspect="9/19" /></div>
+            <label style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 16, fontSize: 13, color: MID, cursor: "pointer" }}>
+              <input type="checkbox" checked={!!featForm.noFrame} onChange={e => setFeatForm(p => ({ ...p, noFrame: e.target.checked }))} style={{ width: "auto", margin: 0 }} />
+              圖片已含手機外框，不要再套站上的框
+            </label>
             <div style={{ display: "flex", gap: 10 }}><button className="pb" onClick={saveFeat} disabled={!featForm.title.trim()}>儲存</button><button className="pg" onClick={() => setEditingFeat(null)}>取消</button></div>
           </div>
         )}
-        {isAdmin && !editingFeat && <div style={{ marginBottom: 24, textAlign: "right" }}><button className="pb" style={{ fontSize: 12 }} onClick={() => { setFeatForm({ n: "", title: "", desc: "", img: "" }); setEditingFeat("new"); }}>＋ 新增功能</button></div>}
+        {isAdmin && !editingFeat && <div style={{ marginBottom: 24, textAlign: "right" }}><button className="pb" style={{ fontSize: 12 }} onClick={() => { setFeatForm({ n: "", title: "", desc: "", img: "", noFrame: false }); setEditingFeat("new"); }}>＋ 新增功能</button></div>}
         <div style={{ display: "flex", flexDirection: "column" }}>
           {c.features.map((f, i) => (
             <Reveal key={f.id || i}>
             <div className={`feature-row-item ${i % 2 === 1 ? "feature-row-alt" : ""}`} style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 56, alignItems: "center", padding: "48px 0", borderBottom: i < c.features.length - 1 ? `1px solid ${BORDER}` : "none" }}>
               <div
-                style={{ background: O2, borderRadius: 32, aspectRatio: "9/19", maxWidth: 280, width: "100%", margin: "0 auto", overflow: "hidden", display: "flex", alignItems: "center", justifyContent: "center", boxShadow: `0 4px 12px rgba(26,26,26,0.07), 0 28px 52px -20px rgba(26,26,26,0.26), 0 0 0 1px ${BORDER}`, transform: "translateY(0)", transition: "transform .35s cubic-bezier(.16,1,.3,1), box-shadow .35s cubic-bezier(.16,1,.3,1)" }}
-                onMouseEnter={e => { e.currentTarget.style.transform = "translateY(-8px)"; e.currentTarget.style.boxShadow = `0 12px 20px rgba(26,26,26,0.1), 0 36px 64px -20px rgba(26,26,26,0.32), 0 0 0 1px ${BORDER}`; }}
-                onMouseLeave={e => { e.currentTarget.style.transform = "translateY(0)"; e.currentTarget.style.boxShadow = `0 4px 12px rgba(26,26,26,0.07), 0 28px 52px -20px rgba(26,26,26,0.26), 0 0 0 1px ${BORDER}`; }}
+                style={f.noFrame
+                  ? { maxWidth: 280, width: "100%", margin: "0 auto", transform: "translateY(0)", transition: "transform .35s cubic-bezier(.16,1,.3,1)" }
+                  : { background: O2, borderRadius: 32, maxWidth: 280, width: "100%", margin: "0 auto", overflow: "hidden", display: "flex", alignItems: "center", justifyContent: "center", boxShadow: `0 4px 12px rgba(26,26,26,0.07), 0 28px 52px -20px rgba(26,26,26,0.26), 0 0 0 1px ${BORDER}`, transform: "translateY(0)", transition: "transform .35s cubic-bezier(.16,1,.3,1), box-shadow .35s cubic-bezier(.16,1,.3,1)", ...(f.img ? null : { aspectRatio: "9/19" }) }}
+                onMouseEnter={e => { e.currentTarget.style.transform = "translateY(-8px)"; if (!f.noFrame) e.currentTarget.style.boxShadow = `0 12px 20px rgba(26,26,26,0.1), 0 36px 64px -20px rgba(26,26,26,0.32), 0 0 0 1px ${BORDER}`; }}
+                onMouseLeave={e => { e.currentTarget.style.transform = "translateY(0)"; if (!f.noFrame) e.currentTarget.style.boxShadow = `0 4px 12px rgba(26,26,26,0.07), 0 28px 52px -20px rgba(26,26,26,0.26), 0 0 0 1px ${BORDER}`; }}
               >
-                {f.img ? <img src={f.img} alt={f.title} style={{ width: "100%", height: "100%", objectFit: "cover" }} loading="lazy" /> : <span style={{ fontSize: 13, color: O, fontWeight: 500, textAlign: "center", padding: "0 16px" }}>{f.title || "功能"}畫面示意</span>}
+                {/* 容器高度跟著圖片的原始比例走，objectFit 一律不用 cover。
+                    舊版寫死 aspectRatio:"9/19" + cover，只要圖片比例不是 9:19 就被靜靜裁掉，
+                    Barbara 自己合成的 1080x1350 外框圖左右各被切掉 20.4%（2026-08-18 回報）。
+                    沒有圖時才保留 9:19 當佔位框。 */}
+                {f.img ? <img src={f.img} alt={f.title} style={{ width: "100%", height: "auto", display: "block", borderRadius: f.noFrame ? 0 : 32 }} loading="lazy" /> : <span style={{ fontSize: 13, color: O, fontWeight: 500, textAlign: "center", padding: "0 16px" }}>{f.title || "功能"}畫面示意</span>}
               </div>
               <div style={{ position: "relative" }}>
                 {isAdmin && <div style={{ position: "absolute", top: -8, right: 0, display: "flex", gap: 4, alignItems: "center" }}>
                   <OrdBtns idx={i} total={c.features.length} onMove={moveFeat} />
-                  <button className="pg" style={{ fontSize: 10, padding: "3px 8px" }} onClick={() => { setFeatForm({ n: f.n, title: f.title, desc: f.desc, img: f.img || "" }); setEditingFeat(f.id); }}>編輯</button>
+                  <button className="pg" style={{ fontSize: 10, padding: "3px 8px" }} onClick={() => { setFeatForm({ n: f.n, title: f.title, desc: f.desc, img: f.img || "", noFrame: !!f.noFrame }); setEditingFeat(f.id); }}>編輯</button>
                   <button className="pg" style={{ fontSize: 10, padding: "3px 8px", color: "#E74C3C", borderColor: "#E74C3C" }} onClick={() => delFeat(f.id)}>✕</button>
                 </div>}
                 {f.n && <span style={{ display: "inline-block", fontSize: 12, color: O, fontWeight: 500, background: O2, padding: "4px 12px", borderRadius: 999, marginBottom: 16 }}>{f.n}</span>}
