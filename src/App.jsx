@@ -1207,6 +1207,30 @@ const IcCheck = () => <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"
 const IcArticle = () => <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/><line x1="8" y1="13" x2="16" y2="13"/><line x1="8" y1="17" x2="13" y2="17"/></svg>;
 
 const PATH_ICONS = { app: IcApp, envelope: IcShop, community: IcIG, resources: IcRes, "tool-quiz": IcCheck, journal: IcArticle };
+// 分流卡的標籤與行動文字，跟 PATH_ICONS 用同一個 page 當 key。
+// 舊版寫成兩層三元式，只認得 resources 與 app，其餘全部掉進 else 變成「實體理財工具」，
+// 所以 Instagram 卡和文章庫卡都顯示成實體工具（2026-08-18 回報）。
+// 之後新增頁面型別只要補這張表，不會再有猜錯的預設值。
+const PATH_META = {
+  resources:   { label: "免費工具",        cta: "先免費檢查" },
+  "tool-quiz": { label: "免費工具",        cta: "開始免費檢查" },
+  app:         { label: APP_PRODUCT_NAME,  cta: "看看財務導航" },
+  envelope:    { label: "實體理財工具",     cta: "找到實體工具" },
+  journal:     { label: "文章庫",          cta: "看文章庫" },
+  community:   { label: "8友社群",         cta: "看看社群" },
+  goods:       { label: "推薦好物",        cta: "看看好物" },
+  about:       { label: "關於 88La",       cta: "認識 88La" }
+};
+// 認不出來的 page 一律走中性文字，不要拿任何一個產品名當預設值，
+// 猜錯的成本比講得籠統高很多。
+const PATH_META_FALLBACK = { label: "88La", cta: "看看" };
+function getPathMeta(page) {
+  if (/^https?:\/\//.test(page || "")) {
+    if (page.includes("instagram")) return { label: "Instagram", cta: "看看 Instagram" };
+    return { label: "外部連結", cta: "前往看看" };
+  }
+  return PATH_META[page] || PATH_META_FALLBACK;
+}
 const HOME_ARTICLE_TOPICS = [
   { label: "存不到錢", keywords: ["存不到錢", "月光", "存錢"] },
   { label: "記帳沒用", keywords: ["記帳", "記完", "照妖鏡"] },
@@ -1879,6 +1903,7 @@ function Home({ articles, setPage, setId, setArticles, isAdmin, homeHero, setHom
                 <input value={p.title} onChange={e => setTmpPaths(pp => pp.map((x, xi) => xi === i ? { ...x, title: e.target.value } : x))} placeholder="標題" style={{ marginBottom: 6 }} />
                 <textarea value={p.desc} onChange={e => setTmpPaths(pp => pp.map((x, xi) => xi === i ? { ...x, desc: e.target.value } : x))} placeholder="說明" style={{ minHeight: 50, marginBottom: 6 }} />
                 <input value={p.page} onChange={e => setTmpPaths(pp => pp.map((x, xi) => xi === i ? { ...x, page: e.target.value } : x))} placeholder="頁面代號（如 app、resources）或完整網址（https://...）" style={{ marginBottom: 6 }} />
+                <input value={p.cta || ""} onChange={e => setTmpPaths(pp => pp.map((x, xi) => xi === i ? { ...x, cta: e.target.value } : x))} placeholder="行動文字，留空會依頁面代號自動帶（如看文章庫）" style={{ marginBottom: 6 }} />
                 <span onClick={() => setTmpPaths(pp => pp.filter((_, xi) => xi !== i))} style={{ fontSize: 12, color: MID, cursor: "pointer" }}>刪除這張卡片</span>
               </div>
             ))}
@@ -1893,16 +1918,17 @@ function Home({ articles, setPage, setId, setArticles, isAdmin, homeHero, setHom
               const isExternal = /^https?:\/\//.test(p.page || "");
               const goTo = () => { if (isExternal) window.open(p.page, "_blank", "noopener,noreferrer"); else setPage(p.page); };
               const PathIcon = isExternal ? (p.page.includes("instagram") ? IcIG : null) : PATH_ICONS[p.page];
+              const meta = getPathMeta(p.page);
               return (
                 <div key={i} onClick={goTo} style={{ background: WHITE, border: `1px solid ${BORDER}`, borderRadius: 16, padding: 28, cursor: "pointer", boxShadow: "0 2px 8px rgba(0,0,0,.04)", transition: "transform .3s, box-shadow .3s" }}
                   onMouseEnter={e => { e.currentTarget.style.transform = "translateY(-6px)"; e.currentTarget.style.boxShadow = "0 20px 40px rgba(0,0,0,.1)"; }}
                   onMouseLeave={e => { e.currentTarget.style.transform = "translateY(0)"; e.currentTarget.style.boxShadow = "0 2px 8px rgba(0,0,0,.04)"; }}
                 >
-                  <p style={{ fontSize: 11, color: O, fontWeight: 700, marginBottom: 12 }}>{p.label || (p.page === "resources" ? "免費工具" : p.page === "app" ? APP_PRODUCT_NAME : "實體理財工具")}</p>
+                  <p style={{ fontSize: 11, color: O, fontWeight: 700, marginBottom: 12 }}>{p.label || meta.label}</p>
                   <div style={{ width: 40, height: 40, borderRadius: 12, background: O2, color: O, display: "flex", alignItems: "center", justifyContent: "center", marginBottom: 16 }}>{PathIcon ? <div style={{ width: 20, height: 20 }}><PathIcon /></div> : null}</div>
                   <h3 style={{ fontSize: 17, fontWeight: 500, color: CHAR, marginBottom: 8 }}>{p.title}</h3>
                   <p style={{ fontSize: 13, color: MID, lineHeight: 1.8, marginBottom: 14 }}>{p.desc}</p>
-                  <span style={{ fontSize: 12, color: O, fontWeight: 500 }}>{p.page === "resources" ? "先免費檢查" : p.page === "app" ? "看看財務導航" : "找到實體工具"} →</span>
+                  <span style={{ fontSize: 12, color: O, fontWeight: 500 }}>{p.cta || meta.cta} →</span>
                 </div>
               );
             })}
