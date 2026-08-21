@@ -140,6 +140,37 @@ export async function getSiteValue(key) {
   return decodeFirestoreValue(data.fields?.value);
 }
 
+// Firestore 的 :commit 端點，路徑格式與一般文件讀寫不同，所以另開一支。
+// 用途是原子遞增：瀏覽數不能用「讀出來加一再寫回去」，兩個人同時看文章就會少算一次。
+export async function firestoreCommit(writes) {
+  const token = await getAccessToken();
+  const r = await fetch(
+    `https://firestore.googleapis.com/v1/projects/${PROJECT_ID}/databases/(default)/documents:commit`,
+    {
+      method: "POST",
+      headers: { Authorization: `Bearer ${token}`, "Content-Type": "application/json" },
+      body: JSON.stringify({ writes }),
+    },
+  );
+  if (!r.ok) throw new Error(`Firestore commit failed: ${r.status}`);
+  return r.json();
+}
+
+export function documentName(path) {
+  return `projects/${PROJECT_ID}/databases/(default)/documents/${path}`;
+}
+
+export async function listCollection(path) {
+  const r = await firestoreFetch(`${path}?pageSize=300`);
+  if (r.status === 404) return [];
+  if (!r.ok) throw new Error(`Firestore list failed: ${r.status}`);
+  const data = await r.json();
+  return (data.documents || []).map((d) => ({
+    id: decodeURIComponent(d.name.split("/").pop()),
+    ...decodeFirestoreFields(d.fields || {}),
+  }));
+}
+
 export async function setDocument(path, data) {
   const r = await firestoreFetch(path, {
     method: "PATCH",

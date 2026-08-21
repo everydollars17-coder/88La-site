@@ -143,11 +143,27 @@ body{font-family:'Noto Sans TC',sans-serif;color:#2d1a0e}
 
 .brand{text-align:center;font-size:11px;color:#c4a090;letter-spacing:0.5px;margin-top:20px}
 </style>
+
+<style>
+/* 88La 導覽列：從社群點進來的人要回得了官網。八個資源頁共用同一份樣式與文案 */
+.la-foot{width:100%;flex:0 0 100%;box-sizing:border-box;margin:36px 0 0;padding:30px 20px 34px;background:#fff3ea;border-top:1px solid #ead5c0;font-family:'Noto Sans TC',sans-serif;}
+.la-foot-inner{max-width:520px;margin:0 auto;text-align:center;}
+.la-foot-brand{margin:0 0 8px;font-size:12px;font-weight:700;letter-spacing:.12em;color:#c96b2f;}
+.la-foot-text{margin:0 0 18px;font-size:13px;line-height:1.8;color:#79513a;}
+.la-foot-btns{display:flex;flex-wrap:wrap;justify-content:center;gap:10px;}
+.la-btn{display:inline-block;padding:11px 20px;border-radius:999px;border:1px solid #c96b2f;font-size:14px;font-weight:700;line-height:1.4;text-decoration:none;transition:opacity .18s;}
+.la-btn:hover{opacity:.85;}
+.la-brand-link{color:inherit;text-decoration:none;}
+.la-btn-main{background:#c96b2f;color:#fff3ea;}
+.la-btn-ghost{background:transparent;color:#c96b2f;border-color:#ead5c0;}
+@media print{.la-foot{display:none;}}
+
+</style>
 </head>
 <body>
 <div class="page">
   <div class="header">
-    <div class="header-tag">88La 理財測驗</div>
+    <div class="header-tag"><a class="la-brand-link" data-la-cta="home" href="https://88la-site.vercel.app/?utm_source=resource&amp;utm_medium=brand&amp;utm_campaign=emergency-fund-quiz">88La 理財測驗</a></div>
     <div class="header-title">先存緊急預備金<br>還是邊存邊投？</div>
     <div class="header-sub">3 個問題，找到你現在最適合的做法</div>
     <div class="progress-wrap">
@@ -163,7 +179,7 @@ body{font-family:'Noto Sans TC',sans-serif;color:#2d1a0e}
       <div class="q-text">你目前有多少緊急預備金？</div>
       <button class="option-btn" onclick="pick(0,0)"><span class="opt-icon">✕</span><span>完全沒有，從零開始</span></button>
       <button class="option-btn" onclick="pick(0,1)"><span class="opt-icon">◑</span><span>有一點，但不到 1 個月生活費</span></button>
-      <button class="option-btn" onclick="pick(0,2)"><span class="opt-icon">✓</span><span>有 1–2 個月以上</span></button>
+      <button class="option-btn" onclick="pick(0,2)"><span class="opt-icon">✓</span><span>有 1 到 2 個月以上</span></button>
       <div class="answer-box" id="a0-0">
         <div class="answer-title">先建立底線</div>
         <div class="answer-text">完全沒有預備金就投資，遇到急用時只能<strong>被迫賠錢賣出</strong>。建議先暫停投資，把存到 1 個月基本生活費當作第一目標。</div>
@@ -182,9 +198,9 @@ body{font-family:'Noto Sans TC',sans-serif;color:#2d1a0e}
     <div class="step" id="s1">
       <div class="q-label">問題 2 / 3</div>
       <div class="q-text">你的收入穩定嗎？</div>
-      <button class="option-btn" onclick="pick(1,0)"><span class="opt-icon">🏦</span><span>穩定——固定薪水、上班族</span></button>
-      <button class="option-btn" onclick="pick(1,1)"><span class="opt-icon">📈</span><span>有點波動——業績制、兼職</span></button>
-      <button class="option-btn" onclick="pick(1,2)"><span class="opt-icon">🌀</span><span>不穩定——接案、自媒體、創業</span></button>
+      <button class="option-btn" onclick="pick(1,0)"><span class="opt-icon">🏦</span><span>穩定，固定薪水、上班族</span></button>
+      <button class="option-btn" onclick="pick(1,1)"><span class="opt-icon">📈</span><span>有點波動，業績制、兼職</span></button>
+      <button class="option-btn" onclick="pick(1,2)"><span class="opt-icon">🌀</span><span>不穩定，接案、自媒體、創業</span></button>
       <div class="answer-box" id="a1-0">
         <div class="answer-title">穩定收入，彈性大</div>
         <div class="answer-text">固定薪水代表每月都有可預測的現金流，<strong>邊存邊投的折衷法最適合你</strong>。</div>
@@ -217,11 +233,11 @@ body{font-family:'Noto Sans TC',sans-serif;color:#2d1a0e}
       </div>
       <div class="answer-box" id="a2-2">
         <div class="answer-title">還差一點安全感</div>
-        <div class="answer-text">有緩衝但不夠，這正是「折衷法」最適合你的階段——繼續補充預備金，同時把剩餘存款做其他規劃。</div>
+        <div class="answer-text">有緩衝但不夠，這正是「折衷法」最適合你的階段，繼續補充預備金，同時把剩餘存款做其他規劃。</div>
       </div>
       <div class="answer-box" id="a2-3">
         <div class="answer-title">預備金發揮了它的功能</div>
-        <div class="answer-text">這就是預備金的意義——讓投資<strong>不需要因為急用而被打斷</strong>，複利才能真正發揮。</div>
+        <div class="answer-text">這就是預備金的意義，讓投資<strong>不需要因為急用而被打斷</strong>，複利才能真正發揮。</div>
       </div>
       <button class="next-btn" id="n2" onclick="showResult()">看我的結果 →</button>
     </div>
@@ -256,6 +272,7 @@ function nextStep(to) {
 }
 
 function showResult() {
+  window.laTrackOnce && window.laTrackOnce("tool_complete");
   document.getElementById('s2').classList.remove('active');
   document.getElementById('prog').style.width = '100%';
   document.getElementById('prog-label').textContent = '3 / 3 完成';
@@ -272,7 +289,7 @@ function showResult() {
     action='連救急的選項都沒有，這是財務最脆弱的狀態。現在唯一的任務是把緊急預備金從零開始存起來，投資的事之後再說。';
     savePct=100; goal='先達標 1 個月基本生活費，再重新評估';
   } else if (a0 === 1) {
-    type='你現在適合'; title='保守折衷——預備金優先，其餘資金為輔';
+    type='你現在適合'; title='保守折衷，預備金優先，其餘資金為輔';
     action='還沒有足夠緊急緩衝，或收入不太穩定。建議把存款大部分放預備金補足安全網，留少部分依個人狀況另行規劃。';
     savePct=75; goal='預備金存到 3 個月以上，再調整比例';
   } else {
@@ -290,7 +307,7 @@ function showResult() {
         action='緊急備用金發揮了它的功能，讓你的投資不需要因為急用被打斷，複利才能真正累積。<br><br>不過你的收入有波動，建議繼續把預備金往 3 個月的目標補，安全網更厚，投資才能真的放心。';
         savePct=60; goal='預備金存滿 6 個月後，再重新評估資金配置';
       } else {
-        type='你現在適合'; title='穩健折衷——邊存預備金邊投資';
+        type='你現在適合'; title='穩健折衷，邊存預備金邊投資';
         action='收入穩定、有緩衝底線，最適合「折衷法」。每月存款分兩部分：多數繼續補充預備金，其餘依個人狀況另行規劃，兩件事同步推進。';
         savePct=60; goal='預備金存滿 6 個月後，再重新評估資金配置';
       }
@@ -385,5 +402,17 @@ function restart() {
   window.scrollTo(0,0);
 }
 </script>
+
+<footer class="la-foot">
+  <div class="la-foot-inner">
+    <p class="la-foot-brand">88La 犒賞系存錢</p>
+    <p class="la-foot-text">官網還有更多免費工具和文章，都可以直接使用。</p>
+    <div class="la-foot-btns">
+      <a class="la-btn la-btn-main" data-la-cta="resources" href="https://88la-site.vercel.app/resources?utm_source=resource&utm_medium=footer&utm_campaign=emergency-fund-quiz">看更多免費資源</a>
+      <a class="la-btn la-btn-ghost" data-la-cta="home" href="https://88la-site.vercel.app/?utm_source=resource&utm_medium=footer&utm_campaign=emergency-fund-quiz">回 88La 官網</a>
+    </div>
+  </div>
+</footer>
+<script src="/resources/_shared/la-kit.js" data-resource="emergency-fund-quiz"></script>
 </body>
 </html>

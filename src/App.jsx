@@ -1,4 +1,5 @@
 import { useState, useEffect, useLayoutEffect, useRef } from "react";
+import { articleKey, viewCount } from "./articleViews.js";
 import { initializeApp } from "firebase/app";
 import { getFirestore, doc, setDoc, collection, getDocs, query, orderBy, deleteDoc } from "firebase/firestore";
 import { getAuth, GoogleAuthProvider, signInWithPopup, onAuthStateChanged, signOut } from "firebase/auth";
@@ -24,6 +25,9 @@ const googleProvider = new GoogleAuthProvider();
 const ADMIN_EMAILS = ["everydollars17@gmail.com"];
 
 const APP_URL = "https://88la-finance.vercel.app";
+// 官網與 88La財務導航是兩個網域，GA4 的 session 到那頭就斷了，來源只有掛在網址上才帶得過去。
+// campaign 標的是「從官網哪個位置點過去的」，App 端日後要把來源寫進註冊資料時直接讀這幾個參數。
+const appLink = from => `${APP_URL}?utm_source=88la-site&utm_medium=cta&utm_campaign=${from}`;
 const QUIZ_URL = "/resources/savings-bag-quiz/index.html";
 
 // 頁面 key ⇄ 網址路徑對照表，供瀏覽器網址列同步用。article 頁另用 /article/:slug 動態路徑處理。
@@ -800,6 +804,42 @@ const fileToDataUrl = file => new Promise((resolve, reject) => {
   reader.readAsDataURL(file);
 });
 
+// 文章瀏覽數
+// 舊做法是前端把整份 articles 陣列寫回 site/articles 來 +1，但那份文件只有管理員寫得進去，
+// 訪客的計數一路都被 Firestore 規則擋掉。現在改成打 API 遞增獨立的計數文件。
+// 顯示值 ＝ 文章上的舊 views 殘值 ＋ 修好之後實際累積的次數。
+const _viewedThisSession = new Set();
+function recordArticleView(article) {
+  const slug = articleKey(article);
+  if (!slug || _viewedThisSession.has(slug)) return;
+  _viewedThisSession.add(slug);
+  fetch("/api/article-view", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ slug }),
+  }).catch(() => { /* 計數失敗不影響閱讀，不要跳錯誤給讀者看 */ });
+}
+
+// 四個地方都要顯示瀏覽數，共用同一份結果，不要各自打一次 API
+let _viewCounts = null;
+let _viewCountsPromise = null;
+function useArticleViewCounts() {
+  const [counts, setCounts] = useState(_viewCounts || {});
+  useEffect(() => {
+    if (_viewCounts) return;
+    if (!_viewCountsPromise) {
+      _viewCountsPromise = fetch("/api/article-views")
+        .then(r => (r.ok ? r.json() : { counts: {} }))
+        .then(d => { _viewCounts = d.counts || {}; return _viewCounts; })
+        .catch(() => ({}));
+    }
+    let alive = true;
+    _viewCountsPromise.then(c => { if (alive) setCounts(c || {}); });
+    return () => { alive = false; };
+  }, []);
+  return counts;
+}
+
 function publicArticle(article) {
   if (!article?.member) return article;
   return { ...article, content: "", locked: true };
@@ -942,10 +982,11 @@ function stripHtml(s) {
   return (s || "").replace(/<[^>]*>/g, "");
 }
 
-function exportArticlesCSV(articles) {
+function exportArticlesCSV(articles, counts) {
   const esc = v => `"${String(v ?? "").replace(/"/g, '""').replace(/\n/g, " ")}"`;
   const header = ["id", "日期", "分類標籤", "標題", "摘要", "瀏覽數", "會員限定"];
-  const rows = (articles || []).map(a => [a.id, a.date, a.tag, a.title, stripHtml(a.excerpt), a.views || 0, a.member ? "Y" : "N"]);
+  // 瀏覽數要跟畫面上顯示的同一個口徑，不然匯出的報表跟後台看到的對不起來
+  const rows = (articles || []).map(a => [a.id, a.date, a.tag, a.title, stripHtml(a.excerpt), viewCount(a, counts), a.member ? "Y" : "N"]);
   const csv = "﻿" + [header, ...rows].map(r => r.map(esc).join(",")).join("\n");
   const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
   const url = URL.createObjectURL(blob);
@@ -1211,6 +1252,9 @@ const PATH_ICONS = { app: IcApp, envelope: IcShop, community: IcIG, resources: I
 // 舊版寫成兩層三元式，只認得 resources 與 app，其餘全部掉進 else 變成「實體理財工具」，
 // 所以 Instagram 卡和文章庫卡都顯示成實體工具（2026-08-18 回報）。
 // 之後新增頁面型別只要補這張表，不會再有猜錯的預設值。
+// 宣告要在 PATH_META 之前：PATH_META 是模組載入時就求值的，放在後面會讓 vite dev
+// 直接拋 TDZ 錯誤整頁空白（打包版因為 rolldown 會重排宣告所以看不出來，本機預覽會壞）
+const APP_PRODUCT_NAME = "88La財務導航";
 const PATH_META = {
   resources:   { label: "免費工具",        cta: "先免費檢查" },
   "tool-quiz": { label: "免費工具",        cta: "開始免費檢查" },
@@ -1242,7 +1286,6 @@ const IcChart  = () => <svg viewBox="0 0 24 24" fill="none" stroke="currentColor
 const IcHeart  = () => <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8"><path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.6l-1-1a5.5 5.5 0 0 0-7.8 7.8l1 1L12 21l7.8-7.8 1-1a5.5 5.5 0 0 0 0-7.8z"/></svg>;
 const ABOUT_ICONS = [IcTarget, IcChart, IcHeart];
 const NAV_KEYS = ["home","app","envelope","resources","about"];
-const APP_PRODUCT_NAME = "88La財務導航";
 const PRODUCT_NAME_PATTERNS = [
   "88La 理財自動導航器",
   "88La理財自動導航器",
@@ -1849,11 +1892,11 @@ function HomeHero({ homeHero, setHomeHero, isAdmin, setPage }) {
   );
 }
 
-function Home({ articles, setPage, setId, setArticles, isAdmin, homeHero, setHomeHero, trustStats, setTrustStats, paths, setPaths, homeCopy, setHomeCopy }) {
+function Home({ articles, setPage, setId, isAdmin, homeHero, setHomeHero, trustStats, setTrustStats, paths, setPaths, homeCopy, setHomeCopy }) {
   const hc = normalizeHomeCopy({ ...DEFAULTS.homeCopy, ...(homeCopy || {}) });
   const [editHomeCopy, setEditHomeCopy] = useState(false);
   const [tmpHomeCopy, setTmpHomeCopy] = useState(hc);
-  const open = id => { setArticles(prev => prev.map(a => a.id === id ? { ...a, views: (a.views || 0) + 1 } : a), { silent: true }); setId(id); setPage("article"); window.scrollTo({ top: 0, behavior: "instant" }); const a = articles.find(x => x.id === id); history.pushState({}, "", "/article/" + encodeURIComponent(a?.slug || id)); };
+  const open = id => { const a = articles.find(x => x.id === id); setId(id); setPage("article"); window.scrollTo({ top: 0, behavior: "instant" }); history.pushState({}, "", "/article/" + encodeURIComponent(a?.slug || id)); };
   const ts = trustStats && trustStats.length ? trustStats : DEFAULTS.trustStats;
   const ph = paths && paths.length ? paths : DEFAULTS.paths;
   const guidedPaths = ph;
@@ -1999,13 +2042,14 @@ function Journal({ articles, setArticles, setId, setPage, isAdmin, siteTitle, se
   const [tmpTitle, setTmpTitle] = useState(siteTitle);
   const [editTags, setEditTags] = useState(false);
   const [newTag, setNewTag] = useState("");
+  const viewCounts = useArticleViewCounts();
   const filtered = articles.filter(a => filter === "全部" || a.tag === filter).slice().sort((a, b) => {
     if (sort === "newest") return (b.date || "").localeCompare(a.date || "");
     if (sort === "oldest") return (a.date || "").localeCompare(b.date || "");
-    if (sort === "views") return (b.views || 0) - (a.views || 0);
+    if (sort === "views") return viewCount(b, viewCounts) - viewCount(a, viewCounts);
     return 0;
   });
-  const open = id => { setArticles(prev => prev.map(a => a.id === id ? { ...a, views: (a.views || 0) + 1 } : a), { silent: true }); setId(id); setPage("article"); window.scrollTo({ top: 0, behavior: "instant" }); const a = articles.find(x => x.id === id); history.pushState({}, "", "/article/" + encodeURIComponent(a?.slug || id)); };
+  const open = id => { const a = articles.find(x => x.id === id); setId(id); setPage("article"); window.scrollTo({ top: 0, behavior: "instant" }); history.pushState({}, "", "/article/" + encodeURIComponent(a?.slug || id)); };
   const addTag = () => { const t = newTag.trim(); if (t && !tags.includes(t)) setTags(prev => [...prev, t]); setNewTag(""); };
   const delTag = t => { if (confirm("確定刪除標籤「" + t + "」？")) setTags(prev => prev.filter(x => x !== t)); };
   const moveA = (idx, dir) => setArticles(prev => {
@@ -2038,7 +2082,7 @@ function Journal({ articles, setArticles, setId, setPage, isAdmin, siteTitle, se
           </div>
           {isAdmin && !editTitle && (
             <div style={{ display: "flex", gap: 10 }}>
-              <button className="pg" onClick={() => exportArticlesCSV(articles)}>匯出文章 CSV</button>
+              <button className="pg" onClick={() => exportArticlesCSV(articles, viewCounts)}>匯出文章 CSV</button>
               <button className="pb" onClick={() => setPage("write")}>＋ 新增文章</button>
             </div>
           )}
@@ -2094,7 +2138,7 @@ function Journal({ articles, setArticles, setId, setPage, isAdmin, siteTitle, se
                 <p style={{ fontSize: 14, color: MID, lineHeight: 1.9, marginBottom: 20, whiteSpace: "pre-wrap", flex: 1, display: "-webkit-box", WebkitLineClamp: 3, WebkitBoxOrient: "vertical", overflow: "hidden" }}>{a.excerpt}</p>
                 <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", flexShrink: 0 }}>
                   <span style={{ fontSize: 12, color: O, fontWeight: 500 }}>閱讀全文 →</span>
-                  <span style={{ fontSize: 11, color: LIGHT }}>瀏覽 {a.views}</span>
+                  <span style={{ fontSize: 11, color: LIGHT }}>瀏覽 {viewCount(a, viewCounts)}</span>
                 </div>
               </div>
               {isAdmin && <OrdBtns idx={idx} total={filtered.length} onMove={moveA} style={{ position: "absolute", top: 12, right: 12, zIndex: 1 }} />}
@@ -2160,6 +2204,9 @@ function Article({ article, onBack, setArticles, isAdmin, tags, links, setPage, 
   const [unlocking, setUnlocking] = useState(false);
   const [pwdInput, setPwdInput] = useState("");
   const [pwdErr, setPwdErr] = useState(false);
+  const viewCounts = useArticleViewCounts();
+  // 記在這裡而不是各個列表的點擊事件：直接開分享連結、按上一頁進來的人一樣要算到
+  useEffect(() => { recordArticleView(article); }, [article]);
   const locked = article.member && !isAdmin && !memberContent;
   const displayContent = article.member ? memberContent : article.content;
   const tryUnlock = async () => {
@@ -2251,7 +2298,7 @@ function Article({ article, onBack, setArticles, isAdmin, tags, links, setPage, 
           <h1 style={{ fontSize: 30, fontWeight: 700, color: CHAR, lineHeight: 1.45, marginBottom: 14 }}>{article.title}</h1>
           <div style={{ display: "flex", gap: 20, alignItems: "center", flexWrap: "wrap" }}>
             <span style={{ fontSize: 12, color: LIGHT }}>{article.date}</span>
-            <span style={{ fontSize: 12, color: LIGHT }}>瀏覽 <CountUp end={article.views} /></span>
+            <span style={{ fontSize: 12, color: LIGHT }}>瀏覽 <CountUp end={viewCount(article, viewCounts)} /></span>
             {isAdmin && <><span style={{ fontSize: 12, color: O, cursor: "pointer" }} onClick={() => setEditing(true)}>編輯</span><span style={{ fontSize: 12, color: "#E74C3C", cursor: "pointer" }} onClick={del}>刪除</span></>}
           </div>
         </div>
@@ -2546,7 +2593,7 @@ function About({ about, setAbout, isAdmin, links, setLinks, setPage, aboutCopy, 
       </div>
       <div style={{ padding: "64px 32px", textAlign: "center" }}>
         <div style={{ display: "flex", gap: 12, justifyContent: "center", flexWrap: "wrap" }}>
-          <a href={APP_URL} target="_blank" rel="noopener noreferrer"><button className="pb">{ac.ctaBtn1}</button></a>
+          <a href={appLink("about-page")} target="_blank" rel="noopener noreferrer"><button className="pb">{ac.ctaBtn1}</button></a>
           <button className="pg" onClick={() => setPage && setPage("community")}>{ac.ctaBtn2}</button>
         </div>
       </div>
@@ -3390,7 +3437,7 @@ function AppPage({ appContent, setAppContent, isAdmin, setPage, demoStory, setDe
                 </li>
               ))}
             </ul>
-            <a href={APP_URL} target="_blank" rel="noopener noreferrer">
+            <a href={appLink("app-plan-detail")} target="_blank" rel="noopener noreferrer">
               <button style={{ background: plan.highlight ? WHITE : O, color: plan.highlight ? O : WHITE, border: "none", padding: "14px 36px", fontSize: 14, fontWeight: 500, cursor: "pointer", fontFamily: "inherit", transition: "opacity .18s" }}
                 onMouseEnter={e => e.currentTarget.style.opacity = ".85"} onMouseLeave={e => e.currentTarget.style.opacity = "1"}
               >{c.planDetailBuyBtn}</button>
@@ -3746,7 +3793,7 @@ function AppPage({ appContent, setAppContent, isAdmin, setPage, demoStory, setDe
               </div>
             ))}
           </div>
-          <p style={{ textAlign: "center", fontSize: 12, color: LIGHT, marginTop: 20 }}>{c.loginNote}<a href={APP_URL} target="_blank" rel="noopener noreferrer" style={{ color: O }}>{c.loginLink}</a></p>
+          <p style={{ textAlign: "center", fontSize: 12, color: LIGHT, marginTop: 20 }}>{c.loginNote}<a href={appLink("app-login-note")} target="_blank" rel="noopener noreferrer" style={{ color: O }}>{c.loginLink}</a></p>
         </div>
         {!isAdmin && (
           <div style={{ position: "absolute", inset: 0, backdropFilter: "blur(6px)", WebkitBackdropFilter: "blur(6px)", background: "rgba(248,248,248,0.75)", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", gap: 14 }}>
@@ -3984,7 +4031,7 @@ function ToolQuiz({ setPage }) {
   );
 }
 
-function Resources({ resources, setResources, isAdmin, articles, setArticles, setId, setPage, resourcesHero, setResourcesHero, resourcesCopy, setResourcesCopy }) {
+function Resources({ resources, setResources, isAdmin, articles, setId, setPage, resourcesHero, setResourcesHero, resourcesCopy, setResourcesCopy }) {
   const rc = { ...DEFAULTS.resourcesCopy, ...(resourcesCopy || {}) };
   const [editCopy, setEditCopy] = useState(false);
   const [tmpCopy, setTmpCopy] = useState(rc);
@@ -4010,7 +4057,7 @@ function Resources({ resources, setResources, isAdmin, articles, setArticles, se
   const showArticles = mainFilter === "all" || mainFilter === "free" || mainFilter === "member";
   const articleList = [...(articles || [])].sort((a, b) => (b.date || "").localeCompare(a.date || ""));
   const filteredArticles = articleList.filter(a => mainFilter === "member" ? a.member : mainFilter === "free" ? !a.member : true);
-  const openArticle = id => { setArticles(prev => prev.map(a => a.id === id ? { ...a, views: (a.views || 0) + 1 } : a), { silent: true }); setId(id); setPage("article"); window.scrollTo({ top: 0, behavior: "instant" }); const a = (articles || []).find(x => x.id === id); history.pushState({}, "", "/article/" + encodeURIComponent(a?.slug || id)); };
+  const openArticle = id => { const a = (articles || []).find(x => x.id === id); setId(id); setPage("article"); window.scrollTo({ top: 0, behavior: "instant" }); history.pushState({}, "", "/article/" + encodeURIComponent(a?.slug || id)); };
   const [editing, setEditing] = useState(null);
   const [form, setForm] = useState({ name: "", type: "模板", desc: "", url: "", img: "", active: true });
   const [resUrlErr, setResUrlErr] = useState("");
@@ -4191,7 +4238,7 @@ function Resources({ resources, setResources, isAdmin, articles, setArticles, se
 }
 
 //  NEW: 電子報訂閱
-function Newsletter({ newsletter, setNewsletter, isAdmin, articles, setArticles, setId, setPage }) {
+function Newsletter({ newsletter, setNewsletter, isAdmin, articles, setId, setPage }) {
   const info = { ...DEFAULTS.newsletter, ...(newsletter || {}) };
   const [editMode, setEditMode] = useState(false);
   const [tmp, setTmp] = useState(info);
@@ -4201,7 +4248,7 @@ function Newsletter({ newsletter, setNewsletter, isAdmin, articles, setArticles,
   const [subErr, setSubErr] = useState("");
   const save = () => { setNewsletter(tmp); setEditMode(false); };
   const recent = [...(articles || [])].sort((a, b) => b.date.localeCompare(a.date)).slice(0, 3);
-  const open = id => { setArticles(prev => prev.map(a => a.id === id ? { ...a, views: (a.views || 0) + 1 } : a), { silent: true }); setId(id); setPage("article"); window.scrollTo({ top: 0, behavior: "instant" }); const a = (articles || []).find(x => x.id === id); history.pushState({}, "", "/article/" + encodeURIComponent(a?.slug || id)); };
+  const open = id => { const a = (articles || []).find(x => x.id === id); setId(id); setPage("article"); window.scrollTo({ top: 0, behavior: "instant" }); history.pushState({}, "", "/article/" + encodeURIComponent(a?.slug || id)); };
   const handleSubscribe = async () => {
     const normalized = email.trim();
     if (!isValidEmail(normalized) || submitting) { setSubErr("請輸入有效的 Email"); return; }
@@ -4698,7 +4745,7 @@ function PricingPage({ appContent, setPage }) {
                     </li>
                   ))}
                 </ul>
-                <a href={APP_URL} target="_blank" rel="noopener noreferrer">
+                <a href={appLink("plans-page")} target="_blank" rel="noopener noreferrer">
                   <button style={{ width: "100%", background: plan.highlight ? WHITE : O, color: plan.highlight ? O : WHITE, border: "none", padding: "14px 24px", fontSize: 14, fontWeight: 500, cursor: "pointer", fontFamily: "inherit", borderRadius: 8, transition: "opacity .18s" }}
                     onMouseEnter={e => e.currentTarget.style.opacity = ".85"} onMouseLeave={e => e.currentTarget.style.opacity = "1"}>
                     立即開始使用 →
@@ -4867,7 +4914,7 @@ function SubscriptionPage({ setPage, isAdmin, appContent, subscriptionCopy, setS
                     </li>
                   ))}
                 </ul>
-                <a href={APP_URL} target="_blank" rel="noopener noreferrer" style={{ display: "block" }}>
+                <a href={appLink("pricing-page")} target="_blank" rel="noopener noreferrer" style={{ display: "block" }}>
                   <button style={{ width: "100%", background: plan.highlight ? WHITE : O, color: plan.highlight ? O : WHITE, border: "none", padding: "13px 20px", fontSize: 13, fontWeight: 500, cursor: "pointer", fontFamily: "inherit", borderRadius: 8, transition: "opacity .18s" }}
                     onMouseEnter={e => e.currentTarget.style.opacity = ".85"} onMouseLeave={e => e.currentTarget.style.opacity = "1"}>
                     立即開始使用 →
@@ -4983,7 +5030,10 @@ export default function App() {
   }), []);
   useLayoutEffect(() => { window.scrollTo({ top: 0, behavior: "instant" }); }, [page]);
 
-  // GA4：站外連結一律送 outbound_click；連到理財導航器的按鈕額外標記 cta_click，方便分開看轉換成效
+  // GA4：站外連結一律送 outbound_click；連到 88La財務導航的按鈕額外標記 cta_click，方便分開看轉換成效。
+  // from_page 記的是「在官網哪一頁點的」，沒有它就只知道有人點了，不知道哪一頁在帶客
+  const pageRef = useRef(page);
+  useEffect(() => { pageRef.current = page; }, [page]);
   useEffect(() => {
     const handler = e => {
       const a = e.target.closest && e.target.closest("a[href]");
@@ -4997,6 +5047,7 @@ export default function App() {
       window.gtag("event", isAppCta ? "cta_click" : "outbound_click", {
         link_url: href,
         link_domain: url.hostname,
+        from_page: pageRef.current,
       });
     };
     document.addEventListener("click", handler, true);
@@ -5139,7 +5190,7 @@ export default function App() {
       <Toast />
       <Nav page={page} setPage={nav} isAdmin={isAdmin} navLabels={navLabels} setNavLabels={setNavLabels} mobileTabLabels={mobileTabLabels} setMobileTabLabels={setMobileTabLabels} />
       <div key={page} className="page-anim">
-        {page === "home" && <Home articles={articles} setPage={setPage} setId={setId} setArticles={setArticles} isAdmin={isAdmin} about={about} setAbout={setAbout} links={links} homeHero={homeHero} setHomeHero={setHomeHero} trustStats={trustStats} setTrustStats={setTrustStats} paths={paths} setPaths={setPaths} homeCopy={homeCopy} setHomeCopy={setHomeCopy} />}
+        {page === "home" && <Home articles={articles} setPage={setPage} setId={setId} isAdmin={isAdmin} about={about} setAbout={setAbout} links={links} homeHero={homeHero} setHomeHero={setHomeHero} trustStats={trustStats} setTrustStats={setTrustStats} paths={paths} setPaths={setPaths} homeCopy={homeCopy} setHomeCopy={setHomeCopy} />}
         {page === "journal" && <Journal articles={articles} setArticles={setArticles} setId={setId} setPage={setPage} isAdmin={isAdmin} siteTitle={siteTitle} setSiteTitle={setSiteTitle} tags={tags} setTags={setTags} />}
         {page === "about" && <About about={about} setAbout={setAbout} isAdmin={isAdmin} links={links} setLinks={setLinks} setPage={nav} aboutCopy={aboutCopy} setAboutCopy={setAboutCopy} />}
         {page === "ig" && <IG igPosts={igPosts} setIgPosts={setIgPosts} isAdmin={isAdmin} links={links} igCopy={igCopy} setIgCopy={setIgCopy} />}
@@ -5150,8 +5201,8 @@ export default function App() {
         {page === "app" && <AppPage appContent={appContent} setAppContent={setAppContent} isAdmin={isAdmin} setPage={nav} demoStory={demoStory} setDemoStory={setDemoStory} />}
         {page === "guide" && <Guide appContent={appContent} isAdmin={isAdmin} setPage={nav} />}
         {page === "tool-quiz" && <ToolQuiz setPage={nav} />}
-        {page === "resources" && <Resources resources={resources} setResources={setResources} isAdmin={isAdmin} articles={articles} setArticles={setArticles} setId={setId} setPage={setPage} resourcesHero={resourcesHero} setResourcesHero={setResourcesHero} resourcesCopy={resourcesCopy} setResourcesCopy={setResourcesCopy} />}
-        {page === "newsletter" && <Newsletter newsletter={newsletter} setNewsletter={setNewsletter} isAdmin={isAdmin} articles={articles} setArticles={setArticles} setId={setId} setPage={setPage} />}
+        {page === "resources" && <Resources resources={resources} setResources={setResources} isAdmin={isAdmin} articles={articles} setId={setId} setPage={setPage} resourcesHero={resourcesHero} setResourcesHero={setResourcesHero} resourcesCopy={resourcesCopy} setResourcesCopy={setResourcesCopy} />}
+        {page === "newsletter" && <Newsletter newsletter={newsletter} setNewsletter={setNewsletter} isAdmin={isAdmin} articles={articles} setId={setId} setPage={setPage} />}
         {page === "contact" && <Contact links={links} contactContent={contactContent} setContactContent={setContactContent} isAdmin={isAdmin} />}
         {page === "savings-quiz" && isAdmin && <SavingsBagQuizAdmin savingsBagQuiz={savingsBagQuiz} setSavingsBagQuiz={setSavingsBagQuiz} />}
         {page === "plans" && <PricingPage appContent={appContent} setPage={nav} />}

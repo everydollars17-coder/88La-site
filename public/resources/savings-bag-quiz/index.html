@@ -80,11 +80,27 @@
       *, *::before, *::after { scroll-behavior: auto !important; transition-duration: .01ms !important; animation-duration: .01ms !important; }
     }
   </style>
+
+<style>
+/* 88La 導覽列：從社群點進來的人要回得了官網。八個資源頁共用同一份樣式與文案 */
+.la-foot{width:100%;flex:0 0 100%;box-sizing:border-box;margin:36px 0 0;padding:30px 20px 34px;background:#fff3ea;border-top:1px solid #ead5c0;font-family:'Noto Sans TC',sans-serif;}
+.la-foot-inner{max-width:520px;margin:0 auto;text-align:center;}
+.la-foot-brand{margin:0 0 8px;font-size:12px;font-weight:700;letter-spacing:.12em;color:#c96b2f;}
+.la-foot-text{margin:0 0 18px;font-size:13px;line-height:1.8;color:#79513a;}
+.la-foot-btns{display:flex;flex-wrap:wrap;justify-content:center;gap:10px;}
+.la-btn{display:inline-block;padding:11px 20px;border-radius:999px;border:1px solid #c96b2f;font-size:14px;font-weight:700;line-height:1.4;text-decoration:none;transition:opacity .18s;}
+.la-btn:hover{opacity:.85;}
+.la-brand-link{color:inherit;text-decoration:none;}
+.la-btn-main{background:#c96b2f;color:#fff3ea;}
+.la-btn-ghost{background:transparent;color:#c96b2f;border-color:#ead5c0;}
+@media print{.la-foot{display:none;}}
+
+</style>
 </head>
 <body>
   <nav class="site-nav" aria-label="測驗導覽">
     <div class="shell nav-inner">
-      <span class="brand">88La</span>
+      <span class="brand"><a class="la-brand-link" data-la-cta="home" href="https://88la-site.vercel.app/?utm_source=resource&amp;utm_medium=brand&amp;utm_campaign=savings-bag-quiz">88La</a></span>
       <span class="nav-title">找到適合的實體理財工具</span>
       <a href="/savings-bag" style="color:var(--orange);font-size:13px;">看全部工具</a>
     </div>
@@ -387,6 +403,7 @@
     }
 
     function showResult() {
+      window.laTrackOnce && window.laTrackOnce("tool_complete");
       const choice = chooseProducts();
       const primary = PRODUCTS[choice.primary];
       const alternative = PRODUCTS[choice.alternative];
@@ -463,5 +480,17 @@
     loadProductCatalog();
     renderQuestion();
   </script>
+
+<footer class="la-foot">
+  <div class="la-foot-inner">
+    <p class="la-foot-brand">88La 犒賞系存錢</p>
+    <p class="la-foot-text">官網還有更多免費工具和文章，都可以直接使用。</p>
+    <div class="la-foot-btns">
+      <a class="la-btn la-btn-main" data-la-cta="resources" href="https://88la-site.vercel.app/resources?utm_source=resource&utm_medium=footer&utm_campaign=savings-bag-quiz">看更多免費資源</a>
+      <a class="la-btn la-btn-ghost" data-la-cta="home" href="https://88la-site.vercel.app/?utm_source=resource&utm_medium=footer&utm_campaign=savings-bag-quiz">回 88La 官網</a>
+    </div>
+  </div>
+</footer>
+<script src="/resources/_shared/la-kit.js" data-resource="savings-bag-quiz"></script>
 </body>
 </html>
