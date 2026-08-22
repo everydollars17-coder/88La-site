@@ -20,6 +20,7 @@ const F = {
   savingTarget: 8000, savingActual: 4000,
   cardDue: 13794, balance: 2876, cashExpense: 21330,
   carInsurance: 3600,          // 半年繳車險，本月一次入帳
+  insuranceBudget: 1200, insuranceActual: 4800,
   shoppingActual: 4540, shoppingBudget: 2500,
   shoppingClothes: 1450, shoppingSkincare: 1290, shoppingImpulse: 1800,
   impulseThis: 1950, impulseLast: 3175, impulseCount: 4,
@@ -27,7 +28,8 @@ const F = {
 
 /* 下月計畫的調整（人工撰寫，必須自洽） */
 const P = { fixed: 17400, variable: 11100, saving: 6000, total: 34500,
-            carMonthly: 600, shoppingNew: 3000, adhoc: 1000 };
+            carMonthly: 600, shoppingNew: 3000, adhoc: 1000,
+            insuranceNew: 1800, savingCeiling: 6876 };
 
 const checks = [
   ['固定超支',        F.fixedActual - F.fixedBudget, 3489],
@@ -44,6 +46,12 @@ const checks = [
   ['9月變動預算',     F.varBudget + (P.shoppingNew - F.shoppingBudget) + P.adhoc, P.variable],
   ['9月預算合計',     P.fixed + P.variable + P.saving, P.total],
   ['9月預算不超收入', P.total < F.income ? 1 : 0, 1],
+  // 下月三件事：每一項的金額都要能從本月事實推出來
+  ['保險新預算',      F.insuranceBudget + P.carMonthly, P.insuranceNew],
+  ['保險本月實際',    F.insuranceBudget + F.carInsurance, F.insuranceActual],
+  ['購物扣衝動後超支', (F.shoppingClothes + F.shoppingSkincare) - F.shoppingBudget, 240],
+  ['本月可存上限',    F.savingActual + F.balance, P.savingCeiling],
+  ['儲蓄新目標不超上限', P.saving < P.savingCeiling ? 1 : 0, 1],
 ];
 
 /* 這些數字必須真的印在頁面上，才算驗到「畫面顯示的」而不只是算式 */
@@ -51,11 +59,15 @@ const mustAppear = [
   '$3,489', '$4,000', '$2,876', '$13,794', '$20,289', '$16,800',
   '$17,400', '$11,100', '$6,000', '$34,500', '$600', '$3,000', '$1,000',
   '$2,740', '$1,800', '$1,450', '$1,290', '121%', '103%',
+  '$1,200', '$4,800', '$240', '$6,876', '$8,000',
 ];
 
 /* 完成態不該再出現的未完成態字句 */
 const mustNotAppear = ['待補充答案', '尚未建立', '下月計畫尚未產生', '本月初步檢查完成',
-                       '回答 6 題', '不是正式診斷', '88La 財務導航', '—', '–'];
+                       '回答 6 題', '不是正式診斷', '88La 財務導航', '—', '–',
+                       // 下月行動的規格是「帶金額的具體動作」，不是討論式的給選項。
+                       // 這幾句來自顧問報告用的 computeNextFocusActions，抄錯來源時會出現。
+                       '不要全部混在一起檢討', '若可用餘額允許就補足', '才知道該調預算還是調習慣'];
 
 let bad = 0;
 console.log('項目'.padEnd(20), '計算'.padStart(9), '期望'.padStart(9), '  結果');

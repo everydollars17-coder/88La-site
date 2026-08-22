@@ -107,18 +107,22 @@ const DIAG_PLAN = `
 
 <div class="card diag-plan-section scroll-reveal revealed" style="margin-bottom:14px">
   <div class="diag-plan-section-title">下個月要做的三件事</div>
+  <div class="diag-plan-section-copy">每一項都是算好金額的具體動作，點進去就能改。</div>
   <div style="padding:0 16px 16px">
-    <div style="background:#FAFAF8;border:1px solid #EEE;border-radius:8px;padding:11px 13px;margin-bottom:9px">
-      <div style="font-size:11px;color:#A84810;font-weight:700;margin-bottom:3px">1 ・ 重新檢查固定支出預算</div>
-      <div style="font-size:12px;color:#555;line-height:1.75">固定預算 $16,800，實際 $20,289。先確認房租、保費、訂閱等固定費用是否完整編入。</div>
+    <div style="background:#FAFAF8;border:1px solid #EEE;border-radius:8px;padding:12px 13px;margin-bottom:10px">
+      <div style="font-size:13px;font-weight:700;color:#1A1A1A;line-height:1.6;margin-bottom:5px">下個月「保險」預算從 $1,200 改成 $1,800</div>
+      <div style="font-size:12px;color:#555;line-height:1.75">你已確認「保險」會持續發生。本月實際 $4,800，其中半年繳的車險 $3,600 攤成每月 $600，下個月依同一份調整增加 $600，畫面試算與實際套用都會使用 $1,800。</div>
+      <button class="btn-g" style="margin-top:9px;font-size:11px;padding:6px 12px" data-p="budget">調整固定預算 →</button>
     </div>
-    <div style="background:#FAFAF8;border:1px solid #EEE;border-radius:8px;padding:11px 13px;margin-bottom:9px">
-      <div style="font-size:11px;color:#A84810;font-weight:700;margin-bottom:3px">2 ・ 把變動支出拆成三種</div>
-      <div style="font-size:12px;color:#555;line-height:1.75">本月變動支出超支 $285，不要全部混在一起檢討。日常必要、臨時事件、想要消費分開看，才知道該調預算還是調習慣。</div>
+    <div style="background:#FAFAF8;border:1px solid #EEE;border-radius:8px;padding:12px 13px;margin-bottom:10px">
+      <div style="font-size:13px;font-weight:700;color:#1A1A1A;line-height:1.6;margin-bottom:5px">下個月「購物」再遇到 $1,800 這種，先放願望清單三天</div>
+      <div style="font-size:12px;color:#555;line-height:1.75">依你剛才的選擇，那筆是想要才花的。扣掉它，這一類其他 2 筆合計 $2,740，只比預算多 $240，代表日常花費大致穩定，問題出在那一筆決定。下個月同樣金額的東西，先放進願望清單，三天後還想要再買。</div>
+      <button class="btn-g" style="margin-top:9px;font-size:11px;padding:6px 12px" data-p="wishlist">打開願望清單 →</button>
     </div>
-    <div style="background:#FAFAF8;border:1px solid #EEE;border-radius:8px;padding:11px 13px">
-      <div style="font-size:11px;color:#A84810;font-weight:700;margin-bottom:3px">3 ・ 處理儲蓄缺口 $4,000</div>
-      <div style="font-size:12px;color:#555;line-height:1.75">若可用餘額允許就補足；若固定支出基準上修，也要同步重估儲蓄目標。</div>
+    <div style="background:#FAFAF8;border:1px solid #EEE;border-radius:8px;padding:12px 13px">
+      <div style="font-size:13px;font-weight:700;color:#1A1A1A;line-height:1.6;margin-bottom:5px">重新審視你能存的金額</div>
+      <div style="font-size:12px;color:#555;line-height:1.75">本月原定儲蓄 $8,000，目前完成 $4,000，扣完必要支出與卡費後還剩 $2,876。兩者相加 $6,876 就是這個月真正能存的上限，先用 $6,000 重新校準。</div>
+      <button class="btn-g" style="margin-top:9px;font-size:11px;padding:6px 12px" data-p="savings-mgr">重新檢視儲蓄目標 →</button>
     </div>
   </div>
 </div>
@@ -267,9 +271,6 @@ function replaceInner(html, id, inner) {
    這些句子換成小琳答完之後的結果。left 找不到就警告：App 改過文案時要有人知道，
    但不必中止整份產出。 */
 const TEXT_FIXES = [
-  // App 自己把 App 名稱寫成「88La 財務導航」（多一個空格），正確寫法沒有空格。
-  // 這裡先在示範頁修掉；App 那邊還有十幾處同樣寫法，要另外處理。
-  ['88La 財務導航', '88La財務導航'],
   ['本月初步檢查完成', '本月結算結果'],
   ['以下是你這個月用錢的情況，可以確認數字對不對。沒問題的話就往下滑幫我補充資料。',
    '以下是你這個月用錢的情況。往下滑可以看到系統的判斷，以及下個月的調整方向。'],
