@@ -422,7 +422,7 @@ const DEFAULTS = {
     label: "LIVE DEMO",
     heading: "真實帳戶長這樣",
     intro: "以下是示範帳戶「小琳」的完整記帳紀錄，和你未來使用的畫面一模一樣。",
-    note: "直接點擊畫面裡的按鈕操作，跟實際 App 一樣的流程",
+    note: "可以切換頁面、展開明細，看完整的診斷結果",
     personaLabel: "示範帳戶人設",
     personaName: "小琳，28 歲，行銷企劃",
     // 這三段的數字必須跟 88la-finance/src/demoData.js 的示範帳戶對得上。
@@ -435,7 +435,7 @@ const DEFAULTS = {
     findings: "固定支出超出預算 NT$3,489，主因是半年繳的車險 NT$3,600 沒編進預算\n購物類別花了 NT$4,540，比預算高出 82%\n衝動消費 4 筆共 NT$1,950，其中星期五就佔了 NT$1,850\n扣掉本期要預留的卡費 NT$13,794，這個月只剩 NT$2,876 可以動用\n儲蓄目標 NT$8,000 只做到 NT$4,000，照這個速度緊急備用金要多花 5 個月",
     suggestionsLabel: "給小琳的建議",
     suggestions: "半年繳的車險攤成每月 NT$600 編進預算，下次就不會被打亂\n購物超出 NT$2,040，下個月決定是把預算調到符合實際，還是從這一類找回來\n衝動消費集中在星期五，出門前先想好當天的額度",
-    lockNote: "🔒 完整月度診斷報告與帳單明細，登入後查看"
+    lockNote: "以上是示範帳戶「小琳」8 月的完整診斷。你的畫面會依自己的記帳結果產生。"
   },
   resourcesCopy: {
     filterAll: "全部", filterTools: "互動工具", filterFree: "免費文章", filterMember: "會員文章",
@@ -1325,10 +1325,14 @@ const normalizeStoredContent = value => {
 // 比對：只有當存的還是那份對不上的舊文案（用它獨有的句子辨識）才換成新的。
 // 認舊句子而不是「跟預設值不同就換」，Barbara 之後自己改寫過的版本才不會被蓋掉；
 // 她下次在後台儲存時，新文案就會寫回 Firestore，這段判斷之後自然失效。
+// 2026-08-22 追加 note 與 lockNote：示範改成 public/app-demo/ 的靜態頁後，
+// 畫面上不再有任何鎖點，「登入後查看」與「跟實際 App 一樣的流程」兩句都對不上了。
 const STALE_DEMO_STORY_MARKERS = {
   personaFacts: ["NT$150,000 頭期款基金", "日常消費卡"],
   findings: ["高出 62%", "出現負值缺口"],
   suggestions: ["網購類別預算下修", "聚餐類別出現 3 次"],
+  note: ["跟實際 App 一樣的流程"],
+  lockNote: ["登入後查看", "🔒"],
 };
 const normalizeDemoStory = story => {
   const next = { ...DEFAULTS.demoStory, ...(story || {}) };
@@ -3515,8 +3519,16 @@ function AppPage({ appContent, setAppContent, isAdmin, setPage, demoStory, setDe
                   <div style={{ width: 100, height: 22, background: "#111", borderRadius: 12 }} />
                 </div>
                 <div style={{ borderRadius: 28, overflow: "hidden", height: 680 }}>
+                  {/* 示範畫面是 public/app-demo/ 的靜態頁，不是正式 App 的 iframe。
+                      正式 App 的 ?demo=true 靠十幾處鎖點遮住建議層，訪客滑完只看得到
+                      「待補充答案」與一堆 🔒，看不出系統要他改什麼；每次 App 改版
+                      還要重補鎖點。靜態頁改放診斷「完成後」的樣子，數字寫死、
+                      不需鎖點，也不會被 App 改版打壞（2026-08-22）。 */}
+                  {/* 指到 index.html 而不是目錄：vercel.json 的 catch-all rewrite
+                      會把取不到檔案的路徑導向官網首頁，官網就會嵌進自己。
+                      這跟 normalizeResourceUrl 對 /resources/ 做的是同一件事。 */}
                   <iframe
-                    src={`${APP_URL}?demo=true`}
+                    src="/app-demo/index.html"
                     style={{ width: "100%", height: "100%", border: "none", display: "block" }}
                     aria-label="88La財務導航示範"
                     loading="lazy"

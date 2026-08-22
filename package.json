@@ -7,7 +7,9 @@
     "dev": "vite",
     "build": "vite build",
     "lint": "eslint .",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "build:demo": "node scripts/build_app_demo.mjs",
+    "verify:demo": "node scripts/app_demo_verification.mjs"
   },
   "dependencies": {
     "dompurify": "^3.4.11",

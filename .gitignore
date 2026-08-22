@@ -24,3 +24,6 @@ dist-ssr
 *.sw?
 .vercel
 密鑰不可外洩/
+
+# impeccable hook 快取，不該進 public 或跟著發布
+.impeccable/
