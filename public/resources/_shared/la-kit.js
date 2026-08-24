@@ -2,7 +2,7 @@
    導覽列本身是各頁的靜態 HTML，不由這支 JS 產生，這樣就算 JS 沒載入或被擋，
    使用者仍然回得了官網。這支只負責量測，壞掉不影響功能。 */
 (function () {
-  var GA_ID = "G-D2CKQRTPSR";
+  var GA_ID = "G-KJYZS2K6QM";
   var self = document.currentScript;
   var resource = (self && self.getAttribute("data-resource")) || "unknown";
   var sent = {};
