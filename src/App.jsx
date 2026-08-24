@@ -42,8 +42,8 @@ const PAGE_PATHS = {
   write: "/write", "savings-quiz": "/savings-quiz"
 };
 const PATH_TO_PAGE = Object.fromEntries(Object.entries(PAGE_PATHS).map(([p, path]) => [path, p]));
-const APP_MONTHLY_AMOUNT = 249;
-const APP_YEARLY_AMOUNT = 2388;
+const APP_MONTHLY_AMOUNT = 199;
+const APP_YEARLY_AMOUNT = 1988;
 const APP_MONTHLY_PRICE = `NT$${APP_MONTHLY_AMOUNT.toLocaleString("en-US")}`;
 const APP_YEARLY_PRICE = `NT$${APP_YEARLY_AMOUNT.toLocaleString("en-US")}`;
 const APP_YEARLY_DISCOUNT = Math.round((1 - APP_YEARLY_AMOUNT / (APP_MONTHLY_AMOUNT * 12)) * 100);
