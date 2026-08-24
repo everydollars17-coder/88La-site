@@ -2212,7 +2212,7 @@ body{background:#F5F0EB;-webkit-tap-highlight-color:transparent}
 
 <div class="demo-cta">
   <p>以上是示範帳戶「小琳」的 8 月資料。<br>你的畫面會依自己的記帳結果產生。</p>
-  <a href="https://88la-finance.vercel.app" target="_top">開始使用 88La財務導航 →</a>
+  <a href="#app-launch" data-app-locked="true">開始使用 88La財務導航 →</a>
 </div>
 </div>
 
@@ -2457,7 +2457,7 @@ body{background:#F5F0EB;-webkit-tap-highlight-color:transparent}
   </button>
 </nav>
 
-<div class="demo-toast" id="demo-toast"></div>
+<div class="demo-toast" id="demo-toast" role="status" aria-live="polite" aria-atomic="true"></div>
 
 <script>
 /* ══════════════════════════════════════════════════════════════
@@ -2466,6 +2466,7 @@ body{background:#F5F0EB;-webkit-tap-highlight-color:transparent}
    只負責切頁、切分頁、收合展開，其餘會改資料的按鈕一律攔下來提示。
    ══════════════════════════════════════════════════════════════ */
 (function () {
+  var APP_LAUNCH_NOTICE = "9/10 正式上線";
   var toastEl = document.getElementById('demo-toast');
   var toastTimer;
   function toast(msg) {
@@ -2526,6 +2527,13 @@ body{background:#F5F0EB;-webkit-tap-highlight-color:transparent}
   };
 
   document.addEventListener('click', function (e) {
+    var lockedAppLink = e.target.closest('[data-app-locked="true"]');
+    if (lockedAppLink) {
+      e.preventDefault();
+      toast(APP_LAUNCH_NOTICE);
+      return;
+    }
+
     var tabBtn = e.target.closest('[data-report-tab]');
     if (tabBtn) { goTab(tabBtn.dataset.reportTab); return; }
 

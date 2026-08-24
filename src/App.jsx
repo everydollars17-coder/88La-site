@@ -4,6 +4,7 @@ import { initializeApp } from "firebase/app";
 import { getFirestore, doc, setDoc, collection, getDocs, query, orderBy, deleteDoc } from "firebase/firestore";
 import { getAuth, GoogleAuthProvider, signInWithPopup, onAuthStateChanged, signOut } from "firebase/auth";
 import DOMPurify from "dompurify";
+import { APP_LAUNCH_NOTICE } from "./siteLaunch.js";
 
 const firebaseConfig = {
   apiKey: "AIzaSyCW8TU318MtXe50MjjqWmmHDydFXv-zA3E",
@@ -25,9 +26,11 @@ const googleProvider = new GoogleAuthProvider();
 const ADMIN_EMAILS = ["everydollars17@gmail.com"];
 
 const APP_URL = "https://88la-finance.vercel.app";
-// 官網與 88La財務導航是兩個網域，GA4 的 session 到那頭就斷了，來源只有掛在網址上才帶得過去。
-// campaign 標的是「從官網哪個位置點過去的」，App 端日後要把來源寫進註冊資料時直接讀這幾個參數。
-const appLink = from => `${APP_URL}?utm_source=88la-site&utm_medium=cta&utm_campaign=${from}`;
+const appLockProps = from => ({
+  href: "#app-launch",
+  "data-app-locked": "true",
+  "data-app-source": from,
+});
 const QUIZ_URL = "/resources/savings-bag-quiz/index.html";
 
 // 頁面 key ⇄ 網址路徑對照表，供瀏覽器網址列同步用。article 頁另用 /article/:slug 動態路徑處理。
@@ -39,8 +42,8 @@ const PAGE_PATHS = {
   write: "/write", "savings-quiz": "/savings-quiz"
 };
 const PATH_TO_PAGE = Object.fromEntries(Object.entries(PAGE_PATHS).map(([p, path]) => [path, p]));
-const APP_MONTHLY_AMOUNT = 139;
-const APP_YEARLY_AMOUNT = 1188;
+const APP_MONTHLY_AMOUNT = 249;
+const APP_YEARLY_AMOUNT = 2388;
 const APP_MONTHLY_PRICE = `NT$${APP_MONTHLY_AMOUNT.toLocaleString("en-US")}`;
 const APP_YEARLY_PRICE = `NT$${APP_YEARLY_AMOUNT.toLocaleString("en-US")}`;
 const APP_YEARLY_DISCOUNT = Math.round((1 - APP_YEARLY_AMOUNT / (APP_MONTHLY_AMOUNT * 12)) * 100);
@@ -949,12 +952,19 @@ let _showToast = () => {};
 function Toast() {
   const [msg, setMsg] = useState("");
   const [show, setShow] = useState(false);
+  const [tone, setTone] = useState("success");
   const t = useRef();
-  _showToast = (m) => { setMsg(m); setShow(true); clearTimeout(t.current); t.current = setTimeout(() => setShow(false), 2200); };
+  _showToast = (m, nextTone = "success") => {
+    setMsg(m);
+    setTone(nextTone);
+    setShow(true);
+    clearTimeout(t.current);
+    t.current = setTimeout(() => setShow(false), 2800);
+  };
   if (!show) return null;
   return (
-    <div style={{ position: "fixed", bottom: 80, left: "50%", transform: "translateX(-50%)", background: CHAR, color: WHITE, padding: "12px 28px", borderRadius: 8, fontSize: 13, zIndex: 80, boxShadow: "0 4px 20px rgba(0,0,0,.25)", letterSpacing: ".5px", whiteSpace: "nowrap", pointerEvents: "none" }}>
-      ✓ {msg}
+    <div role="status" aria-live="polite" aria-atomic="true" style={{ position: "fixed", bottom: 80, left: "50%", transform: "translateX(-50%)", background: CHAR, color: WHITE, padding: "12px 28px", borderRadius: 8, fontSize: 13, zIndex: 80, boxShadow: "0 4px 20px rgba(0,0,0,.25)", letterSpacing: ".5px", whiteSpace: "nowrap", pointerEvents: "none" }}>
+      {tone === "success" ? "✓ " : ""}{msg}
     </div>
   );
 }
@@ -2597,7 +2607,7 @@ function About({ about, setAbout, isAdmin, links, setLinks, setPage, aboutCopy, 
       </div>
       <div style={{ padding: "64px 32px", textAlign: "center" }}>
         <div style={{ display: "flex", gap: 12, justifyContent: "center", flexWrap: "wrap" }}>
-          <a href={appLink("about-page")} target="_blank" rel="noopener noreferrer"><button className="pb">{ac.ctaBtn1}</button></a>
+          <a {...appLockProps("about-page")}><button className="pb">{ac.ctaBtn1}</button></a>
           <button className="pg" onClick={() => setPage && setPage("community")}>{ac.ctaBtn2}</button>
         </div>
       </div>
@@ -3441,7 +3451,7 @@ function AppPage({ appContent, setAppContent, isAdmin, setPage, demoStory, setDe
                 </li>
               ))}
             </ul>
-            <a href={appLink("app-plan-detail")} target="_blank" rel="noopener noreferrer">
+            <a {...appLockProps("app-plan-detail")}>
               <button style={{ background: plan.highlight ? WHITE : O, color: plan.highlight ? O : WHITE, border: "none", padding: "14px 36px", fontSize: 14, fontWeight: 500, cursor: "pointer", fontFamily: "inherit", transition: "opacity .18s" }}
                 onMouseEnter={e => e.currentTarget.style.opacity = ".85"} onMouseLeave={e => e.currentTarget.style.opacity = "1"}
               >{c.planDetailBuyBtn}</button>
@@ -3805,7 +3815,7 @@ function AppPage({ appContent, setAppContent, isAdmin, setPage, demoStory, setDe
               </div>
             ))}
           </div>
-          <p style={{ textAlign: "center", fontSize: 12, color: LIGHT, marginTop: 20 }}>{c.loginNote}<a href={appLink("app-login-note")} target="_blank" rel="noopener noreferrer" style={{ color: O }}>{c.loginLink}</a></p>
+          <p style={{ textAlign: "center", fontSize: 12, color: LIGHT, marginTop: 20 }}>{c.loginNote}<a {...appLockProps("app-login-note")} style={{ color: O }}>{c.loginLink}</a></p>
         </div>
         {!isAdmin && (
           <div style={{ position: "absolute", inset: 0, backdropFilter: "blur(6px)", WebkitBackdropFilter: "blur(6px)", background: "rgba(248,248,248,0.75)", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", gap: 14 }}>
@@ -4757,7 +4767,7 @@ function PricingPage({ appContent, setPage }) {
                     </li>
                   ))}
                 </ul>
-                <a href={appLink("plans-page")} target="_blank" rel="noopener noreferrer">
+                <a {...appLockProps("plans-page")}>
                   <button style={{ width: "100%", background: plan.highlight ? WHITE : O, color: plan.highlight ? O : WHITE, border: "none", padding: "14px 24px", fontSize: 14, fontWeight: 500, cursor: "pointer", fontFamily: "inherit", borderRadius: 8, transition: "opacity .18s" }}
                     onMouseEnter={e => e.currentTarget.style.opacity = ".85"} onMouseLeave={e => e.currentTarget.style.opacity = "1"}>
                     立即開始使用 →
@@ -4926,7 +4936,7 @@ function SubscriptionPage({ setPage, isAdmin, appContent, subscriptionCopy, setS
                     </li>
                   ))}
                 </ul>
-                <a href={appLink("pricing-page")} target="_blank" rel="noopener noreferrer" style={{ display: "block" }}>
+                <a {...appLockProps("pricing-page")} style={{ display: "block" }}>
                   <button style={{ width: "100%", background: plan.highlight ? WHITE : O, color: plan.highlight ? O : WHITE, border: "none", padding: "13px 20px", fontSize: 13, fontWeight: 500, cursor: "pointer", fontFamily: "inherit", borderRadius: 8, transition: "opacity .18s" }}
                     onMouseEnter={e => e.currentTarget.style.opacity = ".85"} onMouseLeave={e => e.currentTarget.style.opacity = "1"}>
                     立即開始使用 →
@@ -5042,7 +5052,7 @@ export default function App() {
   }), []);
   useLayoutEffect(() => { window.scrollTo({ top: 0, behavior: "instant" }); }, [page]);
 
-  // GA4：站外連結一律送 outbound_click；連到 88La財務導航的按鈕額外標記 cta_click，方便分開看轉換成效。
+  // GA4：站外連結一律送 outbound_click；上線前導向 88La財務導航的按鈕會先攔截並記錄鎖定點擊。
   // from_page 記的是「在官網哪一頁點的」，沒有它就只知道有人點了，不知道哪一頁在帶客
   const pageRef = useRef(page);
   useEffect(() => { pageRef.current = page; }, [page]);
@@ -5051,12 +5061,27 @@ export default function App() {
       const a = e.target.closest && e.target.closest("a[href]");
       if (!a) return;
       const href = a.getAttribute("href");
-      if (!href || !/^https?:\/\//.test(href)) return;
-      let url;
-      try { url = new URL(href); } catch { return; }
-      if (url.origin === window.location.origin || typeof window.gtag !== "function") return;
-      const isAppCta = url.origin === new URL(APP_URL).origin;
-      window.gtag("event", isAppCta ? "cta_click" : "outbound_click", {
+      if (!href) return;
+      let url = null;
+      if (/^https?:\/\//.test(href)) {
+        try { url = new URL(href); } catch { return; }
+      }
+      const isAppCta = a.dataset.appLocked === "true" || url?.origin === new URL(APP_URL).origin;
+      if (isAppCta) {
+        e.preventDefault();
+        _showToast(APP_LAUNCH_NOTICE, "notice");
+        if (typeof window.gtag === "function") {
+          window.gtag("event", "cta_locked_click", {
+            link_url: href,
+            link_domain: url?.hostname || new URL(APP_URL).hostname,
+            from_page: pageRef.current,
+            cta_source: a.dataset.appSource || "direct-app-link",
+          });
+        }
+        return;
+      }
+      if (!url || url.origin === window.location.origin || typeof window.gtag !== "function") return;
+      window.gtag("event", "outbound_click", {
         link_url: href,
         link_domain: url.hostname,
         from_page: pageRef.current,

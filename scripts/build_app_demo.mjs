@@ -14,6 +14,7 @@ import { chromium } from 'playwright';
 import { writeFileSync, copyFileSync, mkdirSync, readFileSync } from 'fs';
 import { fileURLToPath } from 'url';
 import { dirname, join } from 'path';
+import { APP_LAUNCH_NOTICE } from '../src/siteLaunch.js';
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..');
 const OUT_DIR = join(ROOT, 'public', 'app-demo');
@@ -345,6 +346,7 @@ const SHELL_JS = `
    只負責切頁、切分頁、收合展開，其餘會改資料的按鈕一律攔下來提示。
    ══════════════════════════════════════════════════════════════ */
 (function () {
+  var APP_LAUNCH_NOTICE = ${JSON.stringify(APP_LAUNCH_NOTICE)};
   var toastEl = document.getElementById('demo-toast');
   var toastTimer;
   function toast(msg) {
@@ -405,6 +407,13 @@ const SHELL_JS = `
   };
 
   document.addEventListener('click', function (e) {
+    var lockedAppLink = e.target.closest('[data-app-locked="true"]');
+    if (lockedAppLink) {
+      e.preventDefault();
+      toast(APP_LAUNCH_NOTICE);
+      return;
+    }
+
     var tabBtn = e.target.closest('[data-report-tab]');
     if (tabBtn) { goTab(tabBtn.dataset.reportTab); return; }
 
@@ -508,7 +517,7 @@ ${pagesHTML}
 
 <div class="demo-cta">
   <p>以上是示範帳戶「小琳」的 8 月資料。<br>你的畫面會依自己的記帳結果產生。</p>
-  <a href="https://88la-finance.vercel.app" target="_top">開始使用 88La財務導航 →</a>
+  <a href="#app-launch" data-app-locked="true">開始使用 88La財務導航 →</a>
 </div>
 </div>
 
@@ -517,7 +526,7 @@ ${morePanel}
 ${quickPanel}
 ${bnav}
 
-<div class="demo-toast" id="demo-toast"></div>
+<div class="demo-toast" id="demo-toast" role="status" aria-live="polite" aria-atomic="true"></div>
 
 <script>${SHELL_JS}</script>
 </body>
