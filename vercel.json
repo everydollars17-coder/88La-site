@@ -1,6 +1,24 @@
 {
   "rewrites": [
     { "source": "/sitemap.xml", "destination": "/api/sitemap" },
+    { "source": "/app", "destination": "/__seo/app.html" },
+    { "source": "/plans", "destination": "/__seo/plans.html" },
+    { "source": "/pricing", "destination": "/__seo/pricing.html" },
+    { "source": "/savings-bag", "destination": "/__seo/savings-bag.html" },
+    { "source": "/resources", "destination": "/__seo/resources.html" },
+    { "source": "/tool-quiz", "destination": "/__seo/tool-quiz.html" },
+    { "source": "/journal", "destination": "/__seo/journal.html" },
+    { "source": "/about", "destination": "/__seo/about.html" },
+    { "source": "/community", "destination": "/__seo/community.html" },
+    { "source": "/shop", "destination": "/__seo/shop.html" },
+    { "source": "/goods", "destination": "/__seo/goods.html" },
+    { "source": "/ig", "destination": "/__seo/ig.html" },
+    { "source": "/guide", "destination": "/__seo/guide.html" },
+    { "source": "/newsletter", "destination": "/__seo/newsletter.html" },
+    { "source": "/contact", "destination": "/__seo/contact.html" },
+    { "source": "/terms", "destination": "/__seo/terms.html" },
+    { "source": "/privacy", "destination": "/__seo/privacy.html" },
+    { "source": "/disclaimer", "destination": "/__seo/disclaimer.html" },
     { "source": "/(.*)", "destination": "/index.html" }
   ]
 }

@@ -26,6 +26,7 @@ const googleProvider = new GoogleAuthProvider();
 const ADMIN_EMAILS = ["everydollars17@gmail.com"];
 
 const APP_URL = "https://app.88lamoney.com";
+const PUBLIC_CONTACT_EMAIL = "hello@88lamoney.com";
 const appLockProps = from => ({
   href: "#app-launch",
   "data-app-locked": "true",
@@ -57,6 +58,17 @@ const PAGE_META = {
   "tool-quiz": ["用 60 秒找到理財起點｜88La", "用三個問題找到目前最值得先處理的卡點。"],
   journal: ["理財文章｜88La", "寫給理財新手的台灣生活財務內容。"],
   about: ["關於 88La", "認識 88La 犒賞系存錢的理念與做法。"],
+  community: ["8友社群｜88La", "和正在練習理財的人一起交流與前進。"],
+  shop: ["88La 實體理財工具", "找到適合日常分配與目標儲蓄的實體工具。"],
+  goods: ["88La 推薦好物", "整理實際使用過的生活與理財工具。"],
+  ig: ["88La 社群內容", "查看 88La 最新的社群內容與理財觀點。"],
+  guide: ["記帳情境解答｜88La", "用常見情境快速找到正確的記帳方式。"],
+  newsletter: ["88La 電子報", "訂閱最新理財文章與實用工具通知。"],
+  contact: ["聯絡 88La", "品牌合作、課程邀請與媒體採訪聯絡方式。"],
+  pricing: ["88La財務導航訂閱方案", "查看 88La財務導航的訂閱方案與服務內容。"],
+  terms: ["服務條款與退款政策｜88La", "88La財務導航的服務條款、續約方式與退款政策。"],
+  privacy: ["隱私政策｜88La", "了解 88La 如何蒐集、使用與保護資料。"],
+  disclaimer: ["免責聲明｜88La", "88La財務導航的服務性質與使用責任說明。"],
 };
 const pathForPage = p => PAGE_PATHS[p] || "/";
 const pageForPath = pathname => {
@@ -591,7 +603,7 @@ const DEFAULTS = {
     lineCommunity: "https://line.me/R/ti/p/@367xhgyr",
     lineOfficial: "https://line.me/R/ti/p/@367xhgyr",
     instagram: "https://www.instagram.com/every_dollars/",
-    email: "everydollars17@gmail.com"
+    email: PUBLIC_CONTACT_EMAIL
   },
   about: {
     intro: "嗨，我是 88La。\n\n我從信封分類法開始認識理財，不是從書本，而是從自己每個月真實的薪水開始。\n\n我相信理財不是讓自己活得緊繃，而是讓你對生活有更多掌控感和自由度。",
@@ -753,19 +765,19 @@ async function fbSet(key, value) {
 }
 
 function useFS(key, def) {
-  const [v, setV] = useState(def);
+  const [v, setV] = useState(() => normalizeValueForKey(key, def));
   const [loaded, setLoaded] = useState(false);
   useEffect(() => {
     if (isLocalAdminPreviewMode()) {
       try {
         const raw = localStorage.getItem(localPreviewStorageKey(key));
-        if (raw !== null) setV(normalizeStoredContent(JSON.parse(raw)));
+        if (raw !== null) setV(normalizeValueForKey(key, JSON.parse(raw)));
       } catch { }
       setLoaded(true);
       return;
     }
     fbGet(key)
-      .then(val => { if (val !== null) setV(normalizeStoredContent(val)); })
+      .then(val => { if (val !== null) setV(normalizeValueForKey(key, val)); })
       .catch(e => console.error(`fbGet(${key}) failed, 使用預設內容繼續顯示`, e))
       .finally(() => setLoaded(true));
   }, [key]);
@@ -1310,7 +1322,8 @@ const normalizeProductText = value => {
   return PRODUCT_NAME_PATTERNS.reduce((text, pattern) => text.split(pattern).join(APP_PRODUCT_NAME), value)
     .replace(BARE_APP_NAME, APP_PRODUCT_NAME)
     .replaceAll("省下約 35%", `省下約 ${APP_YEARLY_DISCOUNT}%`)
-    .replaceAll("相當於 NT$83/月", `相當於 NT$${APP_YEARLY_MONTHLY_EQUIVALENT}/月`);
+    .replaceAll("相當於 NT$83/月", `相當於 NT$${APP_YEARLY_MONTHLY_EQUIVALENT}/月`)
+    .replaceAll("everydollars17@gmail.com", PUBLIC_CONTACT_EMAIL);
 };
 // Firestore 裡存的是 Barbara 在後台編輯過的文字，可能還留著 App 的舊名。
 // 那些字改不到（只能在後台一頁一頁改），所以改成讀取時就換掉，畫面上永遠是新名。
@@ -1326,6 +1339,30 @@ const normalizeStoredContent = value => {
   }
   return value;
 };
+const normalizePrivacyContent = value => {
+  const normalized = normalizeStoredContent(value);
+  if (!normalized || typeof normalized !== "object") return normalized;
+  const oldAnalytics = "<p><strong>【瀏覽網站時（自動蒐集）】</strong><br>本服務官網使用 Vercel Web Analytics 統計流量，此工具不使用第三方 cookie，而是以傳入請求產生的雜湊值識別訪客，所記錄之資料皆為匿名性質，不會與任何個人、客戶或 IP 位址綁定或關聯，相關瀏覽紀錄亦不會永久保存，將於 24 小時後自動清除。我們僅藉此瞭解整體網站使用狀況（如頁面瀏覽量），不會用來識別您的個人身分。</p>";
+  const newAnalytics = "<p><strong>【瀏覽網站時（自動蒐集）】</strong><br>本服務官網使用 Google Analytics 4 與 Vercel Web Analytics 統計流量及頁面互動，可能處理頁面網址、瀏覽器、裝置類型、流量來源與互動事件等技術資訊。相關資料由 Google 與 Vercel 依各自的隱私政策處理。88La 僅用於了解整體網站使用狀況，不會與 88La財務導航內的記帳內容合併分析。</p>";
+  const newsletterDisclosure = `<p><strong>【訂閱電子報時】</strong><br>本服務會蒐集您主動提供的電子郵件位址，用於寄送 88La 電子報。電子報透過 Resend 寄送，每封信均提供退訂方式，退訂後不再寄送行銷電子郵件。</p>`;
+  const analyticsStorageRow = '<tr style="border-bottom:1px solid rgba(0,0,0,0.07);"><td style="padding:12px 14px;vertical-align:top;">匿名瀏覽統計</td><td style="padding:12px 14px;vertical-align:top;">Vercel Web Analytics</td><td style="padding:12px 14px;vertical-align:top;">不可識別個人身分，24 小時後自動清除</td></tr>';
+  const updatedAnalyticsStorageRow = '<tr style="border-bottom:1px solid rgba(0,0,0,0.07);"><td style="padding:12px 14px;vertical-align:top;">網站流量與互動資料</td><td style="padding:12px 14px;vertical-align:top;">Google Analytics 4、Vercel Web Analytics</td><td style="padding:12px 14px;vertical-align:top;">用於了解整體網站使用狀況，不與記帳內容合併分析</td></tr>';
+  const newsletterStorageRow = '<tr style="border-bottom:1px solid rgba(0,0,0,0.07);"><td style="padding:12px 14px;vertical-align:top;">電子報訂閱 Email 與狀態</td><td style="padding:12px 14px;vertical-align:top;">Firebase、Resend</td><td style="padding:12px 14px;vertical-align:top;">用於寄送電子報及處理退訂</td></tr>';
+  let body = String(normalized.body || "")
+    .replace(oldAnalytics, newAnalytics)
+    .replace(analyticsStorageRow, updatedAnalyticsStorageRow)
+    .replace("<li>透過匿名流量統計瞭解網站整體使用狀況，藉以優化服務內容</li>", "<li>透過流量統計瞭解網站整體使用狀況，藉以優化服務內容</li><li>依您的訂閱選擇寄送電子報，並處理退訂需求</li>");
+  if (!body.includes("【訂閱電子報時】")) {
+    body = body.replace("<h2>三、未成年使用者</h2>", `${newsletterDisclosure}<h2>三、未成年使用者</h2>`);
+  }
+  if (!body.includes("電子報訂閱 Email 與狀態")) {
+    body = body.replace("</tbody></table>", `${newsletterStorageRow}</tbody></table>`);
+  }
+  return { ...normalized, lastUpdated: "最後更新：2026 年 8 月", body };
+};
+const normalizeValueForKey = (key, value) => key === "privacyContent"
+  ? normalizePrivacyContent(value)
+  : normalizeStoredContent(value);
 // demoStory 的三段內容講的是 88la-finance 示範帳戶的實際數字。示範帳戶在
 // 2026-08-17 重新配平過（逾期畫面、儲蓄率自相矛盾、餘額逼近 0 都修掉了），
 // 舊文案的每一句都對不上：說網購超支 62%（實際是購物 82%）、說可用餘額出現
@@ -4268,6 +4305,10 @@ function Newsletter({ newsletter, setNewsletter, isAdmin, articles, setId, setPa
   const [submitted, setSubmitted] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [subErr, setSubErr] = useState("");
+  const [sendSubject, setSendSubject] = useState("");
+  const [sendBody, setSendBody] = useState("");
+  const [sendingNewsletter, setSendingNewsletter] = useState(false);
+  const [sendResult, setSendResult] = useState("");
   const save = () => { setNewsletter(tmp); setEditMode(false); };
   const recent = [...(articles || [])].sort((a, b) => b.date.localeCompare(a.date)).slice(0, 3);
   const open = id => { const a = (articles || []).find(x => x.id === id); setId(id); setPage("article"); window.scrollTo({ top: 0, behavior: "instant" }); history.pushState({}, "", "/article/" + encodeURIComponent(a?.slug || id)); };
@@ -4287,6 +4328,31 @@ function Newsletter({ newsletter, setNewsletter, isAdmin, articles, setId, setPa
       setSubErr("訂閱儲存失敗，請稍後再試");
     }
     setSubmitting(false);
+  };
+  const handleSendNewsletter = async () => {
+    const subject = sendSubject.trim();
+    const body = sendBody.trim();
+    if (!subject || !body || sendingNewsletter) { setSendResult("請先填寫主旨與內容"); return; }
+    if (!window.confirm(`確定要寄出「${subject}」給目前所有已訂閱讀者嗎？`)) return;
+    setSendingNewsletter(true); setSendResult("");
+    try {
+      const idToken = await auth.currentUser?.getIdToken();
+      if (!idToken) throw new Error("admin_required");
+      const campaignId = (globalThis.crypto?.randomUUID?.() || `${Date.now()}_${Math.random().toString(36).slice(2)}`).replaceAll("-", "");
+      const r = await fetch("/api/newsletter?action=send", {
+        method: "POST",
+        headers: { "Content-Type": "application/json", Authorization: `Bearer ${idToken}` },
+        body: JSON.stringify({ subject, body, campaignId }),
+      });
+      const data = await r.json().catch(() => ({}));
+      if (!r.ok) throw new Error(data.error || "send_failed");
+      setSendResult(`已寄給 ${data.recipientCount} 位訂閱者`);
+      setSendSubject(""); setSendBody("");
+    } catch (error) {
+      const message = error.message === "email_service_not_configured" ? "寄信服務尚未完成設定" : "寄送失敗，請稍後再試";
+      setSendResult(message);
+    }
+    setSendingNewsletter(false);
   };
   if (editMode) return (
     <div style={{ maxWidth: 640, margin: "0 auto", padding: "60px 32px" }} className="page-wrap">
@@ -4336,6 +4402,23 @@ function Newsletter({ newsletter, setNewsletter, isAdmin, articles, setId, setPa
           <p style={{ fontSize: 11, color: LIGHT, marginTop: 10 }}>{info.archiveNote}</p>
         </div>
       </div>
+      {isAdmin && (
+        <div style={{ maxWidth: 720, margin: "40px auto 0", padding: "0 32px" }} className="page-wrap">
+          <div style={{ background: WHITE, border: `1px solid ${BORDER}`, padding: 24 }}>
+            <p className="section-label" style={{ marginBottom: 8 }}>管理員寄送</p>
+            <h2 style={{ fontSize: 20, color: CHAR, marginBottom: 18 }}>寄送電子報</h2>
+            <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
+              <input value={sendSubject} maxLength={160} onChange={e => { setSendSubject(e.target.value); setSendResult(""); }} placeholder="Email 主旨" />
+              <textarea value={sendBody} maxLength={20000} onChange={e => { setSendBody(e.target.value); setSendResult(""); }} placeholder="電子報內容，可使用換行分段" style={{ minHeight: 220 }} />
+              <p style={{ fontSize: 12, color: LIGHT }}>每封信都會附上退訂連結。按下寄送後，系統會再確認一次。</p>
+              <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
+                <button className="pb" onClick={handleSendNewsletter} disabled={!sendSubject.trim() || !sendBody.trim() || sendingNewsletter}>{sendingNewsletter ? "寄送中..." : "寄送電子報"}</button>
+                {sendResult && <span style={{ fontSize: 12, color: sendResult.startsWith("已寄給") ? "#4A8C5C" : "#B84040" }}>{sendResult}</span>}
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
       {recent.length > 0 && (
         <div style={{ maxWidth: 1100, margin: "0 auto", padding: "56px 32px" }} className="page-wrap">
           <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 32 }}>
@@ -4954,7 +5037,7 @@ function SubscriptionPage({ setPage, isAdmin, appContent, subscriptionCopy, setS
             ))}
             <p style={{ fontSize: 12, color: MID, display: "flex", gap: 8, alignItems: "flex-start" }}>
               <span style={{ color: O, fontWeight: 700, flexShrink: 0 }}>·</span>
-              如有疑問，請聯繫 <a href="mailto:everydollars17@gmail.com" style={{ color: O, textDecoration: "underline" }}>everydollars17@gmail.com</a>
+              如有疑問，請聯繫 <a href={`mailto:${PUBLIC_CONTACT_EMAIL}`} style={{ color: O, textDecoration: "underline" }}>{PUBLIC_CONTACT_EMAIL}</a>
             </p>
             <p style={{ fontSize: 12, color: LIGHT, marginTop: 4 }}>
               訂閱即代表你同意我們的{" "}
@@ -5102,6 +5185,8 @@ export default function App() {
     document.title = title;
     const descriptionTag = document.querySelector('meta[name="description"]');
     if (descriptionTag) descriptionTag.setAttribute("content", description);
+    const robotsTag = document.querySelector('meta[name="robots"]');
+    if (robotsTag) robotsTag.setAttribute("content", ["write", "savings-quiz"].includes(page) ? "noindex,nofollow" : "index,follow");
     const canonical = document.querySelector('link[rel="canonical"]');
     if (canonical) canonical.setAttribute("href", `https://site.88lamoney.com${window.location.pathname}`);
     const ogTitle = document.querySelector('meta[property="og:title"]');

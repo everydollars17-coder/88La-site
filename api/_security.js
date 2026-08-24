@@ -140,6 +140,14 @@ export async function getSiteValue(key) {
   return decodeFirestoreValue(data.fields?.value);
 }
 
+export async function getDocument(path) {
+  const r = await firestoreFetch(path);
+  if (r.status === 404) return null;
+  if (!r.ok) throw new Error(`Firestore read failed: ${r.status}`);
+  const data = await r.json();
+  return { id: decodeURIComponent(data.name.split("/").pop()), ...decodeFirestoreFields(data.fields || {}) };
+}
+
 // Firestore 的 :commit 端點，路徑格式與一般文件讀寫不同，所以另開一支。
 // 用途是原子遞增：瀏覽數不能用「讀出來加一再寫回去」，兩個人同時看文章就會少算一次。
 export async function firestoreCommit(writes) {
@@ -161,14 +169,23 @@ export function documentName(path) {
 }
 
 export async function listCollection(path) {
-  const r = await firestoreFetch(`${path}?pageSize=300`);
-  if (r.status === 404) return [];
-  if (!r.ok) throw new Error(`Firestore list failed: ${r.status}`);
-  const data = await r.json();
-  return (data.documents || []).map((d) => ({
-    id: decodeURIComponent(d.name.split("/").pop()),
-    ...decodeFirestoreFields(d.fields || {}),
-  }));
+  const documents = [];
+  let pageToken = "";
+  do {
+    const query = new URLSearchParams({ pageSize: "300" });
+    if (pageToken) query.set("pageToken", pageToken);
+    const r = await firestoreFetch(`${path}?${query.toString()}`);
+    if (r.status === 404) return documents;
+    if (!r.ok) throw new Error(`Firestore list failed: ${r.status}`);
+    const data = await r.json();
+    documents.push(...(data.documents || []).map((d) => ({
+      id: decodeURIComponent(d.name.split("/").pop()),
+      ...decodeFirestoreFields(d.fields || {}),
+    })));
+    pageToken = data.nextPageToken || "";
+    if (documents.length > 10000) throw new Error("Firestore list exceeds safety limit");
+  } while (pageToken);
+  return documents;
 }
 
 export async function setDocument(path, data) {

@@ -14,11 +14,17 @@ export default async function handler(req, res) {
 
   try {
     const id = crypto.createHash("sha256").update(email).digest("hex");
+    const unsubscribeToken = crypto.randomBytes(24).toString("hex");
+    const now = new Date().toISOString();
     await setDocument(`newsletterSubscribers/${id}`, {
       email,
       source: "site",
-      createdAt: new Date().toISOString(),
+      status: "subscribed",
+      unsubscribeToken,
+      subscribedAt: now,
+      updatedAt: now,
     });
+    await setDocument(`newsletterUnsubscribes/${unsubscribeToken}`, { subscriberId: id, createdAt: now });
     return res.status(200).json({ ok: true });
   } catch (e) {
     console.error(e);

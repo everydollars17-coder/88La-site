@@ -11,10 +11,20 @@ const STATIC_PAGES = [
   { loc: "/resources", changefreq: "weekly", priority: "0.8" },
   { loc: "/journal", changefreq: "weekly", priority: "0.8" },
   { loc: "/about", changefreq: "monthly", priority: "0.6" },
+  { loc: "/guide", changefreq: "monthly", priority: "0.7" },
+  { loc: "/newsletter", changefreq: "monthly", priority: "0.6" },
+  { loc: "/contact", changefreq: "monthly", priority: "0.5" },
+  { loc: "/community", changefreq: "monthly", priority: "0.5" },
+  { loc: "/shop", changefreq: "monthly", priority: "0.6" },
+  { loc: "/goods", changefreq: "monthly", priority: "0.5" },
   { loc: "/resources/savings-bag-quiz/index.html", changefreq: "monthly", priority: "0.8" },
   { loc: "/resources/emergency-fund-quiz/index.html", changefreq: "monthly", priority: "0.7" },
   { loc: "/resources/spending-check/index.html", changefreq: "monthly", priority: "0.7" },
   { loc: "/resources/golden-circle/index.html", changefreq: "monthly", priority: "0.7" },
+  { loc: "/resources/credit-card-reserve/index.html", changefreq: "monthly", priority: "0.7" },
+  { loc: "/resources/declutter-check/index.html", changefreq: "monthly", priority: "0.7" },
+  { loc: "/resources/insurance-safety-fund/index.html", changefreq: "monthly", priority: "0.7" },
+  { loc: "/resources/survival-line/index.html", changefreq: "monthly", priority: "0.7" },
 ];
 
 function escapeXml(s) {

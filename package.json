@@ -5,11 +5,12 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "vite build",
+    "build": "vite build && node scripts/generate-seo-pages.mjs",
     "lint": "eslint .",
     "preview": "vite preview",
     "build:demo": "node scripts/build_app_demo.mjs",
-    "verify:demo": "node scripts/app_demo_verification.mjs"
+    "verify:demo": "node scripts/app_demo_verification.mjs",
+    "verify:domain": "node scripts/domain_migration_verification.mjs"
   },
   "dependencies": {
     "dompurify": "^3.4.11",
