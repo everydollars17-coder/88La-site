@@ -19,7 +19,7 @@ import { APP_LAUNCH_NOTICE } from '../src/siteLaunch.js';
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..');
 const OUT_DIR = join(ROOT, 'public', 'app-demo');
 const FINANCE = join(ROOT, '..', '88la-finance');
-const SRC_URL = process.env.DEMO_SRC || 'https://88la-finance.vercel.app/?demo=true';
+const SRC_URL = process.env.DEMO_SRC || 'https://app.88lamoney.com/?demo=true';
 
 /* 復刻的頁面。key 是 App 的頁面代號，底部導覽與「更多」面板都用同一組代號。 */
 const PAGES = [

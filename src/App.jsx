@@ -25,7 +25,7 @@ const auth = getAuth(app);
 const googleProvider = new GoogleAuthProvider();
 const ADMIN_EMAILS = ["everydollars17@gmail.com"];
 
-const APP_URL = "https://88la-finance.vercel.app";
+const APP_URL = "https://app.88lamoney.com";
 const appLockProps = from => ({
   href: "#app-launch",
   "data-app-locked": "true",
@@ -403,7 +403,7 @@ const DEFAULTS = {
     eyebrow: "LEGAL",
     title: "88La財務導航\n服務條款與退款政策",
     lastUpdated: "最後更新：2026 年 7 月",
-    body: `<h2>一、服務說明</h2><p>88La財務導航（以下簡稱「本服務」）由 88La 提供，為個人理財記帳管理工具，提供收支記錄、預算規劃及桌面快速記帳等功能。本服務以訂閱制提供，訂閱期間內可無限制使用所有功能。</p><h2>二、訂閱方案與收費</h2><p>本服務提供以下訂閱方案：</p><ul><li>月訂閱：${APP_MONTHLY_PRICE} / 月</li><li>年方案：${APP_YEARLY_PRICE} / 年</li></ul><p>所有金額均為新台幣計價。付款由綠界科技股份有限公司代為處理，月訂閱採信用卡定期定額，年方案採單筆付款。</p><h2>三、續約方式</h2><p>月訂閱將依原方案金額定期扣款，如不希望續約，請於下次扣款日前至帳戶設定頁面取消。年方案不會自動續約，到期前將另行提醒。方案到期前仍可使用當期服務。</p><h2>四、退款政策</h2><p>本服務所販售之內容為數位服務，依消費者保護法第 19 條規定，數位內容於開通後不適用七天鑑賞期退換貨規定。</p><p>如有特殊情形，請聯繫 everydollars17@gmail.com，由 88La 個案審酌處理。</p><h2>五、帳戶與資料</h2><p>用戶須自行保管帳戶登入資訊。用戶的記帳資料儲存於個人 Google 雲端帳號中，訂閱取消後資料仍保留於用戶自己的 Google 試算表，88La 不持有用戶資料。</p><h2>六、服務變更</h2><p>88La 保留調整訂閱方案定價及功能內容之權利，並將提前 30 天以電子郵件通知用戶。現有訂閱者不受漲價影響，直至當期訂閱到期。</p><h2>七、帳號到期與資料保留</h2><ol><li>訂閱方案到期前三天，系統將透過 Email 及 App 推播通知提醒續訂。</li><li>方案到期後，帳號進入 7 天緩衝期：<ul><li>可瀏覽所有歷史記帳紀錄</li><li>可匯出個人資料</li><li>新增、編輯、刪除等寫入功能暫停使用</li></ul></li><li>緩衝期結束後（到期後第 8 天起），帳號功能將完全停用，但資料不會主動刪除。</li><li>如需恢復使用，續訂即可立即解鎖所有功能。</li></ol><h2>八、聯絡方式</h2><p>Email：everydollars17@gmail.com<br>官方網站：https://88la-site.vercel.app</p>`,
+    body: `<h2>一、服務說明</h2><p>88La財務導航（以下簡稱「本服務」）由 88La 提供，為個人理財記帳管理工具，提供收支記錄、預算規劃及桌面快速記帳等功能。本服務以訂閱制提供，訂閱期間內可無限制使用所有功能。</p><h2>二、訂閱方案與收費</h2><p>本服務提供以下訂閱方案：</p><ul><li>月訂閱：${APP_MONTHLY_PRICE} / 月</li><li>年方案：${APP_YEARLY_PRICE} / 年</li></ul><p>所有金額均為新台幣計價。付款由綠界科技股份有限公司代為處理，月訂閱採信用卡定期定額，年方案採單筆付款。</p><h2>三、續約方式</h2><p>月訂閱將依原方案金額定期扣款，如不希望續約，請於下次扣款日前至帳戶設定頁面取消。年方案不會自動續約，到期前將另行提醒。方案到期前仍可使用當期服務。</p><h2>四、退款政策</h2><p>本服務所販售之內容為數位服務，依消費者保護法第 19 條規定，數位內容於開通後不適用七天鑑賞期退換貨規定。</p><p>如有特殊情形，請聯繫 everydollars17@gmail.com，由 88La 個案審酌處理。</p><h2>五、帳戶與資料</h2><p>用戶須自行保管帳戶登入資訊。用戶的記帳資料儲存於個人 Google 雲端帳號中，訂閱取消後資料仍保留於用戶自己的 Google 試算表，88La 不持有用戶資料。</p><h2>六、服務變更</h2><p>88La 保留調整訂閱方案定價及功能內容之權利，並將提前 30 天以電子郵件通知用戶。現有訂閱者不受漲價影響，直至當期訂閱到期。</p><h2>七、帳號到期與資料保留</h2><ol><li>訂閱方案到期前三天，系統將透過 Email 及 App 推播通知提醒續訂。</li><li>方案到期後，帳號進入 7 天緩衝期：<ul><li>可瀏覽所有歷史記帳紀錄</li><li>可匯出個人資料</li><li>新增、編輯、刪除等寫入功能暫停使用</li></ul></li><li>緩衝期結束後（到期後第 8 天起），帳號功能將完全停用，但資料不會主動刪除。</li><li>如需恢復使用，續訂即可立即解鎖所有功能。</li></ol><h2>八、聯絡方式</h2><p>Email：everydollars17@gmail.com<br>官方網站：https://site.88lamoney.com</p>`,
     footerNote: "使用本服務即代表你已閱讀並同意以上服務條款。\n如對條款有任何疑問，請於訂閱前透過 Email 與我們聯繫。"
   },
   privacyContent: {
@@ -5103,13 +5103,13 @@ export default function App() {
     const descriptionTag = document.querySelector('meta[name="description"]');
     if (descriptionTag) descriptionTag.setAttribute("content", description);
     const canonical = document.querySelector('link[rel="canonical"]');
-    if (canonical) canonical.setAttribute("href", `https://88la-site.vercel.app${window.location.pathname}`);
+    if (canonical) canonical.setAttribute("href", `https://site.88lamoney.com${window.location.pathname}`);
     const ogTitle = document.querySelector('meta[property="og:title"]');
     const ogDescription = document.querySelector('meta[property="og:description"]');
     const ogUrl = document.querySelector('meta[property="og:url"]');
     if (ogTitle) ogTitle.setAttribute("content", title);
     if (ogDescription) ogDescription.setAttribute("content", description);
-    if (ogUrl) ogUrl.setAttribute("content", `https://88la-site.vercel.app${window.location.pathname}`);
+    if (ogUrl) ogUrl.setAttribute("content", `https://site.88lamoney.com${window.location.pathname}`);
   }, [page, article]);
 
   // 初次載入：以網址路徑決定要顯示哪一頁；相容舊版 ?article= query 分享連結

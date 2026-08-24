@@ -36,7 +36,7 @@ try {
   await verifyLockedLink(about, '[data-app-source="about-page"]', '關於頁 CTA');
   await about.evaluate(() => {
     const directLink = document.createElement('a');
-    directLink.href = 'https://88la-finance.vercel.app';
+    directLink.href = 'https://app.88lamoney.com';
     directLink.dataset.testDirectAppLink = 'true';
     directLink.textContent = '測試未標記的 App 直連';
     document.body.appendChild(directLink);

@@ -1,6 +1,6 @@
 import { getSiteValue } from "./_security.js";
 
-const SITE = "https://88la-site.vercel.app";
+const SITE = "https://site.88lamoney.com";
 
 const STATIC_PAGES = [
   { loc: "/", changefreq: "weekly", priority: "1.0" },
