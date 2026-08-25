@@ -5,6 +5,7 @@ import { getFirestore, doc, setDoc, collection, getDocs, query, orderBy, deleteD
 import { getAuth, GoogleAuthProvider, signInWithPopup, onAuthStateChanged, signOut } from "firebase/auth";
 import DOMPurify from "dompurify";
 import { APP_LAUNCH_NOTICE } from "./siteLaunch.js";
+import { deriveDemoPhonePreview } from "./demoPhonePreviewData.js";
 
 const firebaseConfig = {
   apiKey: "AIzaSyCW8TU318MtXe50MjjqWmmHDydFXv-zA3E",
@@ -316,6 +317,281 @@ button{font-family:inherit;cursor:pointer;border:none;border-radius:8px;}
 }
 .tab-item.active{color:${O};}
 .tab-item svg{width:20px;height:20px;flex-shrink:0;}
+.demo-state-preview{
+  max-width:900px;
+  margin:0 auto 30px;
+  padding:32px;
+  display:grid;
+  grid-template-columns:minmax(0,1fr) minmax(280px,340px);
+  align-items:center;
+  gap:40px;
+  background:${WHITE};
+  border-radius:16px;
+  box-shadow:0 4px 8px rgba(61,26,10,.08);
+}
+.demo-state-copy{min-width:0;text-align:center;}
+.demo-state-heading{
+  margin-bottom:12px;
+  color:${CHAR};
+  font-size:24px;
+  font-weight:700;
+  line-height:1.45;
+  text-wrap:balance;
+}
+.demo-state-intro{
+  max-width:460px;
+  margin:0 auto 18px;
+  color:${MID};
+  font-size:14px;
+  line-height:1.85;
+  text-wrap:pretty;
+  white-space:pre-line;
+}
+.demo-state-tabs{
+  display:flex;
+  gap:4px;
+  width:max-content;
+  max-width:100%;
+  margin-inline:auto;
+  padding:3px;
+  background:#EEE8E2;
+  border-radius:10px;
+}
+.demo-state-tab{
+  flex:0 0 auto;
+  min-width:108px;
+  min-height:36px;
+  padding:7px 14px;
+  background:transparent;
+  border-radius:8px;
+  color:#5F5650;
+  font-size:12px;
+  font-weight:700;
+  transition:background .18s,color .18s,box-shadow .18s;
+}
+.demo-state-tab:hover{color:#A84810;}
+.demo-state-tab:focus-visible{outline:2px solid #A84810;outline-offset:2px;}
+.demo-state-tab[aria-pressed="true"]{
+  background:${WHITE};
+  color:#A84810;
+  box-shadow:0 2px 6px rgba(61,26,10,.1);
+}
+.demo-state-image-wrap{
+  width:100%;
+  max-width:360px;
+  justify-self:center;
+  position:relative;
+  padding:10px;
+  background:#171411;
+  border-radius:46px;
+  box-shadow:0 16px 36px rgba(38,22,13,.24);
+}
+.demo-state-image-wrap::before,
+.demo-state-image-wrap::after{
+  content:"";
+  position:absolute;
+  width:3px;
+  background:#2B2622;
+  border-radius:3px 0 0 3px;
+}
+.demo-state-image-wrap::before{left:-3px;top:112px;height:58px;}
+.demo-state-image-wrap::after{right:-3px;top:150px;height:76px;border-radius:0 3px 3px 0;}
+.demo-phone-preview-screen{
+  position:relative;
+  overflow:hidden;
+  background:#F2EEEA;
+  border-radius:37px;
+}
+.demo-phone-status{
+  position:relative;
+  height:32px;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  padding:0 16px;
+  background:#FCFBFA;
+  color:#171411;
+  font-size:10px;
+  font-weight:700;
+}
+.demo-phone-island{
+  position:absolute;
+  top:6px;
+  left:50%;
+  width:82px;
+  height:20px;
+  transform:translateX(-50%);
+  background:#171411;
+  border-radius:999px;
+}
+.demo-phone-status-meta{font-size:9px;letter-spacing:.2px;}
+.demo-phone-app-tabs{
+  height:45px;
+  display:grid;
+  grid-template-columns:repeat(4,1fr);
+  gap:2px;
+  padding:5px 6px;
+  background:#E7E2DC;
+}
+.demo-phone-app-tab{
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  border-radius:8px;
+  color:#827871;
+  font-size:9px;
+  font-weight:700;
+  white-space:nowrap;
+}
+.demo-phone-app-tab.active{
+  background:${WHITE};
+  color:#A84810;
+  box-shadow:0 2px 5px rgba(38,22,13,.1);
+}
+.demo-state-image{
+  width:100%;
+  display:block;
+  animation:demoStateIn .22s cubic-bezier(.16,1,.3,1);
+}
+.demo-phone-report{
+  display:flex;
+  flex-direction:column;
+  gap:10px;
+  padding:12px 8px;
+  background:#F2EEEA;
+  color:#241D19;
+  text-align:left;
+}
+.demo-phone-summary-card,
+.demo-phone-report-card{
+  background:${WHITE};
+  border-radius:12px;
+  box-shadow:0 3px 7px rgba(61,26,10,.08);
+}
+.demo-phone-summary-card{padding:16px 14px;}
+.demo-phone-report-label,
+.demo-phone-report-heading{
+  color:#AD470D;
+  font-size:11px;
+  font-weight:700;
+}
+.demo-phone-balance-row{
+  display:flex;
+  align-items:baseline;
+  gap:8px;
+  margin:10px 0 12px;
+}
+.demo-phone-balance-row>span{
+  color:#544B46;
+  font-size:10px;
+  font-weight:700;
+}
+.demo-phone-balance-row strong{
+  color:#171411;
+  font-size:25px;
+  line-height:1;
+  letter-spacing:-.025em;
+}
+.demo-phone-balance-row small{
+  padding-left:8px;
+  border-left:1px solid #AAA19A;
+  color:#746A64;
+  font-size:10px;
+}
+.demo-phone-summary-items{
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  gap:0;
+  padding:9px 6px;
+  background:#F7F3F0;
+  color:#463D38;
+  font-size:9px;
+  font-weight:700;
+  line-height:1.4;
+  text-align:center;
+}
+.demo-phone-summary-items span+span::before{
+  content:"·";
+  padding:0 5px;
+  color:#8C817A;
+}
+.demo-phone-report-card{padding:2px 14px;}
+.demo-phone-report-block{padding:14px 0;}
+.demo-phone-report-block+.demo-phone-report-block{border-top:1px solid #E8E0D9;}
+.demo-phone-report-heading{
+  padding-bottom:8px;
+  border-bottom:1px solid #E8E0D9;
+}
+.demo-phone-report-item{padding:10px 0 2px;}
+.demo-phone-report-item+.demo-phone-report-item{
+  margin-top:6px;
+  border-top:1px solid #EEE8E2;
+}
+.demo-phone-report-item strong{
+  display:block;
+  color:#211B18;
+  font-size:13px;
+  line-height:1.45;
+}
+.demo-phone-report-item strong.success{color:#267550;}
+.demo-phone-report-item span{
+  display:block;
+  margin-top:5px;
+  color:#685F59;
+  font-size:10px;
+  line-height:1.65;
+}
+.demo-phone-app-nav{
+  height:62px;
+  display:grid;
+  grid-template-columns:repeat(5,1fr);
+  align-items:center;
+  background:${WHITE};
+  border-top:1px solid #E8E0D9;
+}
+.demo-phone-app-nav-item{
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  gap:4px;
+  color:#8B817B;
+  font-size:9px;
+  font-weight:500;
+}
+.demo-phone-app-nav-item::before{
+  content:"";
+  width:14px;
+  height:12px;
+  border:2px solid currentColor;
+  border-radius:4px;
+}
+.demo-phone-app-nav-item.active{color:#B64D0E;font-weight:700;}
+.demo-phone-home-zone{
+  height:18px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  background:${WHITE};
+}
+.demo-phone-home-pill{
+  width:94px;
+  height:4px;
+  background:#171411;
+  border-radius:999px;
+}
+.demo-interactive-heading{
+  margin:0 auto 18px;
+  color:${CHAR};
+  font-size:17px;
+  font-weight:700;
+  line-height:1.6;
+  text-align:center;
+}
+@keyframes demoStateIn{
+  from{opacity:.35;transform:translateY(6px);}
+  to{opacity:1;transform:translateY(0);}
+}
 @media(max-width:768px){
   .nav-links{display:none!important;}
   .mob-menu{display:flex!important;}
@@ -339,6 +615,19 @@ button{font-family:inherit;cursor:pointer;border:none;border-radius:8px;}
   .demo-sect{padding:40px 12px!important;}
   .demo-card{padding:14px 8px 18px!important;}
   .demo-phone{padding:8px 6px!important;}
+  .demo-state-preview{
+    grid-template-columns:1fr;
+    gap:24px;
+    margin-bottom:28px;
+    padding:22px 12px;
+    border-radius:14px;
+  }
+  .demo-state-heading{font-size:20px;line-height:1.5;}
+  .demo-state-intro{font-size:13px;margin-bottom:18px;}
+  .demo-state-tab{min-width:104px;padding-inline:10px;font-size:11px;}
+  .demo-state-image-wrap{padding:8px;border-radius:40px;}
+  .demo-phone-preview-screen{border-radius:33px;}
+  .demo-interactive-heading{font-size:16px;margin-bottom:14px;}
   .home-ecosystem-float{--home-float-y:-3px;}
   .home-ecosystem-entry-left .home-ecosystem-float,
   .home-ecosystem-entry-right .home-ecosystem-float{--home-float-y:-2px;}
@@ -366,6 +655,9 @@ button{font-family:inherit;cursor:pointer;border:none;border-radius:8px;}
   .home-product-copy{padding:16px 4px 0;}
   .home-product-title{font-size:18px;}
   .home-product-desc{font-size:13px;}
+}
+@media(prefers-reduced-motion:reduce){
+  .demo-state-image{animation:none!important;}
 }
 @media(min-width:769px){
   .mob-menu{display:none!important;}
@@ -437,6 +729,9 @@ const DEFAULTS = {
     label: "LIVE DEMO",
     heading: "真實帳戶長這樣",
     intro: "以下是示範帳戶「小琳」的完整記帳紀錄，和你未來使用的畫面一模一樣。",
+    previewHeading: "月中隨時監測收支狀況",
+    previewIntro: "·本月進行中：先看現在最重要的事\n·本月結束後：整理成結論和下月安排\n※可按鈕切換月中/月底情境",
+    interactiveHeading: "想看細節？直接操作完整 Demo",
     note: "可以切換頁面、展開明細，看完整的診斷結果",
     personaLabel: "示範帳戶人設",
     personaName: "小琳，28 歲，行銷企劃",
@@ -3426,6 +3721,72 @@ function Guide({ appContent, isAdmin, setPage }) {
   );
 }
 
+const demoMoney = value => `$${Number(value || 0).toLocaleString("en-US")}`;
+
+function DemoPhoneReport({ state }) {
+  const data = deriveDemoPhonePreview(state);
+
+  return (
+    <div className="demo-phone-report">
+      <section className="demo-phone-summary-card">
+        <p className="demo-phone-report-label">{data.stateLabel}</p>
+        <div className="demo-phone-balance-row">
+          <span>{data.balanceLabel}</span>
+          <strong>{demoMoney(data.balance)}</strong>
+          {data.daysRemaining !== null && <small>距月底 {data.daysRemaining} 天</small>}
+        </div>
+        <div className="demo-phone-summary-items">
+          {data.summaryItems.map(item => <span key={item}>{item}</span>)}
+        </div>
+      </section>
+
+      <section className="demo-phone-report-card">
+        <div className="demo-phone-report-block">
+          <p className="demo-phone-report-heading">{data.activityHeading}</p>
+          {data.activityItems.map(item => (
+            <div key={item.label} className="demo-phone-report-item">
+              <strong className={item.completed ? "success" : ""}>
+                {item.label} {demoMoney(item.amount)}{item.completed ? " 已完成 ✓" : ""}
+              </strong>
+              <span>{item.body}</span>
+            </div>
+          ))}
+        </div>
+        <div className="demo-phone-report-block">
+          <p className="demo-phone-report-heading">{data.budgetAlerts.length} 項預算需要注意</p>
+          {data.budgetAlerts.map(item => (
+            <div key={item.label} className="demo-phone-report-item">
+              <strong>{item.label}已超支 {demoMoney(item.over)}</strong>
+              <span>預算 {demoMoney(item.budget)}，目前已使用 {demoMoney(item.actual)}。</span>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      <section className="demo-phone-report-card">
+        <div className="demo-phone-report-block">
+          <p className="demo-phone-report-heading">本月目標</p>
+          {data.goals.map(item => (
+            <div key={item.label} className="demo-phone-report-item">
+              <strong className={item.completed ? "success" : ""}>
+                {item.completed ? `${item.label}已完成 ✓` : `${item.label}還差 ${demoMoney(item.remaining)}`}
+              </strong>
+              <span>本月目標 {demoMoney(item.planned)}，目前已完成 {demoMoney(item.actual)}。</span>
+            </div>
+          ))}
+        </div>
+        <div className="demo-phone-report-block">
+          <p className="demo-phone-report-heading">下月提醒</p>
+          <div className="demo-phone-report-item">
+            <strong>已有 {demoMoney(data.nextMonthCardDue)} 卡費會在下月付款</strong>
+            <span>這是本月已經發生、付款時間落在下個月的支出。</span>
+          </div>
+        </div>
+      </section>
+    </div>
+  );
+}
+
 function AppPage({ appContent, setAppContent, isAdmin, setPage, demoStory, setDemoStory }) {
   const c = normalizeAppContent(appContent);
   const ds = normalizeDemoStory(demoStory);
@@ -3437,6 +3798,7 @@ function AppPage({ appContent, setAppContent, isAdmin, setPage, demoStory, setDe
   const [tmpMisc, setTmpMisc] = useState(c);
   const [editDemoStory, setEditDemoStory] = useState(false);
   const [tmpDemoStory, setTmpDemoStory] = useState(ds);
+  const [demoMonthPreview, setDemoMonthPreview] = useState("progress");
   const [editingFeat, setEditingFeat] = useState(null);
   const [featForm, setFeatForm] = useState({ n: "", title: "", desc: "", img: "", noFrame: false });
   const [editingPlan, setEditingPlan] = useState(null);
@@ -3445,6 +3807,19 @@ function AppPage({ appContent, setAppContent, isAdmin, setPage, demoStory, setDe
   const [tmpNote, setTmpNote] = useState({ pricingNote: c.pricingNote, comingSoonTitle: c.comingSoonTitle, comingSoonSub: c.comingSoonSub });
   const [editGuide, setEditGuide] = useState(false);
   const [tmpGuide, setTmpGuide] = useState({ title: "", faqs: [], advancedJson: "", showAdvanced: false });
+  const demoMonthPreviews = [
+    {
+      id: "progress",
+      label: "本月進行中",
+      alt: "88La 財務導航本月進行中的畫面，顯示可用餘額、預算提醒和未完成目標",
+    },
+    {
+      id: "complete",
+      label: "本月已結束",
+      alt: "88La 財務導航本月已結束的畫面，顯示本月最後結果、正式診斷和下月安排",
+    },
+  ];
+  const activeDemoMonthPreview = demoMonthPreviews.find(item => item.id === demoMonthPreview) || demoMonthPreviews[0];
   const saveFeat = () => {
     if (editingFeat === "new") upd({ features: [...c.features, { id: Date.now(), n: String(c.features.length + 1).padStart(2, "0"), ...featForm }] });
     else upd({ features: c.features.map(f => f.id === editingFeat ? { ...f, ...featForm } : f) });
@@ -3554,6 +3929,60 @@ function AppPage({ appContent, setAppContent, isAdmin, setPage, demoStory, setDe
             <p style={{ fontSize: 15, color: MID, lineHeight: 1.8, maxWidth: 480, margin: "0 auto" }}>{ds.intro}</p>
             {isAdmin && <span onClick={() => { setTmpDemoStory(ds); setEditDemoStory(true); }} style={{ fontSize: 11, color: O, cursor: "pointer", marginTop: 8, display: "inline-block" }}>編輯示範情境文字</span>}
           </div>
+          <div className="demo-state-preview">
+            <div className="demo-state-copy">
+              <h3 className="demo-state-heading">{ds.previewHeading}</h3>
+              <p className="demo-state-intro">{ds.previewIntro}</p>
+              <div className="demo-state-tabs" role="group" aria-label="切換月份診斷狀態">
+                {demoMonthPreviews.map(item => (
+                  <button
+                    key={item.id}
+                    type="button"
+                    className="demo-state-tab"
+                    aria-pressed={demoMonthPreview === item.id}
+                    aria-controls="demo-month-preview-panel"
+                    onClick={() => setDemoMonthPreview(item.id)}
+                  >
+                    {item.label}
+                  </button>
+                ))}
+              </div>
+            </div>
+            <div id="demo-month-preview-panel" className="demo-state-image-wrap" aria-live="polite">
+              <div className="demo-phone-preview-screen">
+                <div className="demo-phone-status" aria-hidden="true">
+                  <span>9:41</span>
+                  <span className="demo-phone-island" />
+                  <span className="demo-phone-status-meta">5G&nbsp;&nbsp;88%</span>
+                </div>
+                <div className="demo-phone-app-tabs" aria-hidden="true">
+                  <span className={`demo-phone-app-tab ${activeDemoMonthPreview.id === "progress" ? "active" : ""}`}>本月重點</span>
+                  <span className="demo-phone-app-tab">下月計畫</span>
+                  <span className={`demo-phone-app-tab ${activeDemoMonthPreview.id === "complete" ? "active" : ""}`}>完整診斷</span>
+                  <span className="demo-phone-app-tab">數據明細</span>
+                </div>
+                <div
+                  key={activeDemoMonthPreview.id}
+                  className="demo-state-image"
+                  role="img"
+                  aria-label={activeDemoMonthPreview.alt}
+                >
+                  <DemoPhoneReport state={activeDemoMonthPreview.id} />
+                </div>
+                <div className="demo-phone-app-nav" aria-hidden="true">
+                  <span className="demo-phone-app-nav-item">快訊</span>
+                  <span className="demo-phone-app-nav-item">預算</span>
+                  <span className="demo-phone-app-nav-item">記帳</span>
+                  <span className="demo-phone-app-nav-item active">診斷</span>
+                  <span className="demo-phone-app-nav-item">更多</span>
+                </div>
+                <div className="demo-phone-home-zone" aria-hidden="true">
+                  <span className="demo-phone-home-pill" />
+                </div>
+              </div>
+            </div>
+          </div>
+          <p className="demo-interactive-heading">{ds.interactiveHeading}</p>
           <div className="demo-card" style={{ background: WHITE, border: `1px solid ${BORDER}`, borderRadius: 20, padding: "24px 20px 32px", boxShadow: "0 24px 48px -20px rgba(26,26,26,0.12)" }}>
             <div style={{ display: "flex", alignItems: "center", gap: 6, marginBottom: 20 }}>
               <span style={{ width: 6, height: 6, borderRadius: "50%", background: O, display: "inline-block", flexShrink: 0 }} />
@@ -3632,6 +4061,9 @@ function AppPage({ appContent, setAppContent, isAdmin, setPage, demoStory, setDe
               <div><p style={{ fontSize: 12, color: MID, marginBottom: 6 }}>區塊標籤</p><input value={tmpDemoStory.label} onChange={e => setTmpDemoStory(p => ({ ...p, label: e.target.value }))} /></div>
               <div><p style={{ fontSize: 12, color: MID, marginBottom: 6 }}>標題</p><input value={tmpDemoStory.heading} onChange={e => setTmpDemoStory(p => ({ ...p, heading: e.target.value }))} /></div>
               <div><p style={{ fontSize: 12, color: MID, marginBottom: 6 }}>說明</p><textarea value={tmpDemoStory.intro} onChange={e => setTmpDemoStory(p => ({ ...p, intro: e.target.value }))} style={{ minHeight: 50 }} /></div>
+              <div><p style={{ fontSize: 12, color: MID, marginBottom: 6 }}>狀態預覽標題</p><input value={tmpDemoStory.previewHeading} onChange={e => setTmpDemoStory(p => ({ ...p, previewHeading: e.target.value }))} /></div>
+              <div><p style={{ fontSize: 12, color: MID, marginBottom: 6 }}>狀態預覽說明</p><textarea value={tmpDemoStory.previewIntro} onChange={e => setTmpDemoStory(p => ({ ...p, previewIntro: e.target.value }))} style={{ minHeight: 60 }} /></div>
+              <div><p style={{ fontSize: 12, color: MID, marginBottom: 6 }}>完整 Demo 引導</p><input value={tmpDemoStory.interactiveHeading} onChange={e => setTmpDemoStory(p => ({ ...p, interactiveHeading: e.target.value }))} /></div>
               <div><p style={{ fontSize: 12, color: MID, marginBottom: 6 }}>Demo 小標籤</p><input value={tmpDemoStory.toolbarLabel} onChange={e => setTmpDemoStory(p => ({ ...p, toolbarLabel: e.target.value }))} /></div>
               <div><p style={{ fontSize: 12, color: MID, marginBottom: 6 }}>操作提示文字</p><input value={tmpDemoStory.note} onChange={e => setTmpDemoStory(p => ({ ...p, note: e.target.value }))} /></div>
               <div><p style={{ fontSize: 12, color: MID, marginBottom: 6 }}>人設標籤</p><input value={tmpDemoStory.personaLabel} onChange={e => setTmpDemoStory(p => ({ ...p, personaLabel: e.target.value }))} /></div>

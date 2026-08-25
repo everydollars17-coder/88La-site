@@ -10,6 +10,8 @@
     "preview": "vite preview",
     "build:demo": "node scripts/build_app_demo.mjs",
     "verify:demo": "node scripts/app_demo_verification.mjs",
+    "verify:demo:states": "node scripts/app_demo_state_preview_verification.mjs",
+    "verify:demo:states:browser": "node scripts/app_demo_state_preview_browser_check.mjs",
     "verify:domain": "node scripts/domain_migration_verification.mjs",
     "verify:demo:clicks": "node scripts/app_demo_interaction_check.mjs"
   },
