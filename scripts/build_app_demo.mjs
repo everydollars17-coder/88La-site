@@ -8,18 +8,28 @@
  * 只看得到「待補充答案」和一整排 🔒，看不出系統要他改什麼；而且每次 App 改版都要
  * 重補鎖點。靜態頁沒有運算、不需鎖點，也不會被 App 改版打壞。
  *
+ * 診斷頁的完成態：示範帳戶預設沒答補充問題，而且 8 月仍在進行中，正式 App 只會顯示
+ * OPEN 財務雷達，不會先產生完整診斷與下月計畫。官網外層文案承諾展示「完整診斷」，
+ * 所以這裡會同時注入小琳的答案，並把示範月份標成使用者已結束的 CLOSED 狀態，再交給
+ * 診斷引擎重算。診斷內容全部由 App 自己畫，這裡不人工撰寫任何診斷文字或金額。
+ *
+ * 前置：先在 88la-finance 跑 npm run dev（預設 5173）
  * App 改版後要更新示範頁：npm run build:demo
  */
 import { chromium } from 'playwright';
-import { writeFileSync, copyFileSync, mkdirSync, readFileSync } from 'fs';
+import { writeFileSync, copyFileSync, mkdirSync, readFileSync, existsSync } from 'fs';
 import { fileURLToPath } from 'url';
 import { dirname, join } from 'path';
+import { pathToFileURL } from 'url';
 import { APP_LAUNCH_NOTICE } from '../src/siteLaunch.js';
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..');
 const OUT_DIR = join(ROOT, 'public', 'app-demo');
 const FINANCE = join(ROOT, '..', '88la-finance');
-const SRC_URL = process.env.DEMO_SRC || 'https://app.88lamoney.com/?demo=true';
+/* 一定要對本機 dev server 抓：完成態的診斷要把答案注入引擎重算，而重算需要
+   window.__88laBuildDeepReportSnapshot（只在 import.meta.env.DEV 下存在），
+   凍結的 payload 也只有 dev server 才是獨立模組、攔得下來。正式站兩者都沒有。 */
+const SRC_URL = process.env.DEMO_SRC || 'http://localhost:5173/?demo=true';
 
 /* 復刻的頁面。key 是 App 的頁面代號，底部導覽與「更多」面板都用同一組代號。 */
 const PAGES = [
@@ -27,121 +37,71 @@ const PAGES = [
   'notes', 'accounts', 'savings-mgr', 'wishlist', 'debts',
 ];
 
-/* ────────────────────────────────────────────────────────────────
-   診斷頁的完成態替換
-   示範帳戶沒有回答補充問題，診斷停在「待補充答案」，畫面上每一條都是
-   「需要確認這是…還是…」，正好把訪客最該看到的結論擋掉。以下四塊換成
-   小琳答完題之後的樣子。文字與金額取自 88la-finance/src/demoReportPayload.js
-   （primaryVerdict / keyInsight / userCause / nextFocusActions / scenarioPriorityTable），
-   不是自行編寫的結論。
-   ──────────────────────────────────────────────────────────────── */
-const DIAG_STATUS = `
-<div class="card diag-month-status scroll-reveal revealed">
-  <div class="diag-month-status-head">
-    <div><span>本月狀態</span><strong>已完成</strong></div>
-    <div class="diag-month-status-badges">
-      <span style="background:#F0FDF4;color:#3C7E4E">診斷 已完成</span>
-      <span style="background:#F0FDF4;color:#3C7E4E">下月計畫 已建立</span>
-    </div>
-  </div>
-  <p>小琳已補齊 7 個問題，以下是 8 月的正式診斷結果。</p>
-</div>`;
+/* 小琳的補充答案
+   示範帳戶預設一題都沒答。這六題的答案決定訪客看到的結論，所以是內容決策，
+   不是技術細節：Barbara 於 2026-08-25 逐組看過引擎產出後選定這一組（保險那題
+   選「每月固定」，其餘維持不減少消費頻率、儲蓄缺口與變動支出無關、兩筆臨時
+   支出由本月收入支付）。
+   換答案的方式：改這裡再跑 npm run build:demo，診斷會整份跟著變。
+   注意：官網示範情境的「給小琳的建議」三行（src/App.jsx 的 demoStory）講的是同一份
+   診斷，改這裡要一起看那邊，不然同一個畫面上下兩段會互相矛盾。
+*/
+const DIAG_ANSWERS = {
+  'fixed:保險': 'monthly',              // 保險每月都會有（本月實際 $4,800）
+  'var:飲食-食材': 'cut:0',             // 下個月不減少次數，預算改成貼近實際
+  'var:交通': 'cut:0',                  // 同上
+  'priority-drift': 'unrelated',        // 儲蓄沒完成跟變動支出增加無關
+  'temporary-funding:120': 'fund:income', // 下午茶聚會 $280 由本月收入支付
+  'temporary-funding:122': 'fund:income', // 衣服（網購）$1,450 由本月收入支付
+};
 
-const DIAG_VERDICT = `
-<div class="card scroll-reveal revealed" style="padding:18px 16px;margin-bottom:16px;background:#FFF8F2;border:1px solid #F4D4BE">
-  <div class="diag-section-heading">這個月的主要判斷</div>
-  <div style="font-size:14px;font-weight:700;color:#1A1A1A;line-height:1.8;margin:10px 0 12px">這個月可用餘額表面上仍為正，但固定支出與變動支出都明顯超出預算，建議先回頭檢查預算基準是否抓得太低。</div>
-  <div style="background:#FFF;border:1px solid #EEE;border-radius:8px;padding:11px 13px;margin-bottom:9px">
-    <div style="font-size:11px;color:#A84810;font-weight:700;margin-bottom:3px">關鍵發現</div>
-    <div style="font-size:12px;color:#555;line-height:1.75">固定支出預算 $16,800，實際 $20,289。這種落差需要先確認預算項目是否漏編，而不是急著把所有問題都歸因成花費失控。</div>
-  </div>
-  <div style="background:#FFF;border:1px solid #EEE;border-radius:8px;padding:11px 13px">
-    <div style="font-size:11px;color:#A84810;font-weight:700;margin-bottom:3px">本月主因</div>
-    <div style="font-size:12px;color:#555;line-height:1.75">比較像固定與變動預算基準都需要重抓。下個月先把必要支出和日常支出重新分配，再討論哪些消費可以調整。</div>
-  </div>
-</div>`;
-
-const DIAG_TOP = `
-<div class="card scroll-reveal revealed" style="padding:18px 16px;margin-bottom:16px">
-  <div class="diag-section-heading">本月三個重點</div>
-  <div class="diag-section-help" style="margin-top:4px">依影響程度排序，下個月先盯住第一項就好。</div>
-  <div class="diag-top-list" style="display:flex;flex-direction:column;gap:12px;margin-top:14px">
-    <div style="display:flex;gap:10px">
-      <span style="flex-shrink:0;width:20px;height:20px;border-radius:50%;background:#C85A14;color:#FFF;font-size:11px;font-weight:700;display:flex;align-items:center;justify-content:center;margin-top:1px">1</span>
-      <div><div style="font-size:13px;font-weight:700;color:#1A1A1A;margin-bottom:3px">預算基準失準，不是花費失控</div>
-      <div style="font-size:12px;color:#767676;line-height:1.75">固定支出達預算 121%，變動支出達預算 103%。半年繳的車險 $3,600 沒編進預算，固定支出超支的 $3,489 幾乎全部來自這一筆。</div></div>
-    </div>
-    <div style="display:flex;gap:10px">
-      <span style="flex-shrink:0;width:20px;height:20px;border-radius:50%;background:#B87830;color:#FFF;font-size:11px;font-weight:700;display:flex;align-items:center;justify-content:center;margin-top:1px">2</span>
-      <div><div style="font-size:13px;font-weight:700;color:#1A1A1A;margin-bottom:3px">儲蓄缺口 $4,000，跟預算一起重估</div>
-      <div style="font-size:12px;color:#767676;line-height:1.75">儲蓄目標 $8,000 只做到 $4,000。預算基準上修後，儲蓄目標也要同步調整，不用硬撐原本的數字。</div></div>
-    </div>
-    <div style="display:flex;gap:10px">
-      <span style="flex-shrink:0;width:20px;height:20px;border-radius:50%;background:#8A7A72;color:#FFF;font-size:11px;font-weight:700;display:flex;align-items:center;justify-content:center;margin-top:1px">3</span>
-      <div><div style="font-size:13px;font-weight:700;color:#1A1A1A;margin-bottom:3px">衝動消費是觀察訊號，不是本月主因</div>
-      <div style="font-size:12px;color:#767676;line-height:1.75">衝動消費 4 筆共 $1,950，比上月的 $3,175 少 39%。集中在星期五（2 筆 $1,850），下個月留意這一天就好。</div></div>
-    </div>
-  </div>
-</div>`;
-
-const DIAG_PLAN = `
-<div class="card diag-plan-section scroll-reveal revealed" style="margin-bottom:14px">
-  <div class="diag-plan-section-title">9 月預算調整</div>
-  <div class="diag-plan-section-copy">依這個月的實際狀況重抓基準，不是把超支的預算直接改高讓問題消失。</div>
-  <div style="padding:0 16px 16px">
-    <div class="tx-row">
-      <div><div style="font-size:13px;font-weight:600">固定支出</div><div style="font-size:11px;color:#888;margin-top:2px">車險 $3,600 攤成每月 $600 編進預算</div></div>
-      <div style="text-align:right;white-space:nowrap"><div style="font-size:11px;color:#888;text-decoration:line-through">$16,800</div><div style="font-size:14px;font-weight:700;color:#C85A14">$17,400</div></div>
-    </div>
-    <div class="tx-row">
-      <div><div style="font-size:13px;font-weight:600">變動支出</div><div style="font-size:11px;color:#888;margin-top:2px">購物 $2,500 調到 $3,000，另設臨時支出 $1,000</div></div>
-      <div style="text-align:right;white-space:nowrap"><div style="font-size:11px;color:#888;text-decoration:line-through">$9,600</div><div style="font-size:14px;font-weight:700;color:#C85A14">$11,100</div></div>
-    </div>
-    <div class="tx-row">
-      <div><div style="font-size:13px;font-weight:600">儲蓄</div><div style="font-size:11px;color:#888;margin-top:2px">預算上修後同步下調，先求穩定達成</div></div>
-      <div style="text-align:right;white-space:nowrap"><div style="font-size:11px;color:#888;text-decoration:line-through">$8,000</div><div style="font-size:14px;font-weight:700;color:#4A8C5C">$6,000</div></div>
-    </div>
-    <div class="ok-box" style="margin-top:12px;font-size:12px;color:#3C7E4E;line-height:1.8">調整後 9 月預算合計 $34,500，收入 $42,000，預留卡費後仍有餘裕。</div>
-    <button class="btn-o" style="width:100%;padding:11px;margin-top:12px" data-demo-note="示範帳戶不會實際套用，正式版按下去就會寫進 9 月預算">套用到 9 月預算</button>
-  </div>
-</div>
-
-<div class="card diag-plan-section scroll-reveal revealed" style="margin-bottom:14px">
-  <div class="diag-plan-section-title">下個月要做的三件事</div>
-  <div class="diag-plan-section-copy">每一項都是算好金額的具體動作，點進去就能改。</div>
-  <div style="padding:0 16px 16px">
-    <div style="background:#FAFAF8;border:1px solid #EEE;border-radius:8px;padding:12px 13px;margin-bottom:10px">
-      <div style="font-size:13px;font-weight:700;color:#1A1A1A;line-height:1.6;margin-bottom:5px">下個月「保險」預算從 $1,200 改成 $1,800</div>
-      <div style="font-size:12px;color:#555;line-height:1.75">你已確認「保險」會持續發生。本月實際 $4,800，其中半年繳的車險 $3,600 攤成每月 $600，下個月依同一份調整增加 $600，畫面試算與實際套用都會使用 $1,800。</div>
-      <button class="btn-g" style="margin-top:9px;font-size:11px;padding:6px 12px" data-p="budget">調整固定預算 →</button>
-    </div>
-    <div style="background:#FAFAF8;border:1px solid #EEE;border-radius:8px;padding:12px 13px;margin-bottom:10px">
-      <div style="font-size:13px;font-weight:700;color:#1A1A1A;line-height:1.6;margin-bottom:5px">下個月「購物」再遇到 $1,800 這種，先放願望清單三天</div>
-      <div style="font-size:12px;color:#555;line-height:1.75">依你剛才的選擇，那筆是想要才花的。扣掉它，這一類其他 2 筆合計 $2,740，只比預算多 $240，代表日常花費大致穩定，問題出在那一筆決定。下個月同樣金額的東西，先放進願望清單，三天後還想要再買。</div>
-      <button class="btn-g" style="margin-top:9px;font-size:11px;padding:6px 12px" data-p="wishlist">打開願望清單 →</button>
-    </div>
-    <div style="background:#FAFAF8;border:1px solid #EEE;border-radius:8px;padding:12px 13px">
-      <div style="font-size:13px;font-weight:700;color:#1A1A1A;line-height:1.6;margin-bottom:5px">重新審視你能存的金額</div>
-      <div style="font-size:12px;color:#555;line-height:1.75">本月原定儲蓄 $8,000，目前完成 $4,000，扣完必要支出與卡費後還剩 $2,876。兩者相加 $6,876 就是這個月真正能存的上限，先用 $6,000 重新校準。</div>
-      <button class="btn-g" style="margin-top:9px;font-size:11px;padding:6px 12px" data-p="savings-mgr">重新檢視儲蓄目標 →</button>
-    </div>
-  </div>
-</div>
-
-<div class="card diag-plan-section scroll-reveal revealed" style="margin-bottom:14px">
-  <div class="diag-plan-section-title">觀察重點</div>
-  <div style="padding:0 16px 16px">
-    <div class="coach">衝動消費集中在<strong>星期五</strong>（2 筆 $1,850）。下個月出門前先想好當天的額度，不用全面限制所有消費。</div>
-    <div class="coach">購物、飲食-外食先放進<strong>待買清單</strong>。想買的東西先記下來，隔幾天還想要，再決定是否購買。</div>
-    <div class="coach">下個月回頭看是否<strong>重複出現</strong>。重點不是本月有幾筆，而是同樣時間、同樣類別會不會再次發生。</div>
-  </div>
-</div>`;
-
-/* ── 抓取 ────────────────────────────────────────────────────── */
+/* 抓取 */
 const browser = await chromium.launch();
-const page = await browser.newPage({ viewport: { width: 390, height: 800 } });
+/* serviceWorkers: 'block'：App 是 PWA，模組請求會被 service worker 接走，
+   page.route 就攔不到 demoReportPayload.js（診斷會停在未完成態）。示範頁不需要 SW。 */
+const context = await browser.newContext({ viewport: { width: 390, height: 800 }, serviceWorkers: 'block' });
+const page = await context.newPage();
 await page.goto(SRC_URL, { waitUntil: 'networkidle' });
 await page.waitForTimeout(6000);
+
+/* 診斷完成態，把答案注入引擎，重算一份 payload
+   ?demo=true 的診斷不做運算，一律讀 src/demoReportPayload.js。把那份換成
+   「答完題」的版本，App 就會自己畫出完成態的診斷。 */
+const snapshot = await page.evaluate(() => window.__88laBuildDeepReportSnapshot?.());
+if (!snapshot?.context) {
+  throw new Error('拿不到 window.__88laBuildDeepReportSnapshot()。這支只能對 88la-finance 的本機 dev server 抓（DEMO_SRC 預設 http://localhost:5173/?demo=true），正式站沒有這個函式。');
+}
+snapshot.context.diagAnswers = DIAG_ANSWERS;
+/* 官網示範的是完整月底診斷，不能讓畫面一邊寫「進行中」，一邊又出現完整下月計畫。
+   用 App 正式支援的 userClosedMonth 狀態結束示範月份，讓引擎自己決定 CLOSED 投影。 */
+snapshot.context.monthLifecycle = {
+  ...(snapshot.context.monthLifecycle || {}),
+  userClosedMonth: true,
+  closedAt: `${snapshot.reportDate}T00:00:00.000Z`,
+  closedBy: 'USER',
+  reopenedAt: '',
+  reopenReason: '',
+  diagnosisStaleAt: '',
+};
+const enginePath = pathToFileURL(join(FINANCE, 'api', '_deep-report-app-response.js')).href;
+const { buildDeepReportEngineResponse } = await import(enginePath);
+const answered = buildDeepReportEngineResponse(snapshot);
+const monthStatus = answered?.diagnosisModel?.monthState?.status;
+const diagnosisStatus = answered?.diagnosisModel?.diagnosisStatus;
+const pending = (answered?.diagnosisModel?.questions || []).filter(q => !q.answer);
+if (monthStatus !== 'CLOSED' || diagnosisStatus !== 'FINALIZED' || pending.length) {
+  throw new Error(`注入答案後診斷仍未完成（month=${monthStatus}，diagnosis=${diagnosisStatus}，未答 ${pending.length} 題：`
+    + pending.map(q => q.key).join('、') + '）。App 的題目可能改過，請對照 diagnosisModel.questions 更新 DIAG_ANSWERS');
+}
+const frozen = { ...answered, snapshot: { month: answered.snapshot?.month, viewMode: answered.snapshot?.viewMode } };
+await page.route('**/demoReportPayload.js*', route => route.fulfill({
+  status: 200,
+  contentType: 'application/javascript; charset=utf-8',
+  body: 'export const DEMO_REPORT_PAYLOAD = ' + JSON.stringify(frozen) + ';',
+}));
+await page.reload({ waitUntil: 'networkidle' });
+await page.waitForTimeout(6000);
+console.log('診斷完成態    答完 ' + Object.keys(DIAG_ANSWERS).length + ' 題，月份 ' + monthStatus + '，診斷 ' + diagnosisStatus);
 
 /** 每次抓之前都要跑：拔掉 demo 鎖點、把圖表轉成圖片、讓延遲揭露的區塊固定可見。 */
 const prepare = () => page.evaluate(() => {
@@ -247,64 +207,54 @@ console.log('quick-panel'.padEnd(14), String(quickPanel.length).padStart(7), 'by
 console.log('more-panel'.padEnd(14), String(morePanel.length).padStart(7), 'bytes');
 await browser.close();
 
-/* ── 套用診斷完成態 ──────────────────────────────────────────── */
-/** 把 id 指定的容器整段內容換掉。找不到就中止，不要默默產出半套畫面。 */
-function replaceInner(html, id, inner) {
-  const anchor = html.indexOf(`id="${id}"`);
-  if (anchor < 0) throw new Error(`找不到 #${id}，App 的診斷頁結構可能改過了，請重新確認替換點`);
-  const open = html.lastIndexOf('<', anchor);
-  const tagEnd = html.indexOf('>', anchor);
-  // 從開頭標籤往後數 div 深度，找出對應的結束標籤
-  let depth = 1;
-  let i = tagEnd + 1;
-  while (depth > 0 && i < html.length) {
-    const next = html.indexOf('<div', i);
-    const close = html.indexOf('</div>', i);
-    if (close < 0) throw new Error(`#${id} 的結束標籤找不到`);
-    if (next >= 0 && next < close) { depth++; i = next + 4; }
-    else { depth--; i = close + 6; }
-  }
-  const openTag = html.slice(open, tagEnd + 1);
-  return html.slice(0, open) + openTag + inner + '</div>' + html.slice(i);
+/* 抓取結果的完整性檢查
+   Playwright 抓到半套內容時不會報錯，產出的頁面照樣寫得出來，只是某一頁少了一大塊，
+   而且 index.html 有 390 KB，少 60 KB 用看的看不出來。拿上一份產出逐頁比大小，
+   明顯縮水就中止。真的是 App 改版讓某頁變小時，刪掉 public/app-demo/index.html 再跑。 */
+const prev = existsSync(join(OUT_DIR, 'index.html')) ? readFileSync(join(OUT_DIR, 'index.html'), 'utf8') : '';
+/* 上一份產出把各頁大小寫在 HTML 註解裡（見下方 SIZE_NOTE），直接讀，不用去猜頁面邊界 */
+const prevSizes = (() => {
+  const m = prev.match(/<!-- page-sizes: (\{.*?\}) -->/);
+  try { return m ? JSON.parse(m[1]) : {}; } catch { return {}; }
+})();
+const prevSize = p => prevSizes[p] || 0;
+const shrunk = PAGES.filter(p => prevSize(p) > 0 && grabbed[p].length < prevSize(p) * 0.6);
+if (shrunk.length) {
+  throw new Error('這幾頁抓到的內容比上一份少了四成以上，很可能是沒渲染完就抓：\n  - '
+    + shrunk.map(p => `${p}：${grabbed[p].length} bytes（上一份約 ${prevSize(p)}）`).join('\n  - ')
+    + '\n重跑一次；若是 App 改版讓這頁真的變小，刪掉 public/app-demo/index.html 再跑。');
 }
+const empty = PAGES.filter(p => grabbed[p].length < 1500);
+if (empty.length) throw new Error('這幾頁幾乎是空的，抓取失敗：' + empty.join('、'));
 
-/* 抓下來的診斷內容處處寫著「等你回答」，跟上面替換過的「診斷已完成」互相矛盾。
-   這些句子換成小琳答完之後的結果。left 找不到就警告：App 改過文案時要有人知道，
-   但不必中止整份產出。 */
-const TEXT_FIXES = [
-  ['本月初步檢查完成', '本月結算結果'],
-  ['以下是你這個月用錢的情況，可以確認數字對不對。沒問題的話就往下滑幫我補充資料。',
-   '以下是你這個月用錢的情況。往下滑可以看到系統的判斷，以及下個月的調整方向。'],
-  ['>需要確認</div>', '>小琳的回答</div>'],
-  ['這些固定支出是否每個月都會發生？如果會，下個月應先把它們完整編進固定預算，再討論是否有可取消的訂閱。',
-   '汽機車險 $3,600 是半年繳，當初編預算時沒有算進去。攤成每月 $600 編進固定預算，下次就不會被打亂。'],
-  ['超支的類別裡，哪些是日常必要、哪些是臨時事件、哪些才是想要消費？',
-   '購物 $4,540 裡，衣服 $1,450 和保養品 $1,290 共 $2,740 是計畫內的補貨，剩下的 $1,800 是下班時的衝動網購。購物預算調到 $3,000 貼近實際，另外設一筆臨時支出 $1,000。'],
-  ['下個月要維持原儲蓄目標，還是先等生活成本重新校準後再調整？',
-   '希望先求每個月都能達成。9 月儲蓄目標下調到 $6,000，等預算基準穩定兩個月後再往上加。'],
-  ['先補齊大額支出的需要/想要，尤其是固定支出與變動支出中金額最高的項目。',
-   '這個月先補了購物與飲食兩類的需要/想要，其餘大額支出下個月繼續補，比例還不夠代表整體消費結構。'],
+/* 診斷完成態的把關
+   注入答案後，抓下來的診斷頁必須是完成態。若還留著「待補充答案」這類字樣，
+   代表 payload 沒被換掉（例如攔截路徑失效），官網就會掛著一頁自己前後矛盾的
+   診斷：上面說已完成，中間又叫訪客去回答問題。 */
+const UNFINISHED_MARKERS = [
+  '待補充答案', '尚未建立', '補充 6 個問題', '不是正式診斷', '完成後才會指定主要問題',
+  '本月仍在進行中', '下月計畫會在本月結束後產生', '完整診斷會在本月結束後整理',
 ];
-
-let report = grabbed.report;
-report = replaceInner(report, 'diag-month-status-wrap', DIAG_STATUS);
-report = replaceInner(report, 'diag-confirm-wrap', DIAG_VERDICT);
-report = replaceInner(report, 'diag-top-diagnoses-wrap', DIAG_TOP);
-report = replaceInner(report, 'diag-plan-full-wrap', DIAG_PLAN);
-
-let fixed = 0;
-for (const [from, to] of TEXT_FIXES) {
-  if (!report.includes(from)) {
-    console.warn('  [warn] 找不到要替換的句子，App 文案可能改過：' + from.slice(0, 30));
-    continue;
-  }
-  report = report.split(from).join(to);
-  fixed++;
+const leftover = UNFINISHED_MARKERS.filter(m => grabbed.report.includes(m));
+if (leftover.length) {
+  throw new Error('診斷頁抓到的還是未完成態，出現這些字樣：' + leftover.join('、')
+    + '\n可能是 demoReportPayload.js 的攔截沒生效（Vite 的模組路徑改了？），或 App 的診斷改版');
 }
-grabbed.report = report;
-console.log('診斷完成態替換    4 個區塊 ＋ ' + fixed + '/' + TEXT_FIXES.length + ' 處文案');
+const CLOSED_MARKERS = ['本月最後結果', '已過完', '診斷 已完成', '下個月計畫'];
+const missingClosed = CLOSED_MARKERS.filter(m => !grabbed.report.includes(m));
+if (missingClosed.length) {
+  throw new Error('診斷頁不是完整 CLOSED 畫面，缺少：' + missingClosed.join('、'));
+}
 
-/* ── 組裝 ────────────────────────────────────────────────────── */
+/* 帳戶頁也要跟目前 App 同步。只抓到舊版「帳戶明細」時，數字測試仍會通過，
+   但官網會漏掉新的操作列、群組與交易紀錄卡片。 */
+const ACCOUNT_MARKERS = ['account-action-bar', 'account-transaction-card', '帳戶群組', '交易紀錄'];
+const missingAccounts = ACCOUNT_MARKERS.filter(m => !grabbed.accounts.includes(m));
+if (missingAccounts.length) {
+  throw new Error('帳戶頁仍是舊介面，缺少：' + missingAccounts.join('、'));
+}
+
+/* 組裝 */
 mkdirSync(OUT_DIR, { recursive: true });
 copyFileSync(join(FINANCE, 'src', 'style.css'), join(OUT_DIR, 'app.css'));
 copyFileSync(join(FINANCE, 'public', 'logo-ui.webp'), join(OUT_DIR, 'logo-ui.webp'));
@@ -347,6 +297,10 @@ const SHELL_JS = `
    ══════════════════════════════════════════════════════════════ */
 (function () {
   var APP_LAUNCH_NOTICE = ${JSON.stringify(APP_LAUNCH_NOTICE)};
+  /* 更多面板列出的頁面比示範頁收錄的多（帳號與方案、資料設定、疑難排解都沒收錄，
+     它們的內容是登入後才有的個人資料，做成示範沒有意義）。這些按鈕點下去必須有
+     回應，不能靜靜地什麼都不做，不然訪客會以為畫面壞了。 */
+  var MISSING_PAGE_NOTE = '這一頁在示範版沒有收錄，正式版可以進入';
   var toastEl = document.getElementById('demo-toast');
   var toastTimer;
   function toast(msg) {
@@ -358,11 +312,15 @@ const SHELL_JS = `
 
   function goPage(p) {
     var target = document.getElementById('pg-' + p);
-    if (!target) return;
+    if (!target) return false;
     document.querySelectorAll('.page').forEach(function (el) { el.classList.toggle('on', el === target); });
-    document.querySelectorAll('.nb[data-p]').forEach(function (b) { b.classList.toggle('on', b.dataset.p === p); });
+    /* 底部導覽與「更多」面板用同一組 data-p，兩邊的使用中狀態一起換 */
+    document.querySelectorAll('.nb[data-p], .more-item[data-p]').forEach(function (b) {
+      b.classList.toggle('on', b.dataset.p === p);
+    });
     closeMore();
     window.scrollTo({ top: 0, behavior: 'smooth' });
+    return true;
   }
 
   var REPORT_TABS = ['overview', 'plan', 'detail', 'charts'];
@@ -385,26 +343,116 @@ const SHELL_JS = `
     if (mo) mo.classList.remove('demo-open');
   }
 
-  /* 折頁：App 的展開是 GSAP 動畫，這裡改成單純切 display，收合狀態一致。 */
-  function toggleFold(head) {
-    var body = head.nextElementSibling;
-    if (!body) return;
-    var open = body.style.display !== 'none' && body.style.display !== '';
-    body.style.display = open ? 'none' : 'block';
-    var arr = head.querySelector('.d-arr');
-    if (arr) arr.textContent = open ? '▸' : '▾';
+  /* 折頁
+     示範頁沒有 App 的 JS，展開收合要自己接。這裡刻意不維護「哪些動作只是展開」
+     的名單：App 每次改版都會多出幾個 toggle-*，名單永遠追不上，漏掉的按鈕會跳
+     出「不會實際儲存」，但它其實只是展開一段內容，訪客看不到那段內容也不知道
+     自己按錯什麼。改成看 DOM：找得到收起來的內容區就展開它，找不到才當成會改
+     資料的動作攔下來。
+     動作名稱只用來排除會寫入資料的按鈕（只有 toggle- 開頭的才嘗試展開），
+     真正決定行為的是 DOM 裡有沒有那塊收合內容。
+     App 用三種方式收合，三種都要認：inline display:none、hidden 屬性、
+     .collapsible-body（max-height:0，靠 .open 展開）。 */
+  function isFoldBody(el) {
+    if (!el || (el.tagName !== 'DIV' && el.tagName !== 'SECTION')) return false;
+    if (el.hasAttribute('hidden')) return true;
+    if (el.style.display === 'none') return true;
+    var cls = String(el.className || '');
+    if (cls.indexOf('collapsible-body') >= 0 || cls.indexOf('ia-group-body') >= 0) return true;
+    /* 診斷卡片的內容是 data-diag-body="固定支出診斷" 這種，標題用 data-diag-label 對應。
+       抓下來時它是展開的（要讓內容進 HTML），所以認不到 display:none，
+       改認「屬性名字以 -body 結尾」這個 App 自己標的記號。 */
+    if ([].some.call(el.attributes, function (a) { return /-body$/.test(a.name); })) return true;
+    return /-(body|wrap|list|inner|popover)$/.test(el.id || '');
   }
 
-  /* 只有純顯示切換會被接起來，其餘 data-action 都是會改資料的，一律攔下 */
-  var DISPLAY_ONLY = {
-    'toggle-diag': function (el) { toggleFold(el); },
-    'toggle-budget-workflow-step': function (el) { toggleFold(el); },
-    'toggle-rsv-group': function (el) { toggleFold(el); },
-    'toggle-wishlist-history': function (el) { toggleFold(el); },
-    'toggle-settled-debts': function (el) { toggleFold(el); },
-    'toggle-transfer-list': function (el) { toggleFold(el); },
-    'toggle-cc-analysis': function (el) { toggleFold(el); }
-  };
+  function foldBodyFor(head) {
+    /* App 自己指名 body 的就照它給的（診斷頁的卡費分組） */
+    if (head.dataset.bodyId) return document.getElementById(head.dataset.bodyId);
+    /* 預算四步驟：標題與箭頭包在同一層，內容在外層的下一個，
+       App 用 data-budget-step 對到 #budget-step-N-body，示範頁沿用同一組對應 */
+    if (head.dataset.budgetStep) return document.getElementById('budget-step-' + head.dataset.budgetStep + '-body');
+    return isFoldBody(head.nextElementSibling) ? head.nextElementSibling : null;
+  }
+
+  /* 收合方式在第一次判斷時記下來。hidden 屬性一旦被移掉就認不出原本是哪一種，
+     記在 dataset 上，開合來回幾次都用同一種方式。 */
+  function foldMode(body) {
+    if (!body.dataset.demoFold) {
+      body.dataset.demoFold = String(body.className || '').indexOf('collapsible-body') >= 0 ? 'class'
+        : (body.hasAttribute('hidden') ? 'hidden' : 'display');
+    }
+    return body.dataset.demoFold;
+  }
+
+  function isFoldOpen(body) {
+    var mode = foldMode(body);
+    if (mode === 'class') return body.classList.contains('open');
+    if (mode === 'hidden') return !body.hidden;
+    return body.style.display !== 'none';
+  }
+
+  /* 箭頭字元的開合對應。只認這幾個字，其他文字不動。 */
+  var ARROW_OPEN = { '▸': '▾', '⌄': '⌃' };
+  var ARROW_CLOSED = { '▾': '▸', '⌃': '⌄' };
+  function syncFoldHead(head, open) {
+    if (head.hasAttribute('aria-expanded')) head.setAttribute('aria-expanded', String(open));
+    var map = open ? ARROW_OPEN : ARROW_CLOSED;
+    head.querySelectorAll('*').forEach(function (el) {
+      if (el.children.length) return;
+      var t = el.textContent.trim();
+      if (map[t]) el.textContent = map[t];
+    });
+  }
+
+  function setFoldOpen(head, body, open) {
+    var mode = foldMode(body);
+    if (mode === 'class') body.classList.toggle('open', open);
+    else if (mode === 'hidden') body.hidden = !open;
+    else body.style.display = open ? 'block' : 'none';
+    syncFoldHead(head, open);
+  }
+
+  function toggleFold(head) {
+    var body = foldBodyFor(head);
+    if (!body) return false;
+    setFoldOpen(head, body, !isFoldOpen(body));
+    return true;
+  }
+
+  /* 目標追蹤的三個分類（持續儲蓄／未來預存／時效性儲蓄）沒有 data-action，
+     用 data-sav-mgr-section 對到 #<id>-body，收合方式也自己一套
+     （height:0 + data-collapsed），跟 App 的 toggleSavMgrSection 對齊。 */
+  function toggleSavSection(head) {
+    var id = head.dataset.savMgrSection;
+    var body = document.getElementById(id + '-body');
+    if (!body) return false;
+    var open = body.dataset.collapsed === '1';
+    body.dataset.collapsed = open ? '0' : '1';
+    body.style.height = open ? '' : '0';
+    body.style.opacity = open ? '1' : '0';
+    body.style.overflow = open ? '' : 'hidden';
+    var arrow = document.getElementById(id + '-arrow');
+    if (arrow) arrow.textContent = open ? '▾' : '▸';
+    head.setAttribute('aria-expanded', String(open));
+    var bar = document.getElementById(id + '-bar');
+    if (bar) bar.style.borderRadius = open ? '8px 8px 0 0' : '8px';
+    return true;
+  }
+
+  /* 「查看其他比較數據」的內容不在標題旁邊，是同一張卡裡標了 .diag-compare-extra
+     的那幾列（App 的 toggleMonthCompareExtra 也是這樣找的）。 */
+  function toggleCompareExtra(head) {
+    var scope = head.closest('.card') || document;
+    var rows = scope.querySelectorAll('.diag-compare-extra');
+    if (!rows.length) return false;
+    var open = rows[0].hasAttribute('hidden');
+    rows.forEach(function (r) { r.hidden = !open; });
+    var label = head.querySelector('.diag-compare-extra-label');
+    if (label) label.textContent = open ? '收合其他比較數據' : '查看其他比較數據';
+    syncFoldHead(head, open);
+    return true;
+  }
 
   document.addEventListener('click', function (e) {
     var lockedAppLink = e.target.closest('[data-app-locked="true"]');
@@ -418,14 +466,15 @@ const SHELL_JS = `
     if (tabBtn) { goTab(tabBtn.dataset.reportTab); return; }
 
     var navBtn = e.target.closest('[data-p]');
-    if (navBtn && !navBtn.closest('.page')) { goPage(navBtn.dataset.p); return; }
-    if (navBtn) { goPage(navBtn.dataset.p); return; }
+    if (navBtn) {
+      if (!goPage(navBtn.dataset.p)) toast(MISSING_PAGE_NOTE);
+      return;
+    }
 
     var goBtn = e.target.closest('[data-go-page]');
     if (goBtn) {
       var dest = goBtn.dataset.goPage;
-      if (document.getElementById('pg-' + dest)) goPage(dest);
-      else toast('這一頁在示範版沒有收錄，正式版可以進入');
+      if (!goPage(dest)) toast(MISSING_PAGE_NOTE);
       return;
     }
 
@@ -449,18 +498,52 @@ const SHELL_JS = `
     var noteEl = e.target.closest('[data-demo-note]');
     if (noteEl) { toast(noteEl.dataset.demoNote); return; }
 
+    /* 目標追蹤的分類列：跟 App 一樣，列上的 ℹ 說明鈕（帶 data-action）優先 */
+    var savHead = e.target.closest('[data-sav-mgr-section]');
+    if (savHead && !e.target.closest('[data-action]') && toggleSavSection(savHead)) return;
+
     var actEl = e.target.closest('[data-action]');
     if (actEl) {
       var act = actEl.dataset.action;
-      if (DISPLAY_ONLY[act]) { DISPLAY_ONLY[act](actEl); return; }
-      toast('這是示範帳戶，不會實際儲存。開始使用後就能操作');
       e.preventDefault();
+      if (act === 'toggle-month-compare-extra' && toggleCompareExtra(actEl)) return;
+      /* 預算頁的「前往這一步」：展開那一步並捲過去，箭頭跟著那一步的標題一起翻 */
+      if (act === 'jump-budget-workflow-step' && actEl.dataset.budgetStep) {
+        var stepBody = foldBodyFor(actEl);
+        if (stepBody) {
+          var stepHead = document.querySelector('[data-action="toggle-budget-workflow-step"][data-budget-step="'
+            + actEl.dataset.budgetStep + '"]');
+          setFoldOpen(stepHead || actEl, stepBody, true);
+          stepBody.scrollIntoView({ behavior: 'smooth', block: 'center' });
+          return;
+        }
+      }
+      if (act.indexOf('toggle-') === 0 && toggleFold(actEl)) return;
+      toast('這是示範帳戶，不會實際儲存。開始使用後就能操作');
       return;
     }
 
     // 沒有 data-action 的折頁標題（診斷頁有幾處是直接綁在標題列上的）
-    var arrHead = e.target.closest('.d-arr') ? e.target.closest('.d-arr').parentElement : null;
-    if (arrHead) { toggleFold(arrHead); }
+    var arr = e.target.closest('.d-arr, .collapse-arrow');
+    if (arr && arr.parentElement && toggleFold(arr.parentElement)) return;
+
+    /* 個人／公費／家庭：快照只有個人視角的資料，說清楚比丟一句「不會儲存」準確 */
+    if (e.target.closest('[data-page-view-mode], [data-budget-mode]')) {
+      toast('示範版只放個人視角的資料，公費與家庭在正式版可以切換');
+      return;
+    }
+    /* 記帳明細的篩選：靜態頁沒有篩選運算，明細固定顯示全部 */
+    if (e.target.closest('[data-filter]')) {
+      toast('示範版的記帳明細固定顯示全部，篩選在正式版可以用');
+      return;
+    }
+
+    /* 收尾：按得下去的東西一定要有回應。示範頁最容易壞掉的地方就是 App 改版後
+       多出幾顆沒人接手的按鈕，點下去毫無反應，訪客會以為畫面當掉。
+       這一段保證最差也有提示，不會靜靜地什麼都不做。 */
+    if (e.target.closest('button, [role="button"], [aria-controls], [data-sav-mgr-section]')) {
+      toast('這是示範帳戶，不會實際儲存。開始使用後就能操作');
+    }
   });
 
   /* 表單可以填，但送出一律攔下 */
@@ -469,16 +552,27 @@ const SHELL_JS = `
     toast('這是示範帳戶，不會實際儲存。開始使用後就能操作');
   });
 
+  /* 更多面板的項目也帶 data-p，快照抓取當下停在哪一頁，那一項就被標成使用中，
+     訪客一打開面板會看到不相干的項目亮著。初始化時對齊實際在看的頁面。 */
+  var startPage = (document.querySelector('.page.on') || {}).id || '';
+  document.querySelectorAll('.nb[data-p], .more-item[data-p]').forEach(function (b) {
+    b.classList.toggle('on', 'pg-' + b.dataset.p === startPage);
+  });
+
   /* 診斷頁預設停在「本月重點」 */
   if (document.getElementById('report-tab-overview')) goTab('overview');
 
-  /* 折頁的初始狀態：抓取時全部展開過，這裡收回預設值，讓訪客自己點開 */
+  /* 折頁的初始狀態
+     診斷卡片在抓取時被逐一點開過（內容才會進 HTML），這裡收回去讓訪客自己點。 */
   document.querySelectorAll('[data-action="toggle-diag"]').forEach(function (head) {
-    var body = head.nextElementSibling;
-    if (!body) return;
-    body.style.display = 'none';
-    var arr = head.querySelector('.d-arr');
-    if (arr) arr.textContent = '▸';
+    var body = foldBodyFor(head);
+    if (body) setFoldOpen(head, body, false);
+  });
+  /* 其餘折頁維持 App 給的狀態，只把箭頭與 aria 對齊實際狀態：
+     快照裡有幾處箭頭是展開的樣子、內容卻是收起來的（抓取當下的中間狀態）。 */
+  document.querySelectorAll('[data-action^="toggle-"]').forEach(function (head) {
+    var body = foldBodyFor(head);
+    if (body) syncFoldHead(head, isFoldOpen(body));
   });
 })();
 `;
@@ -507,6 +601,7 @@ const html = `<!DOCTYPE html>
 <body>
 
 <!-- 這份頁面由 scripts/build_app_demo.mjs 產生，請勿手改；要更新請重跑 npm run build:demo -->
+<!-- page-sizes: ${JSON.stringify(Object.fromEntries(PAGES.map(p => [p, grabbed[p].length])))} -->
 
 <div class="demo-top">
   <span class="demo-dot"></span><b>示範帳戶</b><em>小琳的 8 月，資料為示範用途</em>
@@ -533,10 +628,11 @@ ${bnav}
 </html>
 `;
 
-writeFileSync(join(OUT_DIR, 'index.html'), html);
+const normalizedHtml = html.replace(/[ \t]+$/gm, '');
+writeFileSync(join(OUT_DIR, 'index.html'), normalizedHtml);
 
 const kb = n => (n / 1024).toFixed(0) + ' KB';
 console.log('');
-console.log('產出  public/app-demo/index.html  ' + kb(html.length));
+console.log('產出  public/app-demo/index.html  ' + kb(normalizedHtml.length));
 console.log('      public/app-demo/app.css     ' + kb(readFileSync(join(OUT_DIR, 'app.css')).length));
 console.log('      復刻頁面 ' + PAGES.length + ' 頁：' + PAGES.map(p => PAGE_LABEL[p]).join('、'));
