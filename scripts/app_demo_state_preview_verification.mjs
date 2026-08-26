@@ -53,6 +53,11 @@ const requiredSourceMarkers = [
   'aria-pressed={demoMonthPreview === item.id}',
   'aria-live="polite"',
   'role="img"',
+  '本月最後結果',
+  '✓ 正式診斷已完成',
+  '把本月重點帶進下月安排',
+  '查看下月計畫',
+  '已過完',
   '@media(prefers-reduced-motion:reduce)',
 ];
 for (const marker of requiredSourceMarkers) {
@@ -62,6 +67,8 @@ for (const marker of requiredSourceMarkers) {
 check('資料來源只定義一份', 1, (dataSource.match(/export const DEMO_PHONE_PREVIEW/g) || []).length);
 check('進行中資料物件存在', true, Boolean(DEMO_PHONE_PREVIEW.progress));
 check('已結束資料物件存在', true, Boolean(DEMO_PHONE_PREVIEW.complete));
+check('手機預覽底部導覽已移除', false, appSource.includes('demo-phone-app-nav'));
+check('手機預覽 Home 指示條已移除', false, appSource.includes('demo-phone-home-zone'));
 
 const removedCopy = [
   '這是同一個示範帳戶。畫面會依月份進度改變。',

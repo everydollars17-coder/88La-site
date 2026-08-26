@@ -318,18 +318,18 @@ button{font-family:inherit;cursor:pointer;border:none;border-radius:8px;}
 .tab-item.active{color:${O};}
 .tab-item svg{width:20px;height:20px;flex-shrink:0;}
 .demo-state-preview{
-  max-width:900px;
+  max-width:760px;
   margin:0 auto 30px;
   padding:32px;
   display:grid;
-  grid-template-columns:minmax(0,1fr) minmax(280px,340px);
-  align-items:center;
-  gap:40px;
+  grid-template-columns:minmax(0,1fr);
+  justify-items:center;
+  gap:28px;
   background:${WHITE};
   border-radius:16px;
   box-shadow:0 4px 8px rgba(61,26,10,.08);
 }
-.demo-state-copy{min-width:0;text-align:center;}
+.demo-state-copy{width:100%;min-width:0;text-align:center;}
 .demo-state-heading{
   margin-bottom:12px;
   color:${CHAR};
@@ -542,43 +542,107 @@ button{font-family:inherit;cursor:pointer;border:none;border-radius:8px;}
   font-size:10px;
   line-height:1.65;
 }
-.demo-phone-app-nav{
-  height:62px;
-  display:grid;
-  grid-template-columns:repeat(5,1fr);
-  align-items:center;
-  background:${WHITE};
-  border-top:1px solid #E8E0D9;
+.demo-phone-closed-intro{
+  padding:12px 14px;
+  background:#F8F6FF;
+  border:1px solid #D9D0FF;
+  border-radius:10px;
+  color:#554B50;
+  font-size:10px;
+  font-weight:600;
+  line-height:1.65;
 }
-.demo-phone-app-nav-item{
+.demo-phone-closed-focus{
+  padding:16px 14px;
+  background:#FFF8F2;
+  border:1px solid #F2CDB5;
+  border-radius:12px;
+  box-shadow:0 3px 7px rgba(61,26,10,.06);
+}
+.demo-phone-closed-focus strong{
+  display:block;
+  margin-top:8px;
+  color:#211B18;
+  font-size:18px;
+  line-height:1.4;
+}
+.demo-phone-closed-focus span{
+  display:block;
+  margin-top:8px;
+  color:#685F59;
+  font-size:10px;
+  line-height:1.65;
+}
+.demo-phone-closed-link{
+  margin-top:10px;
+  color:#AD470D!important;
+  font-size:10px!important;
+  font-weight:700;
+}
+.demo-phone-closed-confirm,
+.demo-phone-closed-action,
+.demo-phone-closed-status{
+  padding:14px;
+  background:${WHITE};
+  border-radius:12px;
+  box-shadow:0 3px 7px rgba(61,26,10,.08);
+}
+.demo-phone-closed-confirm{
   display:flex;
-  flex-direction:column;
   align-items:center;
-  gap:4px;
-  color:#8B817B;
+  justify-content:space-between;
+  gap:12px;
+}
+.demo-phone-closed-confirm strong{color:#267550;font-size:12px;}
+.demo-phone-closed-control{
+  padding:6px 9px;
+  border:1px solid #D8D0CA;
+  border-radius:7px;
+  color:#685F59;
   font-size:9px;
-  font-weight:500;
+  font-weight:700;
 }
-.demo-phone-app-nav-item::before{
-  content:"";
-  width:14px;
-  height:12px;
-  border:2px solid currentColor;
-  border-radius:4px;
+.demo-phone-closed-action{
+  background:#FFF8F2;
+  border:1px solid #F2CDB5;
 }
-.demo-phone-app-nav-item.active{color:#B64D0E;font-weight:700;}
-.demo-phone-home-zone{
-  height:18px;
+.demo-phone-closed-action span,
+.demo-phone-closed-status>span{
+  color:#AD470D;
+  font-size:9px;
+  font-weight:700;
+}
+.demo-phone-closed-action strong,
+.demo-phone-closed-status strong{
+  display:block;
+  margin-top:3px;
+  color:#332A25;
+  font-size:12px;
+}
+.demo-phone-closed-action .demo-phone-closed-primary{
+  display:block;
+  margin-top:10px;
+  padding:8px 10px;
+  background:#C85A14;
+  border-radius:8px;
+  color:${WHITE};
+  font-size:10px;
+  font-weight:700;
+  text-align:center;
+}
+.demo-phone-closed-badges{
   display:flex;
-  align-items:center;
-  justify-content:center;
-  background:${WHITE};
+  flex-wrap:wrap;
+  gap:5px;
+  margin-top:9px;
 }
-.demo-phone-home-pill{
-  width:94px;
-  height:4px;
-  background:#171411;
+.demo-phone-closed-badges span{
+  padding:4px 7px;
+  background:#F2EEEA;
   border-radius:999px;
+  color:#685F59;
+  font-size:8px;
+  font-weight:700;
 }
 .demo-interactive-heading{
   margin:0 auto 18px;
@@ -3726,6 +3790,39 @@ const demoMoney = value => `$${Number(value || 0).toLocaleString("en-US")}`;
 function DemoPhoneReport({ state }) {
   const data = deriveDemoPhonePreview(state);
 
+  if (state === "complete") {
+    const primaryBudgetAlert = data.budgetAlerts[0];
+
+    return (
+      <div className="demo-phone-report demo-phone-report-closed">
+        <div className="demo-phone-closed-intro">完成本月的財務整理，接著把結果帶進下月安排。</div>
+        <section className="demo-phone-closed-focus">
+          <p className="demo-phone-report-label">本月最後結果</p>
+          <strong>{primaryBudgetAlert.label}已超支 {demoMoney(primaryBudgetAlert.over)}</strong>
+          <span>預算 {demoMoney(primaryBudgetAlert.budget)}，本月實際使用 {demoMoney(primaryBudgetAlert.actual)}。</span>
+          <span className="demo-phone-closed-link">看判斷依據</span>
+        </section>
+        <section className="demo-phone-closed-confirm">
+          <strong>✓ 正式診斷已完成</strong>
+          <span className="demo-phone-closed-control">重新檢視答案</span>
+        </section>
+        <section className="demo-phone-closed-action">
+          <span>下一步</span>
+          <strong>把本月重點帶進下月安排</strong>
+          <span className="demo-phone-closed-primary">查看下月計畫</span>
+        </section>
+        <section className="demo-phone-closed-status">
+          <span>本月狀態</span>
+          <strong>已過完</strong>
+          <div className="demo-phone-closed-badges">
+            <span>診斷 已完成</span>
+            <span>下月計畫 待安排</span>
+          </div>
+        </section>
+      </div>
+    );
+  }
+
   return (
     <div className="demo-phone-report">
       <section className="demo-phone-summary-card">
@@ -3968,16 +4065,6 @@ function AppPage({ appContent, setAppContent, isAdmin, setPage, demoStory, setDe
                   aria-label={activeDemoMonthPreview.alt}
                 >
                   <DemoPhoneReport state={activeDemoMonthPreview.id} />
-                </div>
-                <div className="demo-phone-app-nav" aria-hidden="true">
-                  <span className="demo-phone-app-nav-item">快訊</span>
-                  <span className="demo-phone-app-nav-item">預算</span>
-                  <span className="demo-phone-app-nav-item">記帳</span>
-                  <span className="demo-phone-app-nav-item active">診斷</span>
-                  <span className="demo-phone-app-nav-item">更多</span>
-                </div>
-                <div className="demo-phone-home-zone" aria-hidden="true">
-                  <span className="demo-phone-home-pill" />
                 </div>
               </div>
             </div>

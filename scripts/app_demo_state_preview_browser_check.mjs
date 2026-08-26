@@ -73,6 +73,8 @@ try {
         pageOverflow: root.scrollWidth - root.clientWidth,
         previewLeft: previewBox?.left,
         previewRight: previewBox?.right,
+        copyBottom: copyBox?.bottom,
+        phoneTop: imageBox?.top,
         phoneWidth: imageBox?.width,
         tabsWidth: tabsBox?.width,
         buttonHeight: buttonBox?.height,
@@ -82,6 +84,7 @@ try {
     });
     assert.ok(layout.pageOverflow <= 1, `頁面水平溢出 ${layout.pageOverflow}px`);
     assert.ok(layout.previewLeft >= 0 && layout.previewRight <= layout.viewportWidth + 1);
+    assert.ok(layout.copyBottom <= layout.phoneTop, `文案與按鈕沒有在手機上方：${layout.copyBottom}px > ${layout.phoneTop}px`);
     assert.ok(layout.phoneWidth >= (viewport.width <= 390 ? 270 : 330));
     assert.ok(layout.tabsWidth <= 240, `切換按鈕群過寬 ${layout.tabsWidth}px`);
     assert.ok(layout.buttonHeight <= 38, `切換按鈕過高 ${layout.buttonHeight}px`);
@@ -98,10 +101,14 @@ try {
     await completeButton.click();
     assert.equal(await progressButton.getAttribute('aria-pressed'), 'false');
     assert.equal(await completeButton.getAttribute('aria-pressed'), 'true');
-    assert.match(await image.innerText(), /本月已結束/);
-    assert.match(await image.innerText(), /手機費 \$699 已完成/);
+    assert.match(await image.innerText(), /本月最後結果/);
+    assert.match(await image.innerText(), /正式診斷已完成/);
+    assert.match(await image.innerText(), /把本月重點帶進下月安排/);
+    assert.match(await image.innerText(), /查看下月計畫/);
+    assert.match(await image.innerText(), /已過完/);
     assert.match(await image.innerText(), /外食已超支 \$850/);
-    assert.match(await image.innerText(), /旅遊基金還差 \$1,000/);
+    assert.equal(await page.locator('.demo-phone-app-nav').count(), 0);
+    assert.equal(await page.locator('.demo-phone-home-zone').count(), 0);
 
     await progressButton.focus();
     await page.keyboard.press('Tab');
@@ -145,6 +152,15 @@ try {
   await screenshotPage.getByRole('button', { name: '本月已結束', exact: true }).click();
   await screenshotPreview.screenshot({ path: join(SCREENSHOT_DIR, '88la-demo-preview-390-complete.png') });
   await screenshotPage.close();
+
+  const desktopScreenshotPage = await browser.newPage({ viewport: { width: 1440, height: 1200 } });
+  await desktopScreenshotPage.goto(`${BASE_URL}/app?dev_admin=true`, { waitUntil: 'networkidle', timeout: 60_000 });
+  const desktopPreview = desktopScreenshotPage.locator('.demo-state-preview');
+  await desktopPreview.waitFor({ state: 'visible' });
+  await desktopScreenshotPage.addStyleTag({ content: 'header{visibility:hidden!important}' });
+  await desktopScreenshotPage.getByRole('button', { name: '本月已結束', exact: true }).click();
+  await desktopPreview.screenshot({ path: join(SCREENSHOT_DIR, '88la-demo-preview-1440-complete.png') });
+  await desktopScreenshotPage.close();
 
   console.table(rows);
   console.log('月份狀態切換、鍵盤焦點、手機預覽內容、無水平溢出與 reduced motion 全部通過');
