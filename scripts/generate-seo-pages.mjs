@@ -26,7 +26,7 @@ const pages = {
 };
 
 const resources = {
-  "credit-card-reserve": "試算每月信用卡帳單需要先預留多少現金，避免月底資金不足。",
+  "credit-card-reserve": "算出這個月刷的卡費還差多少沒預留，並看出扣掉卡費後真正可動用的錢。",
   "declutter-check": "用幾個問題判斷物品是否適合留下，降低衝動購物與重複支出。",
   "emergency-fund-quiz": "檢查目前的緊急預備金狀況，找到適合自己的下一步。",
   "golden-circle": "從為什麼、怎麼做與做什麼，找到能持續的存錢理由。",

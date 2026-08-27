@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>信用卡費預留試算表｜88La</title>
+<title>卡費預留規劃器｜88La</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@500;700;900&family=Noto+Sans+TC:wght@400;500;700&family=IBM+Plex+Mono:wght@500;600&display=swap" rel="stylesheet">
@@ -377,6 +377,52 @@
     .calc{box-shadow:none;border:1px solid var(--line);}
   }
 
+
+  .lane-label{
+    font-size:12px;
+    color:var(--orange-deep);
+    font-weight:700;
+    letter-spacing:0.08em;
+    margin:0 0 10px;
+  }
+  .lane-label.life{margin-top:18px;}
+
+  .place-row{display:block;}
+  .place-row label{display:block;margin-bottom:10px;}
+  .place-opts{display:flex;gap:8px;flex-wrap:wrap;}
+  .place-btn{
+    flex:1 1 auto;
+    background:var(--bg);
+    border:1px solid var(--line);
+    border-radius:100px;
+    padding:9px 14px;
+    font-family:'Noto Sans TC', sans-serif;
+    font-size:13px;
+    color:var(--ink);
+    cursor:pointer;
+    transition:background 0.18s ease, color 0.18s ease, border-color 0.18s ease;
+  }
+  .place-btn:hover{border-color:var(--sand-deep);}
+  .place-btn.active{
+    background:var(--orange);
+    border-color:var(--orange);
+    color:#FFFFFF;
+    font-weight:700;
+  }
+
+  .pace-note{
+    margin-top:10px;
+    padding:0 2px;
+    font-size:12.5px;
+    line-height:1.7;
+    color:var(--muted);
+  }
+  .pace-note b{color:var(--orange-deep);font-weight:700;}
+
+  @media (max-width:480px){
+    .place-btn{flex:1 1 100%;}
+  }
+
   @media (max-width:480px){
     .field-row .input-box{width:118px;}
     .results-secondary{grid-template-columns:1fr;}
@@ -410,8 +456,8 @@
 
   <section class="hero">
     <div class="eyebrow">刷多少，就先留多少</div>
-    <h1>算出你這個月<br>該<em>預留</em>多少卡費</h1>
-    <p>被卡費追著跑，很多時候不是花太多，而是這個月刷的錢，一直留給下個月薪水繳。填入三個數字，先看清楚真正能動用的錢剩多少。</p>
+    <h1>算出你這個月<br>還差多少<em>卡費</em>沒預留</h1>
+    <p>被卡費追著跑，很多時候不是花太多，而是這個月刷的錢，一直留給下個月的薪水繳。先看清楚已經留了多少、還差多少，剩下的才是真正能花的錢。</p>
 
     <div class="line-motif">
       <div class="seg"></div>
@@ -419,55 +465,82 @@
       <div class="seg gold"></div>
     </div>
     <div class="line-caption">
-      <span>已刷卡費</span>
+      <span>本月已刷</span>
       <span>真正可動用</span>
     </div>
   </section>
 
   <section class="calc">
-    <h2>卡費預留試算</h2>
-    <div class="sub">填入這個月的刷卡狀況，馬上看出還剩多少能花</div>
+    <h2>卡費預留規劃</h2>
+    <div class="sub">先看清楚還差多少卡費沒預留，剩下的錢才知道怎麼撐到發薪日</div>
 
-    <div class="group-label">這個月的數字</div>
+    <div class="group-label">第一步｜我的卡費現在在哪</div>
 
     <div class="field-row">
-      <label>這個月信用卡已經刷了多少<span class="hint">從月初累加到現在的刷卡金額</span></label>
+      <label>本月已刷<span class="hint">從月初累加到現在的刷卡金額</span></label>
       <div class="input-box"><span>$</span><input type="number" inputmode="numeric" id="spent" placeholder="0"></div>
     </div>
 
     <div class="field-row">
-      <label>距離下次發薪還有幾天</label>
-      <div class="input-box"><input type="number" inputmode="numeric" id="days" placeholder="0"><span style="margin-left:4px;">天</span></div>
+      <label>已預留卡費<span class="hint">已經為這筆卡費留起來的錢，還沒開始就填 0</span></label>
+      <div class="input-box"><span>$</span><input type="number" inputmode="numeric" id="reserved" placeholder="0"></div>
     </div>
+
+    <div class="field-row place-row" id="place-row" style="display:none;">
+      <label>這筆已預留卡費放在哪裡？<span class="hint">兩種情況的「真正可動用」算法不一樣</span></label>
+      <div class="place-opts">
+        <button type="button" class="place-btn active" data-place="same">還在這個帳戶裡</button>
+        <button type="button" class="place-btn" data-place="other">已經移到其他帳戶</button>
+      </div>
+    </div>
+
+    <div class="group-label">第二步｜我現在補得起嗎</div>
 
     <div class="field-row">
       <label>帳戶目前餘額<span class="hint">選填，填了才能算出真正可動用的錢</span></label>
       <div class="input-box"><span>$</span><input type="number" inputmode="numeric" id="balance" placeholder="0"></div>
     </div>
 
+    <div class="group-label">第三步｜還有多少時間</div>
+
+    <div class="field-row">
+      <label>距離繳款日還有幾天<span class="hint">卡費要補完的期限</span></label>
+      <div class="input-box"><input type="number" inputmode="numeric" id="due-days" placeholder="0"><span style="margin-left:4px;">天</span></div>
+    </div>
+
+    <div class="field-row">
+      <label>距離下次發薪還有幾天<span class="hint">剩下的錢要撐到這一天</span></label>
+      <div class="input-box"><input type="number" inputmode="numeric" id="pay-days" placeholder="0"><span style="margin-left:4px;">天</span></div>
+    </div>
+
     <div class="results">
+      <div class="lane-label">卡費線</div>
       <div class="result-card highlight full">
-        <div class="rlabel">建議預留卡費<span class="rsub">從現在開始，就把這筆錢當成已經花掉了</span></div>
-        <div class="rvalue" id="r-reserve">$0</div>
+        <div class="rlabel">尚未預留<span class="rsub" id="r-gap-sub">本月已刷 $0，已預留 $0</span></div>
+        <div class="rvalue" id="r-gap">$0</div>
       </div>
-      <div class="flow-arrow" id="flow-arrow" style="display:none;">↓ 帳戶餘額扣掉這筆預留</div>
+      <div class="pace-note" id="pace-note" style="display:none;"></div>
+
+      <div class="flow-arrow" id="flow-arrow" style="display:none;">↓ 帳戶餘額扣掉不能動的卡費</div>
+
+      <div class="lane-label life" id="life-label" style="display:none;">生活線</div>
       <div class="results-secondary" id="secondary-results" style="display:none;">
-        <div class="result-card">
-          <div class="rlabel">真正可動用的錢</div>
+        <div class="result-card" id="available-card">
+          <div class="rlabel">真正可動用<span class="rsub" id="r-available-sub"></span></div>
           <div class="rvalue" id="r-available">$0</div>
         </div>
-        <div class="result-card warn">
-          <div class="rlabel">距離發薪，平均每天可花</div>
+        <div class="result-card" id="daily-card">
+          <div class="rlabel">距離發薪，平均每天可用</div>
           <div class="rvalue" id="r-daily">$0</div>
         </div>
       </div>
     </div>
 
-    <div class="status-line ok" id="status-line">把「這個月已刷金額」當成已經花掉的錢，先預留起來，就能避免卡費追著薪水跑。</div>
+    <div class="status-line ok" id="status-line">把「本月已刷」當成已經花掉的錢，先預留起來，就能避免卡費追著薪水跑。</div>
 
     <div class="notes-box">
       <label>給下個月的自己</label>
-      <textarea placeholder="例如：開一個專用帳戶放卡費／每天記得看刷卡通知／這個月開始每週轉一次預留金額"></textarea>
+      <textarea placeholder="例如：開一個專用帳戶放卡費／每週轉一次預留金額／繳款日前把缺口補完"></textarea>
     </div>
   </section>
 
@@ -500,7 +573,7 @@
 
   <footer>
     <div class="cta-title">想讓這個自動幫你算？</div>
-    <div class="cta-sub">88La財務導航會直接幫你算出該預留多少卡費</div>
+    <div class="cta-sub">88La財務導航會在每次記帳後，自動更新已刷、已預留和真正可動用</div>
     <a href="https://site.88lamoney.com/app" class="ig-btn" target="_blank" rel="noopener">前往 88La財務導航 →</a>
     <div style="margin-top:14px;">
       <a href="https://www.instagram.com/every_dollars/" style="font-size:12px;color:var(--muted);text-decoration:underline;" target="_blank" rel="noopener">追蹤 Instagram</a>
@@ -512,16 +585,78 @@
 </div>
 
 <script>
-  const spentInput = document.getElementById('spent');
-  const daysInput = document.getElementById('days');
-  const balanceInput = document.getElementById('balance');
+  // ===== calc:start =====
+  // 純計算，不碰 DOM。驗算 script 直接抽這段來跑，確保測的是線上這份程式
+  function calcReserve(input){
+    const spent = Math.max(0, Number(input.spent) || 0);
+    const reserved = Math.max(0, Number(input.reserved) || 0);
+    const place = input.place === 'other' ? 'other' : 'same';
+    const hasBalance = input.balance !== '' && input.balance !== null && input.balance !== undefined;
+    const balance = hasBalance ? (Number(input.balance) || 0) : null;
+    const dueDays = Math.max(0, Math.floor(Number(input.dueDays) || 0));
+    const payDays = Math.max(0, Math.floor(Number(input.payDays) || 0));
 
-  const rReserve = document.getElementById('r-reserve');
-  const rAvailable = document.getElementById('r-available');
-  const rDaily = document.getElementById('r-daily');
-  const secondaryResults = document.getElementById('secondary-results');
+    const gap = Math.max(0, spent - reserved);        // 尚未預留
+    const surplus = Math.max(0, reserved - spent);    // 預留超過已刷的部分
+
+    // 已預留還在同一個帳戶：餘額裡有 max(已刷, 已預留) 這筆錢不能動
+    // 已預留移到其他帳戶：餘額只要再扣掉尚未預留的缺口
+    const locked = place === 'same' ? Math.max(spent, reserved) : gap;
+    const available = hasBalance ? balance - locked : null;
+
+    // 同帳戶卻預留大於餘額，代表這筆錢不可能還在這個帳戶裡（輸入互相矛盾）
+    const conflict = hasBalance && place === 'same' && reserved > balance;
+    // 扣掉已預留之後，帳戶裡還能拿來補缺口的錢
+    const freeBalance = hasBalance ? (place === 'same' ? balance - reserved : balance) : null;
+    // 補不起時要靠後續收入補上的金額（等於 尚未預留 減 還能動用的餘額）
+    const shortfall = (available !== null && available < 0) ? -available : null;
+
+    // 補的節奏用繳款日，無條件進位確保繳款日前補得完
+    const dailyFill = (gap > 0 && dueDays > 0) ? Math.ceil(gap / dueDays) : null;
+    const weeklyFill = (gap > 0 && dueDays >= 7) ? Math.ceil(gap / dueDays * 7) : null;
+    // 生活費用發薪日，無條件捨去避免高估可花的錢
+    const dailyLife = (available !== null && available >= 0 && payDays > 0) ? Math.floor(available / payDays) : null;
+
+    let state;
+    if (spent === 0 && reserved === 0) state = 'idle';
+    else if (conflict) state = 'conflict';
+    else if (available !== null && available < 0) state = 'short';
+    else if (gap === 0) state = 'done';
+    else if (dailyLife !== null && dailyLife < 200) state = 'tight';
+    else if (hasBalance) state = 'ok';
+    else state = 'gap';
+
+    return {
+      spent, reserved, place, hasBalance, balance, dueDays, payDays,
+      gap, surplus, locked, available, freeBalance, shortfall,
+      dailyFill, weeklyFill, dailyLife, state, conflict
+    };
+  }
+  // ===== calc:end =====
+
+  const spentInput = document.getElementById('spent');
+  const reservedInput = document.getElementById('reserved');
+  const balanceInput = document.getElementById('balance');
+  const dueDaysInput = document.getElementById('due-days');
+  const payDaysInput = document.getElementById('pay-days');
+
+  const placeRow = document.getElementById('place-row');
+  const placeBtns = Array.from(document.querySelectorAll('.place-btn'));
+
+  const rGap = document.getElementById('r-gap');
+  const rGapSub = document.getElementById('r-gap-sub');
+  const paceNote = document.getElementById('pace-note');
   const flowArrow = document.getElementById('flow-arrow');
+  const lifeLabel = document.getElementById('life-label');
+  const secondaryResults = document.getElementById('secondary-results');
+  const availableCard = document.getElementById('available-card');
+  const rAvailable = document.getElementById('r-available');
+  const rAvailableSub = document.getElementById('r-available-sub');
+  const dailyCard = document.getElementById('daily-card');
+  const rDaily = document.getElementById('r-daily');
   const statusLine = document.getElementById('status-line');
+
+  let place = 'same';
 
   function fmt(n){
     const v = Math.round(n);
@@ -529,49 +664,109 @@
     return (v < 0 ? '-$' : '$') + Math.abs(v).toLocaleString('zh-Hant-TW');
   }
 
+  function statusText(r){
+    if(r.state === 'idle'){
+      return ['ok', '把「本月已刷」當成已經花掉的錢，先預留起來，就能避免卡費追著薪水跑。'];
+    }
+    if(r.state === 'conflict'){
+      return ['', '已預留的金額比帳戶餘額還多，這筆錢應該不在這個帳戶裡。可以把上面的選項改成「已經移到其他帳戶」。'];
+    }
+    if(r.state === 'short'){
+      const head = '目前的餘額還不足以完整預留本月已刷的卡費。';
+      const body = r.place === 'same'
+        ? '你還需要預留 ' + fmt(r.gap) + '，帳戶餘額 ' + fmt(r.balance) + ' 裡有 ' + fmt(r.reserved) + ' 是已經預留的，能再動用的只有 ' + fmt(r.freeBalance) + '。'
+        : '你還需要預留 ' + fmt(r.gap) + '，目前帳戶餘額為 ' + fmt(r.balance) + '。';
+      return ['warn', head + body + '即使接下來完全不再花錢，仍有至少 ' + fmt(r.shortfall) + ' 需要由後續收入補上。'];
+    }
+    if(r.state === 'done'){
+      return r.surplus > 0
+        ? ['ok', '你已經把目前刷的卡費預留好了 ✓ 已預留比本月已刷多 ' + fmt(r.surplus) + '，這筆可以繼續留給之後的刷卡使用。']
+        : ['ok', '你已經把目前刷的卡費預留好了 ✓ 接下來每刷一筆，記得同步把一樣的金額移到卡費專用帳戶。'];
+    }
+    if(r.state === 'tight'){
+      return ['warn', '預留卡費之後，剩下天數平均每天可用的錢偏緊，這幾天要多留意非必要支出。'];
+    }
+    if(r.state === 'gap'){
+      return ['ok', '還有 ' + fmt(r.gap) + ' 沒預留。填入帳戶餘額，可以看出扣掉卡費之後真正能動用多少。'];
+    }
+    return ['ok', '還有 ' + fmt(r.gap) + ' 沒預留，記得實際移到卡費專用帳戶，帳單來的時候就不用從下個月薪水挖。'];
+  }
+
+  function paceText(r){
+    if(r.gap <= 0) return '';
+    // 補不起的時候，用繳款日均攤的節奏不成立，改講現在實際移得動多少
+    if(r.state === 'short'){
+      return r.freeBalance > 0
+        ? '帳戶裡現在最多能先移 <b>' + fmt(r.freeBalance) + '</b>，剩下的 <b>' + fmt(r.shortfall) + '</b> 要等後續收入進來。'
+        : '帳戶裡目前沒有能先移的錢，這 <b>' + fmt(r.gap) + '</b> 都要等後續收入進來。';
+    }
+    if(r.dueDays <= 0) return '填入距離繳款日的天數，可以看到每天要補多少。';
+    const head = '如果不想一次移出，繳款日前還有 <b>' + r.dueDays + ' 天</b>，每天約 <b>' + fmt(r.dailyFill) + '</b>';
+    return r.weeklyFill ? head + '，每週約 <b>' + fmt(r.weeklyFill) + '</b>。' : head + '。';
+  }
+
+  function availableSub(r){
+    if(r.place === 'other') return '餘額 ' + fmt(r.balance) + ' 扣掉尚未預留 ' + fmt(r.gap);
+    if(r.reserved > r.spent) return '餘額 ' + fmt(r.balance) + ' 扣掉已預留 ' + fmt(r.reserved);
+    return '餘額 ' + fmt(r.balance) + ' 扣掉本月已刷 ' + fmt(r.spent);
+  }
+
   function recalc(){
-    const spent = Number(spentInput.value) || 0;
-    const days = Number(daysInput.value) || 0;
-    const balanceRaw = balanceInput.value;
+    const r = calcReserve({
+      spent: spentInput.value,
+      reserved: reservedInput.value,
+      place: place,
+      balance: balanceInput.value,
+      dueDays: dueDaysInput.value,
+      payDays: payDaysInput.value
+    });
 
-    rReserve.textContent = fmt(spent);
+    // 沒有已預留就不用問放在哪裡，兩種算法此時完全一樣
+    placeRow.style.display = r.reserved > 0 ? 'block' : 'none';
 
-    if(balanceRaw !== ''){
-      const balance = Number(balanceRaw) || 0;
-      const available = balance - spent;
+    rGap.textContent = fmt(r.gap);
+    rGapSub.textContent = '本月已刷 ' + fmt(r.spent) + '，已預留 ' + fmt(r.reserved);
 
-      secondaryResults.style.display = 'grid';
+    const pace = paceText(r);
+    paceNote.innerHTML = pace;
+    paceNote.style.display = pace ? 'block' : 'none';
+
+    if(r.hasBalance){
       flowArrow.style.display = 'block';
-      rAvailable.textContent = fmt(available);
+      lifeLabel.style.display = 'block';
+      secondaryResults.style.display = 'grid';
+      rAvailable.textContent = fmt(r.available);
+      rAvailableSub.textContent = availableSub(r);
+      availableCard.classList.toggle('warn', r.available < 0);
 
-      if(available < 0){
-        // 可動用是負的，算平均每天可花沒有意義
+      if(r.available < 0){
         rDaily.textContent = '已透支';
-      } else if(days > 0){
-        rDaily.textContent = fmt(available / days);
+      } else if(r.payDays > 0){
+        rDaily.textContent = fmt(r.dailyLife);
       } else {
         rDaily.textContent = '未填天數';
       }
-
-      if(available < 0){
-        statusLine.className = 'status-line warn';
-        statusLine.textContent = '目前已刷金額超過帳戶餘額，這個月的卡費已經在借用下個月的薪水了，建議先暫緩非必要消費。';
-      } else if(days > 0 && (available / days) < 200){
-        statusLine.className = 'status-line warn';
-        statusLine.textContent = '預留卡費之後，剩下天數平均每天可花的錢偏緊，這幾天要多留意非必要支出。';
-      } else {
-        statusLine.className = 'status-line ok';
-        statusLine.textContent = '目前狀況還算穩定，記得把這筆建議預留卡費實際轉進專用帳戶，下個月帳單來就不會措手不及。';
-      }
+      // 紅色只留給真的偏緊或透支，健康數字不該長得像警告
+      dailyCard.classList.toggle('warn', r.state === 'short' || r.state === 'tight');
     } else {
-      secondaryResults.style.display = 'none';
       flowArrow.style.display = 'none';
-      statusLine.className = 'status-line ok';
-      statusLine.textContent = '把「這個月已刷金額」當成已經花掉的錢，先預留起來，就能避免卡費追著薪水跑。';
+      lifeLabel.style.display = 'none';
+      secondaryResults.style.display = 'none';
     }
+
+    const [tone, text] = statusText(r);
+    statusLine.className = 'status-line' + (tone ? ' ' + tone : '');
+    statusLine.textContent = text;
   }
 
-  [spentInput, daysInput, balanceInput].forEach(el => el.addEventListener('input', recalc));
+  [spentInput, reservedInput, balanceInput, dueDaysInput, payDaysInput]
+    .forEach(el => el.addEventListener('input', recalc));
+
+  placeBtns.forEach(btn => btn.addEventListener('click', () => {
+    place = btn.dataset.place;
+    placeBtns.forEach(b => b.classList.toggle('active', b === btn));
+    recalc();
+  }));
 
   const savePdfBtn = document.getElementById('save-pdf-btn');
   savePdfBtn.addEventListener('click', () => {
