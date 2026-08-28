@@ -13,23 +13,95 @@
  * 所以這裡會同時注入小琳的答案，並把示範月份標成使用者已結束的 CLOSED 狀態，再交給
  * 診斷引擎重算。診斷內容全部由 App 自己畫，這裡不人工撰寫任何診斷文字或金額。
  *
- * 前置：先在 88la-finance 跑 npm run dev（預設 5173）
- * App 改版後要更新示範頁：npm run build:demo
+ * App 改版後要更新示範頁：FINANCE_ROOT=/path/to/88la-finance npm run build:demo
+ * 產生器會從同一個 FINANCE_ROOT 啟動暫時 dev server、載入診斷引擎並複製 CSS，
+ * 不再允許三個來源各自指向不同工作目錄。
  */
 import { chromium } from 'playwright';
 import { writeFileSync, copyFileSync, mkdirSync, readFileSync, existsSync } from 'fs';
+import { createHash } from 'node:crypto';
+import { execFileSync, spawn } from 'node:child_process';
+import { createServer } from 'node:net';
 import { fileURLToPath } from 'url';
-import { dirname, join } from 'path';
+import { dirname, join, resolve } from 'path';
 import { pathToFileURL } from 'url';
 import { APP_LAUNCH_NOTICE } from '../src/siteLaunch.js';
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..');
 const OUT_DIR = join(ROOT, 'public', 'app-demo');
-const FINANCE = join(ROOT, '..', '88la-finance');
-/* 一定要對本機 dev server 抓：完成態的診斷要把答案注入引擎重算，而重算需要
-   window.__88laBuildDeepReportSnapshot（只在 import.meta.env.DEV 下存在），
-   凍結的 payload 也只有 dev server 才是獨立模組、攔得下來。正式站兩者都沒有。 */
-const SRC_URL = process.env.DEMO_SRC || 'http://localhost:5173/?demo=true';
+const FINANCE = resolve(process.env.FINANCE_ROOT || join(ROOT, '..', '88la-finance'));
+const requiredFinanceFiles = [
+  'package.json',
+  'src/main.js',
+  'src/demoData.js',
+  'src/style.css',
+  'api/_deep-report-engine.js',
+  'api/_deep-report-app-response.js',
+];
+const missingFinanceFiles = requiredFinanceFiles.filter(file => !existsSync(join(FINANCE, file)));
+if (missingFinanceFiles.length) {
+  throw new Error(`FINANCE_ROOT 不是完整的 88la-finance：${FINANCE}\n缺少：${missingFinanceFiles.join('、')}`);
+}
+const financeHead = execFileSync('git', ['rev-parse', 'HEAD'], { cwd: FINANCE, encoding: 'utf8' }).trim();
+const financeDirty = execFileSync('git', ['status', '--porcelain', '--untracked-files=no'], { cwd: FINANCE, encoding: 'utf8' }).trim();
+const financeFingerprint = createHash('sha256');
+requiredFinanceFiles.forEach(file => financeFingerprint.update(file).update(readFileSync(join(FINANCE, file))));
+const financeSourceId = `${financeHead}${financeDirty ? `+working-tree.${financeFingerprint.digest('hex').slice(0, 16)}` : ''}`;
+
+const findFreePort = () => new Promise((resolvePort, reject) => {
+  const server = createServer();
+  server.once('error', reject);
+  server.listen(0, '127.0.0.1', () => {
+    const address = server.address();
+    const port = typeof address === 'object' && address ? address.port : 0;
+    server.close(error => error ? reject(error) : resolvePort(port));
+  });
+});
+const financePort = await findFreePort();
+const SRC_URL = `http://127.0.0.1:${financePort}/?demo=true`;
+let financeServerLog = '';
+const financeServer = spawn(process.platform === 'win32' ? 'npm.cmd' : 'npm', [
+  'run', 'dev', '--', '--host', '127.0.0.1', '--port', String(financePort), '--strictPort',
+], {
+  cwd: FINANCE,
+  env: process.env,
+  stdio: ['ignore', 'pipe', 'pipe'],
+});
+for (const stream of [financeServer.stdout, financeServer.stderr]) {
+  stream.on('data', chunk => {
+    financeServerLog = (financeServerLog + chunk.toString()).slice(-12000);
+  });
+}
+const stopFinanceServer = async () => {
+  if (financeServer.exitCode !== null || financeServer.signalCode !== null) return;
+  financeServer.kill('SIGTERM');
+  await new Promise(resolveStop => {
+    const timer = setTimeout(() => {
+      if (financeServer.exitCode === null && financeServer.signalCode === null) financeServer.kill('SIGKILL');
+      resolveStop();
+    }, 3000);
+    financeServer.once('exit', () => {
+      clearTimeout(timer);
+      resolveStop();
+    });
+  });
+};
+const stopOnExit = () => financeServer.kill('SIGTERM');
+process.once('exit', stopOnExit);
+const waitForFinance = async () => {
+  for (let attempt = 0; attempt < 120; attempt += 1) {
+    if (financeServer.exitCode !== null) {
+      throw new Error(`88la-finance dev server 啟動失敗：\n${financeServerLog}`);
+    }
+    try {
+      const response = await fetch(SRC_URL);
+      if (response.ok) return;
+    } catch {}
+    await new Promise(resolveWait => setTimeout(resolveWait, 250));
+  }
+  throw new Error(`等待 88la-finance dev server 逾時：${SRC_URL}\n${financeServerLog}`);
+};
+await waitForFinance();
 
 /* 復刻的頁面。key 是 App 的頁面代號，底部導覽與「更多」面板都用同一組代號。 */
 const PAGES = [
@@ -38,19 +110,15 @@ const PAGES = [
 ];
 
 /* 小琳的補充答案
-   示範帳戶預設一題都沒答。這六題的答案決定訪客看到的結論，所以是內容決策，
-   不是技術細節：Barbara 於 2026-08-25 逐組看過引擎產出後選定這一組（保險那題
-   選「每月固定」，其餘維持不減少消費頻率、儲蓄缺口與變動支出無關、兩筆臨時
-   支出由本月收入支付）。
+   示範帳戶預設一題都沒答。這四題的答案決定訪客看到的結論，所以是內容決策，
+   不是技術細節：維持不減少食材與交通頻率，兩筆臨時支出由本月收入支付。
    換答案的方式：改這裡再跑 npm run build:demo，診斷會整份跟著變。
-   注意：官網示範情境的「給小琳的建議」三行（src/App.jsx 的 demoStory）講的是同一份
+   注意：官網示範情境的「給小琳的建議」（src/App.jsx 的 demoStory）講的是同一份
    診斷，改這裡要一起看那邊，不然同一個畫面上下兩段會互相矛盾。
 */
 const DIAG_ANSWERS = {
-  'fixed:保險': 'monthly',              // 保險每月都會有（本月實際 $4,800）
   'var:飲食-食材': 'cut:0',             // 下個月不減少次數，預算改成貼近實際
   'var:交通': 'cut:0',                  // 同上
-  'priority-drift': 'unrelated',        // 儲蓄沒完成跟變動支出增加無關
   'temporary-funding:120': 'fund:income', // 下午茶聚會 $280 由本月收入支付
   'temporary-funding:122': 'fund:income', // 衣服（網購）$1,450 由本月收入支付
 };
@@ -69,7 +137,17 @@ await page.waitForTimeout(6000);
    「答完題」的版本，App 就會自己畫出完成態的診斷。 */
 const snapshot = await page.evaluate(() => window.__88laBuildDeepReportSnapshot?.());
 if (!snapshot?.context) {
-  throw new Error('拿不到 window.__88laBuildDeepReportSnapshot()。這支只能對 88la-finance 的本機 dev server 抓（DEMO_SRC 預設 http://localhost:5173/?demo=true），正式站沒有這個函式。');
+  throw new Error(`拿不到 window.__88laBuildDeepReportSnapshot()。請確認 FINANCE_ROOT 指向可啟動的 88la-finance。來源：${SRC_URL}`);
+}
+const enginePath = pathToFileURL(join(FINANCE, 'api', '_deep-report-app-response.js')).href;
+const { buildDeepReportEngineResponse } = await import(enginePath);
+const openResponse = buildDeepReportEngineResponse(snapshot);
+const unanswered = openResponse?.diagnosisModel?.questions || [];
+const questionKeys = unanswered.filter(question => !question.answer).map(question => question.key);
+const staleAnswerKeys = Object.keys(DIAG_ANSWERS).filter(key => !questionKeys.includes(key));
+const missingAnswerKeys = questionKeys.filter(key => !Object.hasOwn(DIAG_ANSWERS, key));
+if (staleAnswerKeys.length || missingAnswerKeys.length) {
+  throw new Error(`Demo 答案與目前診斷問題不一致。多餘：${staleAnswerKeys.join('、') || '無'}；缺少：${missingAnswerKeys.join('、') || '無'}`);
 }
 snapshot.context.diagAnswers = DIAG_ANSWERS;
 /* 官網示範的是完整月底診斷，不能讓畫面一邊寫「進行中」，一邊又出現完整下月計畫。
@@ -83,8 +161,6 @@ snapshot.context.monthLifecycle = {
   reopenReason: '',
   diagnosisStaleAt: '',
 };
-const enginePath = pathToFileURL(join(FINANCE, 'api', '_deep-report-app-response.js')).href;
-const { buildDeepReportEngineResponse } = await import(enginePath);
 const answered = buildDeepReportEngineResponse(snapshot);
 const monthStatus = answered?.diagnosisModel?.monthState?.status;
 const diagnosisStatus = answered?.diagnosisModel?.diagnosisStatus;
@@ -93,6 +169,74 @@ if (monthStatus !== 'CLOSED' || diagnosisStatus !== 'FINALIZED' || pending.lengt
   throw new Error(`注入答案後診斷仍未完成（month=${monthStatus}，diagnosis=${diagnosisStatus}，未答 ${pending.length} 題：`
     + pending.map(q => q.key).join('、') + '）。App 的題目可能改過，請對照 diagnosisModel.questions 更新 DIAG_ANSWERS');
 }
+const openFocus = openResponse.appCurrentMonthFocus;
+const closedFocus = answered.appCurrentMonthFocus;
+const closedTopDiagnosis = answered.appTopDiagnoses?.[0] || closedFocus?.mainImpact || null;
+const closedGoal = closedFocus?.unfinishedGoals?.[0] || null;
+const openBudgetAlerts = Array.isArray(openFocus?.budgetAlerts) ? openFocus.budgetAlerts : [];
+const openGoals = Array.isArray(openFocus?.goals) ? openFocus.goals : [];
+const openPayments = Array.isArray(openFocus?.pendingPayments) ? openFocus.pendingPayments : [];
+const demoPhonePreview = {
+  sourceId: financeSourceId,
+  progress: {
+    stateLabel: openFocus?.heading || '本月目前',
+    balanceLabel: '可用餘額',
+    balance: Number(openFocus?.summary?.availableBalance) || 0,
+    daysRemaining: Number(openFocus?.summary?.daysRemaining) || 0,
+    activityHeading: openPayments.length ? `月底前還有 ${openPayments.length} 項待處理` : '目前沒有待繳款項',
+    activityItems: openPayments.map(item => ({
+      label: item.label,
+      amount: Number(item.amount) || 0,
+      body: item.body,
+      completed: false,
+    })),
+    budgetAlertCount: openBudgetAlerts.length,
+    budgetAlerts: openBudgetAlerts.slice(0, 1).map(item => ({
+      label: item.label,
+      budget: Number(item.budget) || 0,
+      actual: Number(item.actual) || 0,
+    })),
+    goals: openGoals.map(item => ({
+      label: item.label,
+      planned: Number(item.planned) || 0,
+      actual: Number(item.actual) || 0,
+    })),
+    nextMonthCardDue: Number(openResponse?.diagnosisModel?.metrics?.cards?.nextMonthDueAmount) || 0,
+  },
+  complete: {
+    stateLabel: '本月已結束',
+    balanceLabel: '可用餘額',
+    balance: Number(answered?.diagnosisModel?.metrics?.cashflow?.availableBalance) || 0,
+    daysRemaining: null,
+    milestone: `完成第 ${snapshot.months.filter(item => Array.isArray(item.txns) && item.txns.length > 0).length} 個月的財務整理`,
+    monthOutcome: {
+      hasCashGap: Boolean(answered.appMonthOutcome?.flags?.hasCashShortfall),
+      arrangementsComplete: !answered.appMonthOutcome?.flags?.hasUnfinishedGoals,
+      title: closedFocus?.overallResult?.title || '',
+    },
+    topDiagnosis: closedTopDiagnosis ? {
+      title: closedTopDiagnosis.title,
+      body: closedTopDiagnosis.reason || closedTopDiagnosis.body || '',
+      actionSummary: closedTopDiagnosis.actionSummary || '',
+    } : null,
+    goalGapLabel: closedGoal?.label || '',
+    nextAction: '把本月重點帶進下月安排',
+    activityHeading: '',
+    activityItems: [],
+    budgetAlertCount: 0,
+    budgetAlerts: [],
+    goals: closedGoal ? [{
+      label: closedGoal.label,
+      planned: Number(closedGoal.target) || 0,
+      actual: Number(closedGoal.actual) || 0,
+    }] : [],
+    nextMonthCardDue: Number(answered?.diagnosisModel?.metrics?.cards?.nextMonthDueAmount) || 0,
+  },
+};
+writeFileSync(
+  join(ROOT, 'src', 'demoPhonePreviewGenerated.js'),
+  `// 自動產生，請勿手改。來源由 scripts/build_app_demo.mjs 鎖定。\nexport const DEMO_PHONE_PREVIEW_GENERATED = Object.freeze(${JSON.stringify(demoPhonePreview, null, 2)});\n`,
+);
 const frozen = { ...answered, snapshot: { month: answered.snapshot?.month, viewMode: answered.snapshot?.viewMode } };
 await page.route('**/demoReportPayload.js*', route => route.fulfill({
   status: 200,
@@ -595,12 +739,14 @@ const html = `<!DOCTYPE html>
 <title>88La財務導航 示範</title>
 <meta name="robots" content="noindex">
 <meta name="description" content="88La財務導航示範帳戶畫面，資料為示範用途。">
+<meta name="88la-finance-source" content="${financeSourceId}">
 <link rel="stylesheet" href="./app.css">
 <style>${SHELL_CSS}</style>
 </head>
 <body>
 
 <!-- 這份頁面由 scripts/build_app_demo.mjs 產生，請勿手改；要更新請重跑 npm run build:demo -->
+<!-- finance-source: ${financeSourceId} -->
 <!-- page-sizes: ${JSON.stringify(Object.fromEntries(PAGES.map(p => [p, grabbed[p].length])))} -->
 
 <div class="demo-top">
@@ -636,3 +782,7 @@ console.log('');
 console.log('產出  public/app-demo/index.html  ' + kb(normalizedHtml.length));
 console.log('      public/app-demo/app.css     ' + kb(readFileSync(join(OUT_DIR, 'app.css')).length));
 console.log('      復刻頁面 ' + PAGES.length + ' 頁：' + PAGES.map(p => PAGE_LABEL[p]).join('、'));
+console.log('      src/demoPhonePreviewGenerated.js');
+console.log('      Finance source ' + financeSourceId);
+await stopFinanceServer();
+process.removeListener('exit', stopOnExit);

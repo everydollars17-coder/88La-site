@@ -697,6 +697,14 @@ select.inp{background:#F5EEE9 url("data:image/svg+xml,%3Csvg xmlns='http://www.w
 .diag-month-status-head{display:flex;justify-content:space-between;gap:12px;align-items:flex-start}.diag-month-status-head>div:first-child{display:flex;flex-direction:column;gap:3px}.diag-month-status-head span{font-size:10px;color:#767676}.diag-month-status-head strong{font-size:15px;color:#3D3030}
 .diag-month-status-badges{display:flex;flex-wrap:wrap;justify-content:flex-end;gap:5px}.diag-month-status-badges span{padding:4px 7px;border-radius:999px;background:#F4F1EE;color:#5A5050;font-weight:700}
 .diag-month-status p{font-size:11px;line-height:1.75;color:#6A6060;margin:9px 0 0}.diag-month-status-actions{display:flex;flex-wrap:wrap;gap:7px;margin-top:10px}.diag-month-status-actions button{min-height:44px}
+.diag-month-status-closed{padding:9px 12px;margin-bottom:12px;border-radius:8px;background:#FAF9F7;box-shadow:none}
+.diag-month-status-closed:hover{transform:none!important;box-shadow:none!important}
+.diag-month-status-closed .diag-month-status-head{align-items:center;gap:8px;flex-wrap:wrap}
+.diag-month-status-closed .diag-month-status-head>div:first-child{flex-direction:row;align-items:baseline;gap:7px}
+.diag-month-status-closed .diag-month-status-head strong{font-size:12px}
+.diag-month-status-closed .diag-month-status-badges{gap:4px;margin-left:auto}
+.diag-month-status-closed .diag-month-status-badges span{padding:2px 6px;font-size:9px;line-height:1.5}
+.diag-month-status-closed p{margin:4px 0 0;font-size:10px;line-height:1.6}
 .diag-confirm-flow{padding:18px 16px;margin-bottom:16px}
 .diag-confirm-flow-head h2{font-size:16px;line-height:1.55;color:#1A1A1A;margin:0}
 .diag-confirm-flow-head p{font-size:11px;line-height:1.75;color:#6A6060;margin:4px 0 0}
@@ -749,7 +757,7 @@ select.inp{background:#F5EEE9 url("data:image/svg+xml,%3Csvg xmlns='http://www.w
 .diag-stage-result>div{display:flex;gap:8px;margin-top:12px}
 .diag-stage-result button{flex:1;font-size:11px;padding:9px}
 @media(max-width:640px){.diag-stage-progress{grid-template-columns:1fr}.diag-stage-progress>div{padding:7px 8px}.diag-prepaid-heading{align-items:flex-start}.diag-stage-result>div{flex-direction:column}}
-@media(max-width:640px){.diag-month-status-head{flex-direction:column}.diag-month-status-badges{justify-content:flex-start}.diag-prepaid-summary-metrics{grid-template-columns:1fr}}
+@media(max-width:640px){.diag-month-status-head{flex-direction:column}.diag-month-status-badges{justify-content:flex-start}.diag-month-status-closed .diag-month-status-head{flex-direction:row;align-items:center}.diag-month-status-closed .diag-month-status-badges{justify-content:flex-start}.diag-prepaid-summary-metrics{grid-template-columns:1fr}}
 .diag-action-provenance{display:flex;flex-direction:column;align-items:flex-start}
 [data-card-payment-arrangement]{scroll-margin-top:90px}
 [data-card-payment-arrangement].diagnosis-card-highlight{outline:2px solid #C85A14;box-shadow:0 0 0 5px rgba(200,90,20,.12);background:#FFF8F2}

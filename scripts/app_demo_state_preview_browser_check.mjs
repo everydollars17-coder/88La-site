@@ -56,11 +56,12 @@ try {
     assert.equal(await page.locator('.demo-state-note').count(), 0);
     assert.equal(await image.getAttribute('role'), 'img');
     assert.match(await image.innerText(), /本月目前/);
-    assert.match(await image.innerText(), /手機費 \$699/);
-    assert.match(await image.innerText(), /外食已超支 \$320/);
-    assert.match(await image.innerText(), /緊急備用金還差 \$1,500/);
-    assert.match(await image.innerText(), /旅遊基金已完成/);
-    assert.match(await image.innerText(), /已有 \$2,480 卡費會在下月付款/);
+    assert.match(await image.innerText(), /可用餘額\s+\$2,876/);
+    assert.match(await image.innerText(), /目前沒有待繳款項/);
+    assert.match(await image.innerText(), /4 項預算需要注意/);
+    assert.match(await image.innerText(), /保險已超支 \$3,600/);
+    assert.match(await image.innerText(), /儲蓄目標還差 \$4,000/);
+    assert.doesNotMatch(await image.innerText(), /卡費會在下月付款/);
 
     const layout = await page.evaluate(() => {
       const root = document.documentElement;
@@ -101,12 +102,31 @@ try {
     await completeButton.click();
     assert.equal(await progressButton.getAttribute('aria-pressed'), 'false');
     assert.equal(await completeButton.getAttribute('aria-pressed'), 'true');
+    assert.match(await image.innerText(), /本月狀態/);
+    assert.match(await image.innerText(), /完成第 6 個月的財務整理/);
     assert.match(await image.innerText(), /本月最後結果/);
-    assert.match(await image.innerText(), /正式診斷已完成/);
+    assert.match(await image.innerText(), /本月沒有現金缺口，但原訂財務安排沒有全部完成/);
+    assert.match(await image.innerText(), /最值得注意/);
+    assert.match(await image.innerText(), /「保險」有週期性支出，但每月準備不足/);
+    assert.match(await image.innerText(), /目前預算 \$1,200，本月實際 \$4,800/);
+    assert.match(await image.innerText(), /未完成目標/);
+    assert.match(await image.innerText(), /儲蓄還差 \$4,000/);
     assert.match(await image.innerText(), /把本月重點帶進下月安排/);
     assert.match(await image.innerText(), /查看下月計畫/);
     assert.match(await image.innerText(), /已過完/);
-    assert.match(await image.innerText(), /外食已超支 \$850/);
+    const closedOrder = await page.evaluate(() => {
+      const selectors = [
+        '.demo-phone-closed-status',
+        '.demo-phone-closed-milestone',
+        '.demo-phone-closed-focus',
+        '.demo-phone-closed-focus.secondary',
+        '.demo-phone-closed-goal',
+        '.demo-phone-closed-action',
+      ];
+      return selectors.map(selector => document.querySelector(selector)?.getBoundingClientRect().top);
+    });
+    assert.ok(closedOrder.every(Number.isFinite));
+    assert.deepEqual([...closedOrder].sort((a, b) => a - b), closedOrder);
     assert.equal(await page.locator('.demo-phone-app-nav').count(), 0);
     assert.equal(await page.locator('.demo-phone-home-zone').count(), 0);
 

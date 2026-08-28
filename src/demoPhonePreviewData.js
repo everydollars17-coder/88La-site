@@ -1,51 +1,6 @@
-export const DEMO_PHONE_PREVIEW = Object.freeze({
-  progress: Object.freeze({
-    stateLabel: "本月目前",
-    balanceLabel: "可用餘額",
-    balance: 2680,
-    daysRemaining: 8,
-    activityHeading: "月底前還有 1 項待處理",
-    activityItems: Object.freeze([
-      Object.freeze({
-        label: "手機費",
-        amount: 699,
-        body: "本月目前還沒看到付款紀錄。",
-        completed: false,
-      }),
-    ]),
-    budgetAlerts: Object.freeze([
-      Object.freeze({ label: "外食", budget: 3500, actual: 3820 }),
-    ]),
-    goals: Object.freeze([
-      Object.freeze({ label: "緊急備用金", planned: 3000, actual: 1500 }),
-      Object.freeze({ label: "旅遊基金", planned: 1000, actual: 1200 }),
-    ]),
-    nextMonthCardDue: 2480,
-  }),
-  complete: Object.freeze({
-    stateLabel: "本月已結束",
-    balanceLabel: "本月剩餘",
-    balance: 3260,
-    daysRemaining: null,
-    activityHeading: "本月已完成 1 項處理",
-    activityItems: Object.freeze([
-      Object.freeze({
-        label: "手機費",
-        amount: 699,
-        body: "已在本月留下付款紀錄。",
-        completed: true,
-      }),
-    ]),
-    budgetAlerts: Object.freeze([
-      Object.freeze({ label: "外食", budget: 4500, actual: 5350 }),
-    ]),
-    goals: Object.freeze([
-      Object.freeze({ label: "緊急備用金", planned: 4000, actual: 4000 }),
-      Object.freeze({ label: "旅遊基金", planned: 3000, actual: 2000 }),
-    ]),
-    nextMonthCardDue: 2480,
-  }),
-});
+import { DEMO_PHONE_PREVIEW_GENERATED } from "./demoPhonePreviewGenerated.js";
+
+export const DEMO_PHONE_PREVIEW = DEMO_PHONE_PREVIEW_GENERATED;
 
 export const deriveDemoPhonePreview = state => {
   const source = DEMO_PHONE_PREVIEW[state] || DEMO_PHONE_PREVIEW.progress;
@@ -59,15 +14,32 @@ export const deriveDemoPhonePreview = state => {
     completed: item.actual >= item.planned,
   }));
   const unfinishedGoalCount = goals.filter(item => !item.completed).length;
+  const goalGap = state === "complete"
+    ? goals.find(item => item.label === source.goalGapLabel && !item.completed) || null
+    : null;
+  const topDiagnosis = source.topDiagnosis || null;
+  const monthOutcome = source.monthOutcome
+    ? {
+        ...source.monthOutcome,
+        title: source.monthOutcome.title || (source.monthOutcome.hasCashGap
+          ? "本月出現現金缺口。"
+          : source.monthOutcome.arrangementsComplete
+            ? "本月沒有現金缺口，原訂安排也已完成。"
+            : "本月沒有現金缺口，但原訂安排沒有全部完成。"),
+      }
+    : null;
 
   return {
     ...source,
     budgetAlerts,
     goals,
+    goalGap,
+    topDiagnosis,
+    monthOutcome,
     unfinishedGoalCount,
     summaryItems: [
       `${source.activityItems.length} 項${state === "complete" ? "完成事項" : "待處理"}`,
-      `${budgetAlerts.length} 項預算提醒`,
+      `${source.budgetAlertCount ?? budgetAlerts.length} 項預算提醒`,
       `${unfinishedGoalCount} 個目標未完成`,
     ],
   };

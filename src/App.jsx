@@ -552,12 +552,46 @@ button{font-family:inherit;cursor:pointer;border:none;border-radius:8px;}
   font-weight:600;
   line-height:1.65;
 }
+.demo-phone-closed-milestone{
+  padding:10px 12px;
+  background:#F8F6FF;
+  border:1px solid #D9D0FF;
+  border-radius:10px;
+  color:#554B50;
+  font-size:10px;
+  font-weight:700;
+  line-height:1.5;
+}
 .demo-phone-closed-focus{
   padding:16px 14px;
   background:#FFF8F2;
   border:1px solid #F2CDB5;
   border-radius:12px;
   box-shadow:0 3px 7px rgba(61,26,10,.06);
+}
+.demo-phone-closed-focus.secondary{
+  background:${WHITE};
+  border-color:#E8E0D9;
+  box-shadow:0 3px 7px rgba(61,26,10,.05);
+}
+.demo-phone-closed-goal{
+  padding:14px;
+  background:${WHITE};
+  border-radius:12px;
+  box-shadow:0 3px 7px rgba(61,26,10,.06);
+}
+.demo-phone-closed-goal strong{
+  display:block;
+  margin-top:6px;
+  color:#332A25;
+  font-size:13px;
+}
+.demo-phone-closed-goal span{
+  display:block;
+  margin-top:5px;
+  color:#685F59;
+  font-size:10px;
+  line-height:1.6;
 }
 .demo-phone-closed-focus strong{
   display:block;
@@ -636,6 +670,19 @@ button{font-family:inherit;cursor:pointer;border:none;border-radius:8px;}
   gap:5px;
   margin-top:9px;
 }
+.demo-phone-closed-status{
+  padding:10px 12px;
+  box-shadow:none;
+  border:1px solid #E8E0D9;
+}
+.demo-phone-closed-status-row{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:8px;
+}
+.demo-phone-closed-status strong{margin-top:0;}
+.demo-phone-closed-status .demo-phone-closed-badges{margin-top:7px;}
 .demo-phone-closed-badges span{
   padding:4px 7px;
   background:#F2EEEA;
@@ -806,9 +853,9 @@ const DEFAULTS = {
     // 卡費預留 13,794／可用餘額 2,876／儲蓄 4,000 對目標 8,000
     personaFacts: "月薪 NT$42,000，台北租屋，每月房租 NT$13,000\n兩張信用卡加一張簽帳卡，結帳日都是 20 號\n目標：緊急備用金存到 NT$60,000，同時累積 NT$80,000 頭期款\n有記帳習慣但常常「記了，然後呢？」月初信心滿滿，月中容易失控，月底發現目標又落後",
     findingsLabel: "系統怎麼看",
-    findings: "固定支出超出預算 NT$3,489，主因是半年繳的車險 NT$3,600 沒編進預算\n購物類別花了 NT$4,540，比預算高出 82%\n衝動消費 4 筆共 NT$1,950，其中星期五就佔了 NT$1,850\n扣掉本期要預留的卡費 NT$13,794，這個月只剩 NT$2,876 可以動用\n儲蓄目標 NT$8,000 只做到 NT$4,000，照這個速度緊急備用金要多花 5 個月",
+    findings: "本月沒有現金缺口，但原訂財務安排沒有全部完成\n固定支出超出原安排 NT$3,489，變動總支出超出 NT$2,235，但正常日常支出低於預算 NT$1,445\n最值得注意的是半年繳保險沒有提前準備，本月實際 NT$4,800\n扣除本期卡費 NT$13,794 與儲蓄 NT$4,000 後，可用餘額為 NT$2,876\n儲蓄目標 NT$8,000，本月完成 NT$4,000，還差 NT$4,000",
     suggestionsLabel: "給小琳的建議",
-    suggestions: "保險預算 NT$1,200 對不上實際的 NT$4,800，下個月先把預算調到符合實際\n本月有 NT$4,000 儲蓄目標未完成，先決定是否延到下個月\n臨時購物 NT$1,450 下次先存一筆備用金，衝動購物先放願望清單三天",
+    suggestions: "半年繳保險 NT$3,600，之後每月預存 NT$600，不把整筆加進下月固定預算\n購物的 NT$1,450 已確認為臨時支出，下月先維持原本日常預算\n飲食食材調整為 NT$2,900，交通調整為 NT$2,000\n本月還差 NT$4,000 儲蓄，先決定是否帶到下月安排\n衝動消費 4 筆共 NT$1,950，下次先放進願望清單三天",
     lockNote: "以上是示範帳戶「小琳」8 月的完整診斷。你的畫面會依自己的記帳結果產生。"
   },
   resourcesCopy: {
@@ -1722,10 +1769,8 @@ const normalizePrivacyContent = value => {
 const normalizeValueForKey = (key, value) => key === "privacyContent"
   ? normalizePrivacyContent(value)
   : normalizeStoredContent(value);
-// demoStory 的三段內容講的是 88la-finance 示範帳戶的實際數字。示範帳戶在
-// 2026-08-17 重新配平過（逾期畫面、儲蓄率自相矛盾、餘額逼近 0 都修掉了），
-// 舊文案的每一句都對不上：說網購超支 62%（實際是購物 82%）、說可用餘額出現
-// 負值缺口（實際是 +$2,876）、建議把只有 $2,500 的預算下修 $3,000。
+// demoStory 的三段內容講的是 88la-finance 示範帳戶的實際數字。2026-08-28
+// 已改成先呈現整月結果，再呈現最值得處理的局部主因，週期性保險也改為每月預存。
 //
 // 這些字存在 Firestore，改程式碼的預設值對線上沒有效果，所以在讀取時逐欄
 // 比對：只有當存的還是那份對不上的舊文案（用它獨有的句子辨識）才換成新的。
@@ -1735,12 +1780,8 @@ const normalizeValueForKey = (key, value) => key === "privacyContent"
 // 畫面上不再有任何鎖點，「登入後查看」與「跟實際 App 一樣的流程」兩句都對不上了。
 const STALE_DEMO_STORY_MARKERS = {
   personaFacts: ["NT$150,000 頭期款基金", "日常消費卡"],
-  findings: ["高出 62%", "出現負值缺口"],
-  // 「攤成每月」：2026-08-25 起示範頁的診斷改由診斷引擎產生（見 88la-site/scripts/
-  // build_app_demo.mjs 的 DIAG_ANSWERS），引擎給的建議是「保險預算 $1,200 調到實際的
-  // $4,800」，沒有攤提這個選項。舊文案寫「車險攤成每月 $600」，跟手機畫面裡的診斷
-  // 擺在同一個螢幕上互相矛盾，所以認這個詞就換掉。
-  suggestions: ["網購類別預算下修", "聚餐類別出現 3 次", "攤成每月", "先存後花", "出門前先想好當天的額度"],
+  findings: ["高出 62%", "出現負值缺口", "比預算高出 82%", "照這個速度緊急備用金要多花 5 個月"],
+  suggestions: ["網購類別預算下修", "聚餐類別出現 3 次", "先存後花", "出門前先想好當天的額度", "保險預算 NT$1,200 對不上實際的 NT$4,800", "下次先存一筆備用金"],
   note: ["跟實際 App 一樣的流程"],
   lockNote: ["登入後查看", "🔒"],
 };
@@ -3791,33 +3832,39 @@ function DemoPhoneReport({ state }) {
   const data = deriveDemoPhonePreview(state);
 
   if (state === "complete") {
-    const primaryBudgetAlert = data.budgetAlerts[0];
-
     return (
       <div className="demo-phone-report demo-phone-report-closed">
-        <div className="demo-phone-closed-intro">完成本月的財務整理，接著把結果帶進下月安排。</div>
-        <section className="demo-phone-closed-focus">
-          <p className="demo-phone-report-label">本月最後結果</p>
-          <strong>{primaryBudgetAlert.label}已超支 {demoMoney(primaryBudgetAlert.over)}</strong>
-          <span>預算 {demoMoney(primaryBudgetAlert.budget)}，本月實際使用 {demoMoney(primaryBudgetAlert.actual)}。</span>
-          <span className="demo-phone-closed-link">看判斷依據</span>
-        </section>
-        <section className="demo-phone-closed-confirm">
-          <strong>✓ 正式診斷已完成</strong>
-          <span className="demo-phone-closed-control">重新檢視答案</span>
-        </section>
-        <section className="demo-phone-closed-action">
-          <span>下一步</span>
-          <strong>把本月重點帶進下月安排</strong>
-          <span className="demo-phone-closed-primary">查看下月計畫</span>
-        </section>
         <section className="demo-phone-closed-status">
-          <span>本月狀態</span>
-          <strong>已過完</strong>
+          <div className="demo-phone-closed-status-row">
+            <span>本月狀態</span>
+            <strong>已過完</strong>
+          </div>
           <div className="demo-phone-closed-badges">
             <span>診斷 已完成</span>
             <span>下月計畫 待安排</span>
           </div>
+        </section>
+        <div className="demo-phone-closed-milestone">🎉 {data.milestone}</div>
+        <section className="demo-phone-closed-focus">
+          <p className="demo-phone-report-label">本月最後結果</p>
+          <strong>{data.monthOutcome.title}</strong>
+          <span>{data.balanceLabel} {demoMoney(data.balance)}，但原訂目標仍有差額。</span>
+        </section>
+        <section className="demo-phone-closed-focus secondary">
+          <p className="demo-phone-report-label">最值得注意</p>
+          <strong>{data.topDiagnosis.title}</strong>
+          <span>{data.topDiagnosis.body}</span>
+          <span className="demo-phone-closed-link">看判斷依據</span>
+        </section>
+        <section className="demo-phone-closed-goal">
+          <p className="demo-phone-report-label">未完成目標</p>
+          <strong>{data.goalGap.label}還差 {demoMoney(data.goalGap.remaining)}</strong>
+          <span>目標 {demoMoney(data.goalGap.planned)}，本月完成 {demoMoney(data.goalGap.actual)}。</span>
+        </section>
+        <section className="demo-phone-closed-action">
+          <span>下一步</span>
+          <strong>{data.nextAction}</strong>
+          <span className="demo-phone-closed-primary">查看下月計畫</span>
         </section>
       </div>
     );
@@ -3850,7 +3897,7 @@ function DemoPhoneReport({ state }) {
           ))}
         </div>
         <div className="demo-phone-report-block">
-          <p className="demo-phone-report-heading">{data.budgetAlerts.length} 項預算需要注意</p>
+          <p className="demo-phone-report-heading">{data.budgetAlertCount ?? data.budgetAlerts.length} 項預算需要注意</p>
           {data.budgetAlerts.map(item => (
             <div key={item.label} className="demo-phone-report-item">
               <strong>{item.label}已超支 {demoMoney(item.over)}</strong>
@@ -3872,13 +3919,15 @@ function DemoPhoneReport({ state }) {
             </div>
           ))}
         </div>
-        <div className="demo-phone-report-block">
-          <p className="demo-phone-report-heading">下月提醒</p>
-          <div className="demo-phone-report-item">
-            <strong>已有 {demoMoney(data.nextMonthCardDue)} 卡費會在下月付款</strong>
-            <span>這是本月已經發生、付款時間落在下個月的支出。</span>
+        {data.nextMonthCardDue > 0 && (
+          <div className="demo-phone-report-block">
+            <p className="demo-phone-report-heading">下月提醒</p>
+            <div className="demo-phone-report-item">
+              <strong>已有 {demoMoney(data.nextMonthCardDue)} 卡費會在下月付款</strong>
+              <span>這是本月已經發生、付款時間落在下個月的支出。</span>
+            </div>
           </div>
-        </div>
+        )}
       </section>
     </div>
   );
