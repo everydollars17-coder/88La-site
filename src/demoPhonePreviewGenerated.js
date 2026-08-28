@@ -1,6 +1,6 @@
 // 自動產生，請勿手改。來源由 scripts/build_app_demo.mjs 鎖定。
 export const DEMO_PHONE_PREVIEW_GENERATED = Object.freeze({
-  "sourceId": "27a8202a78c3c58e23f09d02bb46c74e7377cb4a",
+  "sourceId": "6c64ce11dbb1a1c023c10d389ffb11ee2be52530",
   "progress": {
     "stateLabel": "本月目前",
     "balanceLabel": "可用餘額",
