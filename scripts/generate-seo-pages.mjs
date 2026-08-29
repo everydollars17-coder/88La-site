@@ -26,6 +26,7 @@ const pages = {
 };
 
 const resources = {
+  "budget-planner": "把收入分配到固定支出、儲蓄、大筆開銷預存和生活支出，算出這個月可以放心花的金額。",
   "credit-card-reserve": "算出這個月刷的卡費還差多少沒預留，並看出扣掉卡費後真正可動用的錢。",
   "declutter-check": "用幾個問題判斷物品是否適合留下，降低衝動購物與重複支出。",
   "emergency-fund-quiz": "檢查目前的緊急預備金狀況，找到適合自己的下一步。",

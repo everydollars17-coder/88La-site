@@ -22,6 +22,7 @@ const STATIC_PAGES = [
   { loc: "/resources/spending-check/index.html", changefreq: "monthly", priority: "0.7" },
   { loc: "/resources/golden-circle/index.html", changefreq: "monthly", priority: "0.7" },
   { loc: "/resources/credit-card-reserve/index.html", changefreq: "monthly", priority: "0.7" },
+  { loc: "/resources/budget-planner/index.html", changefreq: "monthly", priority: "0.7" },
   { loc: "/resources/declutter-check/index.html", changefreq: "monthly", priority: "0.7" },
   { loc: "/resources/insurance-safety-fund/index.html", changefreq: "monthly", priority: "0.7" },
   { loc: "/resources/survival-line/index.html", changefreq: "monthly", priority: "0.7" },

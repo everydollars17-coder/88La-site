@@ -1,0 +1,662 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>預算分配練習器｜88La</title>
+<meta name="description" content="把收入分配到固定支出、儲蓄、大筆開銷預存和生活支出，算出這個月可以放心花的金額。">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700;900&display=swap" rel="stylesheet">
+</head>
+<body>
+<style>
+
+  .b88 {
+    --paper: #F5F3ED;
+    --paper-deep: #ECE7D9;
+    --ink: #1F2A24;
+    --ink-soft: #5B655E;
+    --line: #DCD5C7;
+    --teal: #2F6F62;
+    --teal-dark: #1C463C;
+    --teal-tint: #E4EEEB;
+    --gold: #C99A3D;
+    --gold-tint: #F7EDD9;
+    --brick: #AE4A3E;
+    --brick-tint: #F5E4E1;
+    --card: #FFFFFF;
+    --brand-orange: #E8551E;
+    --brand-orange-deep: #C96B2F;
+    --tag-bg: #E7E0D2;
+    --tag-ink: #928C7C;
+    --peach: #FFF3EA;
+    font-family: 'Noto Sans TC', -apple-system, BlinkMacSystemFont, sans-serif;
+    color: var(--ink);
+    background: var(--paper);
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+  }
+  .b88 * { box-sizing: border-box; }
+  .b88 .wrap { max-width: 720px; margin: 0 auto; padding: 0 20px 64px; }
+
+  /* ---------- Hero ---------- */
+  .b88 .hero { padding: 40px 20px 28px; text-align: center; }
+  .b88 .hero .tag {
+    display: inline-block; font-size: 13px; letter-spacing: .08em; color: var(--teal-dark);
+    background: var(--teal-tint); padding: 4px 12px; border-radius: 999px; margin-bottom: 14px;
+  }
+  .b88 .hero h1 {
+    font-weight: 900; font-size: clamp(22px, 5vw, 30px);
+    margin: 0 0 10px; letter-spacing: 0;
+  }
+  .b88 .hero p { color: var(--ink-soft); font-size: 15px; max-width: 480px; margin: 0 auto; }
+
+  /* ---------- Sticky progress ---------- */
+  .b88 .progress-shell { position: sticky; top: 0; z-index: 20; background: rgba(245,243,237,.94); backdrop-filter: blur(6px); border-bottom: 1px solid var(--line); padding: 10px 20px 12px; }
+  .b88 .progress-inner { max-width: 720px; margin: 0 auto; }
+  .b88 .progress-track { display: flex; height: 14px; border-radius: 999px; overflow: hidden; background: var(--paper-deep); border: 1px solid var(--line); }
+  .b88 .progress-seg { height: 100%; transition: width .35s ease; }
+  .b88 .progress-meta { display: flex; justify-content: space-between; font-size: 12.5px; color: var(--ink-soft); margin-top: 6px; }
+  .b88 .progress-meta strong { color: var(--ink); font-weight: 700; }
+  .b88 .progress-meta.over strong.remain { color: var(--brick); }
+
+  /* ---------- Cards ---------- */
+  .b88 .card { background: var(--card); border: 1px solid var(--line); border-radius: 18px; padding: 26px 24px; margin-top: 22px; }
+  .b88 .card-head { display: flex; align-items: baseline; gap: 10px; margin-bottom: 4px; }
+  .b88 .card-head .num { font-weight: 900; font-size: 14px; color: var(--teal); }
+  .b88 .card-head h2 { font-size: 19px; margin: 0; font-weight: 700; }
+  .b88 .card .helper { color: var(--ink-soft); font-size: 13.5px; margin: 4px 0 18px; }
+
+  .b88 .row { display: flex; gap: 8px; align-items: center; margin-bottom: 10px; }
+  .b88 .row input[type="text"] {
+    flex: 1.1; min-width: 0; border: 1px solid var(--line); border-radius: 10px; padding: 10px 12px;
+    font-size: 14.5px; font-family: inherit; background: var(--paper); color: var(--ink);
+  }
+  .b88 .row input[type="number"] {
+    flex: .8; min-width: 0; border: 1px solid var(--line); border-radius: 10px; padding: 10px 12px;
+    font-size: 14.5px; font-family: inherit; text-align: right; background: var(--paper); color: var(--ink);
+  }
+  .b88 .row input[type="month"] {
+    flex: .85; min-width: 0; border: 1px solid var(--line); border-radius: 10px; padding: 9px 10px;
+    font-size: 13.5px; font-family: inherit; background: var(--paper); color: var(--ink);
+  }
+  .b88 .row .reserve-note { flex: 0 0 auto; font-size: 12.5px; color: var(--teal-dark); white-space: nowrap; min-width: 92px; text-align: right; }
+  .b88 .row .del {
+    flex: 0 0 auto; width: 30px; height: 30px; border-radius: 8px; border: 1px solid var(--line);
+    background: var(--paper); color: var(--ink-soft); cursor: pointer; font-size: 15px; line-height: 1;
+  }
+  .b88 .row .del:hover { background: var(--brick-tint); color: var(--brick); border-color: var(--brick); }
+  .b88 .big-row { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 12px; align-items: center; }
+  .b88 .big-row input[type="text"] { flex: 1 1 100%; }
+  .b88 .big-row .sub { display: flex; gap: 8px; width: 100%; align-items: center; }
+
+  .b88 .add-btn {
+    display: inline-flex; align-items: center; gap: 6px; background: none; border: 1px dashed var(--line);
+    color: var(--teal-dark); padding: 8px 14px; border-radius: 10px; font-size: 13.5px; cursor: pointer;
+    font-family: inherit; margin-top: 2px;
+  }
+  .b88 .add-btn:hover { background: var(--teal-tint); border-color: var(--teal); }
+
+  .b88 .subtotal { display: flex; justify-content: space-between; margin-top: 16px; padding-top: 14px; border-top: 1px dashed var(--line); font-size: 14.5px; }
+  .b88 .subtotal strong { font-size: 17px; font-weight: 900; }
+
+  .b88 .suggest-box { background: var(--gold-tint); border: 1px solid var(--gold); border-radius: 12px; padding: 12px 16px; margin-bottom: 18px; font-size: 13.5px; }
+  .b88 .suggest-box .amt { font-weight: 900; font-size: 20px; color: #8a6a26; display: block; margin-top: 2px; }
+
+  /* ---------- Result ---------- */
+  .b88 .card.result { background: var(--brand-orange); color: #FFF6EC; border: none; }
+  .b88 .card.result h2 { color: #FFF6EC; }
+  .b88 .card.result .helper { color: rgba(255,246,236,.85); }
+  .b88 .result-flex { display: flex; gap: 28px; align-items: center; flex-wrap: wrap; margin-top: 8px; }
+  .b88 .donut-wrap { flex: 0 0 auto; }
+  .b88 .legend { flex: 1 1 220px; min-width: 200px; display: flex; flex-direction: column; gap: 9px; }
+  .b88 .legend .li { display: flex; align-items: center; gap: 8px; font-size: 13.5px; }
+  .b88 .legend .dot { width: 11px; height: 11px; border-radius: 3px; flex: 0 0 auto; border: 1px solid rgba(255,255,255,.5); }
+  .b88 .legend .lab { flex: 1; color: #DCE6E1; }
+  .b88 .legend .val { font-weight: 700; }
+  /* 超出收入不佔弧長，所以這一列不放色塊，改用一條分隔線跟上面的圓餅項目分開 */
+  .b88 .legend .li.li-note { margin-top: 1px; padding-top: 10px; border-top: 1px solid rgba(255,255,255,.28); }
+  .b88 .legend .li-note .spacer { width: 11px; flex: 0 0 auto; }
+
+  .b88 .verdict { margin-top: 22px; padding: 16px 18px; border-radius: 12px; background: rgba(255,255,255,.08); font-size: 14.5px; line-height: 1.7; }
+  .b88 .verdict.over { background: rgba(43,38,32,.4); }
+
+  .b88 .actions { display: flex; justify-content: center; margin-top: 26px; }
+  .b88 .pdf-btn {
+    background: var(--brand-orange); color: #fff; border: none; padding: 13px 26px; border-radius: 999px;
+    font-size: 15px; font-weight: 700; cursor: pointer; font-family: inherit; letter-spacing: .02em;
+  }
+  .b88 .pdf-btn:hover { background: var(--brand-orange-deep); }
+
+  .b88 footer.disclaimer { text-align: center; color: var(--ink-soft); font-size: 12px; margin-top: 22px; }
+
+  /* ---------- 頁首 ---------- */
+  .b88 .site-header { display: flex; align-items: center; justify-content: space-between; padding: 16px 20px; }
+  .b88 .site-header .logo { font-size: 21px; font-weight: 900; color: var(--ink); text-decoration: none; }
+  .b88 .site-header .logo .accent { color: var(--brand-orange); }
+  .b88 .site-header .tag-pill {
+    font-size: 12.5px; color: var(--tag-ink); background: var(--tag-bg); border-radius: 999px;
+    padding: 8px 16px; text-decoration: none;
+  }
+
+  /* ---------- 頁尾導引 CTA ---------- */
+  .b88 .cta-block { text-align: center; padding: 30px 10px 4px; }
+  .b88 .cta-block .cta-btn {
+    display: inline-block; background: var(--brand-orange); color: #fff; font-weight: 700; font-size: 15px;
+    padding: 14px 30px; border-radius: 999px; text-decoration: none; margin-bottom: 16px;
+  }
+  .b88 .cta-block .cta-btn:hover { background: var(--brand-orange-deep); }
+  .b88 .cta-block .ig-link { display: block; font-size: 14px; color: var(--ink-soft); text-decoration: underline; margin-bottom: 18px; }
+  .b88 .cta-block .cta-note { font-size: 12px; color: #B7AF9E; margin: 2px 0; }
+
+  .b88 .cta-secondary { background: var(--peach); margin-top: 28px; border-radius: 18px; padding: 30px 24px; text-align: center; }
+  .b88 .cta-secondary h3 { color: var(--brand-orange); font-size: 16px; margin: 0 0 8px; font-weight: 900; }
+  .b88 .cta-secondary p { color: var(--ink-soft); font-size: 13.5px; margin: 0 0 18px; }
+  .b88 .cta-secondary .btns { display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; }
+  .b88 .cta-secondary .btn-fill {
+    background: var(--brand-orange-deep); color: #fff; padding: 12px 22px; border-radius: 999px;
+    text-decoration: none; font-weight: 700; font-size: 14px;
+  }
+  .b88 .cta-secondary .btn-outline {
+    border: 1px solid var(--line); color: var(--ink); padding: 12px 22px; border-radius: 999px;
+    text-decoration: none; font-weight: 700; font-size: 14px; background: #fff;
+  }
+
+  .b88 :focus-visible { outline: 2px solid var(--teal); outline-offset: 2px; }
+
+  .b88 .print-only { display: none; }
+
+  @media (max-width: 480px) {
+    .b88 .row input[type="text"] { flex: 1 1 100%; }
+    .b88 .row { flex-wrap: wrap; }
+    .b88 .row input[type="number"] { flex: 1 1 auto; }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .b88 * { transition: none !important; }
+  }
+
+  @media print {
+    .b88 .site-header, .b88 .progress-shell, .b88 .card:not(.print-summary), .b88 .actions,
+    .b88 .cta-block, .b88 .cta-secondary { display: none !important; }
+    .b88 .print-only { display: block !important; }
+    .b88 { background: #fff; }
+    .b88 .wrap { max-width: 100%; padding: 0 8mm; }
+    .b88 .print-summary { border: none; padding: 0; }
+    .b88 .print-summary h2 { font-weight: 900; }
+    .b88 .p-section { margin-bottom: 16px; break-inside: avoid; }
+    .b88 .p-section h3 { font-size: 14px; border-bottom: 1px solid #ccc; padding-bottom: 4px; margin-bottom: 8px; }
+    .b88 .p-line { display: flex; justify-content: space-between; font-size: 13px; padding: 3px 0; }
+    .b88 .p-total { display: flex; justify-content: space-between; font-weight: 700; border-top: 1px solid #999; margin-top: 4px; padding-top: 6px; }
+    .b88 .p-verdict { margin-top: 14px; padding: 12px; background: #F5F3ED; border-radius: 8px; font-size: 13px; }
+  }
+</style>
+
+<div class="b88">
+  <header class="site-header">
+    <a class="logo" href="https://site.88lamoney.com/?utm_source=resource&utm_medium=brand&utm_campaign=budget-planner">88<span class="accent">La</span></a>
+    <a class="tag-pill" href="https://site.88lamoney.com/resources?utm_source=resource&utm_medium=header&utm_campaign=budget-planner">資源工具</a>
+  </header>
+
+  <div class="wrap hero">
+    <span class="tag">記錄然後呢？</span>
+    <h1>88La財務導航 · 預算分配練習器</h1>
+    <p>融入「零基預算法」概念分配收入，讓每一分錢都有任務。</p>
+  </div>
+
+  <div class="progress-shell">
+    <div class="progress-inner">
+      <div class="progress-track" id="progressTrack"></div>
+      <div class="progress-meta" id="progressMeta">
+        <span>已分配 <strong id="pmAllocated">NT$0</strong> / 收入 <strong id="pmIncome">NT$0</strong></span>
+        <span>剩餘可花 <strong class="remain" id="pmRemain">NT$0</strong></span>
+      </div>
+    </div>
+  </div>
+
+  <div class="wrap">
+
+    <!-- Step 1 收入 -->
+    <section class="card" data-section="income">
+      <div class="card-head"><span class="num">01</span><h2>收入</h2></div>
+      <p class="helper">薪水、副業、其他收入，都算進來。</p>
+      <div class="rows" data-list="income"></div>
+      <button class="add-btn" data-add="income">＋ 新增收入項目</button>
+      <div class="subtotal"><span>收入合計</span><strong id="sumIncome">NT$0</strong></div>
+    </section>
+
+    <!-- Step 2 固定支出 -->
+    <section class="card" data-section="fixed">
+      <div class="card-head"><span class="num">02</span><h2>本月已知要花的</h2></div>
+      <p class="helper">房租、房貸、保費、訂閱，這些錢從月初開始就不是你的。</p>
+      <div class="rows" data-list="fixed"></div>
+      <button class="add-btn" data-add="fixed">＋ 新增固定支出</button>
+      <div class="subtotal"><span>固定支出合計</span><strong id="sumFixed">NT$0</strong></div>
+    </section>
+
+    <!-- Step 3 儲蓄 -->
+    <section class="card" data-section="savings">
+      <div class="card-head"><span class="num">03</span><h2>儲蓄</h2></div>
+      <p class="helper">先把未來的自己顧好，才輪到現在的花費。</p>
+      <div class="rows" data-list="savings"></div>
+      <button class="add-btn" data-add="savings">＋ 新增儲蓄項目</button>
+      <div class="subtotal"><span>儲蓄合計</span><strong id="sumSavings">NT$0</strong></div>
+    </section>
+
+    <!-- Step 4 生活支出 -->
+    <section class="card" data-section="living">
+      <div class="card-head"><span class="num">04</span><h2>本月生活支出</h2></div>
+      <p class="helper">先看系統幫你算出的建議金額，再填你打算怎麼分配。</p>
+      <div class="suggest-box">
+        這個月生活費建議抓在
+        <span class="amt" id="suggestLiving">NT$0</span>
+        （收入 － 固定支出 － 儲蓄 － 大筆開銷預存）
+      </div>
+      <div class="rows" data-list="living"></div>
+      <button class="add-btn" data-add="living">＋ 新增生活支出項目</button>
+      <div class="subtotal"><span>生活支出合計</span><strong id="sumLiving">NT$0</strong></div>
+    </section>
+
+    <!-- Step 5 大筆開銷 -->
+    <section class="card" data-section="big">
+      <div class="card-head"><span class="num">05</span><h2>未來可能的大筆開銷</h2></div>
+      <p class="helper">填上項目、金額、預計完成時間，系統會幫你回推「這個月要先存多少」。</p>
+      <div class="rows" data-list="big"></div>
+      <button class="add-btn" data-add="big">＋ 新增大筆開銷</button>
+      <div class="subtotal"><span>本月大筆開銷預存合計</span><strong id="sumBig">NT$0</strong></div>
+    </section>
+
+    <!-- Result -->
+    <section class="card result">
+      <div class="card-head"><span class="num" style="color:#BFE0D4">06</span><h2>這個月的錢，去了哪裡</h2></div>
+      <p class="helper" id="donutNote">依照收入佔比計算，看看每個位置各拿走了多少。</p>
+      <div class="result-flex">
+        <div class="donut-wrap">
+          <svg id="donutSvg" width="180" height="180" viewBox="0 0 180 180"></svg>
+        </div>
+        <div class="legend" id="legend"></div>
+      </div>
+      <div class="verdict" id="verdict"></div>
+    </section>
+
+    <div class="actions">
+      <button class="pdf-btn" id="pdfBtn">下載／列印 PDF</button>
+    </div>
+
+    <div class="cta-block">
+      <a class="cta-btn" data-la-cta="app" href="https://site.88lamoney.com/app">前往 88La財務導航 →</a>
+      <a class="ig-link" href="https://www.instagram.com/every_dollars/" target="_blank" rel="noopener">追蹤 Instagram</a>
+      <p class="cta-note">本工具僅供個人預算試算參考，實際財務規劃請依個人狀況調整。</p>
+      <p class="cta-note">@every_dollars</p>
+    </div>
+
+    <div class="cta-secondary">
+      <h3>88La 犒賞系存錢</h3>
+      <p>官網還有更多免費工具和文章，都可以直接使用。</p>
+      <div class="btns">
+        <a class="btn-fill" data-la-cta="resources" href="https://site.88lamoney.com/resources?utm_source=resource&utm_medium=footer&utm_campaign=budget-planner">看更多免費資源</a>
+        <a class="btn-outline" data-la-cta="home" href="https://site.88lamoney.com/?utm_source=resource&utm_medium=footer&utm_campaign=budget-planner">回 88La 官網</a>
+      </div>
+    </div>
+  </div>
+
+  <!-- 列印用摘要，畫面上不顯示，僅在列印/存 PDF 時出現 -->
+  <div class="wrap print-only">
+    <div class="card print-summary" id="printSummary"></div>
+  </div>
+</div>
+
+<script>
+(function(){
+  const root = document.currentScript.previousElementSibling.parentElement || document;
+  const app = document.querySelector('.b88');
+
+  // 頂部分配進度條顏色（在米色底上）
+  const COLORS = {
+    fixed: '#5B655E',
+    savings: '#C99A3D',
+    big: '#1C463C',
+    living: '#2F6F62',
+    remain: '#BFD8CF',
+    over: '#AE4A3E'
+  };
+
+  // 甜甜圈圖配色（卡片底色改為品牌橘色，另外挑選對比清楚的顏色）
+  const DONUT_COLORS = {
+    fixed: '#2B2620',
+    savings: '#FFFFFF',
+    big: '#C96B2F',
+    // 生活支出原本是 #FFF3EA，跟儲蓄的純白在橘底上分不出來，改用頂部進度條同一個綠 #2F6F62
+    living: '#2F6F62',
+    remain: '#F6D9C4'
+  };
+
+  let uid = 1;
+  const state = {
+    income: [], fixed: [], savings: [], living: [], big: []
+  };
+
+  function newId(){ return 'r' + (uid++); }
+
+  function fmt(n){
+    n = Math.round(n || 0);
+    return 'NT$' + n.toLocaleString('zh-Hant-TW');
+  }
+
+  // ---------- Row builders ----------
+  function makeSimpleRow(section, data){
+    const id = data.id || newId();
+    const wrap = document.createElement('div');
+    wrap.className = 'row';
+    wrap.dataset.id = id;
+    wrap.innerHTML = `
+      <input type="text" placeholder="項目名稱" value="${data.name || ''}" data-field="name">
+      <input type="number" placeholder="金額" value="${data.amount || ''}" data-field="amount" min="0">
+      <button class="del" type="button" aria-label="刪除">×</button>
+    `;
+    bindRow(wrap, section, id);
+    return { id, name: data.name || '', amount: Number(data.amount) || 0, el: wrap };
+  }
+
+  function makeBigRow(section, data){
+    const id = data.id || newId();
+    const wrap = document.createElement('div');
+    wrap.className = 'row big-row';
+    wrap.dataset.id = id;
+    wrap.innerHTML = `
+      <input type="text" placeholder="項目名稱（例如：換手機、出國旅行）" value="${data.name || ''}" data-field="name">
+      <div class="sub">
+        <input type="number" placeholder="預計總金額" value="${data.amount || ''}" data-field="amount" min="0">
+        <input type="month" value="${data.target || ''}" data-field="target">
+        <span class="reserve-note" data-role="reserve">每月先存 NT$0</span>
+        <button class="del" type="button" aria-label="刪除">×</button>
+      </div>
+    `;
+    bindRow(wrap, section, id);
+    return { id, name: data.name || '', amount: Number(data.amount) || 0, target: data.target || '', el: wrap };
+  }
+
+  function bindRow(wrap, section, id){
+    wrap.addEventListener('input', () => recalc());
+    wrap.querySelector('.del').addEventListener('click', () => {
+      state[section] = state[section].filter(r => r.id !== id);
+      wrap.remove();
+      recalc();
+    });
+  }
+
+  function addRow(section, data = {}){
+    const list = app.querySelector(`[data-list="${section}"]`);
+    const row = section === 'big' ? makeBigRow(section, data) : makeSimpleRow(section, data);
+    state[section].push(row);
+    list.appendChild(row.el);
+    recalc();
+  }
+
+  // 事件委派：新增按鈕
+  app.querySelectorAll('[data-add]').forEach(btn => {
+    btn.addEventListener('click', () => addRow(btn.dataset.add));
+  });
+
+  function monthsRemaining(targetStr){
+    if(!targetStr) return null;
+    const [ty, tm] = targetStr.split('-').map(Number);
+    const now = new Date();
+    const cy = now.getFullYear(), cm = now.getMonth() + 1;
+    let diff = (ty * 12 + tm) - (cy * 12 + cm);
+    if (diff < 0) diff = 0;
+    return diff + 1; // 含當月
+  }
+
+  function readSection(section){
+    const list = app.querySelector(`[data-list="${section}"]`);
+    const rows = [];
+    list.querySelectorAll('.row').forEach(rowEl => {
+      const name = rowEl.querySelector('[data-field="name"]').value.trim();
+      const amount = Number(rowEl.querySelector('[data-field="amount"]').value) || 0;
+      if (section === 'big') {
+        const target = rowEl.querySelector('[data-field="target"]').value;
+        const months = monthsRemaining(target);
+        const reserve = months ? amount / months : 0;
+        const note = rowEl.querySelector('[data-role="reserve"]');
+        if (target) {
+          note.textContent = `每月先存 ${fmt(reserve)}`;
+          if (months === 1) note.textContent += '（時間快到了）';
+        } else {
+          note.textContent = '請選完成時間';
+        }
+        rows.push({ name, amount, target, reserve });
+      } else {
+        rows.push({ name, amount });
+      }
+    });
+    return rows;
+  }
+
+  function sum(rows, key){ return rows.reduce((s, r) => s + (r[key] || 0), 0); }
+
+  function recalc(){
+    const income = readSection('income');
+    const fixed = readSection('fixed');
+    const savings = readSection('savings');
+    const big = readSection('big');
+    const living = readSection('living');
+
+    const incomeTotal = sum(income, 'amount');
+    const fixedTotal = sum(fixed, 'amount');
+    const savingsTotal = sum(savings, 'amount');
+    const bigTotal = sum(big, 'reserve');
+    const livingTotal = sum(living, 'amount');
+
+    document.getElementById('sumIncome').textContent = fmt(incomeTotal);
+    document.getElementById('sumFixed').textContent = fmt(fixedTotal);
+    document.getElementById('sumSavings').textContent = fmt(savingsTotal);
+    document.getElementById('sumBig').textContent = fmt(bigTotal);
+    document.getElementById('sumLiving').textContent = fmt(livingTotal);
+
+    const suggestedLiving = Math.max(incomeTotal - fixedTotal - savingsTotal - bigTotal, 0);
+    document.getElementById('suggestLiving').textContent = fmt(suggestedLiving);
+
+    const allocatedBeforeLiving = fixedTotal + savingsTotal + bigTotal;
+    const allocatedTotal = allocatedBeforeLiving + livingTotal;
+    const remain = incomeTotal - allocatedTotal;
+
+    // 頂部進度條
+    const track = document.getElementById('progressTrack');
+    track.innerHTML = '';
+    const segs = [
+      { v: fixedTotal, c: COLORS.fixed },
+      { v: savingsTotal, c: COLORS.savings },
+      { v: bigTotal, c: COLORS.big },
+      { v: livingTotal, c: COLORS.living },
+    ];
+    const base = incomeTotal > 0 ? incomeTotal : (allocatedTotal || 1);
+    segs.forEach(s => {
+      if (s.v <= 0) return;
+      const div = document.createElement('div');
+      div.className = 'progress-seg';
+      div.style.width = (s.v / base) * 100 + '%';
+      div.style.background = s.c;
+      track.appendChild(div);
+    });
+    if (remain > 0 && incomeTotal > 0) {
+      const div = document.createElement('div');
+      div.className = 'progress-seg';
+      div.style.width = (remain / base) * 100 + '%';
+      div.style.background = COLORS.remain;
+      track.appendChild(div);
+    }
+
+    document.getElementById('pmAllocated').textContent = fmt(allocatedTotal);
+    document.getElementById('pmIncome').textContent = fmt(incomeTotal);
+    const pmRemain = document.getElementById('pmRemain');
+    pmRemain.textContent = fmt(remain);
+    document.getElementById('progressMeta').classList.toggle('over', remain < 0);
+
+    renderDonut(incomeTotal, { fixedTotal, savingsTotal, bigTotal, livingTotal, remain });
+    renderVerdict(incomeTotal, suggestedLiving, livingTotal, remain);
+    renderPrintSummary({ income, fixed, savings, big, living, incomeTotal, fixedTotal, savingsTotal, bigTotal, livingTotal, suggestedLiving, remain });
+  }
+
+  // ---------- Donut ----------
+  function renderDonut(incomeTotal, parts){
+    const svg = document.getElementById('donutSvg');
+    const legend = document.getElementById('legend');
+    svg.innerHTML = '';
+    legend.innerHTML = '';
+
+    const cx = 90, cy = 90, r = 68, sw = 24;
+    const circumference = 2 * Math.PI * r;
+
+    // 超支時若還用收入當分母，各段加起來會超過一整圈，繞回來蓋掉前面畫好的段
+    // （例如固定支出那段會整段消失）。所以超支就改用分配總額當 100%，
+    // 圓圈永遠剛好一圈，超出收入的金額改用獨立一列文字說明，不佔弧長。
+    const allocated = parts.fixedTotal + parts.savingsTotal + parts.bigTotal + parts.livingTotal;
+    const ready = incomeTotal > 0;
+    const over = ready && parts.remain < 0;
+    const base = ((over || !ready) ? allocated : incomeTotal) || 1;
+
+    const note = document.getElementById('donutNote');
+    if (note) {
+      note.textContent = over
+        ? '支出已經超過收入，圓圈改用分配總額當 100%，看看每個位置各拿走了多少。'
+        : '依照收入佔比計算，看看每個位置各拿走了多少。';
+    }
+
+    const entries = [
+      { label: '固定支出', value: parts.fixedTotal, color: DONUT_COLORS.fixed },
+      { label: '儲蓄', value: parts.savingsTotal, color: DONUT_COLORS.savings },
+      { label: '大筆開銷預存', value: parts.bigTotal, color: DONUT_COLORS.big },
+      { label: '生活支出', value: parts.livingTotal, color: DONUT_COLORS.living },
+    ];
+    if (ready && parts.remain >= 0) {
+      entries.push({ label: '剩餘可花', value: parts.remain, color: DONUT_COLORS.remain });
+    }
+
+    const bg = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+    bg.setAttribute('cx', cx); bg.setAttribute('cy', cy); bg.setAttribute('r', r);
+    bg.setAttribute('fill', 'none'); bg.setAttribute('stroke', 'rgba(255,255,255,.12)');
+    bg.setAttribute('stroke-width', sw);
+    svg.appendChild(bg);
+
+    let offset = 0;
+    entries.forEach(en => {
+      if (en.value <= 0) return;
+      const frac = en.value / base;
+      const dash = Math.max(frac * circumference, 0);
+      const circle = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+      circle.setAttribute('cx', cx); circle.setAttribute('cy', cy); circle.setAttribute('r', r);
+      circle.setAttribute('fill', 'none');
+      circle.setAttribute('stroke', en.color);
+      circle.setAttribute('stroke-width', sw);
+      circle.setAttribute('stroke-dasharray', `${dash} ${circumference - dash}`);
+      circle.setAttribute('stroke-dashoffset', -offset);
+      circle.setAttribute('transform', `rotate(-90 ${cx} ${cy})`);
+      svg.appendChild(circle);
+      offset += dash;
+
+      const li = document.createElement('div');
+      li.className = 'li';
+      const val = ready ? `${fmt(en.value)}（${Math.round(frac * 100)}%）` : fmt(en.value);
+      li.innerHTML = `<span class="dot" style="background:${en.color}"></span><span class="lab">${en.label}</span><span class="val">${val}</span>`;
+      legend.appendChild(li);
+    });
+
+    if (over) {
+      const li = document.createElement('div');
+      li.className = 'li li-note';
+      li.innerHTML = `<span class="spacer"></span><span class="lab">超出收入</span><span class="val">${fmt(Math.abs(parts.remain))}</span>`;
+      legend.appendChild(li);
+    }
+
+    if (incomeTotal <= 0) {
+      const txt = document.createElement('div');
+      txt.className = 'li';
+      txt.style.color = '#DCE6E1';
+      txt.textContent = '先填寫收入，圖表才會出現';
+      legend.appendChild(txt);
+    }
+  }
+
+  function renderVerdict(incomeTotal, suggestedLiving, livingTotal, remain){
+    const box = document.getElementById('verdict');
+    box.classList.remove('over');
+    if (incomeTotal <= 0) {
+      box.textContent = '從「收入」開始填，系統會一步步幫你算出可以放心花的金額。';
+      return;
+    }
+    if (remain >= 0) {
+      box.innerHTML = `分配完固定支出、儲蓄、未來的大筆開銷之後，這個月你還有 <strong>${fmt(remain)}</strong> 可以自由運用，不用什麼都不敢買，這筆錢本來就是留給你的。`;
+    } else {
+      box.classList.add('over');
+      box.innerHTML = `目前的生活支出比建議預算多了 <strong>${fmt(Math.abs(remain))}</strong>。不是不能花，是回頭看看哪個類別可以調整，或者這個月的大筆開銷是不是可以往後延一點。`;
+    }
+  }
+
+  // ---------- 列印摘要 ----------
+  function printLine(name, amount){
+    return `<div class="p-line"><span>${name || '（未命名）'}</span><span>${fmt(amount)}</span></div>`;
+  }
+
+  function renderPrintSummary(d){
+    const el = document.getElementById('printSummary');
+    const bigLines = d.big.map(r => {
+      const t = r.target ? `（預計 ${r.target} 完成，每月先存 ${fmt(r.reserve)}）` : '（未設定完成時間）';
+      return printLine(r.name + t, r.amount);
+    }).join('');
+
+    el.innerHTML = `
+      <h2>88La 預算分配表</h2>
+      <div class="p-section">
+        <h3>01 收入</h3>
+        ${d.income.map(r => printLine(r.name, r.amount)).join('')}
+        <div class="p-total"><span>收入合計</span><span>${fmt(d.incomeTotal)}</span></div>
+      </div>
+      <div class="p-section">
+        <h3>02 本月已知要花的</h3>
+        ${d.fixed.map(r => printLine(r.name, r.amount)).join('')}
+        <div class="p-total"><span>固定支出合計</span><span>${fmt(d.fixedTotal)}</span></div>
+      </div>
+      <div class="p-section">
+        <h3>03 儲蓄</h3>
+        ${d.savings.map(r => printLine(r.name, r.amount)).join('')}
+        <div class="p-total"><span>儲蓄合計</span><span>${fmt(d.savingsTotal)}</span></div>
+      </div>
+      <div class="p-section">
+        <h3>04 本月生活支出（建議 ${fmt(d.suggestedLiving)}）</h3>
+        ${d.living.map(r => printLine(r.name, r.amount)).join('')}
+        <div class="p-total"><span>生活支出合計</span><span>${fmt(d.livingTotal)}</span></div>
+      </div>
+      <div class="p-section">
+        <h3>05 未來可能的大筆開銷</h3>
+        ${bigLines || '<div class="p-line"><span>（尚未填寫）</span><span></span></div>'}
+        <div class="p-total"><span>本月大筆開銷預存合計</span><span>${fmt(d.bigTotal)}</span></div>
+      </div>
+      <div class="p-verdict">
+        ${d.remain >= 0
+          ? `這個月可以放心花的餘額：<strong>${fmt(d.remain)}</strong>`
+          : `生活支出超出建議預算：<strong>${fmt(Math.abs(d.remain))}</strong>，建議回頭調整分配`}
+      </div>
+    `;
+  }
+
+  // ---------- PDF / 列印 ----------
+  document.getElementById('pdfBtn').addEventListener('click', () => window.print());
+
+  // ---------- 初始預設資料 ----------
+  addRow('income', { name: '薪水' });
+  addRow('fixed', { name: '房租/房貸' });
+  addRow('fixed', { name: '保險費' });
+  addRow('savings', { name: '緊急預備金' });
+  addRow('living', { name: '餐飲' });
+  addRow('living', { name: '交通' });
+  addRow('living', { name: '日常雜項' });
+  addRow('big', {});
+
+  recalc();
+})();
+</script>
+<script src="/resources/_shared/la-kit.js" data-resource="budget-planner"></script>
+</body>
+</html>
