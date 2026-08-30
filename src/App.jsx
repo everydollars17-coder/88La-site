@@ -46,8 +46,12 @@ const PAGE_PATHS = {
 const PATH_TO_PAGE = Object.fromEntries(Object.entries(PAGE_PATHS).map(([p, path]) => [path, p]));
 const APP_MONTHLY_AMOUNT = 199;
 const APP_YEARLY_AMOUNT = 1988;
+const FOUNDER_MONTHLY_AMOUNT = 149;
+const FOUNDER_YEARLY_AMOUNT = 1188;
 const APP_MONTHLY_PRICE = `NT$${APP_MONTHLY_AMOUNT.toLocaleString("en-US")}`;
 const APP_YEARLY_PRICE = `NT$${APP_YEARLY_AMOUNT.toLocaleString("en-US")}`;
+const FOUNDER_MONTHLY_PRICE = `NT$${FOUNDER_MONTHLY_AMOUNT.toLocaleString("en-US")}`;
+const FOUNDER_YEARLY_PRICE = `NT$${FOUNDER_YEARLY_AMOUNT.toLocaleString("en-US")}`;
 const APP_YEARLY_DISCOUNT = Math.round((1 - APP_YEARLY_AMOUNT / (APP_MONTHLY_AMOUNT * 12)) * 100);
 const APP_YEARLY_MONTHLY_EQUIVALENT = Math.round(APP_YEARLY_AMOUNT / 12);
 const PAGE_META = {
@@ -960,7 +964,7 @@ const DEFAULTS = {
     heading: "選擇你的方案",
     intro: "用 88La財務導航，把記帳這件事變成每天兩分鐘的習慣。\n所有方案皆包含桌面快速記帳功能。",
     notes: "所有金額均為新台幣計價，含稅\n月訂閱採信用卡定期定額，可於下次扣款日前取消\n年方案採單筆付款，不會自動續約\n到期前三天將寄送提醒通知。到期後提供 7 天資料匯出緩衝期，期間可瀏覽歷史紀錄，續訂即可立即恢復完整功能",
-    foundingNote: "感謝最早支持 88La 的 90 位創始成員，你們的定價永久保留：月訂閱 NT$109 ／ 年方案 NT$599 ／ 兩年方案 NT$998。此優惠僅適用於已取得創始會員資格之用戶，不開放新申請。"
+    foundingNote: `感謝最早支持 88La 的創始成員，你們的定價永久保留：月訂閱 ${FOUNDER_MONTHLY_PRICE} ／ 年方案 ${FOUNDER_YEARLY_PRICE}。請直接選擇方案並以你當時購買的 Email 登入，系統會自動調整至創始優惠價。此優惠僅適用於已取得創始會員資格之用戶，不開放新申請。`
   },
   homeHero: {
     eyebrow: "88La 犒賞系存錢",
