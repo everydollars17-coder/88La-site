@@ -11,7 +11,6 @@
 </head>
 <body>
 <style>
-
   .b88 {
     --paper: #F5F3ED;
     --paper-deep: #ECE7D9;
@@ -26,8 +25,9 @@
     --brick: #AE4A3E;
     --brick-tint: #F5E4E1;
     --card: #FFFFFF;
-    --brand-orange: #E8551E;
+    --brand-orange: #C96B2F;
     --brand-orange-deep: #C96B2F;
+    --brand-orange-darker: #A85825;
     --tag-bg: #E7E0D2;
     --tag-ink: #928C7C;
     --peach: #FFF3EA;
@@ -105,7 +105,7 @@
   .b88 .suggest-box .amt { font-weight: 900; font-size: 20px; color: #8a6a26; display: block; margin-top: 2px; }
 
   /* ---------- Result ---------- */
-  .b88 .card.result { background: var(--brand-orange); color: #FFF6EC; border: none; }
+  .b88 .card.result { background: var(--brand-orange-deep); color: #FFF6EC; border: none; }
   .b88 .card.result h2 { color: #FFF6EC; }
   .b88 .card.result .helper { color: rgba(255,246,236,.85); }
   .b88 .result-flex { display: flex; gap: 28px; align-items: center; flex-wrap: wrap; margin-top: 8px; }
@@ -124,10 +124,10 @@
 
   .b88 .actions { display: flex; justify-content: center; margin-top: 26px; }
   .b88 .pdf-btn {
-    background: var(--brand-orange); color: #fff; border: none; padding: 13px 26px; border-radius: 999px;
+    background: var(--brand-orange-deep); color: #fff; border: none; padding: 13px 26px; border-radius: 999px;
     font-size: 15px; font-weight: 700; cursor: pointer; font-family: inherit; letter-spacing: .02em;
   }
-  .b88 .pdf-btn:hover { background: var(--brand-orange-deep); }
+  .b88 .pdf-btn:hover { background: var(--brand-orange-darker); }
 
   .b88 footer.disclaimer { text-align: center; color: var(--ink-soft); font-size: 12px; margin-top: 22px; }
 
@@ -146,7 +146,7 @@
     display: inline-block; background: var(--brand-orange); color: #fff; font-weight: 700; font-size: 15px;
     padding: 14px 30px; border-radius: 999px; text-decoration: none; margin-bottom: 16px;
   }
-  .b88 .cta-block .cta-btn:hover { background: var(--brand-orange-deep); }
+  .b88 .cta-block .cta-btn:hover { background: var(--brand-orange-darker); }
   .b88 .cta-block .ig-link { display: block; font-size: 14px; color: var(--ink-soft); text-decoration: underline; margin-bottom: 18px; }
   .b88 .cta-block .cta-note { font-size: 12px; color: #B7AF9E; margin: 2px 0; }
 
@@ -322,14 +322,13 @@
     over: '#AE4A3E'
   };
 
-  // 甜甜圈圖配色（卡片底色改為品牌橘色，另外挑選對比清楚的顏色）
+  // 甜甜圈圖配色（卡片底色為品牌深橘，另外挑選對比清楚的顏色）
   const DONUT_COLORS = {
     fixed: '#2B2620',
     savings: '#FFFFFF',
-    big: '#C96B2F',
-    // 生活支出原本是 #FFF3EA，跟儲蓄的純白在橘底上分不出來，改用頂部進度條同一個綠 #2F6F62
-    living: '#2F6F62',
-    remain: '#F6D9C4'
+    big: '#4A2A14',
+    living: '#FFF3EA',
+    remain: '#F0BE8F'
   };
 
   let uid = 1;
@@ -508,14 +507,13 @@
 
     const cx = 90, cy = 90, r = 68, sw = 24;
     const circumference = 2 * Math.PI * r;
-
     // 超支時若還用收入當分母，各段加起來會超過一整圈，繞回來蓋掉前面畫好的段
     // （例如固定支出那段會整段消失）。所以超支就改用分配總額當 100%，
     // 圓圈永遠剛好一圈，超出收入的金額改用獨立一列文字說明，不佔弧長。
     const allocated = parts.fixedTotal + parts.savingsTotal + parts.bigTotal + parts.livingTotal;
     const ready = incomeTotal > 0;
     const over = ready && parts.remain < 0;
-    const base = ((over || !ready) ? allocated : incomeTotal) || 1;
+    const base = (over ? allocated : incomeTotal) || 1;
 
     const note = document.getElementById('donutNote');
     if (note) {
@@ -540,6 +538,15 @@
     bg.setAttribute('stroke-width', sw);
     svg.appendChild(bg);
 
+    if (!ready) {
+      const txt = document.createElement('div');
+      txt.className = 'li';
+      txt.style.color = '#DCE6E1';
+      txt.textContent = '先填寫收入，圖表才會出現';
+      legend.appendChild(txt);
+      return;
+    }
+
     let offset = 0;
     entries.forEach(en => {
       if (en.value <= 0) return;
@@ -558,8 +565,7 @@
 
       const li = document.createElement('div');
       li.className = 'li';
-      const val = ready ? `${fmt(en.value)}（${Math.round(frac * 100)}%）` : fmt(en.value);
-      li.innerHTML = `<span class="dot" style="background:${en.color}"></span><span class="lab">${en.label}</span><span class="val">${val}</span>`;
+      li.innerHTML = `<span class="dot" style="background:${en.color}"></span><span class="lab">${en.label}</span><span class="val">${fmt(en.value)}（${Math.round(frac * 100)}%）</span>`;
       legend.appendChild(li);
     });
 
@@ -570,13 +576,6 @@
       legend.appendChild(li);
     }
 
-    if (incomeTotal <= 0) {
-      const txt = document.createElement('div');
-      txt.className = 'li';
-      txt.style.color = '#DCE6E1';
-      txt.textContent = '先填寫收入，圖表才會出現';
-      legend.appendChild(txt);
-    }
   }
 
   function renderVerdict(incomeTotal, suggestedLiving, livingTotal, remain){
