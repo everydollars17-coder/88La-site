@@ -4,6 +4,7 @@ import { initializeApp } from "firebase/app";
 import { getFirestore, doc, setDoc, collection, getDocs, query, orderBy, deleteDoc } from "firebase/firestore";
 import { getAuth, GoogleAuthProvider, signInWithPopup, onAuthStateChanged, signOut } from "firebase/auth";
 import DOMPurify from "dompurify";
+import { APP_LAUNCH_NOTICE, isAppLaunched } from "./siteLaunch.js";
 import { deriveDemoPhonePreview } from "./demoPhonePreviewData.js";
 
 const firebaseConfig = {
@@ -27,11 +28,11 @@ const ADMIN_EMAILS = ["everydollars17@gmail.com"];
 
 const APP_URL = "https://app.88lamoney.com";
 const PUBLIC_CONTACT_EMAIL = "hello@88lamoney.com";
-// 導向正式 App 的 CTA。2026-09-01 起解除上線前的鎖點提示，按下去直接進 App。
-const appCtaProps = from => ({
-  href: APP_URL,
-  "data-app-source": from,
-});
+// 進 App 的 CTA。上線日之前一律鎖住並顯示提示，當天起自動改成真的導過去，
+// 判斷在 siteLaunch.js（用台灣時間），9/10 不需要改程式或重新部署。
+const appCtaProps = from => (isAppLaunched()
+  ? { href: APP_URL, "data-app-source": from }
+  : { href: "#app-launch", "data-app-locked": "true", "data-app-source": from });
 const QUIZ_URL = "/resources/savings-bag-quiz/index.html";
 
 // 頁面 key ⇄ 網址路徑對照表，供瀏覽器網址列同步用。article 頁另用 /article/:slug 動態路徑處理。
@@ -863,6 +864,20 @@ button:focus-visible{border-radius:4px;}
 .nx-btn-md{padding:13px 24px;font-size:15px;}
 .nx-btn-sm{padding:11px 20px;font-size:14px;font-weight:600;}
 .nx-btn-block{display:flex;width:100%;}
+/* 上線前的 CTA 掛一個「9/10 開放」小標，讓人在按下去之前就知道。
+   靠 data-app-locked 判斷，上線日之後 appCtaProps 不再帶這個屬性，小標自動消失 */
+.nx-price-blur{display:inline-block;filter:blur(.2em);opacity:.5;user-select:none;-webkit-user-select:none;vertical-align:baseline;}
+.nx-price-note{display:inline-flex;align-items:center;gap:6px;padding:7px 14px;border-radius:999px;
+  background:var(--nx-dark);color:var(--nx-dt);font-size:13px;font-weight:700;line-height:1.5;}
+.nx-price-note::before{content:"";width:6px;height:6px;border-radius:50%;background:var(--nx-o);flex-shrink:0;}
+.nx-btn[data-app-locked="true"]{position:relative;overflow:visible;}
+.nx-btn[data-app-locked="true"]::after{
+  content:"9/10 開放";position:absolute;top:-10px;right:-6px;
+  padding:3px 9px;border-radius:999px;background:var(--nx-dark);color:var(--nx-dt);
+  font-size:10px;font-weight:700;line-height:1.5;white-space:nowrap;pointer-events:none;
+  box-shadow:0 3px 10px -3px rgba(46,42,33,.5);}
+.nx-nav-in .nx-btn[data-app-locked="true"]::after{top:-11px;right:-8px;font-size:9px;padding:2px 8px;}
+@media(max-width:900px){.nx-btn[data-app-locked="true"]::after{top:-9px;right:8px;}}
 
 /* 導覽列 */
 .nx-nav{position:sticky;top:0;z-index:50;background:#fff;border-bottom:1px solid var(--nx-bd);}
@@ -1389,6 +1404,9 @@ button:focus-visible{border-radius:4px;}
 .ar-gate-foot{font-size:13px;color:rgba(252,250,246,.45);line-height:1.8;}
 .ar-gate-foot a{color:var(--nx-dl);font-weight:600;}
 .ar-gate-err{margin-bottom:12px;font-size:13px;color:#F0A08A;}
+@keyframes nxToastIn{from{opacity:0;transform:translate(-50%,50%) scale(.96);}to{opacity:1;}}
+.nx-toast{animation:nxToastIn .22s var(--nx-ease);}
+@media(prefers-reduced-motion:reduce){.nx-toast{animation:none;}}
 @media(max-width:640px){.ar-gate-form{flex-direction:column;}.ar-gate-form .nx-btn{width:100%;}}
 
 /* ===== /about 關於頁 ===== */
@@ -2162,6 +2180,19 @@ async function migrateMemberArticles() {
 }
 
 let _showToast = () => {};
+// 上線前訂閱金額一律屏蔽，9/10 之後自動顯示原值（判斷同 appCtaProps）。
+// 只蓋 88La財務導航的訂閱價，存錢袋與模板 2.0 已經在賣，價格照常顯示。
+function Price({ children }) {
+  if (isAppLaunched()) return <>{children}</>;
+  return <span className="nx-price-blur" aria-label="價格 9/10 公布">{children}</span>;
+}
+
+// 每個有價格的區塊只標一次，不要每個數字都掛一個標籤
+function PriceNote({ style }) {
+  if (isAppLaunched()) return null;
+  return <p className="nx-price-note" style={style}>完整方案與價格 9/10 公布</p>;
+}
+
 function Toast() {
   const [msg, setMsg] = useState("");
   const [show, setShow] = useState(false);
@@ -2172,11 +2203,24 @@ function Toast() {
     setTone(nextTone);
     setShow(true);
     clearTimeout(t.current);
-    t.current = setTimeout(() => setShow(false), 2800);
+    t.current = setTimeout(() => setShow(false), nextTone === "notice" ? 4200 : 2800);
   };
   if (!show) return null;
+  // notice 是上線提示這類「按了但不會發生事情」的回饋，要夠明顯，
+  // 否則使用者會以為按鈕壞掉（Barbara 2026-09-01 回報）
+  const isNotice = tone === "notice";
   return (
-    <div role="status" aria-live="polite" aria-atomic="true" style={{ position: "fixed", bottom: 80, left: "50%", transform: "translateX(-50%)", background: CHAR, color: WHITE, padding: "12px 28px", borderRadius: 8, fontSize: 13, zIndex: 80, boxShadow: "0 4px 20px rgba(0,0,0,.25)", letterSpacing: ".5px", whiteSpace: "nowrap", pointerEvents: "none" }}>
+    <div role="status" aria-live="polite" aria-atomic="true" className="nx-toast" style={{
+      position: "fixed", bottom: isNotice ? "50%" : 80, left: "50%",
+      transform: isNotice ? "translate(-50%,50%)" : "translateX(-50%)",
+      background: isNotice ? "#494949" : CHAR, color: "#FCFAF6",
+      padding: isNotice ? "18px 28px" : "12px 28px",
+      borderRadius: isNotice ? 16 : 8,
+      fontSize: isNotice ? 16 : 13, fontWeight: isNotice ? 600 : 400,
+      lineHeight: 1.7, textAlign: "center", maxWidth: "min(88vw, 420px)",
+      zIndex: 80, boxShadow: "0 18px 44px -12px rgba(46,42,33,.5)",
+      letterSpacing: isNotice ? 0 : ".5px", pointerEvents: "none",
+    }}>
       {tone === "success" ? "✓ " : ""}{msg}
     </div>
   );
@@ -2973,7 +3017,7 @@ function Home({ setPage, isAdmin, trustStats, setTrustStats }) {
       <div className="nx-in">
         <section className="nx-hero">
           <div>
-            <p className="nx-badge"><b>訂閱制</b><span><span className="nx-hide-mob">88La財務導航 · </span>每月 {NT_MONTHLY}</span></p>
+            <p className="nx-badge"><b>訂閱制</b><span><span className="nx-hide-mob">88La財務導航 · </span>每月 <Price>{NT_MONTHLY}</Price></span></p>
             <h1 className="nx-h1">不用再問<br />「記帳了，然後勒？」</h1>
             <p className="nx-hero-p nx-hide-mob">88La財務導航是一套理財工具：月初幫你把薪水分配好，平常 5 秒記一筆，月底告訴你哪裡超支、下個月該從哪裡開始調整。</p>
             <p className="nx-hero-p nx-only-mob">月初分配、平常 5 秒記一筆、月底告訴你下個月該從哪裡開始調整。</p>
@@ -3204,14 +3248,15 @@ function Home({ setPage, isAdmin, trustStats, setTrustStats }) {
             <div className="hm-price-top">
               <div>
                 <p className="hm-price-label">年方案 · 最多人選擇</p>
-                <p className="hm-price-num">{NT_YEARLY}<span> /年</span></p>
-                <p className="hm-price-save">相當於 NT$ {APP_YEARLY_MONTHLY_EQUIVALENT} / 月，省下約 {APP_YEARLY_DISCOUNT}%</p>
+                <PriceNote style={{ marginBottom: 14 }} />
+                <p className="hm-price-num"><Price>{NT_YEARLY}</Price><span> /年</span></p>
+                <p className="hm-price-save"><Price>{`相當於 NT$ ${APP_YEARLY_MONTHLY_EQUIVALENT} / 月，省下約 ${APP_YEARLY_DISCOUNT}%`}</Price></p>
               </div>
               <a className="nx-btn nx-btn-pri nx-btn-lg" {...appCtaProps("home-price")}>開始使用 →</a>
             </div>
             <div className="hm-price-bot">
               <div>
-                <strong>想先試一個月？月訂閱 {NT_MONTHLY} / 月</strong>
+                <strong>想先試一個月？月訂閱 <Price>{NT_MONTHLY}</Price> / 月</strong>
                 <em>下次扣款日前都可以取消，資料留著</em>
               </div>
               <a className="nx-btn nx-btn-sec nx-btn-sm" {...appCtaProps("home-price-monthly")}>選月訂閱</a>
@@ -3236,7 +3281,7 @@ function Home({ setPage, isAdmin, trustStats, setTrustStats }) {
       <div className="nx-sticky">
         <div>
           <b>88La財務導航</b>
-          <span>{NT_MONTHLY} / 月起</span>
+          <span><Price>{NT_MONTHLY}</Price> / 月起</span>
         </div>
         <a className="nx-btn nx-btn-pri nx-btn-sm" {...appCtaProps("home-sticky")}>開始使用</a>
       </div>
@@ -5677,8 +5722,8 @@ function AppPage({ appContent, setAppContent, isAdmin, setPage, demoStory, setDe
           <div>
             <p className="nx-badge">
               <b>訂閱制</b>
-              <span className="nx-hide-mob">{NT_MONTHLY} / 月，或年方案 {NT_YEARLY}</span>
-              <span className="nx-only-mob">{NT_MONTHLY} / 月起</span>
+              <span className="nx-hide-mob"><Price>{NT_MONTHLY}</Price> / 月，或年方案 <Price>{NT_YEARLY}</Price></span>
+              <span className="nx-only-mob"><Price>{NT_MONTHLY}</Price> / 月起</span>
             </p>
             <h1 className="nx-h1">88La財務導航</h1>
             <p className="nx-hero-p" style={{ color: "var(--nx-t1)", maxWidth: 480, fontSize: "clamp(17px,1.9vw,19px)", lineHeight: 1.78 }}>月初把錢安排好，平常 5 秒記一筆，月底告訴你下個月該從哪裡調整。</p>
@@ -5790,7 +5835,7 @@ function AppPage({ appContent, setAppContent, isAdmin, setPage, demoStory, setDe
             </article>
             <article className="ap-vs-hi">
               <div className="ap-vs-kicker"><h3>88La財務導航</h3><span>手機與網頁</span></div>
-              <p className="ap-vs-price">{NT_MONTHLY}<span> / 月起</span></p>
+              <p className="ap-vs-price"><Price>{NT_MONTHLY}</Price><span> / 月起</span></p>
               <p className="ap-vs-sub">陪你走每一個月，隨時可停</p>
               <div className="ap-vs-shot">
                 <img src={HM_SHOT + "alert.webp"} width="940" height="1175" loading="lazy" alt="88La財務導航 快訊頁：本月可用餘額 $4,729、本期卡費已預留 $4,249" />
@@ -5931,11 +5976,12 @@ function AppPage({ appContent, setAppContent, isAdmin, setPage, demoStory, setDe
             <p className="nx-eyebrow" style={{ marginBottom: 12 }}>方案</p>
             <h2 className="nx-h2" style={{ marginBottom: 12 }}>每月一頓飯的錢，換來不焦慮</h2>
             <p className="nx-lead">兩個方案功能完全一樣，只差付款週期</p>
+            <PriceNote style={{ marginTop: 18 }} />
           </div>
           <div className="ap-plans">
             <div className="ap-plan">
               <p className="ap-plan-name">月訂閱</p>
-              <p className="ap-plan-price">{NT_MONTHLY}<span> /月</span></p>
+              <p className="ap-plan-price"><Price>{NT_MONTHLY}</Price><span> /月</span></p>
               <p className="ap-plan-sub">隨時可取消</p>
               <ul><li>完整功能</li><li>桌面快速記帳</li><li>下次扣款前可取消</li></ul>
               <a className="nx-btn nx-btn-sec nx-btn-sec-strong nx-btn-block nx-btn-md" {...appCtaProps("app-plan-monthly")}>選這個方案</a>
@@ -5943,8 +5989,8 @@ function AppPage({ appContent, setAppContent, isAdmin, setPage, demoStory, setDe
             <div className="ap-plan ap-plan-dark">
               <span className="ap-plan-badge">最多人選擇</span>
               <p className="ap-plan-name">年方案</p>
-              <p className="ap-plan-price">{NT_YEARLY}<span> /年</span></p>
-              <p className="ap-plan-sub">相當於 NT$ {APP_YEARLY_MONTHLY_EQUIVALENT} / 月，省下約 {APP_YEARLY_DISCOUNT}%</p>
+              <p className="ap-plan-price"><Price>{NT_YEARLY}</Price><span> /年</span></p>
+              <p className="ap-plan-sub"><Price>{`相當於 NT$ ${APP_YEARLY_MONTHLY_EQUIVALENT} / 月，省下約 ${APP_YEARLY_DISCOUNT}%`}</Price></p>
               <ul><li>完整功能</li><li>桌面快速記帳</li><li>單筆付款，不自動續約</li></ul>
               <a className="nx-btn nx-btn-pri nx-btn-block nx-btn-md" {...appCtaProps("app-plan-yearly")}>開始使用 →</a>
             </div>
@@ -5987,7 +6033,7 @@ function AppPage({ appContent, setAppContent, isAdmin, setPage, demoStory, setDe
       <div className="nx-sticky">
         <div>
           <b>88La財務導航</b>
-          <span>{NT_MONTHLY} / 月起</span>
+          <span><Price>{NT_MONTHLY}</Price> / 月起</span>
         </div>
         <a className="nx-btn nx-btn-pri nx-btn-sm" {...appCtaProps("app-sticky")}>開始使用</a>
       </div>
@@ -6980,6 +7026,7 @@ function PricingPage({ appContent, setPage }) {
           <p className="section-label" style={{ marginBottom: 10 }}>PRICING</p>
           <h1 style={{ fontSize: 36, fontWeight: 700, color: CHAR, lineHeight: 1.3, marginBottom: 14 }}>選擇最適合你的方案</h1>
           <p style={{ fontSize: 15, color: MID, lineHeight: 1.9, maxWidth: 520 }}>{c.pricingNote || "選擇適合你的方案，開始掌握每一筆錢"}</p>
+          <PriceNote style={{ marginTop: 18 }} />
         </div>
       </div>
       <div style={{ background: GRAY, padding: "72px 32px" }}>
@@ -6993,7 +7040,7 @@ function PricingPage({ appContent, setPage }) {
                 {plan.badge && <span style={{ position: "absolute", top: -12, left: "50%", transform: "translateX(-50%)", background: CHAR, color: WHITE, fontSize: 11, padding: "4px 14px", borderRadius: 20, letterSpacing: ".5px", fontWeight: 500, whiteSpace: "nowrap" }}>{plan.badge}</span>}
                 <p style={{ fontSize: 12, letterSpacing: "1.5px", color: plan.highlight ? "rgba(255,255,255,.6)" : MID, marginBottom: 12, fontWeight: 500 }}>{(plan.name || "").toUpperCase()}</p>
                 <div style={{ display: "flex", alignItems: "baseline", gap: 4, marginBottom: 32, flexWrap: "nowrap" }}>
-                  <span style={{ fontSize: 28, fontWeight: 700, color: plan.highlight ? WHITE : CHAR, whiteSpace: "nowrap" }}>{plan.price}</span>
+                  <span style={{ fontSize: 28, fontWeight: 700, color: plan.highlight ? WHITE : CHAR, whiteSpace: "nowrap" }}><Price>{plan.price}</Price></span>
                   <span style={{ fontSize: 13, color: plan.highlight ? "rgba(255,255,255,.55)" : LIGHT, whiteSpace: "nowrap" }}>{plan.period}</span>
                 </div>
                 <ul style={{ listStyle: "none", display: "flex", flexDirection: "column", gap: 12, marginBottom: 36 }}>
@@ -7121,7 +7168,8 @@ function SubscriptionPage({ setPage, isAdmin, appContent, subscriptionCopy, setS
   const sc = normalizeSubscriptionCopy(subscriptionCopy);
   const [editing, setEditing] = useState(false);
   const [tmp, setTmp] = useState(sc);
-  if (!isAdmin) return (
+  // 上線日之前訪客只看得到 COMING SOON，當天起自動顯示完整方案頁
+  if (!isAdmin && !isAppLaunched()) return (
     <div style={{ background: GRAD, minHeight: "60vh", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", padding: "80px 32px", textAlign: "center" }}>
       <p style={{ fontSize: 11, fontWeight: 700, letterSpacing: "0.18em", color: O, marginBottom: 16 }}>COMING SOON</p>
       <h1 style={{ fontSize: 32, fontWeight: 700, color: CHAR, lineHeight: 1.3, marginBottom: 14 }}>{c.comingSoonTitle}</h1>
@@ -7162,7 +7210,7 @@ function SubscriptionPage({ setPage, isAdmin, appContent, subscriptionCopy, setS
                 )}
                 <p style={{ fontSize: 11, letterSpacing: "1.5px", color: plan.highlight ? "rgba(255,255,255,.6)" : MID, marginBottom: 10, fontWeight: 500 }}>{plan.name.toUpperCase()}</p>
                 <div style={{ display: "flex", alignItems: "baseline", gap: 3, marginBottom: 28, flexWrap: "nowrap" }}>
-                  <span style={{ fontSize: 28, fontWeight: 700, color: plan.highlight ? WHITE : CHAR, whiteSpace: "nowrap" }}>{plan.price}</span>
+                  <span style={{ fontSize: 28, fontWeight: 700, color: plan.highlight ? WHITE : CHAR, whiteSpace: "nowrap" }}><Price>{plan.price}</Price></span>
                   <span style={{ fontSize: 13, color: plan.highlight ? "rgba(255,255,255,.5)" : LIGHT, whiteSpace: "nowrap" }}>{plan.period}</span>
                 </div>
                 <ul style={{ listStyle: "none", display: "flex", flexDirection: "column", gap: 10, marginBottom: 28 }}>
@@ -7285,6 +7333,25 @@ export default function App() {
   // from_page 記的是「在官網哪一頁點的」，沒有它就只知道有人點了，不知道哪一頁在帶客
   const pageRef = useRef(page);
   useEffect(() => { pageRef.current = page; }, [page]);
+  // 頁內錨點自己接管捲動。原本靠瀏覽器處理 href="#id"，遇到圖片載入造成的
+  // 版面位移、或網址已經是同一個 hash 時，可能捲不到位或看起來沒反應。
+  // 改成明確呼叫 scrollIntoView，scroll-margin-top 會把導覽列的高度算進去。
+  useEffect(() => {
+    const onAnchorClick = e => {
+      if (e.defaultPrevented || e.metaKey || e.ctrlKey || e.shiftKey || e.button) return;
+      const a = e.target.closest && e.target.closest('a[href^="#"]');
+      if (!a) return;
+      const id = a.getAttribute("href").slice(1);
+      if (!id || id === "app-launch") return;
+      const el = document.getElementById(id);
+      if (!el) return;
+      e.preventDefault();
+      el.scrollIntoView({ behavior: "smooth", block: "start" });
+      history.replaceState(null, "", window.location.pathname + "#" + id);
+    };
+    document.addEventListener("click", onAnchorClick);
+    return () => document.removeEventListener("click", onAnchorClick);
+  }, []);
   useEffect(() => {
     const handler = e => {
       const a = e.target.closest && e.target.closest("a[href]");
@@ -7295,13 +7362,20 @@ export default function App() {
       if (/^https?:\/\//.test(href)) {
         try { url = new URL(href); } catch { return; }
       }
-      // 進 App 的 CTA 照樣導過去，只多送一個事件記錄是哪一頁帶進去的
-      if (url?.origin === new URL(APP_URL).origin && typeof window.gtag === "function") {
-        window.gtag("event", "app_cta_click", {
-          link_url: href,
-          from_page: pageRef.current,
-          cta_source: a.dataset.appSource || "direct-app-link",
-        });
+      const isAppCta = a.dataset.appLocked === "true" || url?.origin === new URL(APP_URL).origin;
+      if (isAppCta) {
+        // 上線前：攔下來說明何時開放，不要讓人以為按鈕壞掉
+        if (!isAppLaunched()) {
+          e.preventDefault();
+          _showToast(APP_LAUNCH_NOTICE, "notice");
+        }
+        if (typeof window.gtag === "function") {
+          window.gtag("event", isAppLaunched() ? "app_cta_click" : "cta_locked_click", {
+            link_url: href,
+            from_page: pageRef.current,
+            cta_source: a.dataset.appSource || "direct-app-link",
+          });
+        }
         return;
       }
       if (!url || url.origin === window.location.origin || typeof window.gtag !== "function") return;
