@@ -4,7 +4,6 @@ import { initializeApp } from "firebase/app";
 import { getFirestore, doc, setDoc, collection, getDocs, query, orderBy, deleteDoc } from "firebase/firestore";
 import { getAuth, GoogleAuthProvider, signInWithPopup, onAuthStateChanged, signOut } from "firebase/auth";
 import DOMPurify from "dompurify";
-import { APP_LAUNCH_NOTICE } from "./siteLaunch.js";
 import { deriveDemoPhonePreview } from "./demoPhonePreviewData.js";
 
 const firebaseConfig = {
@@ -28,9 +27,9 @@ const ADMIN_EMAILS = ["everydollars17@gmail.com"];
 
 const APP_URL = "https://app.88lamoney.com";
 const PUBLIC_CONTACT_EMAIL = "hello@88lamoney.com";
-const appLockProps = from => ({
-  href: "#app-launch",
-  "data-app-locked": "true",
+// 導向正式 App 的 CTA。2026-09-01 起解除上線前的鎖點提示，按下去直接進 App。
+const appCtaProps = from => ({
+  href: APP_URL,
   "data-app-source": from,
 });
 const QUIZ_URL = "/resources/savings-bag-quiz/index.html";
@@ -821,11 +820,16 @@ button:focus-visible{border-radius:4px;}
 @media(max-width:900px){:root{--nx-pad:20px;--nx-navh:58px;}}
 
 .nx-page{background:var(--nx-bg);color:var(--nx-t1);font-family:'Noto Sans TC','PingFang TC',system-ui,sans-serif;}
-.nx-page h1,.nx-page h2,.nx-page h3,.nx-page h4,.nx-page p{margin:0;}
+/* 這是 reset，不是樣式：用 :where() 讓它的權重歸零，否則 .nx-page p 的權重
+   會蓋掉 .nx-hero-p 這類單一 class 的 margin，所有段落間距都會被歸零
+   （Barbara 2026-09-01 回報「整個擠在一坨」的成因） */
+:where(.nx-page) :where(h1,h2,h3,h4,p,dl,dd,ul,ol){margin:0;}
 .nx-page img{max-width:100%;height:auto;}
 .nx-in{max-width:1120px;margin:0 auto;padding-inline:var(--nx-pad);}
 .nx-mono{font-family:var(--nx-mono);letter-spacing:.06em;}
 .nx-eyebrow{font-size:clamp(11px,1.2vw,13px);font-weight:700;letter-spacing:.14em;color:var(--nx-o);}
+.nx-eyebrow+.nx-h2,.nx-eyebrow+h2{margin-top:12px;}
+.nx-h2+.nx-lead,h2+.nx-lead,.nx-h2+.nx-body{margin-top:16px;}
 .nx-eyebrow-mute{color:var(--nx-t3);}
 .nx-eyebrow-dark{color:#EB8A48;}
 .nx-h2{font-size:clamp(24px,3.4vw,34px);font-weight:700;letter-spacing:-.02em;line-height:1.35;text-wrap:pretty;}
@@ -864,12 +868,22 @@ button:focus-visible{border-radius:4px;}
 .nx-nav{position:sticky;top:0;z-index:50;background:#fff;border-bottom:1px solid var(--nx-bd);}
 .nx-nav-in{display:flex;align-items:center;justify-content:space-between;gap:24px;max-width:1120px;margin:0 auto;padding:18px var(--nx-pad);}
 .nx-nav-left{display:flex;align-items:center;gap:36px;min-width:0;}
-.nx-logo{padding:0;background:none;border:none;font-family:inherit;font-size:19px;font-weight:900;letter-spacing:-.02em;color:var(--nx-t1);cursor:pointer;}
+.nx-logo{padding:0;background:none;border:none;font-family:inherit;font-size:19px;font-weight:900;letter-spacing:-.02em;color:var(--nx-t1);cursor:pointer;transition:transform .12s var(--nx-ease);}
+.nx-logo:active{transform:scale(.96);}
 .nx-logo i{font-style:normal;color:var(--nx-o);}
 .nx-nav-links{display:flex;gap:26px;}
-.nx-nav-link{padding:0 0 2px;background:none;border:none;border-bottom:2px solid transparent;font-family:inherit;font-size:14px;color:var(--nx-t2);white-space:nowrap;cursor:pointer;transition:color .2s var(--nx-ease);}
-.nx-nav-link:hover{color:var(--nx-od);}
-.nx-nav-link.is-current{font-weight:600;color:var(--nx-t1);border-bottom-color:var(--nx-o);}
+/* 目前頁面的底線用 ::after 畫，切頁時從中間展開；不用 border-bottom，
+   才不會跟瀏覽器的 focus outline 疊成一個橘色圓角框（Barbara 2026-09-01 回報） */
+.nx-nav-link{position:relative;padding:2px 2px 6px;background:none;border:none;font-family:inherit;font-size:14px;color:var(--nx-t2);white-space:nowrap;cursor:pointer;transition:color .2s var(--nx-ease);}
+.nx-nav-link::after{content:"";position:absolute;left:0;right:0;bottom:0;height:2px;border-radius:2px;background:var(--nx-o);transform:scaleX(0);transform-origin:center;transition:transform .28s var(--nx-ease);}
+.nx-nav-link:hover{color:var(--nx-t1);}
+.nx-nav-link:hover::after{transform:scaleX(.45);background:var(--nx-bd);}
+.nx-nav-link:active{transform:translateY(1px);}
+.nx-nav-link.is-current{font-weight:600;color:var(--nx-t1);}
+.nx-nav-link.is-current::after,.nx-nav-link.is-current:hover::after{transform:scaleX(1);background:var(--nx-o);}
+/* 全站的 focus-visible 是方框加圓角，套在導覽列上會變成一個橘框，這裡改成細底線 */
+.nx-nav-link:focus-visible,.nx-mob-link:focus-visible{outline:none;box-shadow:0 2px 0 0 var(--nx-o);border-radius:2px;}
+@media(prefers-reduced-motion:reduce){.nx-nav-link::after{transition:none;}}
 .nx-nav-right{display:flex;align-items:center;gap:16px;}
 .nx-nav-text{background:none;border:none;padding:0;font-family:inherit;font-size:14px;color:var(--nx-t2);cursor:pointer;transition:color .2s var(--nx-ease);}
 .nx-nav-text:hover{color:var(--nx-od);}
@@ -878,7 +892,8 @@ button:focus-visible{border-radius:4px;}
 .nx-nav-admin button{background:none;border:none;padding:0;font-family:inherit;font-size:12px;color:var(--nx-t3);cursor:pointer;text-decoration:underline;}
 .nx-nav-admin button:hover{color:var(--nx-od);}
 .nx-mob-panel{border-top:1px solid var(--nx-bd);background:#fff;padding:6px var(--nx-pad) 18px;}
-.nx-mob-link{display:block;width:100%;padding:14px 0;background:none;border:none;border-bottom:1px solid var(--nx-hair);font-family:inherit;font-size:16px;color:var(--nx-t2);text-align:left;cursor:pointer;}
+.nx-mob-link{display:block;width:100%;padding:14px 0;background:none;border:none;border-bottom:1px solid var(--nx-hair);font-family:inherit;font-size:16px;color:var(--nx-t2);text-align:left;cursor:pointer;transition:color .2s var(--nx-ease),padding-left .2s var(--nx-ease);}
+.nx-mob-link:active{color:var(--nx-od);padding-left:6px;}
 .nx-mob-link.is-current{font-weight:700;color:var(--nx-t1);}
 .nx-mob-foot{display:flex;align-items:center;gap:12px;margin-top:16px;}
 .nx-mob-foot .nx-btn{flex:1;}
@@ -892,13 +907,13 @@ button:focus-visible{border-radius:4px;}
 
 /* ===== 首頁 ===== */
 .nx-hero{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,min(470px,45%));gap:48px;align-items:center;padding-block:clamp(30px,5vw,64px) clamp(26px,4.5vw,56px);}
-.nx-badge{display:inline-flex;align-items:center;gap:10px;margin-bottom:clamp(16px,2vw,22px);padding:6px 14px 6px 8px;border-radius:999px;background:var(--nx-os);}
+.nx-badge{display:inline-flex;align-items:center;gap:10px;margin-bottom:clamp(22px,2.6vw,28px);padding:6px 14px 6px 8px;border-radius:999px;background:var(--nx-os);}
 .nx-badge b{padding:3px 9px;border-radius:999px;background:var(--nx-o);color:#fff;font-size:clamp(10px,1.1vw,11px);font-weight:700;letter-spacing:.06em;}
 .nx-badge span{font-size:clamp(12px,1.3vw,13px);font-weight:600;color:var(--nx-ost);}
-.nx-h1{margin-bottom:clamp(16px,2vw,20px);font-size:clamp(27px,4.4vw,52px);font-weight:700;line-height:1.24;letter-spacing:-.025em;text-wrap:pretty;}
-.nx-hero-p{max-width:460px;margin-bottom:14px;font-size:clamp(15px,1.7vw,17px);line-height:1.85;color:var(--nx-t2);text-wrap:pretty;}
-.nx-hero-p2{max-width:460px;margin-bottom:clamp(22px,3vw,30px);font-size:15px;line-height:1.8;color:var(--nx-t3);}
-.nx-cta-row{display:flex;flex-wrap:wrap;gap:12px;align-items:center;margin-bottom:22px;}
+.nx-h1{margin-bottom:clamp(22px,2.6vw,28px);font-size:clamp(27px,4.4vw,52px);font-weight:700;line-height:1.24;letter-spacing:-.025em;text-wrap:pretty;}
+.nx-hero-p{max-width:460px;margin-bottom:18px;font-size:clamp(15px,1.7vw,17px);line-height:1.85;color:var(--nx-t2);text-wrap:pretty;}
+.nx-hero-p2{max-width:460px;margin-bottom:clamp(30px,3.6vw,38px);font-size:15px;line-height:1.8;color:var(--nx-t3);}
+.nx-cta-row{display:flex;flex-wrap:wrap;gap:14px;align-items:center;margin-bottom:clamp(26px,3vw,32px);}
 .nx-proof{display:flex;flex-wrap:wrap;gap:10px 14px;align-items:center;font-size:13px;color:var(--nx-t3);}
 .nx-proof i{font-style:normal;color:var(--nx-bd);}
 .nx-shot-wrap{display:flex;justify-content:center;}
@@ -906,7 +921,9 @@ button:focus-visible{border-radius:4px;}
 @media(max-width:900px){
   .nx-hero{grid-template-columns:minmax(0,1fr);gap:8px;}
   .nx-hero-p,.nx-hero-p2{max-width:none;}
-  .nx-cta-row{flex-direction:column;align-items:stretch;gap:10px;margin-bottom:18px;}
+  /* 手機版只留一段說明，它與按鈕之間要有跟桌機 p2 一樣的呼吸空間 */
+  .nx-hero-p{margin-bottom:30px;}
+  .nx-cta-row{flex-direction:column;align-items:stretch;gap:12px;margin-bottom:26px;}
   .nx-cta-row .nx-btn{width:100%;}
   .nx-proof{justify-content:center;font-size:12px;}
   .nx-shot{max-width:390px;margin:0 auto;filter:drop-shadow(0 20px 36px rgba(46,42,33,.22));}
@@ -922,11 +939,11 @@ button:focus-visible{border-radius:4px;}
 
 .hm-story{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:clamp(24px,5vw,56px);align-items:center;padding-block:clamp(28px,4.5vw,56px);}
 .hm-story-flip>.nx-shot-wrap{order:2;}
-.hm-story h2{margin-bottom:18px;font-size:clamp(26px,3.8vw,38px);font-weight:700;line-height:1.35;letter-spacing:-.02em;text-wrap:pretty;}
-.hm-story .nx-mono{display:block;margin-bottom:16px;font-size:clamp(12px,1.3vw,13px);color:var(--nx-o);}
+.hm-story h2{margin-bottom:22px;font-size:clamp(26px,3.8vw,38px);font-weight:700;line-height:1.35;letter-spacing:-.02em;text-wrap:pretty;}
+.hm-story .nx-mono{display:block;margin-bottom:18px;font-size:clamp(12px,1.3vw,13px);color:var(--nx-o);}
 .hm-story .nx-shot{max-width:440px;}
-.hm-story-p{max-width:440px;margin-bottom:20px;font-size:clamp(15px,1.6vw,16px);line-height:1.9;color:var(--nx-t2);}
-.hm-quote{max-width:420px;padding-left:16px;border-left:2px solid var(--nx-bd);font-size:15px;line-height:1.85;color:var(--nx-t3);}
+.hm-story-p{max-width:440px;margin-bottom:24px;font-size:clamp(15px,1.6vw,16px);line-height:1.9;color:var(--nx-t2);}
+.hm-quote{max-width:420px;margin-top:28px;padding-left:16px;border-left:2px solid var(--nx-bd);font-size:15px;line-height:1.85;color:var(--nx-t3);}
 @media(max-width:900px){
   .hm-story{grid-template-columns:minmax(0,1fr);gap:20px;}
   .hm-story-p,.hm-quote{max-width:none;}
@@ -1030,9 +1047,9 @@ button:focus-visible{border-radius:4px;}
 .ap-hero-note{font-size:13px;color:var(--nx-t3);}
 @media(max-width:900px){.ap-hero-note{text-align:center;}}
 .ap-demo{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,400px);gap:clamp(24px,4.5vw,56px);align-items:center;}
-.ap-demo-p{max-width:440px;margin-bottom:14px;font-size:clamp(15px,1.6vw,16px);line-height:1.9;color:var(--nx-t2);}
-.ap-demo-note{max-width:440px;margin-bottom:26px;font-size:15px;line-height:1.85;color:var(--nx-t3);}
-.ap-demo-actions{display:flex;align-items:center;gap:12px;flex-wrap:wrap;}
+.ap-demo-p{max-width:440px;margin-bottom:18px;font-size:clamp(15px,1.6vw,16px);line-height:1.9;color:var(--nx-t2);}
+.ap-demo-note{max-width:440px;margin-bottom:34px;font-size:15px;line-height:1.85;color:var(--nx-t3);}
+.ap-demo-actions{display:flex;align-items:center;gap:16px;flex-wrap:wrap;}
 .ap-demo-actions span{font-size:13px;color:var(--nx-t3);}
 .nx-btn-dark{background:var(--nx-dark);color:var(--nx-dt);}
 .nx-btn-dark:hover{background:#3a3a3a;color:var(--nx-dt);}
@@ -1242,8 +1259,8 @@ button:focus-visible{border-radius:4px;}
 /* ===== /savings-bag 實體工具頁 ===== */
 .bg-hero{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);align-items:stretch;border-bottom:1px solid var(--nx-bd);}
 .bg-hero-copy{display:flex;flex-direction:column;justify-content:center;padding:clamp(28px,4.6vw,64px) var(--nx-pad) clamp(26px,4.2vw,60px);}
-.bg-hero h1{margin-bottom:18px;font-size:clamp(30px,4.2vw,42px);font-weight:700;line-height:1.28;letter-spacing:-.03em;text-wrap:pretty;}
-.bg-hero-sub{max-width:420px;margin-bottom:clamp(20px,2.4vw,28px);font-size:clamp(15px,1.7vw,17px);color:var(--nx-t2);line-height:1.95;}
+.bg-hero h1{margin-bottom:22px;font-size:clamp(30px,4.2vw,42px);font-weight:700;line-height:1.28;letter-spacing:-.03em;text-wrap:pretty;}
+.bg-hero-sub{max-width:420px;margin-bottom:clamp(28px,3.4vw,36px);font-size:clamp(15px,1.7vw,17px);color:var(--nx-t2);line-height:1.95;}
 .bg-hero-note{font-size:13px;color:var(--nx-t3);line-height:1.8;}
 .bg-hero-img{width:100%;height:100%;min-height:420px;max-height:560px;object-fit:cover;display:block;}
 @media(max-width:900px){
@@ -1468,11 +1485,11 @@ button:focus-visible{border-radius:4px;}
 
 .gd-sect{margin-bottom:clamp(34px,4.6vw,52px);scroll-margin-top:calc(var(--nx-navh) + 24px);}
 .gd-sect+.gd-sect{padding-top:clamp(28px,3.6vw,44px);border-top:1px dotted var(--nx-t5);}
-.gd-sect-head{display:flex;align-items:baseline;gap:14px;flex-wrap:wrap;margin-bottom:20px;}
+.gd-sect-head{display:flex;align-items:baseline;gap:14px;flex-wrap:wrap;margin-bottom:10px;}
 .gd-sect-head b{font-family:var(--nx-mono);font-size:14px;font-weight:500;color:var(--nx-o);}
 .gd-sect-head h2{font-size:clamp(21px,2.6vw,28px);font-weight:700;letter-spacing:-.02em;}
 .gd-sect-head span{font-size:13px;color:var(--nx-t3);}
-.gd-intro{max-width:620px;margin-bottom:24px;font-size:clamp(14px,1.5vw,15px);color:var(--nx-t2);line-height:1.9;}
+.gd-intro{max-width:620px;margin-bottom:clamp(26px,3vw,34px);font-size:clamp(14px,1.5vw,15px);color:var(--nx-t2);line-height:1.9;}
 
 .gd-steps{display:flex;flex-direction:column;gap:14px;}
 .gd-step{display:grid;grid-template-columns:34px minmax(0,1fr) 250px;gap:20px;align-items:start;padding:24px;border:1px solid var(--nx-bd);border-radius:16px;background:#fff;box-shadow:var(--nx-sh);}
@@ -2706,7 +2723,7 @@ function Nav({ page, setPage, isAdmin, navLabels, setNavLabels }) {
             ) : (
               <a className="nx-nav-text" href={APP_URL}>登入</a>
             )}
-            <a className="nx-btn nx-btn-pri nx-btn-sm" href={pathForPage("app")} onClick={e => { e.preventDefault(); go("app"); }}>開始使用</a>
+            <a className="nx-btn nx-btn-pri nx-btn-sm" {...appCtaProps("nav")}>開始使用</a>
           </div>
           <button className="nx-burger" onClick={() => setMob(p => !p)} aria-label={mob ? "關閉選單" : "開啟選單"} aria-expanded={mob}>
             {mob ? (
@@ -2728,7 +2745,7 @@ function Nav({ page, setPage, isAdmin, navLabels, setNavLabels }) {
             </>}
             <div className="nx-mob-foot">
               {!isAdmin && <a className="nx-btn nx-btn-sec nx-btn-sm" href={APP_URL}>登入</a>}
-              <a className="nx-btn nx-btn-pri nx-btn-sm" href={pathForPage("app")} onClick={e => { e.preventDefault(); go("app"); }}>開始使用</a>
+              <a className="nx-btn nx-btn-pri nx-btn-sm" {...appCtaProps("nav-mobile")}>開始使用</a>
             </div>
           </div>
         )}
@@ -2962,7 +2979,7 @@ function Home({ setPage, isAdmin, trustStats, setTrustStats }) {
             <p className="nx-hero-p nx-only-mob">月初分配、平常 5 秒記一筆、月底告訴你下個月該從哪裡開始調整。</p>
             <p className="nx-hero-p2 nx-hide-mob">不是叫你什麼都別買，是讓想花的錢花得安心。</p>
             <div className="nx-cta-row">
-              <a className="nx-btn nx-btn-pri nx-btn-lg" {...to("app")}>開始使用 88La財務導航 →</a>
+              <a className="nx-btn nx-btn-pri nx-btn-lg" {...appCtaProps("home-hero")}>開始使用 88La財務導航 →</a>
               <a className="nx-btn nx-btn-sec nx-btn-lg" href="#month">先看完一個月 ↓</a>
             </div>
             {editStats ? (
@@ -3068,7 +3085,7 @@ function Home({ setPage, isAdmin, trustStats, setTrustStats }) {
             </div>
           </div>
           <div className="nx-dark-foot">
-            <a className="nx-btn nx-btn-pri nx-btn-lg" {...to("app")}>開始我的第一個月 →</a>
+            <a className="nx-btn nx-btn-pri nx-btn-lg" {...appCtaProps("home-month")}>開始我的第一個月 →</a>
             <p>月初先分配，月底就會有自己的診斷</p>
           </div>
         </div>
@@ -3190,14 +3207,14 @@ function Home({ setPage, isAdmin, trustStats, setTrustStats }) {
                 <p className="hm-price-num">{NT_YEARLY}<span> /年</span></p>
                 <p className="hm-price-save">相當於 NT$ {APP_YEARLY_MONTHLY_EQUIVALENT} / 月，省下約 {APP_YEARLY_DISCOUNT}%</p>
               </div>
-              <a className="nx-btn nx-btn-pri nx-btn-lg" {...to("app")}>開始使用 →</a>
+              <a className="nx-btn nx-btn-pri nx-btn-lg" {...appCtaProps("home-price")}>開始使用 →</a>
             </div>
             <div className="hm-price-bot">
               <div>
                 <strong>想先試一個月？月訂閱 {NT_MONTHLY} / 月</strong>
                 <em>下次扣款日前都可以取消，資料留著</em>
               </div>
-              <a className="nx-btn nx-btn-sec nx-btn-sm" {...to("app")}>選月訂閱</a>
+              <a className="nx-btn nx-btn-sec nx-btn-sm" {...appCtaProps("home-price-monthly")}>選月訂閱</a>
             </div>
           </div>
         </div>
@@ -3221,7 +3238,7 @@ function Home({ setPage, isAdmin, trustStats, setTrustStats }) {
           <b>88La財務導航</b>
           <span>{NT_MONTHLY} / 月起</span>
         </div>
-        <a className="nx-btn nx-btn-pri nx-btn-sm" {...to("app")}>開始使用</a>
+        <a className="nx-btn nx-btn-pri nx-btn-sm" {...appCtaProps("home-sticky")}>開始使用</a>
       </div>
     </div>
   );
@@ -5070,7 +5087,7 @@ function AppLegacyAdmin({ appContent, setAppContent, isAdmin, setPage, demoStory
                 </li>
               ))}
             </ul>
-            <a {...appLockProps("app-plan-detail")}>
+            <a {...appCtaProps("app-plan-detail")}>
               <button style={{ background: plan.highlight ? WHITE : O, color: plan.highlight ? O : WHITE, border: "none", padding: "14px 36px", fontSize: 14, fontWeight: 500, cursor: "pointer", fontFamily: "inherit", transition: "opacity .18s" }}
                 onMouseEnter={e => e.currentTarget.style.opacity = ".85"} onMouseLeave={e => e.currentTarget.style.opacity = "1"}
               >{c.planDetailBuyBtn}</button>
@@ -5481,7 +5498,7 @@ function AppLegacyAdmin({ appContent, setAppContent, isAdmin, setPage, demoStory
               </div>
             ))}
           </div>
-          <p style={{ textAlign: "center", fontSize: 12, color: LIGHT, marginTop: 20 }}>{c.loginNote}<a {...appLockProps("app-login-note")} style={{ color: O }}>{c.loginLink}</a></p>
+          <p style={{ textAlign: "center", fontSize: 12, color: LIGHT, marginTop: 20 }}>{c.loginNote}<a {...appCtaProps("app-login-note")} style={{ color: O }}>{c.loginLink}</a></p>
         </div>
         {!isAdmin && (
           <div style={{ position: "absolute", inset: 0, backdropFilter: "blur(6px)", WebkitBackdropFilter: "blur(6px)", background: "rgba(248,248,248,0.75)", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", gap: 14 }}>
@@ -5667,7 +5684,7 @@ function AppPage({ appContent, setAppContent, isAdmin, setPage, demoStory, setDe
             <p className="nx-hero-p" style={{ color: "var(--nx-t1)", maxWidth: 480, fontSize: "clamp(17px,1.9vw,19px)", lineHeight: 1.78 }}>月初把錢安排好，平常 5 秒記一筆，月底告訴你下個月該從哪裡調整。</p>
             <p className="nx-hero-p2">不是又一個記帳 App。是一整套「分配 → 記錄 → 診斷」的循環<span className="nx-hide-mob">，陪你把每個月走完</span>。</p>
             <div className="nx-cta-row">
-              <a className="nx-btn nx-btn-pri nx-btn-lg" {...to("app")}>開始使用 →</a>
+              <a className="nx-btn nx-btn-pri nx-btn-lg" {...appCtaProps("app-hero")}>開始使用 →</a>
               <a className="nx-btn nx-btn-sec nx-btn-lg" href="#demo">先滑滑看 demo ↓</a>
             </div>
             <p className="ap-hero-note">不用訂閱 · 免費試玩</p>
@@ -5921,7 +5938,7 @@ function AppPage({ appContent, setAppContent, isAdmin, setPage, demoStory, setDe
               <p className="ap-plan-price">{NT_MONTHLY}<span> /月</span></p>
               <p className="ap-plan-sub">隨時可取消</p>
               <ul><li>完整功能</li><li>桌面快速記帳</li><li>下次扣款前可取消</li></ul>
-              <a className="nx-btn nx-btn-sec nx-btn-sec-strong nx-btn-block nx-btn-md" {...to("app")}>選這個方案</a>
+              <a className="nx-btn nx-btn-sec nx-btn-sec-strong nx-btn-block nx-btn-md" {...appCtaProps("app-plan-monthly")}>選這個方案</a>
             </div>
             <div className="ap-plan ap-plan-dark">
               <span className="ap-plan-badge">最多人選擇</span>
@@ -5929,7 +5946,7 @@ function AppPage({ appContent, setAppContent, isAdmin, setPage, demoStory, setDe
               <p className="ap-plan-price">{NT_YEARLY}<span> /年</span></p>
               <p className="ap-plan-sub">相當於 NT$ {APP_YEARLY_MONTHLY_EQUIVALENT} / 月，省下約 {APP_YEARLY_DISCOUNT}%</p>
               <ul><li>完整功能</li><li>桌面快速記帳</li><li>單筆付款，不自動續約</li></ul>
-              <a className="nx-btn nx-btn-pri nx-btn-block nx-btn-md" {...to("app")}>開始使用 →</a>
+              <a className="nx-btn nx-btn-pri nx-btn-block nx-btn-md" {...appCtaProps("app-plan-yearly")}>開始使用 →</a>
             </div>
           </div>
         </div>
@@ -5953,7 +5970,7 @@ function AppPage({ appContent, setAppContent, isAdmin, setPage, demoStory, setDe
               </div>
               <div>
                 <a className="nx-btn nx-btn-sec nx-btn-sec-strong nx-btn-sm" href={`mailto:${PUBLIC_CONTACT_EMAIL}`}>聯絡我們</a>
-                <a className="nx-btn nx-btn-pri nx-btn-sm" {...to("app")}>開始使用 →</a>
+                <a className="nx-btn nx-btn-pri nx-btn-sm" {...appCtaProps("app-faq")}>開始使用 →</a>
               </div>
             </div>
           </div>
@@ -5972,7 +5989,7 @@ function AppPage({ appContent, setAppContent, isAdmin, setPage, demoStory, setDe
           <b>88La財務導航</b>
           <span>{NT_MONTHLY} / 月起</span>
         </div>
-        <a className="nx-btn nx-btn-pri nx-btn-sm" {...to("app")}>開始使用</a>
+        <a className="nx-btn nx-btn-pri nx-btn-sm" {...appCtaProps("app-sticky")}>開始使用</a>
       </div>
 
       {/* 後台：舊版 /app 頁只是保留下來當編輯器，方案與使用說明資料還是從這裡改。
@@ -6987,7 +7004,7 @@ function PricingPage({ appContent, setPage }) {
                     </li>
                   ))}
                 </ul>
-                <a {...appLockProps("plans-page")}>
+                <a {...appCtaProps("plans-page")}>
                   <button style={{ width: "100%", background: plan.highlight ? WHITE : O, color: plan.highlight ? O : WHITE, border: "none", padding: "14px 24px", fontSize: 14, fontWeight: 500, cursor: "pointer", fontFamily: "inherit", borderRadius: 8, transition: "opacity .18s" }}
                     onMouseEnter={e => e.currentTarget.style.opacity = ".85"} onMouseLeave={e => e.currentTarget.style.opacity = "1"}>
                     立即開始使用 →
@@ -7156,7 +7173,7 @@ function SubscriptionPage({ setPage, isAdmin, appContent, subscriptionCopy, setS
                     </li>
                   ))}
                 </ul>
-                <a {...appLockProps("pricing-page")} style={{ display: "block" }}>
+                <a {...appCtaProps("pricing-page")} style={{ display: "block" }}>
                   <button style={{ width: "100%", background: plan.highlight ? WHITE : O, color: plan.highlight ? O : WHITE, border: "none", padding: "13px 20px", fontSize: 13, fontWeight: 500, cursor: "pointer", fontFamily: "inherit", borderRadius: 8, transition: "opacity .18s" }}
                     onMouseEnter={e => e.currentTarget.style.opacity = ".85"} onMouseLeave={e => e.currentTarget.style.opacity = "1"}>
                     立即開始使用 →
@@ -7278,18 +7295,13 @@ export default function App() {
       if (/^https?:\/\//.test(href)) {
         try { url = new URL(href); } catch { return; }
       }
-      const isAppCta = a.dataset.appLocked === "true" || url?.origin === new URL(APP_URL).origin;
-      if (isAppCta) {
-        e.preventDefault();
-        _showToast(APP_LAUNCH_NOTICE, "notice");
-        if (typeof window.gtag === "function") {
-          window.gtag("event", "cta_locked_click", {
-            link_url: href,
-            link_domain: url?.hostname || new URL(APP_URL).hostname,
-            from_page: pageRef.current,
-            cta_source: a.dataset.appSource || "direct-app-link",
-          });
-        }
+      // 進 App 的 CTA 照樣導過去，只多送一個事件記錄是哪一頁帶進去的
+      if (url?.origin === new URL(APP_URL).origin && typeof window.gtag === "function") {
+        window.gtag("event", "app_cta_click", {
+          link_url: href,
+          from_page: pageRef.current,
+          cta_source: a.dataset.appSource || "direct-app-link",
+        });
         return;
       }
       if (!url || url.origin === window.location.origin || typeof window.gtag !== "function") return;
