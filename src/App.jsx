@@ -1592,7 +1592,7 @@ button:focus-visible{border-radius:4px;}
 .nx-page .article-content ul,.nx-page .article-content ol{margin-bottom:22px;padding-left:24px;}
 .nx-page .article-content li{margin-bottom:8px;line-height:1.95;}
 
-.ar-rel{margin-bottom:clamp(28px,3.6vw,40px);}
+.ar-rel{margin-top:clamp(28px,3.6vw,40px);margin-bottom:clamp(28px,3.6vw,40px);}
 .ar-rel>p{margin-bottom:14px;font-size:13px;font-weight:700;letter-spacing:.1em;color:var(--nx-t3);}
 .ar-rel-item{display:flex;align-items:center;gap:16px;width:100%;padding:16px 20px;margin-bottom:10px;border:1px solid var(--nx-bd);border-radius:14px;background:#fff;font-family:inherit;text-align:left;cursor:pointer;transition:border-color .2s var(--nx-ease),transform .12s var(--nx-ease);}
 .ar-rel-item:hover{border-color:var(--nx-o);}
@@ -1602,7 +1602,7 @@ button:focus-visible{border-radius:4px;}
 .ar-rel-label{margin-top:2px;font-size:15px;font-weight:600;color:var(--nx-t1);}
 .ar-rel-meta{margin-top:2px;font-size:13px;color:var(--nx-t3);}
 
-.ar-share{display:flex;gap:12px;flex-wrap:wrap;padding-bottom:clamp(28px,3.6vw,40px);border-bottom:1px dotted var(--nx-t5);}
+.ar-share{display:flex;gap:12px;flex-wrap:wrap;margin-top:clamp(28px,3.6vw,40px);padding-bottom:clamp(28px,3.6vw,40px);border-bottom:1px dotted var(--nx-t5);}
 .ar-community{display:flex;align-items:center;justify-content:space-between;gap:20px;flex-wrap:wrap;margin-block:clamp(28px,3.6vw,40px);padding:clamp(22px,2.6vw,28px);border-radius:16px;background:var(--nx-os);}
 .ar-community strong{display:block;margin-bottom:6px;font-size:17px;font-weight:700;color:var(--nx-ost);}
 .ar-community em{font-style:normal;font-size:14px;color:var(--nx-ol);}
@@ -3281,7 +3281,7 @@ function Home({ setPage, isAdmin, trustStats, setTrustStats }) {
       <div className="nx-sticky">
         <div>
           <b>88La財務導航</b>
-          <span><Price>{NT_MONTHLY}</Price> / 月起</span>
+          <span>{isAppLaunched() ? `${NT_MONTHLY} / 月起` : "9/10 正式上線"}</span>
         </div>
         <a className="nx-btn nx-btn-pri nx-btn-sm" {...appCtaProps("home-sticky")}>開始使用</a>
       </div>
@@ -6033,7 +6033,7 @@ function AppPage({ appContent, setAppContent, isAdmin, setPage, demoStory, setDe
       <div className="nx-sticky">
         <div>
           <b>88La財務導航</b>
-          <span><Price>{NT_MONTHLY}</Price> / 月起</span>
+          <span>{isAppLaunched() ? `${NT_MONTHLY} / 月起` : "9/10 正式上線"}</span>
         </div>
         <a className="nx-btn nx-btn-pri nx-btn-sm" {...appCtaProps("app-sticky")}>開始使用</a>
       </div>
