@@ -1,4 +1,4 @@
-import { useState, useEffect, useLayoutEffect, useRef } from "react";
+import { useState, useEffect, useLayoutEffect, useRef, Fragment } from "react";
 import { articleKey, viewCount } from "./articleViews.js";
 import { initializeApp } from "firebase/app";
 import { getFirestore, doc, setDoc, collection, getDocs, query, orderBy, deleteDoc } from "firebase/firestore";
@@ -52,6 +52,10 @@ const APP_MONTHLY_PRICE = `NT$${APP_MONTHLY_AMOUNT.toLocaleString("en-US")}`;
 const APP_YEARLY_PRICE = `NT$${APP_YEARLY_AMOUNT.toLocaleString("en-US")}`;
 const FOUNDER_MONTHLY_PRICE = `NT$${FOUNDER_MONTHLY_AMOUNT.toLocaleString("en-US")}`;
 const FOUNDER_YEARLY_PRICE = `NT$${FOUNDER_YEARLY_AMOUNT.toLocaleString("en-US")}`;
+// 改版文案規範：金額一律 NT$ + 半形空格 + 千分位（NT$ 1,988）。金額本身仍只有上面那組常數是來源
+const ntSpaced = amount => `NT$ ${amount.toLocaleString("en-US")}`;
+const NT_MONTHLY = ntSpaced(APP_MONTHLY_AMOUNT);
+const NT_YEARLY = ntSpaced(APP_YEARLY_AMOUNT);
 const APP_YEARLY_DISCOUNT = Math.round((1 - APP_YEARLY_AMOUNT / (APP_MONTHLY_AMOUNT * 12)) * 100);
 const APP_YEARLY_MONTHLY_EQUIVALENT = Math.round(APP_YEARLY_AMOUNT / 12);
 const PAGE_META = {
@@ -93,11 +97,10 @@ const GRAY = "#F8F8F8";
 const CHAR = "#1A1A1A";
 const MID = "#6B6B6B";
 const LIGHT = "#767676";
-const TITLE_COLOR = "#F05E1C";
 const BORDER = "rgba(0,0,0,0.07)";
 const GRAD = O2;
 
-const GF = `@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@300;400;500;700&family=Inter:ital,opsz,wght@0,14..32,300;0,14..32,400;0,14..32,500;0,14..32,700;1,14..32,300&display=swap');`;
+const GF = `@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@300;400;500;600;700;900&family=JetBrains+Mono:wght@400;500&family=Inter:ital,opsz,wght@0,14..32,300;0,14..32,400;0,14..32,500;0,14..32,700;1,14..32,300&display=swap');`;
 
 const css = `
 ${GF}
@@ -802,6 +805,789 @@ button:focus-visible{border-radius:4px;}
   .home-ecosystem-float{animation:none;will-change:auto;}
   .home-product-preview:hover .home-ecosystem-object{transform:none;}
 }
+
+/* ========= 2026-09 官網改版：共用設計系統（nx-）與首頁（hm-） ========= */
+:root{
+  --nx-bg:#FCFAF6;--nx-bg2:#F7F2E9;--nx-card:#FFFFFF;
+  --nx-o:#E07238;--nx-od:#C95A26;--nx-os:#FBE6D2;--nx-ost:#7C3617;--nx-ol:#A4471D;
+  --nx-dark:#494949;--nx-dt:#FCFAF6;--nx-ds:rgba(252,250,246,.62);--nx-dl:#E8A578;
+  --nx-t1:#2E2A21;--nx-t2:#574F40;--nx-t3:#877C68;--nx-t4:#A79B85;--nx-t5:#B5A893;
+  --nx-bd:#E4DCC9;--nx-hair:#F0E9DA;
+  --nx-mono:'JetBrains Mono',ui-monospace,SFMono-Regular,monospace;
+  --nx-ease:cubic-bezier(.2,.7,.2,1);
+  --nx-sh:0 1px 0 rgba(46,42,33,.04),0 8px 24px -12px rgba(46,42,33,.10);
+  --nx-pad:40px;--nx-navh:66px;
+}
+@media(max-width:900px){:root{--nx-pad:20px;--nx-navh:58px;}}
+
+.nx-page{background:var(--nx-bg);color:var(--nx-t1);font-family:'Noto Sans TC','PingFang TC',system-ui,sans-serif;}
+.nx-page h1,.nx-page h2,.nx-page h3,.nx-page h4,.nx-page p{margin:0;}
+.nx-page img{max-width:100%;height:auto;}
+.nx-in{max-width:1120px;margin:0 auto;padding-inline:var(--nx-pad);}
+.nx-mono{font-family:var(--nx-mono);letter-spacing:.06em;}
+.nx-eyebrow{font-size:clamp(11px,1.2vw,13px);font-weight:700;letter-spacing:.14em;color:var(--nx-o);}
+.nx-eyebrow-mute{color:var(--nx-t3);}
+.nx-eyebrow-dark{color:#EB8A48;}
+.nx-h2{font-size:clamp(24px,3.4vw,34px);font-weight:700;letter-spacing:-.02em;line-height:1.35;text-wrap:pretty;}
+.nx-h3{font-size:clamp(17px,1.8vw,20px);font-weight:700;line-height:1.45;}
+.nx-h4{font-size:clamp(16px,1.6vw,18px);font-weight:700;line-height:1.5;}
+.nx-lead{font-size:clamp(14px,1.4vw,15px);color:var(--nx-t3);line-height:1.8;text-wrap:pretty;}
+.nx-body{font-size:clamp(14px,1.5vw,16px);color:var(--nx-t2);line-height:1.9;text-wrap:pretty;}
+.nx-sm{font-size:14px;color:var(--nx-t2);line-height:1.85;}
+.nx-card{background:var(--nx-card);border:1px solid var(--nx-bd);border-radius:16px;box-shadow:var(--nx-sh);}
+.nx-hr{margin-top:24px;padding-top:20px;border-top:1px dotted var(--nx-t5);}
+.nx-anchor{scroll-margin-top:calc(var(--nx-navh) + 24px);}
+@media(max-width:900px){.nx-anchor{scroll-margin-top:calc(var(--nx-navh) + 16px);}}
+.nx-only-mob{display:none!important;}
+.nx-link{color:var(--nx-od);text-decoration:underline;text-underline-offset:2px;cursor:pointer;}
+.nx-link:hover{color:var(--nx-o);}
+@media(max-width:768px){
+  .nx-hide-mob{display:none!important;}
+  .nx-only-mob{display:block!important;}
+}
+
+/* 按鈕 */
+.nx-btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;border:1px solid transparent;border-radius:999px;font-family:inherit;font-weight:700;line-height:1.2;text-align:center;cursor:pointer;white-space:nowrap;
+  transition:background .2s var(--nx-ease),color .2s var(--nx-ease),border-color .2s var(--nx-ease),box-shadow .2s var(--nx-ease),transform .12s var(--nx-ease);}
+.nx-btn:active{transform:scale(.98);}
+.nx-btn-pri{background:var(--nx-o);color:#fff;box-shadow:0 8px 20px -10px rgba(224,114,56,.9);}
+.nx-btn-pri:hover{background:var(--nx-od);color:#fff;box-shadow:0 10px 24px -10px rgba(224,114,56,.95);}
+.nx-btn-sec{background:#fff;border-color:var(--nx-bd);color:var(--nx-t2);font-weight:600;}
+.nx-btn-sec:hover{border-color:var(--nx-o);color:var(--nx-od);}
+.nx-btn-sec-strong{color:var(--nx-t1);}
+.nx-btn-lg{padding:15px 30px;font-size:clamp(15px,1.6vw,16px);}
+.nx-btn-md{padding:13px 24px;font-size:15px;}
+.nx-btn-sm{padding:11px 20px;font-size:14px;font-weight:600;}
+.nx-btn-block{display:flex;width:100%;}
+
+/* 導覽列 */
+.nx-nav{position:sticky;top:0;z-index:50;background:#fff;border-bottom:1px solid var(--nx-bd);}
+.nx-nav-in{display:flex;align-items:center;justify-content:space-between;gap:24px;max-width:1120px;margin:0 auto;padding:18px var(--nx-pad);}
+.nx-nav-left{display:flex;align-items:center;gap:36px;min-width:0;}
+.nx-logo{padding:0;background:none;border:none;font-family:inherit;font-size:19px;font-weight:900;letter-spacing:-.02em;color:var(--nx-t1);cursor:pointer;}
+.nx-logo i{font-style:normal;color:var(--nx-o);}
+.nx-nav-links{display:flex;gap:26px;}
+.nx-nav-link{padding:0 0 2px;background:none;border:none;border-bottom:2px solid transparent;font-family:inherit;font-size:14px;color:var(--nx-t2);white-space:nowrap;cursor:pointer;transition:color .2s var(--nx-ease);}
+.nx-nav-link:hover{color:var(--nx-od);}
+.nx-nav-link.is-current{font-weight:600;color:var(--nx-t1);border-bottom-color:var(--nx-o);}
+.nx-nav-right{display:flex;align-items:center;gap:16px;}
+.nx-nav-text{background:none;border:none;padding:0;font-family:inherit;font-size:14px;color:var(--nx-t2);cursor:pointer;transition:color .2s var(--nx-ease);}
+.nx-nav-text:hover{color:var(--nx-od);}
+.nx-burger{display:none;align-items:center;justify-content:center;width:40px;height:40px;margin-right:-8px;padding:0;background:none;border:none;color:var(--nx-t1);cursor:pointer;}
+.nx-nav-admin{display:flex;align-items:center;gap:12px;font-size:12px;color:var(--nx-t3);}
+.nx-nav-admin button{background:none;border:none;padding:0;font-family:inherit;font-size:12px;color:var(--nx-t3);cursor:pointer;text-decoration:underline;}
+.nx-nav-admin button:hover{color:var(--nx-od);}
+.nx-mob-panel{border-top:1px solid var(--nx-bd);background:#fff;padding:6px var(--nx-pad) 18px;}
+.nx-mob-link{display:block;width:100%;padding:14px 0;background:none;border:none;border-bottom:1px solid var(--nx-hair);font-family:inherit;font-size:16px;color:var(--nx-t2);text-align:left;cursor:pointer;}
+.nx-mob-link.is-current{font-weight:700;color:var(--nx-t1);}
+.nx-mob-foot{display:flex;align-items:center;gap:12px;margin-top:16px;}
+.nx-mob-foot .nx-btn{flex:1;}
+@media(max-width:900px){
+  .nx-nav-in{padding:14px var(--nx-pad);}
+  .nx-logo{font-size:17px;}
+  .nx-nav-links,.nx-nav-right{display:none;}
+  .nx-burger{display:flex;}
+}
+@media(min-width:901px){.nx-mob-panel{display:none;}}
+
+/* ===== 首頁 ===== */
+.nx-hero{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,min(470px,45%));gap:48px;align-items:center;padding-block:clamp(30px,5vw,64px) clamp(26px,4.5vw,56px);}
+.nx-badge{display:inline-flex;align-items:center;gap:10px;margin-bottom:clamp(16px,2vw,22px);padding:6px 14px 6px 8px;border-radius:999px;background:var(--nx-os);}
+.nx-badge b{padding:3px 9px;border-radius:999px;background:var(--nx-o);color:#fff;font-size:clamp(10px,1.1vw,11px);font-weight:700;letter-spacing:.06em;}
+.nx-badge span{font-size:clamp(12px,1.3vw,13px);font-weight:600;color:var(--nx-ost);}
+.nx-h1{margin-bottom:clamp(16px,2vw,20px);font-size:clamp(27px,4.4vw,52px);font-weight:700;line-height:1.24;letter-spacing:-.025em;text-wrap:pretty;}
+.nx-hero-p{max-width:460px;margin-bottom:14px;font-size:clamp(15px,1.7vw,17px);line-height:1.85;color:var(--nx-t2);text-wrap:pretty;}
+.nx-hero-p2{max-width:460px;margin-bottom:clamp(22px,3vw,30px);font-size:15px;line-height:1.8;color:var(--nx-t3);}
+.nx-cta-row{display:flex;flex-wrap:wrap;gap:12px;align-items:center;margin-bottom:22px;}
+.nx-proof{display:flex;flex-wrap:wrap;gap:10px 14px;align-items:center;font-size:13px;color:var(--nx-t3);}
+.nx-proof i{font-style:normal;color:var(--nx-bd);}
+.nx-shot-wrap{display:flex;justify-content:center;}
+.nx-shot{width:100%;max-width:470px;height:auto;display:block;filter:drop-shadow(0 30px 50px rgba(46,42,33,.26));}
+@media(max-width:900px){
+  .nx-hero{grid-template-columns:minmax(0,1fr);gap:8px;}
+  .nx-hero-p,.nx-hero-p2{max-width:none;}
+  .nx-cta-row{flex-direction:column;align-items:stretch;gap:10px;margin-bottom:18px;}
+  .nx-cta-row .nx-btn{width:100%;}
+  .nx-proof{justify-content:center;font-size:12px;}
+  .nx-shot{max-width:390px;margin:0 auto;filter:drop-shadow(0 20px 36px rgba(46,42,33,.22));}
+}
+
+.nx-band{background:var(--nx-bg2);border-block:1px solid var(--nx-bd);}
+.nx-dark{background:var(--nx-dark);}
+.hm-pain{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:clamp(0px,3vw,32px);}
+.hm-pain>div{padding-top:18px;border-top:1px dotted var(--nx-t5);}
+.hm-pain h3{margin-bottom:8px;font-size:clamp(17px,1.9vw,19px);font-weight:600;line-height:1.55;}
+.hm-pain p{font-size:14px;color:var(--nx-t3);line-height:1.8;}
+@media(max-width:768px){.hm-pain{grid-template-columns:minmax(0,1fr);gap:0;}.hm-pain>div{padding-block:14px 0;}}
+
+.hm-story{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:clamp(24px,5vw,56px);align-items:center;padding-block:clamp(28px,4.5vw,56px);}
+.hm-story-flip>.nx-shot-wrap{order:2;}
+.hm-story h2{margin-bottom:18px;font-size:clamp(26px,3.8vw,38px);font-weight:700;line-height:1.35;letter-spacing:-.02em;text-wrap:pretty;}
+.hm-story .nx-mono{display:block;margin-bottom:16px;font-size:clamp(12px,1.3vw,13px);color:var(--nx-o);}
+.hm-story .nx-shot{max-width:440px;}
+.hm-story-p{max-width:440px;margin-bottom:20px;font-size:clamp(15px,1.6vw,16px);line-height:1.9;color:var(--nx-t2);}
+.hm-quote{max-width:420px;padding-left:16px;border-left:2px solid var(--nx-bd);font-size:15px;line-height:1.85;color:var(--nx-t3);}
+@media(max-width:900px){
+  .hm-story{grid-template-columns:minmax(0,1fr);gap:20px;}
+  .hm-story-p,.hm-quote{max-width:none;}
+}
+
+.hm-month-head{padding-block:clamp(36px,5vw,64px) 8px;text-align:center;}
+.hm-month-head h2{margin-block:12px;}
+.hm-diag{display:grid;grid-template-columns:minmax(0,500px) minmax(0,1fr);gap:32px;align-items:center;max-width:980px;margin:0 auto;}
+.hm-diag .nx-shot{max-width:500px;}
+.hm-advice{padding:clamp(20px,2.4vw,28px);border-radius:16px;background:var(--nx-bg);}
+.hm-advice>p:first-child{margin-bottom:18px;font-size:12px;font-weight:700;letter-spacing:.1em;color:var(--nx-t3);}
+.hm-advice li{margin-bottom:16px;padding-left:14px;border-left:2px solid var(--nx-bd);font-size:clamp(14px,1.5vw,15px);line-height:1.85;list-style:none;color:var(--nx-t2);}
+.hm-advice li:first-child{border-left-color:var(--nx-o);color:var(--nx-t1);}
+.hm-advice li:last-child{margin-bottom:0;}
+.nx-dark-foot{display:flex;flex-direction:column;align-items:center;gap:12px;margin-top:clamp(28px,4vw,48px);padding-top:clamp(24px,3.4vw,40px);border-top:1px dotted rgba(252,250,246,.22);}
+.nx-dark-foot p{font-size:clamp(13px,1.4vw,14px);color:rgba(252,250,246,.55);text-align:center;}
+@media(max-width:900px){
+  .hm-diag{grid-template-columns:minmax(0,1fr);gap:20px;}
+  .hm-diag .nx-shot{max-width:340px;filter:drop-shadow(0 20px 36px rgba(0,0,0,.45));}
+  .nx-dark-foot .nx-btn{width:100%;}
+}
+
+.hm-feat{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:20px;}
+.hm-feat article{padding:20px 20px 8px;}
+.hm-feat h3{margin-bottom:6px;font-size:clamp(15px,1.6vw,17px);font-weight:700;}
+.hm-feat p{margin-bottom:14px;font-size:13px;color:var(--nx-t3);line-height:1.8;}
+.hm-feat img{width:100%;display:block;}
+@media(max-width:900px){.hm-feat{grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;}.hm-feat article{padding:16px 16px 6px;}.hm-feat h3{margin-bottom:10px;}}
+
+.nx-sect-head{display:flex;justify-content:space-between;align-items:flex-end;gap:24px;flex-wrap:wrap;margin-bottom:clamp(22px,3vw,36px);}
+.nx-sect-head h2{margin-block:12px;}
+.nx-sect-head .nx-lead{max-width:520px;}
+.nx-pill{display:inline-flex;align-items:center;gap:10px;padding:11px 18px;border-radius:999px;background:var(--nx-os);font-size:clamp(13px,1.4vw,14px);font-weight:700;color:var(--nx-ost);}
+.nx-pill svg{flex-shrink:0;}
+
+.nx-steps{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:clamp(14px,2vw,22px);}
+.nx-steps article{padding:clamp(20px,2.4vw,26px);}
+.nx-step-no{display:flex;align-items:center;gap:10px;margin-bottom:14px;}
+.nx-step-no b{display:inline-flex;align-items:center;justify-content:center;width:26px;height:26px;border-radius:999px;background:var(--nx-o);color:#fff;font-size:13px;font-weight:700;}
+.nx-step-no span{font-size:13px;color:var(--nx-t3);}
+.nx-steps h3{margin-bottom:10px;}
+.nx-steps p{margin-bottom:20px;font-size:14px;color:var(--nx-t2);line-height:1.85;}
+.nx-thumb{padding:10px;border:1px solid var(--nx-bd);border-radius:12px;background:var(--nx-bg);overflow:hidden;}
+.nx-thumb img{width:100%;display:block;}
+@media(max-width:900px){.nx-steps{grid-template-columns:minmax(0,1fr);gap:14px;}}
+
+.nx-stack{display:grid;grid-template-columns:.85fr 1.15fr;gap:clamp(24px,4.5vw,56px);align-items:start;}
+.nx-stack-list{display:flex;flex-direction:column;gap:14px;}
+.nx-stack-list article{padding:clamp(20px,2.2vw,26px);border-radius:16px;}
+.nx-stack-now{background:var(--nx-bg);}
+.nx-stack-next{background:rgba(252,250,246,.08);border:1px solid rgba(252,250,246,.16);}
+.nx-stack-list h3{margin-bottom:10px;font-size:clamp(17px,1.8vw,19px);font-weight:700;}
+.nx-stack-now h3{color:var(--nx-t1);}
+.nx-stack-next h3{color:var(--nx-dt);}
+.nx-stack-now p{font-size:14px;color:var(--nx-t2);line-height:1.85;}
+.nx-stack-next p{font-size:14px;color:var(--nx-ds);line-height:1.85;}
+.nx-stack-tag{display:inline-block;margin-top:10px;font-size:12px;font-weight:700;color:var(--nx-ol);}
+@media(max-width:900px){.nx-stack{grid-template-columns:minmax(0,1fr);gap:22px;}}
+
+.nx-terms{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:clamp(12px,1.8vw,20px);}
+.nx-terms article{padding:clamp(18px,2.2vw,24px);}
+.nx-terms h3{margin-bottom:8px;font-size:clamp(16px,1.7vw,18px);font-weight:700;}
+.nx-terms p{font-size:14px;color:var(--nx-t2);line-height:1.85;}
+@media(max-width:900px){.nx-terms{grid-template-columns:minmax(0,1fr);}}
+
+.nx-inline-cta{display:flex;justify-content:space-between;align-items:center;gap:24px;flex-wrap:wrap;}
+.nx-inline-cta p{font-size:clamp(14px,1.5vw,15px);color:var(--nx-t2);}
+.nx-inline-cta div{display:flex;gap:12px;flex-wrap:wrap;}
+@media(max-width:640px){.nx-inline-cta div{flex-direction:column;width:100%;}.nx-inline-cta .nx-btn{width:100%;}}
+
+.hm-value{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:clamp(18px,2.6vw,28px);max-width:920px;margin:0 auto;}
+.hm-value>div{padding-top:18px;border-top:2px solid var(--nx-o);}
+@media(max-width:768px){.hm-sub-head{text-align:left!important;}}
+.hm-value h3{margin-bottom:10px;font-size:clamp(16px,1.7vw,18px);font-weight:700;}
+.hm-value p{font-size:14px;color:var(--nx-t2);line-height:1.85;}
+@media(max-width:900px){.hm-value{grid-template-columns:minmax(0,1fr);gap:22px;}}
+
+.hm-price{max-width:760px;margin:0 auto;padding:clamp(24px,3.2vw,36px);border:1px solid var(--nx-bd);border-radius:20px;background:#fff;box-shadow:0 8px 24px -12px rgba(46,42,33,.14);}
+.hm-price-top{display:flex;justify-content:space-between;align-items:flex-end;gap:24px;flex-wrap:wrap;padding-bottom:26px;margin-bottom:26px;border-bottom:1px dotted var(--nx-t5);}
+.hm-price-label{margin-bottom:10px;font-size:13px;font-weight:700;letter-spacing:.12em;color:var(--nx-t3);}
+.hm-price-num{font-size:clamp(34px,5vw,46px);font-weight:700;letter-spacing:-.03em;font-variant-numeric:tabular-nums;}
+.hm-price-num span{font-size:clamp(15px,1.7vw,17px);font-weight:500;color:var(--nx-t3);}
+.hm-price-save{margin-top:6px;font-size:clamp(13px,1.4vw,14px);color:var(--nx-od);}
+.hm-price-bot{display:flex;justify-content:space-between;align-items:center;gap:16px;flex-wrap:wrap;}
+.hm-price-bot strong{display:block;margin-bottom:4px;font-size:15px;font-weight:600;}
+.hm-price-bot em{font-style:normal;font-size:13px;color:var(--nx-t3);}
+@media(max-width:640px){
+  .hm-price-top,.hm-price-bot{flex-direction:column;align-items:stretch;}
+  .hm-price-top .nx-btn,.hm-price-bot .nx-btn{width:100%;}
+}
+
+.nx-sticky{position:sticky;bottom:0;z-index:40;display:none;align-items:center;justify-content:space-between;gap:12px;
+  padding:14px var(--nx-pad) calc(14px + env(safe-area-inset-bottom,0px));
+  background:rgba(252,250,246,.97);border-top:1px solid var(--nx-bd);box-shadow:0 -6px 20px -12px rgba(46,42,33,.35);
+  backdrop-filter:saturate(140%) blur(6px);}
+.nx-sticky b{display:block;font-size:13px;font-weight:700;line-height:1.35;}
+.nx-sticky span{display:block;font-size:12px;color:var(--nx-t3);line-height:1.35;}
+@media(max-width:900px){.nx-sticky{display:flex;}}
+
+/* ===== /app 財務導航產品頁 ===== */
+.ap-hero-note{font-size:13px;color:var(--nx-t3);}
+@media(max-width:900px){.ap-hero-note{text-align:center;}}
+.ap-demo{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,400px);gap:clamp(24px,4.5vw,56px);align-items:center;}
+.ap-demo-p{max-width:440px;margin-bottom:14px;font-size:clamp(15px,1.6vw,16px);line-height:1.9;color:var(--nx-t2);}
+.ap-demo-note{max-width:440px;margin-bottom:26px;font-size:15px;line-height:1.85;color:var(--nx-t3);}
+.ap-demo-actions{display:flex;align-items:center;gap:12px;flex-wrap:wrap;}
+.ap-demo-actions span{font-size:13px;color:var(--nx-t3);}
+.nx-btn-dark{background:var(--nx-dark);color:var(--nx-dt);}
+.nx-btn-dark:hover{background:#3a3a3a;color:var(--nx-dt);}
+.ap-phone{width:100%;max-width:340px;margin:0 auto;padding:12px 10px;border-radius:32px;background:#1F1D1A;box-shadow:0 24px 56px -18px rgba(46,42,33,.5);}
+.ap-phone-notch{height:22px;display:flex;align-items:center;justify-content:center;}
+.ap-phone-notch i{display:block;width:86px;height:18px;border-radius:12px;background:#111;}
+.ap-phone-screen{aspect-ratio:9 / 17;border-radius:24px;overflow:hidden;background:#F5F0EB;}
+.ap-phone-screen iframe{width:100%;height:100%;border:none;display:block;}
+.ap-phone-bar{height:18px;display:flex;align-items:center;justify-content:center;}
+.ap-phone-bar i{display:block;width:86px;height:4px;border-radius:2px;background:#4a4a4a;}
+@media(max-width:900px){
+  .ap-demo{grid-template-columns:minmax(0,1fr);gap:20px;}
+  .ap-demo-p,.ap-demo-note{max-width:none;}
+  .ap-demo-actions{flex-direction:column;align-items:stretch;}
+  .ap-demo-actions .nx-btn{width:100%;}
+  .ap-demo-actions span{text-align:center;}
+  .ap-phone{max-width:none;padding:10px 8px;border-radius:26px;}
+  .ap-phone-screen{aspect-ratio:9 / 15;border-radius:20px;}
+}
+
+.ap-grid{display:grid;gap:20px;}
+.ap-grid-3{grid-template-columns:repeat(3,minmax(0,1fr));}
+.ap-grid-4{grid-template-columns:repeat(4,minmax(0,1fr));}
+.ap-card{padding:22px 22px 10px;}
+.ap-card-head{display:flex;align-items:center;gap:10px;margin-bottom:8px;}
+.ap-card-head svg{flex-shrink:0;}
+.ap-card h3{font-size:clamp(15px,1.6vw,17px);font-weight:700;}
+.ap-card p{margin-bottom:14px;font-size:13px;color:var(--nx-t3);line-height:1.8;}
+.ap-card img{width:100%;display:block;}
+.ap-card-sm{padding:20px 20px 8px;}
+.ap-card-sm h3{margin-bottom:6px;font-size:16px;}
+.ap-card-sm p{margin-bottom:12px;}
+.ap-card-plain{padding:20px;border:1px solid var(--nx-bd);border-radius:16px;background:var(--nx-bg2);}
+.ap-card-plain h3{margin-bottom:6px;font-size:16px;font-weight:700;}
+.ap-card-plain p{font-size:13px;color:var(--nx-t3);line-height:1.8;}
+.ap-chips{display:flex;flex-wrap:wrap;gap:8px;margin-top:14px;}
+@media(max-width:768px){.ap-chips.nx-only-mob{display:flex!important;}}
+.ap-chips span{padding:8px 14px;border:1px solid var(--nx-bd);border-radius:999px;background:var(--nx-bg2);font-size:13px;color:var(--nx-t2);}
+@media(max-width:900px){
+  .ap-grid-3{grid-template-columns:minmax(0,1fr);gap:14px;}
+  .ap-grid-4{grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;}
+  .ap-card{padding:20px 20px 8px;}
+  .ap-card-sm{padding:16px 16px 6px;}
+  .ap-card-sm h3{margin-bottom:10px;}
+}
+
+/* 三方比較 */
+.ap-vs{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px;margin-bottom:22px;}
+.ap-vs article{padding:26px;border-radius:18px;background:var(--nx-bg);}
+.ap-vs h3{font-size:clamp(17px,1.8vw,19px);font-weight:700;}
+.ap-vs-kicker{display:flex;align-items:baseline;justify-content:space-between;gap:12px;margin-bottom:6px;}
+.ap-vs-kicker span{font-size:12px;font-weight:700;color:var(--nx-t3);white-space:nowrap;}
+.ap-vs-meta{margin-bottom:10px;font-size:12px;font-weight:700;color:var(--nx-t3);}
+.ap-vs-price{margin-bottom:4px;font-size:clamp(20px,2.4vw,26px);font-weight:700;letter-spacing:-.02em;font-variant-numeric:tabular-nums;}
+.ap-vs-price span{font-size:14px;font-weight:500;color:var(--nx-t3);}
+.ap-vs-sub{margin-bottom:18px;font-size:13px;color:var(--nx-t3);}
+.ap-vs-foot{padding-top:14px;border-top:1px dotted var(--nx-t5);font-size:13px;color:var(--nx-t2);line-height:1.85;}
+.ap-vs img{width:100%;display:block;border-radius:10px;}
+.ap-vs-hi{background:var(--nx-os);}
+.ap-vs-hi h3{color:var(--nx-ost);}
+.ap-vs-hi .ap-vs-kicker span,.ap-vs-hi .ap-vs-sub{color:var(--nx-ol);}
+.ap-vs-hi .ap-vs-price{color:var(--nx-t1);}
+.ap-vs-hi .ap-vs-price span{color:var(--nx-ol);}
+.ap-vs-shot{display:flex;justify-content:center;}
+.ap-vs-shot img{max-width:170px;border-radius:0;}
+@media(max-width:900px){.ap-vs{grid-template-columns:minmax(0,1fr);gap:12px;}.ap-vs article{padding:20px;border-radius:16px;}}
+
+.ap-table{border-radius:18px;background:var(--nx-bg);overflow:hidden;}
+.ap-tr{display:grid;grid-template-columns:.75fr 1fr 1fr 1fr;}
+.ap-thead{background:var(--nx-bg2);border-bottom:1px solid var(--nx-bd);}
+.ap-thead>div{padding:16px 18px;font-size:13px;font-weight:700;color:var(--nx-t2);}
+.ap-thead>div:first-child{letter-spacing:.08em;color:var(--nx-t3);}
+.ap-thead>div:not(:first-child){border-left:1px solid var(--nx-bd);}
+.ap-thead>div:last-child{background:var(--nx-os);color:var(--nx-ol);}
+.ap-tbody{border-bottom:1px dotted var(--nx-bd);}
+.ap-tbody:last-child{border-bottom:none;}
+.ap-tbody>div{padding:16px 18px;font-size:13px;line-height:1.75;}
+.ap-tbody>div:first-child{font-size:14px;font-weight:600;color:var(--nx-t1);}
+.ap-tbody>div:not(:first-child){border-left:1px solid var(--nx-bd);}
+.ap-tbody>div:nth-child(2){color:var(--nx-t3);}
+.ap-tbody>div:nth-child(3){color:var(--nx-t2);}
+.ap-tbody>div:nth-child(4){color:var(--nx-t1);}
+.ap-note{margin-top:24px;font-size:15px;line-height:1.85;color:rgba(252,250,246,.55);}
+.ap-note-weak{margin-top:14px;font-size:14px;line-height:1.85;color:rgba(252,250,246,.4);}
+
+.ap-table-m{border-radius:16px;background:var(--nx-bg);overflow:hidden;}
+.ap-row-m{padding:16px 18px;border-bottom:1px dotted var(--nx-bd);}
+.ap-row-m>p{margin-bottom:10px;font-size:15px;font-weight:700;}
+.ap-row-m dl{display:grid;grid-template-columns:62px 1fr;gap:7px 10px;align-items:baseline;margin:0;}
+.ap-row-m dt{font-size:12px;color:var(--nx-t4);}
+.ap-row-m dd{margin:0;font-size:13px;color:var(--nx-t3);line-height:1.6;}
+.ap-row-m dt:last-of-type{font-weight:700;color:var(--nx-ol);}
+.ap-row-m dd:last-of-type{font-size:14px;font-weight:600;color:var(--nx-t1);line-height:1.65;}
+.ap-more{display:flex;align-items:center;justify-content:center;gap:8px;width:100%;padding:15px 18px;border:none;border-top:1px solid var(--nx-bd);background:var(--nx-bg2);font-family:inherit;font-size:14px;font-weight:600;color:var(--nx-t2);cursor:pointer;}
+.ap-more:hover{color:var(--nx-od);}
+
+.ap-quotes{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:clamp(12px,1.8vw,20px);}
+.ap-quotes article{padding:clamp(20px,2.4vw,26px);}
+.ap-quotes blockquote{margin:0 0 18px;font-size:clamp(15px,1.6vw,16px);line-height:1.85;text-wrap:pretty;}
+.ap-quotes cite{font-style:normal;font-size:13px;color:var(--nx-t3);}
+.ap-crit{border:1px solid var(--nx-t5);border-radius:16px;background:var(--nx-bg2);box-shadow:none;}
+.ap-crit-tag{display:inline-flex;align-items:center;margin-bottom:16px;padding:5px 12px;border:1px solid var(--nx-bd);border-radius:999px;background:#fff;font-size:11px;font-weight:700;letter-spacing:.06em;color:var(--nx-t3);}
+.ap-crit-fix{padding-left:14px;border-left:2px solid var(--nx-o);font-size:14px;line-height:1.85;color:var(--nx-t2);}
+@media(max-width:900px){.ap-quotes{grid-template-columns:minmax(0,1fr);}}
+
+.ap-devices{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:clamp(18px,2.6vw,32px);}
+.ap-devices dt{margin-bottom:12px;font-size:13px;font-weight:700;letter-spacing:.12em;color:var(--nx-t3);}
+.ap-devices dd{margin:0;font-size:clamp(14px,1.5vw,15px);line-height:1.85;color:var(--nx-t1);}
+@media(max-width:900px){.ap-devices{grid-template-columns:minmax(0,1fr);gap:18px;}}
+
+.ap-plans{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:22px;max-width:760px;margin:0 auto;}
+.ap-plan{position:relative;padding:30px;border:1px solid var(--nx-bd);border-radius:16px;background:#fff;}
+.ap-plan-dark{border-color:transparent;background:var(--nx-dark);box-shadow:0 24px 48px -20px rgba(46,42,33,.4);}
+.ap-plan-badge{position:absolute;top:-11px;left:30px;padding:4px 12px;border-radius:999px;background:var(--nx-o);color:#fff;font-size:11px;font-weight:700;}
+.ap-plan-name{margin-bottom:14px;font-size:15px;font-weight:600;}
+.ap-plan-price{margin-bottom:4px;font-size:clamp(32px,4.4vw,44px);font-weight:700;letter-spacing:-.03em;font-variant-numeric:tabular-nums;}
+.ap-plan-price span{font-size:16px;font-weight:500;color:var(--nx-t3);}
+.ap-plan-sub{margin-bottom:22px;font-size:13px;color:var(--nx-t3);}
+.ap-plan ul{display:flex;flex-direction:column;gap:9px;margin:0 0 26px;padding:0;list-style:none;font-size:14px;color:var(--nx-t2);}
+.ap-plan-dark .ap-plan-name,.ap-plan-dark .ap-plan-price{color:var(--nx-dt);}
+.ap-plan-dark .ap-plan-price span{color:rgba(252,250,246,.55);}
+.ap-plan-dark .ap-plan-sub{color:#EB8A48;}
+.ap-plan-dark ul{color:rgba(252,250,246,.72);}
+@media(max-width:900px){.ap-plans{grid-template-columns:minmax(0,1fr);gap:24px;}.ap-plan{padding:24px;}.ap-plan-badge{left:24px;}}
+
+.ap-faq{max-width:820px;margin:0 auto;}
+.ap-faq h2{margin-bottom:clamp(18px,2.4vw,28px);font-size:clamp(24px,2.6vw,28px);font-weight:700;letter-spacing:-.02em;}
+.ap-faq details{padding:clamp(18px,2vw,22px) 0;border-top:1px dotted var(--nx-t5);}
+.ap-faq details:last-of-type{border-bottom:1px dotted var(--nx-t5);}
+.ap-faq summary{display:flex;align-items:flex-start;justify-content:space-between;gap:16px;font-size:clamp(16px,1.7vw,18px);font-weight:700;line-height:1.5;cursor:pointer;list-style:none;}
+.ap-faq summary::-webkit-details-marker{display:none;}
+.ap-faq summary::after{content:"＋";flex-shrink:0;color:var(--nx-o);font-weight:700;transition:transform .2s var(--nx-ease);}
+.ap-faq details[open] summary::after{content:"－";}
+.ap-faq details p{margin-top:10px;font-size:clamp(14px,1.5vw,15px);line-height:1.9;color:var(--nx-t2);}
+.ap-ask{display:flex;align-items:center;justify-content:space-between;gap:24px;flex-wrap:wrap;margin-top:32px;padding:clamp(20px,2.4vw,26px) clamp(20px,2.6vw,28px);border-radius:16px;background:var(--nx-bg2);}
+.ap-ask strong{display:block;margin-bottom:6px;font-size:17px;font-weight:700;}
+.ap-ask em{font-style:normal;font-size:14px;color:var(--nx-t3);}
+.ap-ask div:last-child{display:flex;gap:12px;flex-wrap:wrap;}
+@media(max-width:640px){.ap-ask div:last-child{flex-direction:column;width:100%;}.ap-ask .nx-btn{width:100%;}}
+
+/* ===== /resources 免費工具頁 ===== */
+.rs-hero{padding-block:clamp(30px,4.6vw,56px) clamp(26px,3.6vw,44px);border-bottom:1px solid var(--nx-bd);}
+.rs-hero h1{max-width:700px;margin-block:16px;font-size:clamp(27px,3.9vw,40px);font-weight:700;line-height:1.3;letter-spacing:-.025em;text-wrap:pretty;}
+.rs-hero p{max-width:620px;font-size:clamp(14px,1.6vw,16px);color:var(--nx-t2);line-height:1.9;}
+.rs-banner{display:flex;align-items:center;justify-content:space-between;gap:clamp(16px,2.4vw,28px);margin-bottom:14px;padding:clamp(20px,2.4vw,24px) clamp(20px,2.6vw,28px);border-radius:16px;background:var(--nx-dark);}
+.rs-banner h2{margin-bottom:8px;font-size:clamp(17px,1.9vw,19px);font-weight:700;color:var(--nx-dt);}
+.rs-banner p{font-size:14px;color:var(--nx-ds);line-height:1.8;}
+.rs-blocks{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px;}
+.rs-block{display:block;padding:20px 22px;border:1px solid var(--nx-bd);border-radius:16px;background:#fff;color:inherit;transition:border-color .2s var(--nx-ease),transform .12s var(--nx-ease);}
+.rs-block:hover{border-color:var(--nx-o);color:inherit;}
+.rs-block:active{transform:scale(.98);}
+.rs-block strong{display:block;margin-bottom:8px;font-size:15px;font-weight:700;}
+.rs-block span{font-size:13px;color:var(--nx-t2);line-height:1.8;}
+@media(max-width:900px){
+  .rs-banner{flex-direction:column;align-items:stretch;text-align:left;}
+  .rs-banner .nx-btn{width:100%;}
+  .rs-blocks{grid-template-columns:minmax(0,1fr);}
+}
+
+.rs-lead{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,420px);gap:clamp(20px,3.2vw,36px);align-items:center;padding-bottom:clamp(26px,3.4vw,40px);border-bottom:1px dotted var(--nx-t5);}
+.rs-lead-badge{display:inline-block;margin-bottom:18px;padding:6px 14px;border-radius:999px;background:var(--nx-os);color:var(--nx-ost);font-size:12px;font-weight:700;letter-spacing:.06em;}
+.rs-lead h2{margin-bottom:14px;font-size:clamp(21px,3vw,30px);font-weight:700;line-height:1.35;letter-spacing:-.02em;}
+.rs-lead p{max-width:460px;margin-bottom:22px;font-size:15px;color:var(--nx-t2);line-height:1.95;white-space:pre-wrap;}
+.rs-lead-actions{display:flex;align-items:center;gap:14px;flex-wrap:wrap;}
+.rs-lead-actions span{font-size:13px;color:var(--nx-t3);}
+.rs-lead-img{width:100%;aspect-ratio:7 / 5;border:1px solid var(--nx-bd);border-radius:18px;background:var(--nx-bg2);object-fit:cover;display:block;}
+@media(max-width:900px){
+  .rs-lead{grid-template-columns:minmax(0,1fr);gap:18px;}
+  .rs-lead>div{order:2;}
+  .rs-lead p{max-width:none;}
+  .rs-lead-actions{flex-direction:column;align-items:stretch;}
+  .rs-lead-actions .nx-btn{width:100%;}
+  .rs-lead-actions span{text-align:center;}
+}
+
+.rs-tools{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px;margin-top:clamp(22px,3vw,36px);}
+.rs-tool{display:flex;flex-direction:column;padding:clamp(20px,2.4vw,26px) clamp(20px,2.6vw,28px);border:1px solid var(--nx-bd);border-radius:18px;background:#fff;box-shadow:var(--nx-sh);}
+.rs-tag{margin-bottom:12px;font-size:12px;font-weight:700;letter-spacing:.1em;color:var(--nx-t3);}
+.rs-tool h3{margin-bottom:10px;font-size:clamp(17px,1.8vw,19px);font-weight:700;line-height:1.45;}
+.rs-tool p{margin-bottom:18px;font-size:14px;color:var(--nx-t2);line-height:1.9;white-space:pre-wrap;}
+.rs-tool-cta{margin-top:auto;font-size:14px;font-weight:600;color:var(--nx-od);align-self:flex-start;background:none;border:none;padding:0;font-family:inherit;cursor:pointer;}
+.rs-tool-cta:hover{color:var(--nx-o);}
+.rs-tool-hi{grid-column:1 / -1;border-color:transparent;background:var(--nx-os);box-shadow:none;}
+.rs-tool-hi .rs-tag{color:var(--nx-ost);}
+.rs-admin-row{display:flex;align-items:center;gap:10px;margin-top:14px;padding-top:12px;border-top:1px dotted var(--nx-bd);font-size:11px;color:var(--nx-t3);}
+@media(max-width:900px){.rs-tools{grid-template-columns:minmax(0,1fr);gap:12px;}}
+
+.rs-templates{margin-top:clamp(28px,4vw,48px);padding-top:clamp(24px,3.4vw,40px);border-top:1px dotted var(--nx-t5);}
+.rs-templates h2{margin-bottom:8px;font-size:clamp(20px,2.2vw,24px);font-weight:700;letter-spacing:-.02em;}
+.rs-templates>p{margin-bottom:24px;font-size:15px;color:var(--nx-t2);line-height:1.9;}
+
+.rs-roles{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:clamp(20px,3.2vw,36px);align-items:start;}
+.rs-roles h2{margin-bottom:14px;font-size:clamp(20px,2.2vw,24px);font-weight:700;line-height:1.4;letter-spacing:-.02em;}
+.rs-roles>div>p{font-size:15px;color:var(--nx-t2);line-height:1.95;}
+.rs-role-list{display:flex;flex-direction:column;gap:10px;}
+.rs-role{display:flex;gap:14px;padding:16px 20px;border:1px solid var(--nx-bd);border-radius:14px;background:#fff;}
+.rs-role b{min-width:56px;font-size:13px;font-weight:700;color:var(--nx-o);}
+.rs-role p{font-size:14px;color:var(--nx-t2);line-height:1.8;}
+@media(max-width:900px){.rs-roles{grid-template-columns:minmax(0,1fr);gap:20px;}}
+
+.rs-cta{padding-block:clamp(32px,4.4vw,52px) clamp(36px,5vw,60px);text-align:center;}
+.rs-cta h2{margin-bottom:12px;font-size:clamp(21px,2.4vw,26px);font-weight:700;letter-spacing:-.02em;}
+.rs-cta>p{margin-bottom:26px;font-size:15px;color:var(--nx-t2);line-height:1.9;}
+.rs-cta-row{display:flex;justify-content:center;gap:12px;flex-wrap:wrap;}
+@media(max-width:640px){.rs-cta-row{flex-direction:column;}.rs-cta-row .nx-btn{width:100%;}}
+
+/* ===== /savings-bag 實體工具頁 ===== */
+.bg-hero{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);align-items:stretch;border-bottom:1px solid var(--nx-bd);}
+.bg-hero-copy{display:flex;flex-direction:column;justify-content:center;padding:clamp(28px,4.6vw,64px) var(--nx-pad) clamp(26px,4.2vw,60px);}
+.bg-hero h1{margin-bottom:18px;font-size:clamp(30px,4.2vw,42px);font-weight:700;line-height:1.28;letter-spacing:-.03em;text-wrap:pretty;}
+.bg-hero-sub{max-width:420px;margin-bottom:clamp(20px,2.4vw,28px);font-size:clamp(15px,1.7vw,17px);color:var(--nx-t2);line-height:1.95;}
+.bg-hero-note{font-size:13px;color:var(--nx-t3);line-height:1.8;}
+.bg-hero-img{width:100%;height:100%;min-height:420px;max-height:560px;object-fit:cover;display:block;}
+@media(max-width:900px){
+  .bg-hero{grid-template-columns:minmax(0,1fr);}
+  .bg-hero>picture,.bg-hero>img{order:-1;}
+  .bg-hero-img{min-height:0;aspect-ratio:4 / 3;}
+  .bg-hero-copy{padding-block:24px 26px;}
+  .bg-hero-sub{max-width:none;}
+  .bg-hero .nx-btn{width:100%;}
+}
+
+.bg-quiz{display:flex;align-items:center;justify-content:space-between;gap:clamp(16px,2.4vw,28px);padding:clamp(20px,2.4vw,26px) var(--nx-pad);border-bottom:1px solid var(--nx-bd);background:var(--nx-dark);}
+.bg-quiz h2{margin-bottom:6px;font-size:clamp(16px,1.8vw,18px);font-weight:700;color:var(--nx-dt);}
+.bg-quiz p{font-size:14px;color:var(--nx-ds);line-height:1.8;}
+@media(max-width:900px){.bg-quiz{flex-direction:column;align-items:stretch;}.bg-quiz .nx-btn{width:100%;}}
+
+.bg-why h2{max-width:640px;margin-bottom:16px;font-size:clamp(22px,3vw,28px);font-weight:700;line-height:1.4;letter-spacing:-.02em;}
+.bg-why>p{max-width:660px;margin-bottom:clamp(24px,3.2vw,36px);font-size:clamp(14px,1.6vw,16px);color:var(--nx-t2);line-height:1.95;}
+.bg-why-cards{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px;}
+.bg-why-cards article{padding:clamp(20px,2.4vw,24px) clamp(20px,2.6vw,26px);border:1px solid var(--nx-bd);border-radius:16px;background:#fff;}
+.bg-why-cards h3{margin-bottom:10px;font-size:16px;font-weight:700;}
+.bg-why-cards p{font-size:14px;color:var(--nx-t2);line-height:1.9;}
+@media(max-width:900px){.bg-why-cards{grid-template-columns:minmax(0,1fr);gap:12px;}}
+
+.bg-steps{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:20px;}
+.bg-steps img{width:100%;height:200px;object-fit:cover;border-radius:14px;display:block;}
+.bg-step-head{display:flex;align-items:baseline;gap:12px;margin:18px 0 8px;}
+.bg-step-head b{font-family:var(--nx-mono);font-size:22px;font-weight:700;color:var(--nx-o);}
+.bg-step-head span{font-size:17px;font-weight:700;}
+.bg-steps p{font-size:14px;color:var(--nx-t2);line-height:1.9;}
+@media(max-width:900px){.bg-steps{grid-template-columns:minmax(0,1fr);gap:26px;}.bg-steps img{height:auto;aspect-ratio:3 / 2;}}
+
+.bg-fit{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,380px);gap:clamp(24px,3.8vw,44px);align-items:start;}
+.bg-fit h2{margin-bottom:22px;font-size:clamp(20px,2.2vw,24px);font-weight:700;letter-spacing:-.02em;}
+.bg-fit-item{padding:18px 0;border-bottom:1px dotted var(--nx-t5);}
+.bg-fit-item:last-child{border-bottom:none;}
+.bg-fit-item strong{display:block;margin-bottom:6px;font-size:16px;font-weight:600;}
+.bg-fit-item span{font-size:14px;color:var(--nx-t2);line-height:1.9;}
+.bg-spec{padding:clamp(22px,2.6vw,28px) clamp(22px,2.8vw,30px);border:1px solid var(--nx-bd);border-radius:18px;background:#fff;box-shadow:var(--nx-sh);}
+.bg-spec>p{margin-bottom:18px;font-size:13px;font-weight:700;letter-spacing:.12em;color:var(--nx-t3);}
+.bg-spec dl{display:flex;flex-direction:column;margin:0;}
+.bg-spec-row{display:flex;justify-content:space-between;gap:16px;padding:12px 0;border-bottom:1px solid var(--nx-hair);}
+.bg-spec-row:last-child{border-bottom:none;}
+.bg-spec dt{font-size:14px;color:var(--nx-t2);}
+.bg-spec dd{margin:0;font-size:14px;font-weight:600;text-align:right;}
+.bg-spec .nx-btn{margin-top:22px;}
+@media(max-width:900px){.bg-fit{grid-template-columns:minmax(0,1fr);gap:24px;}}
+
+.bg-app{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:clamp(22px,3.4vw,40px);align-items:center;}
+.bg-app h2{margin-bottom:16px;font-size:clamp(21px,2.4vw,26px);font-weight:700;line-height:1.4;letter-spacing:-.02em;}
+.bg-app p{margin-bottom:22px;font-size:15px;color:var(--nx-t2);line-height:1.95;}
+.bg-app-row{display:flex;gap:12px;flex-wrap:wrap;}
+.bg-app img{width:100%;height:280px;object-fit:cover;border-radius:18px;display:block;}
+@media(max-width:900px){
+  .bg-app{grid-template-columns:minmax(0,1fr);gap:20px;}
+  .bg-app img{height:auto;aspect-ratio:3 / 2;border-radius:16px;order:-1;}
+  .bg-app-row{flex-direction:column;}
+  .bg-app-row .nx-btn{width:100%;}
+}
+
+/* ===== /journal 文章列表 ===== */
+.jn-hero{padding-block:clamp(30px,4.6vw,56px) clamp(20px,2.6vw,32px);}
+.jn-hero h1{max-width:680px;margin-block:16px;font-size:clamp(27px,3.9vw,40px);font-weight:700;line-height:1.3;letter-spacing:-.025em;text-wrap:pretty;}
+.jn-hero p{max-width:600px;font-size:clamp(14px,1.6vw,16px);color:var(--nx-t2);line-height:1.9;}
+.jn-chips{display:flex;gap:10px;flex-wrap:wrap;padding-bottom:clamp(20px,2.6vw,32px);}
+.jn-chip{padding:10px 20px;border:1px solid var(--nx-bd);border-radius:999px;background:#fff;font-family:inherit;font-size:clamp(13px,1.4vw,14px);color:var(--nx-t2);cursor:pointer;white-space:nowrap;transition:border-color .2s var(--nx-ease),color .2s var(--nx-ease);}
+.jn-chip:hover{border-color:var(--nx-o);color:var(--nx-od);}
+.jn-chip.is-on{border-color:transparent;background:var(--nx-o);color:#fff;font-weight:600;}
+.jn-chip b{font-weight:inherit;margin-left:.6em;}
+
+.jn-lead{display:grid;grid-template-columns:minmax(0,580px) minmax(0,1fr);gap:clamp(20px,3.2vw,36px);align-items:center;padding-bottom:clamp(26px,3.8vw,44px);border-bottom:1px dotted var(--nx-t5);}
+.jn-lead-cover{width:100%;aspect-ratio:29 / 17;object-fit:cover;border-radius:18px;background:var(--nx-bg2);display:block;}
+.jn-meta{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:16px;}
+.jn-tag{padding:6px 14px;border-radius:999px;background:var(--nx-os);color:var(--nx-ost);font-size:12px;font-weight:700;}
+.jn-member{padding:6px 14px;border-radius:999px;background:var(--nx-dark);color:var(--nx-dt);font-size:12px;font-weight:700;}
+.jn-member-sm{padding:3px 10px;font-size:11px;}
+.jn-date{font-size:13px;color:var(--nx-t3);}
+.jn-lead h2{margin-bottom:14px;font-size:clamp(21px,3vw,30px);font-weight:700;line-height:1.4;letter-spacing:-.02em;text-wrap:pretty;}
+.jn-lead p{margin-bottom:20px;font-size:15px;color:var(--nx-t2);line-height:1.95;}
+.jn-more{font-size:14px;font-weight:600;color:var(--nx-od);}
+.jn-more:hover{color:var(--nx-o);}
+@media(max-width:900px){.jn-lead{grid-template-columns:minmax(0,1fr);gap:16px;}}
+
+.jn-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:clamp(16px,2.4vw,24px);}
+.jn-card-cover{width:100%;aspect-ratio:16 / 10;object-fit:cover;border-radius:14px;background:var(--nx-bg2);display:block;}
+.jn-card-meta{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin:16px 0 8px;}
+.jn-card-tag{font-size:12px;font-weight:700;letter-spacing:.08em;color:var(--nx-o);}
+.jn-card h3{margin-bottom:10px;font-size:clamp(17px,1.8vw,19px);font-weight:700;line-height:1.5;text-wrap:pretty;}
+.jn-card p{font-size:14px;color:var(--nx-t2);line-height:1.9;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden;}
+.jn-card a{color:inherit;}
+.jn-card a:hover{color:var(--nx-od);}
+@media(max-width:900px){.jn-grid{grid-template-columns:minmax(0,1fr);gap:26px;}}
+
+.jn-note{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,300px);gap:clamp(20px,3.2vw,36px);align-items:center;padding:clamp(24px,3vw,32px) clamp(24px,3.2vw,36px);border-radius:20px;background:var(--nx-dark);}
+.jn-note-tag{display:inline-block;margin-bottom:14px;padding:6px 14px;border-radius:999px;background:rgba(252,250,246,.12);color:var(--nx-dt);font-size:12px;font-weight:700;letter-spacing:.06em;}
+.jn-note h2{margin-bottom:12px;font-size:clamp(19px,2.2vw,24px);font-weight:700;line-height:1.45;letter-spacing:-.02em;color:var(--nx-dt);}
+.jn-note>div>p{font-size:15px;color:var(--nx-ds);line-height:1.9;}
+.jn-note-box{padding:22px 24px;border:1px solid rgba(252,250,246,.14);border-radius:16px;background:rgba(252,250,246,.07);}
+.jn-note-box p:first-child{margin-bottom:12px;font-size:13px;color:var(--nx-ds);line-height:1.8;}
+.jn-note-box p:nth-child(2){margin-bottom:16px;font-size:14px;color:var(--nx-dt);line-height:1.8;}
+.jn-note-box a{font-size:14px;font-weight:600;color:var(--nx-dl);}
+@media(max-width:900px){.jn-note{grid-template-columns:minmax(0,1fr);gap:18px;}}
+
+.jn-starter{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px;}
+.jn-starter article{padding:clamp(20px,2.4vw,24px) clamp(20px,2.6vw,26px);border:1px solid var(--nx-bd);border-radius:16px;background:#fff;}
+.jn-starter b{font-family:var(--nx-mono);font-size:20px;font-weight:700;color:var(--nx-o);}
+.jn-starter h3{margin:12px 0 8px;font-size:17px;font-weight:700;line-height:1.5;}
+.jn-starter h3 a{color:inherit;}
+.jn-starter h3 a:hover{color:var(--nx-od);}
+.jn-starter p{font-size:13px;color:var(--nx-t2);line-height:1.85;}
+@media(max-width:900px){.jn-starter{grid-template-columns:minmax(0,1fr);gap:12px;}}
+
+/* ===== 文章內頁：會員密碼閘 ===== */
+/* 前段淡出：會員全文在解鎖前不會送到瀏覽器，這裡淡出的是公開摘要，所以漸層只蓋住底部，
+   前面幾行要保持完全可讀（設計稿的 inset:0 是為了它那份較長的示範內文） */
+.ar-fade{position:relative;min-height:96px;max-height:132px;overflow:hidden;}
+.ar-fade::after{content:"";position:absolute;left:0;right:0;bottom:0;height:52px;background:linear-gradient(to bottom,rgba(252,250,246,0) 0%,rgba(252,250,246,.85) 55%,#FCFAF6 100%);}
+.ar-gate{padding:clamp(24px,3vw,32px) clamp(24px,3.2vw,36px);border-radius:20px;background:var(--nx-dark);}
+.ar-gate-tag{display:inline-block;margin-bottom:16px;padding:6px 14px;border-radius:999px;background:rgba(252,250,246,.12);color:var(--nx-dt);font-size:12px;font-weight:700;letter-spacing:.06em;}
+.ar-gate h2{margin-bottom:10px;font-size:clamp(18px,2vw,22px);font-weight:700;line-height:1.5;letter-spacing:-.02em;color:var(--nx-dt);}
+.ar-gate>p{margin-bottom:22px;font-size:15px;color:var(--nx-ds);line-height:1.9;}
+.ar-gate-form{display:flex;gap:10px;margin-bottom:14px;}
+.ar-gate-form input{flex:1;min-width:0;padding:15px 18px;border:1px solid rgba(252,250,246,.18);border-bottom:1px solid rgba(252,250,246,.18);border-radius:10px;background:rgba(252,250,246,.1);color:var(--nx-dt);font-size:15px;}
+.ar-gate-form input::placeholder{color:rgba(252,250,246,.45);}
+.ar-gate-form input:focus{border-color:var(--nx-o);border-bottom-color:var(--nx-o);outline:none;}
+.ar-gate-foot{font-size:13px;color:rgba(252,250,246,.45);line-height:1.8;}
+.ar-gate-foot a{color:var(--nx-dl);font-weight:600;}
+.ar-gate-err{margin-bottom:12px;font-size:13px;color:#F0A08A;}
+@media(max-width:640px){.ar-gate-form{flex-direction:column;}.ar-gate-form .nx-btn{width:100%;}}
+
+/* ===== /about 關於頁 ===== */
+.ab-hero{padding-block:clamp(36px,6vw,80px) clamp(30px,4.8vw,64px);text-align:center;border-bottom:1px solid var(--nx-bd);}
+.ab-hero h1{max-width:780px;margin:24px auto;font-size:clamp(28px,4.4vw,46px);font-weight:700;line-height:1.35;letter-spacing:-.025em;text-wrap:pretty;}
+.ab-hero p{max-width:600px;margin:0 auto;font-size:clamp(15px,1.7vw,17px);color:var(--nx-t2);line-height:1.9;}
+
+.ab-intro{display:grid;grid-template-columns:minmax(0,240px) minmax(0,1fr);gap:clamp(20px,3.2vw,40px);align-items:start;padding-block:clamp(30px,4.6vw,60px);border-bottom:1px dotted var(--nx-t5);}
+.ab-intro img{width:100%;aspect-ratio:1;object-fit:cover;border-radius:18px;display:block;background:var(--nx-bg2);}
+.ab-intro-text{font-size:clamp(15px,1.6vw,16px);color:var(--nx-t2);line-height:2;white-space:pre-line;text-wrap:pretty;}
+@media(max-width:768px){.ab-intro{grid-template-columns:minmax(0,1fr);gap:18px;}.ab-intro img{max-width:200px;}}
+.ab-lede{max-width:640px;margin-bottom:clamp(22px,2.8vw,36px);}
+.ab-lede h2{margin-bottom:20px;font-size:clamp(23px,3.4vw,34px);font-weight:700;line-height:1.4;letter-spacing:-.02em;text-wrap:pretty;}
+.ab-lede p{margin-bottom:18px;font-size:clamp(15px,1.6vw,16px);color:var(--nx-t2);line-height:1.9;}
+.ab-lede p:last-child{margin-bottom:0;}
+.ab-shot{width:100%;display:block;border-radius:18px;box-shadow:0 14px 40px -18px rgba(46,42,33,.3);}
+.ab-caption{margin-top:14px;font-size:13px;color:var(--nx-t3);text-align:center;}
+.ab-pair{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:20px;}
+.ab-pair img{width:100%;height:400px;object-fit:cover;display:block;border-radius:14px;box-shadow:0 8px 24px -12px rgba(46,42,33,.24);}
+.ab-pair p{margin-top:12px;font-size:14px;color:var(--nx-t2);line-height:1.8;}
+.ab-pair b{font-weight:600;}
+@media(max-width:900px){.ab-pair{grid-template-columns:minmax(0,1fr);gap:24px;}.ab-pair img{height:auto;aspect-ratio:4 / 3;}}
+
+.ab-tools{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:clamp(14px,2vw,22px);}
+.ab-tools article{padding:clamp(22px,2.8vw,28px);border:1px solid var(--nx-bd);border-radius:16px;background:#fff;box-shadow:var(--nx-sh);}
+.ab-tools h3{margin-bottom:12px;font-size:clamp(18px,2vw,21px);font-weight:700;}
+.ab-tools .ab-kind{margin-bottom:12px;font-size:12px;font-weight:700;letter-spacing:.1em;color:var(--nx-t3);}
+.ab-tools .ab-desc{margin-bottom:16px;font-size:14px;color:var(--nx-t2);line-height:1.85;}
+.ab-tools .ab-foot{font-size:13px;color:var(--nx-t3);line-height:1.8;}
+.ab-tools .ab-hi{border-color:transparent;background:var(--nx-os);box-shadow:none;}
+.ab-hi .ab-kind{color:var(--nx-ol);}
+.ab-hi h3{color:var(--nx-ost);}
+@media(max-width:900px){.ab-tools{grid-template-columns:minmax(0,1fr);gap:12px;}}
+
+.ab-beliefs{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:clamp(22px,3vw,32px) clamp(24px,3.6vw,40px);max-width:900px;margin:0 auto;}
+.ab-beliefs>div{padding-top:20px;border-top:2px solid var(--nx-o);}
+.ab-beliefs h3{margin-bottom:10px;font-size:clamp(18px,1.9vw,20px);font-weight:700;color:var(--nx-dt);}
+.ab-beliefs p{font-size:15px;color:var(--nx-ds);line-height:1.9;}
+@media(max-width:768px){.ab-beliefs{grid-template-columns:minmax(0,1fr);}}
+
+.ab-community{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:clamp(24px,4.4vw,56px);align-items:center;}
+.ab-quotes{display:flex;flex-direction:column;gap:14px;}
+.ab-quotes article{padding:24px;border:1px solid var(--nx-bd);border-radius:16px;background:#fff;box-shadow:var(--nx-sh);}
+.ab-quotes p{padding-left:14px;border-left:2px solid var(--nx-bd);font-size:16px;line-height:1.85;color:var(--nx-t2);}
+.ab-quotes article:first-child p{border-left-color:var(--nx-o);color:var(--nx-t1);}
+.ab-community h2{margin-bottom:20px;font-size:clamp(23px,3.4vw,34px);font-weight:700;line-height:1.4;letter-spacing:-.02em;text-wrap:pretty;}
+.ab-community-p{max-width:440px;margin-bottom:18px;font-size:clamp(15px,1.6vw,16px);color:var(--nx-t2);line-height:1.9;}
+.ab-community-sub{max-width:440px;margin-bottom:26px;font-size:15px;color:var(--nx-t3);line-height:1.85;}
+.ab-community-row{display:flex;gap:12px;flex-wrap:wrap;}
+@media(max-width:900px){
+  .ab-community{grid-template-columns:minmax(0,1fr);gap:22px;}
+  .ab-quotes{order:2;}
+  .ab-community-p,.ab-community-sub{max-width:none;}
+  .ab-community-row{flex-direction:column;}
+  .ab-community-row .nx-btn{width:100%;}
+}
+
+.ab-stats{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:clamp(20px,2.8vw,32px);}
+.ab-stats b{display:block;margin-bottom:6px;font-size:clamp(28px,3.6vw,38px);font-weight:700;letter-spacing:-.03em;font-variant-numeric:tabular-nums;}
+.ab-stats span{font-size:14px;color:var(--nx-t3);}
+@media(max-width:768px){.ab-stats{grid-template-columns:repeat(2,minmax(0,1fr));gap:22px;}}
+
+.ab-cta{padding-block:clamp(34px,5vw,64px);text-align:center;}
+.ab-cta h2{margin-bottom:14px;font-size:clamp(23px,2.8vw,30px);font-weight:700;letter-spacing:-.02em;}
+.ab-cta>p{max-width:520px;margin:0 auto 30px;font-size:15px;color:var(--nx-t3);line-height:1.85;}
+.ab-cta-row{display:flex;gap:12px;justify-content:center;flex-wrap:wrap;}
+@media(max-width:640px){.ab-cta-row{flex-direction:column;}.ab-cta-row .nx-btn{width:100%;}}
+
+/* ===== /guide 使用說明 ===== */
+.gd-hero{padding-block:clamp(30px,4.6vw,56px) clamp(26px,3.6vw,44px);border-bottom:1px solid var(--nx-bd);}
+.gd-hero h1{max-width:680px;margin-block:16px;font-size:clamp(27px,3.9vw,40px);font-weight:700;line-height:1.3;letter-spacing:-.025em;text-wrap:pretty;}
+.gd-hero>p{max-width:600px;margin-bottom:24px;font-size:clamp(14px,1.6vw,16px);color:var(--nx-t2);line-height:1.9;}
+.gd-jump{display:flex;gap:10px;flex-wrap:wrap;}
+.gd-jump a{padding:10px 18px;border:1px solid var(--nx-bd);border-radius:999px;background:#fff;font-size:clamp(13px,1.4vw,14px);color:var(--nx-t2);transition:border-color .2s var(--nx-ease),color .2s var(--nx-ease);}
+.gd-jump a:first-child{border-color:transparent;background:var(--nx-os);color:var(--nx-ost);font-weight:600;}
+.gd-jump a:hover{border-color:var(--nx-o);color:var(--nx-od);}
+.gd-jump a:first-child:hover{color:var(--nx-ost);}
+
+.gd-layout{display:grid;grid-template-columns:236px minmax(0,1fr);align-items:start;max-width:1120px;margin:0 auto;}
+.gd-toc{position:sticky;top:calc(var(--nx-navh) + 16px);padding:40px 24px 40px var(--nx-pad);}
+.gd-toc>p{margin-bottom:18px;font-size:12px;font-weight:700;letter-spacing:.12em;color:var(--nx-t3);}
+.gd-toc nav{display:flex;flex-direction:column;gap:2px;}
+.gd-toc a{padding:9px 12px;border-radius:8px;font-size:14px;color:var(--nx-t2);}
+.gd-toc a:hover{background:var(--nx-bg2);color:var(--nx-od);}
+.gd-toc a.is-on{background:var(--nx-os);color:var(--nx-ost);font-weight:600;}
+.gd-toc-ask{margin-top:28px;padding-top:20px;border-top:1px dotted var(--nx-t5);}
+.gd-toc-ask p{margin-bottom:12px;font-size:13px;color:var(--nx-t3);line-height:1.8;}
+.gd-body{padding:40px var(--nx-pad);border-left:1px solid var(--nx-bd);}
+@media(max-width:900px){
+  .gd-layout{grid-template-columns:minmax(0,1fr);}
+  .gd-toc{display:none;}
+  .gd-body{padding:28px var(--nx-pad);border-left:none;}
+}
+
+.gd-sect{margin-bottom:clamp(34px,4.6vw,52px);scroll-margin-top:calc(var(--nx-navh) + 24px);}
+.gd-sect+.gd-sect{padding-top:clamp(28px,3.6vw,44px);border-top:1px dotted var(--nx-t5);}
+.gd-sect-head{display:flex;align-items:baseline;gap:14px;flex-wrap:wrap;margin-bottom:20px;}
+.gd-sect-head b{font-family:var(--nx-mono);font-size:14px;font-weight:500;color:var(--nx-o);}
+.gd-sect-head h2{font-size:clamp(21px,2.6vw,28px);font-weight:700;letter-spacing:-.02em;}
+.gd-sect-head span{font-size:13px;color:var(--nx-t3);}
+.gd-intro{max-width:620px;margin-bottom:24px;font-size:clamp(14px,1.5vw,15px);color:var(--nx-t2);line-height:1.9;}
+
+.gd-steps{display:flex;flex-direction:column;gap:14px;}
+.gd-step{display:grid;grid-template-columns:34px minmax(0,1fr) 250px;gap:20px;align-items:start;padding:24px;border:1px solid var(--nx-bd);border-radius:16px;background:#fff;box-shadow:var(--nx-sh);}
+.gd-step>b{display:inline-flex;align-items:center;justify-content:center;width:28px;height:28px;border-radius:999px;background:var(--nx-o);color:#fff;font-size:14px;font-weight:700;}
+.gd-step h3{margin-bottom:10px;font-size:clamp(17px,1.8vw,19px);font-weight:700;}
+.gd-step-body{margin-bottom:12px;font-size:14px;color:var(--nx-t2);line-height:1.9;}
+.gd-tip{padding-left:14px;border-left:2px solid var(--nx-bd);font-size:13px;color:var(--nx-t3);line-height:1.85;}
+.gd-step img{width:100%;border-radius:10px;display:block;}
+@media(max-width:900px){.gd-step{grid-template-columns:28px minmax(0,1fr);gap:14px;padding:20px;}.gd-step img{display:none;}}
+
+.gd-month{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:20px;}
+.gd-month article{padding:24px;border:1px solid var(--nx-bd);border-radius:16px;background:var(--nx-bg2);}
+.gd-month-when{margin-bottom:12px;font-family:var(--nx-mono);font-size:12px;color:var(--nx-o);}
+.gd-month h3{margin-bottom:12px;font-size:18px;font-weight:700;}
+.gd-month ol{display:flex;flex-direction:column;gap:10px;margin:0;padding:0;list-style:none;font-size:14px;color:var(--nx-t2);line-height:1.8;}
+.gd-month-note{margin-top:16px;padding-top:14px;border-top:1px dotted var(--nx-t5);font-size:13px;color:var(--nx-t3);line-height:1.85;}
+.gd-month .gd-hi{border-color:transparent;background:var(--nx-os);}
+.gd-hi .gd-month-when{color:var(--nx-ol);}
+.gd-hi .gd-month-note{color:var(--nx-ost);}
+@media(max-width:900px){.gd-month{grid-template-columns:minmax(0,1fr);gap:12px;}}
+
+.gd-table{border:1px solid var(--nx-bd);border-radius:16px;background:#fff;box-shadow:var(--nx-sh);overflow:hidden;}
+.gd-tr{display:grid;grid-template-columns:1fr 1.4fr;border-bottom:1px dotted var(--nx-bd);}
+.gd-tr:last-child{border-bottom:none;}
+.gd-thead{background:var(--nx-bg2);border-bottom:1px solid var(--nx-bd);}
+.gd-thead>div{padding:14px 22px;font-size:13px;font-weight:700;letter-spacing:.08em;color:var(--nx-t3);}
+.gd-tr>div:nth-child(2){border-left:1px solid var(--nx-bd);}
+.gd-tr>dt{padding:18px 22px;font-size:15px;font-weight:600;color:var(--nx-t1);}
+.gd-tr>dd{margin:0;padding:18px 22px;border-left:1px solid var(--nx-bd);font-size:14px;color:var(--nx-t2);line-height:1.85;}
+@media(max-width:768px){
+  .gd-table{border-radius:14px;}
+  .gd-tr{grid-template-columns:minmax(0,1fr);}
+  .gd-thead{display:none;}
+  .gd-tr>dt{padding:16px 18px 0;}
+  .gd-tr>dd{padding:8px 18px 16px;border-left:none;}
+}
+
+.gd-terms{display:flex;flex-direction:column;}
+.gd-terms>div{padding:18px 0;border-bottom:1px dotted var(--nx-t5);}
+.gd-terms>div:last-child{border-bottom:none;}
+.gd-terms h3{margin-bottom:8px;font-size:16px;font-weight:700;}
+.gd-terms p{font-size:14px;color:var(--nx-t2);line-height:1.9;}
+.gd-acc details{border-bottom:1px dotted var(--nx-t5);}
+.gd-acc summary{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:16px 0;font-size:16px;font-weight:700;cursor:pointer;list-style:none;}
+.gd-acc summary::-webkit-details-marker{display:none;}
+.gd-acc summary::after{content:"＋";flex-shrink:0;color:var(--nx-o);font-weight:700;}
+.gd-acc details[open] summary::after{content:"－";}
+.gd-acc details p{padding-bottom:16px;font-size:14px;color:var(--nx-t2);line-height:1.9;}
+
+.gd-books{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px;}
+.gd-books article{padding:22px 24px;border:1px solid var(--nx-bd);border-radius:16px;background:#fff;}
+.gd-books h3{margin-bottom:8px;font-size:17px;font-weight:700;}
+.gd-books p{font-size:14px;color:var(--nx-t2);line-height:1.9;}
+@media(max-width:900px){.gd-books{grid-template-columns:minmax(0,1fr);gap:12px;}}
+
+.gd-faq>div{padding:22px 0;border-bottom:1px dotted var(--nx-t5);}
+.gd-faq h3{margin-bottom:10px;font-size:clamp(16px,1.7vw,18px);font-weight:700;line-height:1.5;}
+.gd-faq p{font-size:clamp(14px,1.5vw,15px);color:var(--nx-t2);line-height:1.9;}
+.gd-ask{display:flex;align-items:center;justify-content:space-between;gap:24px;flex-wrap:wrap;margin-top:32px;padding:clamp(20px,2.4vw,26px) clamp(20px,2.6vw,28px);border-radius:16px;background:var(--nx-bg2);}
+.gd-ask strong{display:block;margin-bottom:6px;font-size:17px;font-weight:700;}
+.gd-ask em{font-style:normal;font-size:14px;color:var(--nx-t3);}
+.gd-ask div:last-child{display:flex;gap:12px;flex-wrap:wrap;}
+@media(max-width:640px){.gd-ask div:last-child{flex-direction:column;width:100%;}.gd-ask .nx-btn{width:100%;}}
+
+/* ===== /article 文章內頁 ===== */
+.ar-wrap{max-width:760px;margin:0 auto;padding-inline:var(--nx-pad);}
+.ar-head{padding-block:clamp(24px,3.4vw,44px) 0;}
+.ar-back{display:inline-block;margin-bottom:clamp(18px,2.4vw,28px);font-size:14px;color:var(--nx-t2);background:none;border:none;padding:0;font-family:inherit;cursor:pointer;}
+.ar-back:hover{color:var(--nx-od);}
+.ar-title{margin-bottom:clamp(20px,2.6vw,28px);font-size:clamp(26px,3.6vw,34px);font-weight:700;line-height:1.35;letter-spacing:-.025em;text-wrap:pretty;}
+.ar-cover{width:100%;max-height:400px;object-fit:cover;border-radius:16px;display:block;background:var(--nx-bg2);}
+.ar-admin{display:inline-flex;gap:12px;margin-left:auto;}
+.ar-admin button{background:none;border:none;padding:0;font-family:inherit;font-size:13px;color:var(--nx-t3);cursor:pointer;text-decoration:underline;}
+.ar-admin button:hover{color:var(--nx-od);}
+.ar-body{padding-block:clamp(24px,3.4vw,32px) clamp(28px,4vw,48px);}
+.nx-page .article-content{font-size:clamp(15px,1.7vw,17px);line-height:2.05;color:var(--nx-t1);}
+.nx-page .article-content p{margin-bottom:22px;}
+.nx-page .article-content h2{margin:36px 0 14px;font-size:clamp(20px,2.2vw,24px);font-weight:700;color:var(--nx-t1);line-height:1.4;}
+.nx-page .article-content h3{margin:28px 0 12px;font-size:clamp(17px,1.9vw,20px);font-weight:700;color:var(--nx-t1);line-height:1.45;}
+.nx-page .article-content a{color:var(--nx-od);text-decoration:underline;}
+.nx-page .article-content img{border-radius:12px;}
+.nx-page .article-content ul,.nx-page .article-content ol{margin-bottom:22px;padding-left:24px;}
+.nx-page .article-content li{margin-bottom:8px;line-height:1.95;}
+
+.ar-rel{margin-bottom:clamp(28px,3.6vw,40px);}
+.ar-rel>p{margin-bottom:14px;font-size:13px;font-weight:700;letter-spacing:.1em;color:var(--nx-t3);}
+.ar-rel-item{display:flex;align-items:center;gap:16px;width:100%;padding:16px 20px;margin-bottom:10px;border:1px solid var(--nx-bd);border-radius:14px;background:#fff;font-family:inherit;text-align:left;cursor:pointer;transition:border-color .2s var(--nx-ease),transform .12s var(--nx-ease);}
+.ar-rel-item:hover{border-color:var(--nx-o);}
+.ar-rel-item:active{transform:scale(.99);}
+.ar-rel-item>i{display:grid;place-items:center;width:36px;height:36px;flex-shrink:0;border-radius:10px;background:var(--nx-os);color:var(--nx-ol);font-style:normal;}
+.ar-rel-kind{font-size:12px;font-weight:700;color:var(--nx-t3);}
+.ar-rel-label{margin-top:2px;font-size:15px;font-weight:600;color:var(--nx-t1);}
+.ar-rel-meta{margin-top:2px;font-size:13px;color:var(--nx-t3);}
+
+.ar-share{display:flex;gap:12px;flex-wrap:wrap;padding-bottom:clamp(28px,3.6vw,40px);border-bottom:1px dotted var(--nx-t5);}
+.ar-community{display:flex;align-items:center;justify-content:space-between;gap:20px;flex-wrap:wrap;margin-block:clamp(28px,3.6vw,40px);padding:clamp(22px,2.6vw,28px);border-radius:16px;background:var(--nx-os);}
+.ar-community strong{display:block;margin-bottom:6px;font-size:17px;font-weight:700;color:var(--nx-ost);}
+.ar-community em{font-style:normal;font-size:14px;color:var(--nx-ol);}
+.ar-community div:last-child{display:flex;gap:10px;flex-wrap:wrap;}
+@media(max-width:640px){.ar-community div:last-child{flex-direction:column;width:100%;}.ar-community .nx-btn{width:100%;}}
+
+.ar-comments{padding-bottom:clamp(36px,5vw,64px);}
+.ar-comments>p:first-child{margin-bottom:16px;font-size:13px;font-weight:700;letter-spacing:.1em;color:var(--nx-t3);}
+.ar-comment{padding:16px 0;border-bottom:1px dotted var(--nx-bd);}
+.ar-comment-head{display:flex;align-items:baseline;gap:10px;margin-bottom:8px;}
+.ar-comment-head b{font-size:14px;font-weight:600;}
+.ar-comment-head span{font-size:12px;color:var(--nx-t3);}
+.ar-comment p{font-size:15px;color:var(--nx-t2);line-height:1.9;white-space:pre-wrap;}
+.ar-form{margin-top:24px;padding:clamp(20px,2.4vw,24px);border:1px solid var(--nx-bd);border-radius:16px;background:#fff;}
+.ar-form>p{margin-bottom:14px;font-size:15px;font-weight:600;}
+.ar-form input,.ar-form textarea{border:1px solid var(--nx-bd);border-radius:10px;background:var(--nx-bg);padding:12px 14px;margin-bottom:12px;font-size:15px;color:var(--nx-t1);}
+.ar-form input:focus,.ar-form textarea:focus{border-color:var(--nx-o);border-bottom-color:var(--nx-o);}
+.ar-form textarea{min-height:110px;line-height:1.85;}
+.ar-form-foot{display:flex;align-items:center;gap:12px;flex-wrap:wrap;}
+.ar-form-foot span{font-size:13px;color:var(--nx-t3);}
 `;
 
 const DEFAULT_TAGS = ["理財觀念", "信用卡", "記帳", "投資", "讀書筆記", "生活財務", "其他"];
@@ -809,7 +1595,7 @@ const DEFAULT_TAGS = ["理財觀念", "信用卡", "記帳", "投資", "讀書�
 const DEFAULTS = {
   siteTitle: "理財觀點與讀書筆記",
   footerTagline: "理財，是為了讓生活更自由。",
-  navLabels: { home: "找到起點", journal: "文章", app: "88La財務導航", envelope: "實體理財工具", goods: "推薦好物", community: "8友社群", resources: "免費資源", about: "關於 88La" },
+  navLabels: { home: "找到起點", journal: "文章", app: "財務導航", envelope: "實體工具", goods: "推薦好物", community: "8友社群", resources: "免費工具", about: "關於", guide: "使用說明" },
   mobileTabLabels: { home: "首頁", community: "社群", resources: "資源", app: "App", envelope: "存錢袋" },
   footerLabels: {
     colProduct: "產品", colAbout: "關於", colLegal: "法律資訊",
@@ -953,37 +1739,17 @@ const DEFAULTS = {
     ctaBtn1: "開始使用88La財務導航",
     ctaBtn2: "認識 8友社群"
   },
-  homeCopy: {
-    latestLabel: "卡關導讀",
-    latestHeading: "你可能正在卡這些",
-    ctaHeading: "還不知道選哪個？",
-    ctaSub: "用 60 秒找到目前最值得先處理的卡點。",
-    ctaBtn: "用 60 秒找到我的起點"
-  },
   subscriptionCopy: {
     heading: "選擇你的方案",
     intro: "用 88La財務導航，把記帳這件事變成每天兩分鐘的習慣。\n所有方案皆包含桌面快速記帳功能。",
     notes: "所有金額均為新台幣計價，含稅\n月訂閱採信用卡定期定額，可於下次扣款日前取消\n年方案採單筆付款，不會自動續約\n到期前三天將寄送提醒通知。到期後提供 7 天資料匯出緩衝期，期間可瀏覽歷史紀錄，續訂即可立即恢復完整功能",
     foundingNote: `感謝最早支持 88La 的創始成員，你們的定價永久保留：月訂閱 ${FOUNDER_MONTHLY_PRICE} ／ 年方案 ${FOUNDER_YEARLY_PRICE}。請直接選擇方案並以你當時購買的 Email 登入，系統會自動調整至創始優惠價。此優惠僅適用於已取得創始會員資格之用戶，不開放新申請。`
   },
-  homeHero: {
-    eyebrow: "88La 犒賞系存錢",
-    headline: "先看懂錢去哪\n再決定怎麼存",
-    subheadline: "不是逼自己什麼都不能買，而是先安排好，讓想花的錢花得安心、該留下的錢留得住。",
-    ctaText: "用 60 秒找到我的起點",
-    cta2Text: "先看免費資源",
-    screenshot: ""
-  },
   trustStats: [
     { num: "90+", label: "8友社群成員" },
     { num: "4,000+", label: "記帳範本下載" },
     { num: "113+", label: "付費工具使用者" },
     { num: "5年+", label: "理財內容創作經驗" }
-  ],
-  paths: [
-    { label: "免費工具", title: "我不知道錢都去哪了", desc: "先用免費工具找出目前的財務卡點。", page: "resources" },
-    { label: "88La財務導航", title: "我有記帳，但月底還是不知道怎麼調", desc: "用 88La財務導航整理分配、記錄、卡費、預存與月底診斷。", page: "app" },
-    { label: "實體理財工具", title: "我知道想存什麼，但錢總是被花掉", desc: "用看得見、摸得到的實體工具，把目標拆成能持續的行動。", page: "envelope" }
   ],
   envelopeHero: {
     eyebrow: "88La · 實體工具",
@@ -1027,7 +1793,7 @@ const DEFAULTS = {
     { id: 2, title: "信用卡不是壞東西，是你沒搞清楚規則", date: "2026-05-15", tag: "信用卡", img: "", excerpt: "很多人怕信用卡，覺得它會讓自己亂花錢。但其實信用卡是中性工具，問題在於你有沒有掌控它。", content: "信用卡本身是中性的，問題從來都不是卡，是使用的方式。\n\n把信用卡的預算視同現金在管理。刷了就登記，不要等帳單才知道。設定自動扣款，永遠不繳最低應繳。", views: 198, comments: [], relatedLinks: [] }
   ],
   products: [
-    { id: 1, name: "理財自動導航器 2.0", type: "digital", price: "NT$ 299", desc: "Google Sheets 理財模板，自動模式偵測，適合薪水族。", url: "https://portaly.cc/every_dollars", img: "" },
+    { id: 1, name: "理財自動導航器 2.0", type: "digital", price: "NT$ 699", desc: "Google Sheets 理財模板，自動模式偵測，適合薪水族。", url: "https://portaly.cc/everydollars", img: "" },
     { id: 2, name: "88La 存錢袋", type: "physical", price: "NT$ 180", desc: "手工製作信封袋，現金分類存錢用。", url: "", img: "" }
   ],
   igPosts: [
@@ -1311,6 +2077,14 @@ async function uploadCloudinaryImage(file, onProgress) {
     xhr.send(fd);
   });
 }
+
+// 會員解鎖狀態存在 sessionStorage：輸入一次密碼，這次瀏覽期間所有會員文章都保持解鎖，
+// 關掉瀏覽器就失效（不用 localStorage、不用長效 cookie）。密碼本身仍由後端 /api/member-article
+// 驗證，前端沒有任何比對邏輯；這裡存密碼是因為每篇全文都要再跟後端換一次。
+const MEMBER_SESSION_KEY = "88la_member_pwd";
+const getMemberSessionPassword = () => { try { return sessionStorage.getItem(MEMBER_SESSION_KEY) || ""; } catch { return ""; } };
+const setMemberSessionPassword = pwd => { try { sessionStorage.setItem(MEMBER_SESSION_KEY, pwd); } catch { } };
+const clearMemberSessionPassword = () => { try { sessionStorage.removeItem(MEMBER_SESSION_KEY); } catch { } };
 
 async function fetchMemberArticleContent(articleId, password = "") {
   if (isLocalAdminPreviewMode()) {
@@ -1669,55 +2443,10 @@ function RichEditor({ value, onChange }) {
   );
 }
 
-//  SVG icons for mobile tab bar
-const IcIG   = () => <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8"><rect x="2" y="2" width="20" height="20" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1" fill="currentColor" strokeWidth="0"/></svg>;
-const IcRes  = () => <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg>;
-const IcApp  = () => <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8"><rect x="5" y="2" width="14" height="20" rx="2"/><circle cx="12" cy="17" r="1" fill="currentColor"/></svg>;
-const IcShop = () => <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>;
-const IcEye   = () => <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8"><path d="M1 12s4-7 11-7 11 7 11 7-4 7-11 7-11-7-11-7z"/><circle cx="12" cy="12" r="3"/></svg>;
-const IcSync  = () => <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8"><path d="M4 9a8 8 0 0 1 14-5l2 2"/><path d="M20 6V2m0 4h-4"/><path d="M20 15a8 8 0 0 1-14 5l-2-2"/><path d="M4 18v4m0-4h4"/></svg>;
-const IcCheck = () => <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8"><path d="M4 12l5 5L20 6"/></svg>;
-const IcArticle = () => <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/><line x1="8" y1="13" x2="16" y2="13"/><line x1="8" y1="17" x2="13" y2="17"/></svg>;
 
-const PATH_ICONS = { app: IcApp, envelope: IcShop, community: IcIG, resources: IcRes, "tool-quiz": IcCheck, journal: IcArticle };
-// 分流卡的標籤與行動文字，跟 PATH_ICONS 用同一個 page 當 key。
-// 舊版寫成兩層三元式，只認得 resources 與 app，其餘全部掉進 else 變成「實體理財工具」，
-// 所以 Instagram 卡和文章庫卡都顯示成實體工具（2026-08-18 回報）。
-// 之後新增頁面型別只要補這張表，不會再有猜錯的預設值。
-// 宣告要在 PATH_META 之前：PATH_META 是模組載入時就求值的，放在後面會讓 vite dev
-// 直接拋 TDZ 錯誤整頁空白（打包版因為 rolldown 會重排宣告所以看不出來，本機預覽會壞）
 const APP_PRODUCT_NAME = "88La財務導航";
-const PATH_META = {
-  resources:   { label: "免費工具",        cta: "先免費檢查" },
-  "tool-quiz": { label: "免費工具",        cta: "開始免費檢查" },
-  app:         { label: APP_PRODUCT_NAME,  cta: "看看財務導航" },
-  envelope:    { label: "實體理財工具",     cta: "找到實體工具" },
-  journal:     { label: "文章庫",          cta: "看文章庫" },
-  community:   { label: "8友社群",         cta: "看看社群" },
-  goods:       { label: "推薦好物",        cta: "看看好物" },
-  about:       { label: "關於 88La",       cta: "認識 88La" }
-};
-// 認不出來的 page 一律走中性文字，不要拿任何一個產品名當預設值，
-// 猜錯的成本比講得籠統高很多。
-const PATH_META_FALLBACK = { label: "88La", cta: "看看" };
-function getPathMeta(page) {
-  if (/^https?:\/\//.test(page || "")) {
-    if (page.includes("instagram")) return { label: "Instagram", cta: "看看 Instagram" };
-    return { label: "外部連結", cta: "前往看看" };
-  }
-  return PATH_META[page] || PATH_META_FALLBACK;
-}
-const HOME_ARTICLE_TOPICS = [
-  { label: "存不到錢", keywords: ["存不到錢", "月光", "存錢"] },
-  { label: "記帳沒用", keywords: ["記帳", "記完", "照妖鏡"] },
-  { label: "錢很快花完", keywords: ["花錢", "行動支付", "零阻力", "衝動"] }
-];
-const WHY_ICONS = [IcEye, IcSync, IcCheck];
-const IcTarget = () => <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="5"/><circle cx="12" cy="12" r="1" fill="currentColor" stroke="none"/></svg>;
-const IcChart  = () => <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8"><line x1="4" y1="20" x2="4" y2="12"/><line x1="12" y1="20" x2="12" y2="6"/><line x1="20" y1="20" x2="20" y2="15"/></svg>;
-const IcHeart  = () => <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8"><path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.6l-1-1a5.5 5.5 0 0 0-7.8 7.8l1 1L12 21l7.8-7.8 1-1a5.5 5.5 0 0 0 0-7.8z"/></svg>;
-const ABOUT_ICONS = [IcTarget, IcChart, IcHeart];
-const NAV_KEYS = ["home","app","envelope","resources","about"];
+// 2026-09 改版導覽列順序（logo 就是首頁入口，所以 home 不進選單）
+const NAV_KEYS = ["app","resources","envelope","journal","about","guide"];
 const PRODUCT_NAME_PATTERNS = [
   "88La 理財自動導航器",
   "88La理財自動導航器",
@@ -1805,10 +2534,12 @@ const normalizeResourceUrl = value => {
 };
 const normalizeNavLabels = labels => {
   const next = { ...DEFAULTS.navLabels, ...(labels || {}) };
-  if (["導航器", "理財導航器", "理財自動導航器"].includes(next.app)) next.app = APP_PRODUCT_NAME;
   if (["首頁", "開始這裡"].includes(next.home)) next.home = "找到起點";
-  if (next.envelope === "存錢袋") next.envelope = "實體理財工具";
-  if (next.about === "關於") next.about = "關於 88La";
+  // 2026-09 改版：導覽列改用短標籤，把 Firestore 裡的舊長標籤換掉，避免選單被撐爆
+  if (["導航器", "理財導航器", "理財自動導航器", "88La財務導航", "88La理財自動導航器", "財務導航 Web App", "財務導航 App", APP_PRODUCT_NAME].includes(next.app)) next.app = "財務導航";
+  if (["存錢袋", "實體理財工具"].includes(next.envelope)) next.envelope = "實體工具";
+  if (["免費資源", "資源中心"].includes(next.resources)) next.resources = "免費工具";
+  if (["關於 88La", "關於我們"].includes(next.about)) next.about = "關於";
   return next;
 };
 const normalizeFooterLabels = labels => {
@@ -1912,43 +2643,8 @@ const normalizeSubscriptionCopy = raw => {
   };
 };
 
-const normalizeHomeHero = h => ({
-  ...h,
-  subheadline: normalizeProductText(h.subheadline),
-  ctaText: ["我想開始記帳", "開始使用理財導航器", "先看我適合哪個入口"].includes(h.ctaText) ? "用 60 秒找到我的起點" : h.ctaText,
-  cta2Text: ["先免費試試", "看看存錢袋"].includes(h.cta2Text) ? "先看免費資源" : h.cta2Text
-});
 
-const normalizeHomeCopy = hc => ({
-  ...hc,
-  latestLabel: hc.latestLabel === "最新文章" ? "卡關導讀" : hc.latestLabel,
-  latestHeading: (hc.latestHeading || "").startsWith("理財知識") ? "你可能正在卡這些" : hc.latestHeading,
-  ctaHeading: ["先從一個入口開始", "準備好開始了嗎？"].includes(hc.ctaHeading) ? "還不知道選哪個？" : hc.ctaHeading,
-  ctaSub: (hc.ctaSub || "").includes("理財自動導航器") || (hc.ctaSub || "").includes("免費資源") || (hc.ctaSub || "").includes("2 分鐘")
-    ? "用 60 秒找到目前最值得先處理的卡點。"
-    : hc.ctaSub,
-  ctaBtn: ["先看免費資源", "開始使用理財導航器", "開始工具診斷"].includes(hc.ctaBtn) ? "用 60 秒找到我的起點" : hc.ctaBtn
-});
 
-const pickHomeArticles = articles => {
-  const sorted = [...articles].sort((a, b) => (b.date || "").localeCompare(a.date || ""));
-  const used = new Set();
-  const picked = HOME_ARTICLE_TOPICS.map(topic => {
-    const article = sorted.find(a => {
-      if (used.has(a.id)) return false;
-      const haystack = `${a.title || ""} ${a.excerpt || ""} ${a.content || ""}`;
-      return topic.keywords.some(k => haystack.includes(k));
-    });
-    if (!article) return null;
-    used.add(article.id);
-    return { ...article, topicLabel: topic.label };
-  }).filter(Boolean);
-  for (const article of sorted) {
-    if (picked.length >= 3) break;
-    if (!used.has(article.id)) picked.push(article);
-  }
-  return picked.slice(0, 3);
-};
 
 //  Nav
 function Nav({ page, setPage, isAdmin, navLabels, setNavLabels }) {
@@ -1989,25 +2685,51 @@ function Nav({ page, setPage, isAdmin, navLabels, setNavLabels }) {
   return (
     <>
       <style>{css}</style>
-      <header style={{ background: O, position: "sticky", top: 0, zIndex: 50 }}>
-        <div style={{ maxWidth: 1100, margin: "0 auto", padding: "0 28px", height: 60, display: "flex", alignItems: "center", justifyContent: "space-between" }}>
-          <span onClick={() => go("home")} style={{ fontFamily: "Inter", fontWeight: 700, fontSize: 16, letterSpacing: "2px", color: WHITE, cursor: "pointer", flexShrink: 0 }}>88La</span>
-          <nav className="nav-links" style={{ display: "flex", gap: 22, alignItems: "center" }}>
-            {NAV_KEYS.map(k => (
-              <span key={k} onClick={() => go(k)} style={{ fontSize: 12, letterSpacing: ".8px", color: page === k ? WHITE : "rgba(255,255,255,.7)", cursor: "pointer", fontWeight: page === k ? "700" : "400", borderBottom: page === k ? `2px solid ${WHITE}` : "2px solid transparent", paddingBottom: 2, transition: "color .15s" }}>{nl[k]}</span>
-            ))}
-            {isAdmin && <><span onClick={() => go("write")} style={{ fontSize: 12, color: WHITE, cursor: "pointer", letterSpacing: ".5px" }}>＋ 撰文</span><span onClick={() => go("savings-quiz")} style={{ fontSize: 12, color: "rgba(255,255,255,.7)", cursor: "pointer", letterSpacing: ".5px", marginLeft: 6 }}>存錢袋測驗</span><span onClick={() => { setTmpNav(nl); setEditingNav(true); }} style={{ fontSize: 11, color: "rgba(255,255,255,.6)", cursor: "pointer", letterSpacing: ".5px", marginLeft: 6, textDecoration: "underline" }}>編輯選單文字</span><span onClick={() => signOut(auth)} style={{ fontSize: 11, color: "rgba(255,255,255,.5)", cursor: "pointer", marginLeft: 6 }}>登出</span></>}
-          </nav>
-          <button className="mob-menu" onClick={() => setMob(p => !p)} aria-label={mob ? "關閉選單" : "開啟選單"} style={{ background: "none", border: "none", color: WHITE, fontSize: 22, cursor: "pointer", display: "flex", alignItems: "center" }}>
-            {mob ? "✕" : "☰"}
+      <header className="nx-nav">
+        <div className="nx-nav-in">
+          <div className="nx-nav-left">
+            <button className="nx-logo" onClick={() => go("home")} aria-label="回到首頁">88<i>La</i></button>
+            <nav className="nx-nav-links" aria-label="主選單">
+              {NAV_KEYS.map(k => (
+                <button key={k} className={"nx-nav-link" + (page === k ? " is-current" : "")} aria-current={page === k ? "page" : undefined} onClick={() => go(k)}>{nl[k]}</button>
+              ))}
+            </nav>
+          </div>
+          <div className="nx-nav-right">
+            {isAdmin ? (
+              <div className="nx-nav-admin">
+                <button onClick={() => go("write")}>＋ 撰文</button>
+                <button onClick={() => go("savings-quiz")}>存錢袋測驗</button>
+                <button onClick={() => { setTmpNav(nl); setEditingNav(true); }}>編輯選單文字</button>
+                <button onClick={() => signOut(auth)}>登出後台</button>
+              </div>
+            ) : (
+              <a className="nx-nav-text" href={APP_URL}>登入</a>
+            )}
+            <a className="nx-btn nx-btn-pri nx-btn-sm" href={pathForPage("app")} onClick={e => { e.preventDefault(); go("app"); }}>開始使用</a>
+          </div>
+          <button className="nx-burger" onClick={() => setMob(p => !p)} aria-label={mob ? "關閉選單" : "開啟選單"} aria-expanded={mob}>
+            {mob ? (
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round"><line x1="6" y1="6" x2="18" y2="18" /><line x1="18" y1="6" x2="6" y2="18" /></svg>
+            ) : (
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round"><line x1="4" y1="7" x2="20" y2="7" /><line x1="4" y1="17" x2="20" y2="17" /></svg>
+            )}
           </button>
         </div>
         {mob && (
-          <div className="mob-panel" style={{ background: CHAR, display: "flex", flexDirection: "column" }}>
+          <div className="nx-mob-panel">
             {NAV_KEYS.map(k => (
-              <span key={k} onClick={() => go(k)} style={{ fontSize: 15, padding: "15px 24px", borderBottom: `1px solid rgba(255,255,255,.08)`, color: page === k ? O : "rgba(255,255,255,.85)", cursor: "pointer", fontWeight: page === k ? "600" : "400" }}>{nl[k]}</span>
+              <button key={k} className={"nx-mob-link" + (page === k ? " is-current" : "")} onClick={() => go(k)}>{nl[k]}</button>
             ))}
-            {isAdmin && <><span onClick={() => go("write")} style={{ fontSize: 15, padding: "15px 24px", borderBottom: `1px solid rgba(255,255,255,.08)`, color: O, cursor: "pointer" }}>＋ 撰文</span><span onClick={() => go("savings-quiz")} style={{ fontSize: 15, padding: "15px 24px", borderBottom: `1px solid rgba(255,255,255,.08)`, color: "rgba(255,255,255,.7)", cursor: "pointer" }}>存錢袋測驗</span><span onClick={() => { signOut(auth); setMob(false); }} style={{ fontSize: 13, padding: "13px 24px", color: "rgba(255,255,255,.4)", cursor: "pointer" }}>登出</span></>}
+            {isAdmin && <>
+              <button className="nx-mob-link" onClick={() => go("write")}>＋ 撰文</button>
+              <button className="nx-mob-link" onClick={() => go("savings-quiz")}>存錢袋測驗</button>
+              <button className="nx-mob-link" onClick={() => { signOut(auth); setMob(false); }}>登出後台</button>
+            </>}
+            <div className="nx-mob-foot">
+              {!isAdmin && <a className="nx-btn nx-btn-sec nx-btn-sm" href={APP_URL}>登入</a>}
+              <a className="nx-btn nx-btn-pri nx-btn-sm" href={pathForPage("app")} onClick={e => { e.preventDefault(); go("app"); }}>開始使用</a>
+            </div>
           </div>
         )}
       </header>
@@ -2157,60 +2879,6 @@ function Footer({ links, footerTagline, setFooterTagline, isAdmin, setPage, foot
 }
 
 //  Hero Banner
-function Hero({ about, isAdmin, setAbout, links }) {
-  const l = links || DEFAULTS.links;
-  const [editBanner, setEditBanner] = useState(false);
-  const [tmp, setTmp] = useState(about);
-  const [bannerUrlErr, setBannerUrlErr] = useState("");
-  const save = () => {
-    const l1 = (tmp.bannerLink1 || "").trim(), l2 = (tmp.bannerLink2 || "").trim();
-    if ((l1 && !isValidUrl(l1)) || (l2 && !isValidUrl(l2))) { setBannerUrlErr("連結格式不正確，需以 https:// 開頭"); return; }
-    setBannerUrlErr(""); setAbout(tmp); setEditBanner(false);
-  };
-  if (editBanner) return (
-    <div style={{ padding: "48px 32px", maxWidth: 600, margin: "0 auto" }}>
-      <p style={{ fontSize: 11, letterSpacing: "2px", color: O, marginBottom: 24 }}>編輯 Banner</p>
-      <div style={{ display: "flex", flexDirection: "column", gap: 20 }}>
-        <ImgUploader label="背景圖片" value={tmp.bannerImg || ""} onChange={v => setTmp(p => ({ ...p, bannerImg: v }))} aspect="16/9" />
-        {[["大標題","bannerTitle",""],["副標題","bannerSub",""],["按鈕一文字","bannerBtn1","加入 LINE 社群"],["按鈕一連結","bannerLink1","https://line.me/..."],["按鈕二文字","bannerBtn2","追蹤 Instagram"],["按鈕二連結","bannerLink2","https://www.instagram.com/..."]].map(([label,key,ph]) => (
-          <div key={key}><p style={{ fontSize: 12, color: MID, marginBottom: 8 }}>{label}</p><input placeholder={ph} value={tmp[key] || ""} onChange={e => { setTmp(p => ({ ...p, [key]: e.target.value })); setBannerUrlErr(""); }} /></div>
-        ))}
-        {bannerUrlErr && <p style={{ fontSize: 12, color: "#C0392B" }}>{bannerUrlErr}</p>}
-      </div>
-      <div style={{ display: "flex", gap: 10, marginTop: 28 }}><button className="pb" onClick={save}>儲存</button><button className="pg" onClick={() => setEditBanner(false)}>取消</button></div>
-    </div>
-  );
-  const bi = about.bannerImg || "";
-  const bt = about.bannerTitle || "理財，是為了讓生活更自由。";
-  const bs = about.bannerSub || "88La 帶你用最真實的方式，重新認識金錢。";
-  const bb1 = about.bannerBtn1 || "加入 LINE 社群";
-  const bb2 = about.bannerBtn2 || "追蹤 Instagram";
-  const bl1 = about.bannerLink1 || l.lineCommunity;
-  const bl2 = about.bannerLink2 || l.instagram;
-  return (
-    <div className="banner-h" style={{
-      height: 560,
-      background: bi ? `linear-gradient(rgba(40,20,10,.55),rgba(40,20,10,.55)) center/cover, url('${bi.replace(/[\\'()]/g, "\\$&")}') center/cover no-repeat` : O2,
-      display: "flex", alignItems: "center", position: "relative"
-    }}>
-      <div style={{ maxWidth: 1100, margin: "0 auto", padding: "0 32px", width: "100%" }}>
-        <p className="hero-stagger hs-1" style={{ fontSize: 11, letterSpacing: "3px", color: O, marginBottom: 20, fontWeight: 600 }}>88La · PERSONAL FINANCE</p>
-        <h1 className="hero-title hero-stagger hs-2" style={{ fontSize: 52, fontWeight: 700, color: bi ? WHITE : CHAR, lineHeight: 1.2, marginBottom: 20, maxWidth: 600 }}>{bt}</h1>
-        <p className="hero-sub hero-stagger hs-3" style={{ fontSize: 16, color: bi ? "rgba(255,255,255,.8)" : MID, marginBottom: 36, maxWidth: 480, lineHeight: 1.85 }}>{bs}</p>
-        <div className="hero-stagger hs-4" style={{ display: "flex", gap: 12, flexWrap: "wrap" }}>
-          <a href={bl1} target="_blank" rel="noopener noreferrer"><button className="pb">{bb1}</button></a>
-          <a href={bl2} target="_blank" rel="noopener noreferrer">
-            <button style={{ background: bi ? "rgba(255,255,255,.12)" : "transparent", color: bi ? WHITE : CHAR, border: `1px solid ${bi ? "rgba(255,255,255,.35)" : "#D0D0D0"}`, padding: "11px 24px", fontSize: 13, cursor: "pointer", fontFamily: "inherit", transition: "border-color .18s" }}>{bb2}</button>
-          </a>
-        </div>
-      </div>
-      {isAdmin && <button onClick={() => { setTmp(about); setEditBanner(true); }} style={{ position: "absolute", top: 20, right: 20, background: "rgba(200,90,20,.9)", color: WHITE, border: "none", padding: "8px 16px", fontSize: 12, cursor: "pointer", fontFamily: "inherit" }}>編輯 Banner</button>}
-    </div>
-  );
-}
-
-//  Home (article list)
-//  Homepage Hero (marketing)
 function PageHero({ title, fields, data, setData, defaults, isAdmin, children }) {
   const h = { ...defaults, ...(data || {}) };
   const [editing, setEditing] = useState(false);
@@ -2239,262 +2907,340 @@ function PageHero({ title, fields, data, setData, defaults, isAdmin, children })
   return children(h, isAdmin ? <span onClick={() => { setTmp(h); setEditing(true); }} style={{ fontSize: 12, color: O, cursor: "pointer" }}>編輯文字</span> : null);
 }
 
-function HomeHero({ homeHero, setHomeHero, isAdmin, setPage }) {
-  const h = normalizeHomeHero({ ...DEFAULTS.homeHero, ...(homeHero || {}) });
-  const [editing, setEditing] = useState(false);
-  const [tmp, setTmp] = useState(h);
-  const save = () => { setHomeHero(tmp); setEditing(false); };
-  if (editing) return (
-    <div style={{ padding: "48px 32px", maxWidth: 600, margin: "0 auto" }}>
-      <p style={{ fontSize: 11, letterSpacing: "2px", color: O, marginBottom: 24 }}>編輯首頁 Hero</p>
-      <div style={{ display: "flex", flexDirection: "column", gap: 20 }}>
-        <div><p style={{ fontSize: 12, color: MID, marginBottom: 8 }}>小標籤（Eyebrow）</p><input value={tmp.eyebrow} onChange={e => setTmp(p => ({ ...p, eyebrow: e.target.value }))} /></div>
-        <div><p style={{ fontSize: 12, color: MID, marginBottom: 8 }}>主標題（可換行）</p><textarea value={tmp.headline} onChange={e => setTmp(p => ({ ...p, headline: e.target.value }))} style={{ minHeight: 80 }} /></div>
-        <div><p style={{ fontSize: 12, color: MID, marginBottom: 8 }}>副標題</p><textarea value={tmp.subheadline} onChange={e => setTmp(p => ({ ...p, subheadline: e.target.value }))} style={{ minHeight: 60 }} /></div>
-        <div><p style={{ fontSize: 12, color: MID, marginBottom: 8 }}>主要按鈕文字</p><input value={tmp.ctaText} onChange={e => setTmp(p => ({ ...p, ctaText: e.target.value }))} /></div>
-        <div><p style={{ fontSize: 12, color: MID, marginBottom: 8 }}>次要按鈕文字</p><input value={tmp.cta2Text} onChange={e => setTmp(p => ({ ...p, cta2Text: e.target.value }))} /></div>
-        <ImgUploader label="App 截圖" value={tmp.screenshot} onChange={v => setTmp(p => ({ ...p, screenshot: v }))} aspect="9/19" />
-      </div>
-      <div style={{ display: "flex", gap: 10, marginTop: 28 }}><button className="pb" onClick={save}>儲存</button><button className="pg" onClick={() => setEditing(false)}>取消</button></div>
-    </div>
-  );
-  return (
-    <div style={{ background: O2, padding: "72px 32px" }}>
-      <div style={{ maxWidth: 1180, margin: "0 auto", display: "grid", gridTemplateColumns: "0.78fr 1.22fr", gap: 64, alignItems: "center" }} className="grid2">
-        <div>
-          <p style={{ fontSize: 12, letterSpacing: "2px", color: O, fontWeight: 600, marginBottom: 16 }}>{h.eyebrow}</p>
-          <h1 style={{ fontSize: 40, fontWeight: 700, color: CHAR, lineHeight: 1.35, marginBottom: 18, whiteSpace: "pre-wrap" }}>{h.headline}</h1>
-          <p style={{ fontSize: 15, color: MID, lineHeight: 1.85, marginBottom: 28, maxWidth: 440 }}>{h.subheadline}</p>
-          <div style={{ display: "flex", gap: 12, flexWrap: "wrap", alignItems: "center" }}>
-            <button className="pb" onClick={() => setPage("tool-quiz")}>{h.ctaText} →</button>
-            <button className="pg" onClick={() => setPage("resources")}>{h.cta2Text}</button>
-            {isAdmin && <span onClick={() => { setTmp(h); setEditing(true); }} style={{ fontSize: 12, color: O, cursor: "pointer", marginLeft: 4 }}>編輯</span>}
-          </div>
-        </div>
-        <div style={{ display: "flex", justifyContent: "center", width: "100%", minWidth: 0 }}>
-          <div className="home-ecosystem-stage" aria-label="88La 三種理財入口">
-            <svg className="home-ecosystem-links" viewBox="0 0 600 180" fill="none" aria-hidden="true">
-              <path d="M40 122C122 42 198 42 287 100" stroke="currentColor" strokeWidth="1.5" strokeDasharray="4 8" />
-              <path d="M312 100C400 42 478 48 560 122" stroke="currentColor" strokeWidth="1.5" strokeDasharray="4 8" />
-              <circle cx="40" cy="122" r="3" fill="currentColor" /><circle cx="300" cy="94" r="3" fill="currentColor" /><circle cx="560" cy="122" r="3" fill="currentColor" />
-            </svg>
+//  Home（2026-09 改版：先講產品與價格 → 帶你走完一個月 → 還有什麼 → 上手 → 才給價格）
+const HM_SHOT = "/app-shots/";
+const HM_PAINS = [
+  ["有記帳，但月底還是不知道要調哪裡", "記了一整個月，只換到一張看不懂的圓餅圖。"],
+  ["薪水一入帳，卡費一扣就沒了", "不是花太多，是沒有先把卡費留下來。"],
+  ["想存錢，但一犒賞自己就破功", "缺的是一筆說好可以花的預算。"],
+];
+const HM_FEATURES = [
+  ["信用卡帳期", "每張卡的結帳日、繳費日與本期應還，月初就先預留", "credit-card.webp", "88La財務導航 信用卡帳期管理：三張卡的結帳與繳費日、本期應還 $5,774"],
+  ["負債追蹤", "學貸、分期還了多少、還剩多少，每月提醒不漏繳", "debt.webp", "88La財務導航 負債追蹤：大學學貸已還 $28,896、本月還款提醒"],
+  ["帳戶與淨資產", "目標帳戶與活存分開看，錢有沒有往目標走一眼就懂", "accounts.webp", "88La財務導航 帳戶管理：淨資產、總資產與負債、目標帳戶與其他帳戶"],
+  ["願望清單", "想買的先記下來，冷靜幾天再決定要不要買", "wishlist.webp", "88La財務導航 願望清單：待決定 2 個共 $19,500，可延後或標記已購買"],
+];
+const HM_STEPS = [
+  ["約 3 分鐘", "填入你手上有多少錢", "活存、目標帳戶、還有正在還的學貸或分期。只填一次，之後靠記帳自己更新。", "accounts.webp", "88La財務導航 帳戶管理：淨資產、總資產與負債、目標帳戶與其他帳戶"],
+  ["約 4 分鐘", "設好每張卡的結帳日", "這一步做完，才知道要幫你預留多少卡費，也是最多人做完之後說「原來差在這裡」的一步。", "credit-card.webp", "88La財務導航 信用卡帳期管理：三張卡的結帳與繳費日、本期應還 $5,774"],
+  ["約 3 分鐘", "寫下一個想存的目標", "一個就好。有目標，月底的診斷才有東西可以對照，不然只是看數字。", "goals.webp", "88La財務導航 儲蓄目標頁：股票 41%、儲蓄 10%、預存管理與短期衝刺目標"],
+];
+const HM_TERMS = [
+  ["固定 / 變動", "每月幾乎不變的（房租、保險）是固定；會浮動的（吃飯、交通）是變動。"],
+  ["儲蓄", "存起來不打算動的錢。是往目標走的那一筆。"],
+  ["未來預存", "為了以後某筆一定會來的支出先放的錢，例如半年繳的保險、年繳的稅。錢還是會花掉，只是提前準備。"],
+  ["時效性儲蓄", "短期內想達成的目標，例如三個月後的旅行。時間到就結束，不長期綁著。"],
+  ["卡費預留", "這個月刷掉、下個月要付的錢。88La 會先扣下來，所以你看到的餘額是真的可以花的。"],
+  ["個人 / 公費 / 家庭", "三本各自獨立帳本。自己使用的帳、情侶各自拿出一筆當公積金的帳、雙薪家庭混用的帳，三種帳不混在一起看。"],
+];
+const HM_VALUES = [
+  ["一套先把錢安排好再花的方式", "月初先安排這個月能怎麼花，月中就能知道錢還夠不夠按照原計劃走。"],
+  ["一個記得住細節的紀錄", "卡費、分期、預存、儲蓄、心情，全部收在同一個地方。"],
+  ["一份每月的陪伴建議", "不評分、不說教，只給你下個月能調整的具體建議。"],
+];
+const IcClock = () => (
+  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#A4471D" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+    <circle cx="12" cy="12" r="9" /><polyline points="12 7 12 12 15.5 14" />
+  </svg>
+);
 
-            <button type="button" className="home-product-preview home-ecosystem-entry home-ecosystem-entry-left" onClick={() => setPage("resources")} aria-label="前往免費工具">
-              <div className="home-ecosystem-float">
-                <div className="home-ecosystem-object home-free-visual" aria-hidden="true">
-                  <div className="home-free-sheet home-free-sheet-back" />
-                  <div className="home-free-sheet home-free-sheet-mid" />
-                  <div className="home-free-sheet home-free-sheet-front">
-                    <p className="home-mini-kicker">你的檢查結果</p>
-                    <p className="home-mini-answer">目前最容易卡在<br />日常支出</p>
-                    <div className="home-mini-track"><span /></div>
-                    <p className="home-mini-check"><i>✓</i>先看懂支出位置</p>
-                    <p className="home-mini-check"><i>✓</i>找到一個下一步</p>
-                  </div>
-                </div>
-              </div>
-              <div className="home-product-copy">
-                <span className="home-product-tag">免費起步</span>
-                <h3 className="home-product-title">免費工具</h3>
-                <p className="home-product-desc">先看懂自己卡在哪</p>
-                <span className="home-product-action">開始免費檢查 →</span>
-              </div>
-            </button>
-
-            <button type="button" className="home-product-preview home-ecosystem-entry home-ecosystem-entry-center" onClick={() => setPage("app")} aria-label="了解88La財務導航">
-              <div className="home-ecosystem-float">
-                <div className="home-ecosystem-object home-app-visual">
-                  <div className="home-app-phone">
-                    {h.screenshot ? <img src={h.screenshot} alt="88La財務導航實際畫面" style={{ width: "100%", height: "100%", objectFit: "cover" }} /> : (
-                      <div className="home-app-screen" aria-label="88La財務導航功能預覽">
-                        <div className="home-app-top"><span>88La</span><span className="home-app-month">本月</span></div>
-                        <div className="home-app-tabs"><span>個人</span><span>公費</span><span>家庭</span></div>
-                        <div className="home-app-balance"><p className="home-app-balance-label">本月可用餘額</p><div className="home-app-balance-line" /></div>
-                        <div className="home-app-metrics">
-                          <div className="home-app-metric"><span>卡費預留</span><i /></div>
-                          <div className="home-app-metric"><span>固定支出</span><i /></div>
-                          <div className="home-app-metric"><span>儲蓄進度</span><i /></div>
-                        </div>
-                        <div className="home-app-focus"><small>本月最值得處理</small><strong>看懂差多少，再決定去哪裡調</strong></div>
-                      </div>
-                    )}
-                  </div>
-                </div>
-              </div>
-              <div className="home-product-copy">
-                <span className="home-product-tag">核心服務</span>
-                <h3 className="home-product-title" aria-label="88La財務導航"><span>88La</span> 財務導航</h3>
-                <p className="home-product-desc">從月初分配，到月底知道怎麼調整</p>
-                <span className="home-product-action">看看怎麼運作 →</span>
-              </div>
-            </button>
-
-            <button type="button" className="home-product-preview home-ecosystem-entry home-ecosystem-entry-right" onClick={() => setPage("envelope")} aria-label="前往實體理財工具">
-              <div className="home-ecosystem-float">
-                <div className="home-ecosystem-object home-physical-visual">
-                  <div className="home-paper-tab home-paper-tab-one">每日預算</div>
-                  <div className="home-paper-tab home-paper-tab-two">旅遊目標</div>
-                  <div className="home-physical-photo"><img src="/商品圖｜存錢袋.png" alt="88La 實體理財工具實拍" /></div>
-                </div>
-              </div>
-              <div className="home-product-copy">
-                <span className="home-product-tag">實體執行</span>
-                <h3 className="home-product-title">實體理財工具</h3>
-                <p className="home-product-desc">把預算與目標，變成看得見的行動</p>
-                <span className="home-product-action">找到適合我的工具 →</span>
-              </div>
-            </button>
-          </div>
-        </div>
-      </div>
-    </div>
-  );
-}
-
-function Home({ articles, setPage, setId, isAdmin, homeHero, setHomeHero, trustStats, setTrustStats, paths, setPaths, homeCopy, setHomeCopy }) {
-  const hc = normalizeHomeCopy({ ...DEFAULTS.homeCopy, ...(homeCopy || {}) });
-  const [editHomeCopy, setEditHomeCopy] = useState(false);
-  const [tmpHomeCopy, setTmpHomeCopy] = useState(hc);
-  const open = id => { const a = articles.find(x => x.id === id); setId(id); setPage("article"); window.scrollTo({ top: 0, behavior: "instant" }); history.pushState({}, "", "/article/" + encodeURIComponent(a?.slug || id)); };
+function Home({ setPage, isAdmin, trustStats, setTrustStats }) {
   const ts = trustStats && trustStats.length ? trustStats : DEFAULTS.trustStats;
-  const ph = paths && paths.length ? paths : DEFAULTS.paths;
-  const guidedPaths = ph;
-  const homeArticles = pickHomeArticles(articles);
   const [editStats, setEditStats] = useState(false);
   const [tmpStats, setTmpStats] = useState(ts);
-  const [editPaths, setEditPaths] = useState(false);
-  const [tmpPaths, setTmpPaths] = useState(ph);
+  // 內部連結：保留真實 href（SEO 與新分頁可用），點擊時走前端路由
+  const to = p => ({ href: pathForPage(p), onClick: e => { if (e.metaKey || e.ctrlKey || e.shiftKey || e.button) return; e.preventDefault(); setPage(p); } });
   return (
-    <div>
-      <HomeHero homeHero={homeHero} setHomeHero={setHomeHero} isAdmin={isAdmin} setPage={setPage} />
-      <div style={{ maxWidth: 1100, margin: "0 auto", padding: "56px 32px", display: "flex", flexDirection: "column" }} className="page-wrap">
-        {isAdmin && <div style={{ textAlign: "right", marginBottom: 12 }}>{!editStats && <span onClick={() => { setTmpStats(ts); setEditStats(true); }} style={{ fontSize: 12, color: O, cursor: "pointer" }}>編輯信任數據</span>}</div>}
-        {editStats ? (
-          <div style={{ background: GRAY, padding: 24, border: `1px solid ${BORDER}`, marginBottom: 20 }}>
-            <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(200px,1fr))", gap: 16, marginBottom: 16 }} className="grid2">
-              {tmpStats.map((s, i) => (
-                <div key={i}>
-                  <input value={s.num} onChange={e => setTmpStats(p => p.map((x, xi) => xi === i ? { ...x, num: e.target.value } : x))} placeholder="數字" style={{ marginBottom: 6 }} />
-                  <input value={s.label} onChange={e => setTmpStats(p => p.map((x, xi) => xi === i ? { ...x, label: e.target.value } : x))} placeholder="標籤" />
-                </div>
-              ))}
+    <div className="nx-page">
+      {/* Hero */}
+      <div className="nx-in">
+        <section className="nx-hero">
+          <div>
+            <p className="nx-badge"><b>訂閱制</b><span><span className="nx-hide-mob">88La財務導航 · </span>每月 {NT_MONTHLY}</span></p>
+            <h1 className="nx-h1">不用再問<br />「記帳了，然後勒？」</h1>
+            <p className="nx-hero-p nx-hide-mob">88La財務導航是一套理財工具：月初幫你把薪水分配好，平常 5 秒記一筆，月底告訴你哪裡超支、下個月該從哪裡開始調整。</p>
+            <p className="nx-hero-p nx-only-mob">月初分配、平常 5 秒記一筆、月底告訴你下個月該從哪裡開始調整。</p>
+            <p className="nx-hero-p2 nx-hide-mob">不是叫你什麼都別買，是讓想花的錢花得安心。</p>
+            <div className="nx-cta-row">
+              <a className="nx-btn nx-btn-pri nx-btn-lg" {...to("app")}>開始使用 88La財務導航 →</a>
+              <a className="nx-btn nx-btn-sec nx-btn-lg" href="#month">先看完一個月 ↓</a>
             </div>
-            <div style={{ display: "flex", gap: 10 }}><button className="pb" onClick={() => { setTrustStats(tmpStats); setEditStats(false); }}>儲存</button><button className="pg" onClick={() => setEditStats(false)}>取消</button></div>
-          </div>
-        ) : (
-          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(160px,1fr))", gap: 20, marginTop: 56, textAlign: "center", order: 4 }} className="grid4">
-            {ts.map((s, i) => (
-              <div key={i}>
-                <p style={{ fontSize: 28, fontWeight: 700, color: O }}>{s.num}</p>
-                <p style={{ fontSize: 13, color: MID, marginTop: 4 }}>{s.label}</p>
-              </div>
-            ))}
-          </div>
-        )}
-        {isAdmin && <div style={{ textAlign: "right", marginBottom: 12 }}>{!editPaths && <span onClick={() => { setTmpPaths(ph); setEditPaths(true); }} style={{ fontSize: 12, color: O, cursor: "pointer" }}>編輯分流路徑</span>}</div>}
-        <div style={{ textAlign: "center", marginBottom: 28 }}>
-          <p className="section-label" style={{ marginBottom: 12 }}>START HERE</p>
-          <h2 style={{ fontSize: 24, fontWeight: 700, color: CHAR, marginBottom: 10 }}>先選一個最像你的狀態</h2>
-          <p style={{ fontSize: 14, color: MID, lineHeight: 1.8 }}>不用先懂產品，從現在的卡關點開始就好。</p>
-        </div>
-        {editPaths ? (
-          <div style={{ background: GRAY, padding: 24, border: `1px solid ${BORDER}`, marginBottom: 20 }}>
-            {tmpPaths.map((p, i) => (
-              <div key={i} style={{ marginBottom: 16, paddingBottom: 16, borderBottom: i < tmpPaths.length - 1 ? `1px solid ${BORDER}` : "none" }}>
-                <input value={p.label || ""} onChange={e => setTmpPaths(pp => pp.map((x, xi) => xi === i ? { ...x, label: e.target.value } : x))} placeholder="入口類型，例如免費工具" style={{ marginBottom: 6 }} />
-                <input value={p.title} onChange={e => setTmpPaths(pp => pp.map((x, xi) => xi === i ? { ...x, title: e.target.value } : x))} placeholder="標題" style={{ marginBottom: 6 }} />
-                <textarea value={p.desc} onChange={e => setTmpPaths(pp => pp.map((x, xi) => xi === i ? { ...x, desc: e.target.value } : x))} placeholder="說明" style={{ minHeight: 50, marginBottom: 6 }} />
-                <input value={p.page} onChange={e => setTmpPaths(pp => pp.map((x, xi) => xi === i ? { ...x, page: e.target.value } : x))} placeholder="頁面代號（如 app、resources）或完整網址（https://...）" style={{ marginBottom: 6 }} />
-                <input value={p.cta || ""} onChange={e => setTmpPaths(pp => pp.map((x, xi) => xi === i ? { ...x, cta: e.target.value } : x))} placeholder="行動文字，留空會依頁面代號自動帶（如看文章庫）" style={{ marginBottom: 6 }} />
-                <span onClick={() => setTmpPaths(pp => pp.filter((_, xi) => xi !== i))} style={{ fontSize: 12, color: MID, cursor: "pointer" }}>刪除這張卡片</span>
-              </div>
-            ))}
-            <div style={{ display: "flex", gap: 10, marginBottom: 16 }}>
-              <span onClick={() => setTmpPaths(pp => [...pp, { title: "", desc: "", page: "resources" }])} style={{ fontSize: 12, color: O, cursor: "pointer" }}>+ 新增卡片</span>
-            </div>
-            <div style={{ display: "flex", gap: 10 }}><button className="pb" onClick={() => { setPaths(tmpPaths); setEditPaths(false); }}>儲存</button><button className="pg" onClick={() => setEditPaths(false)}>取消</button></div>
-          </div>
-        ) : (
-          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(260px,1fr))", gap: 20, marginBottom: 20 }} className="grid3">
-            {guidedPaths.map((p, i) => {
-              const isExternal = /^https?:\/\//.test(p.page || "");
-              const goTo = () => { if (isExternal) window.open(p.page, "_blank", "noopener,noreferrer"); else setPage(p.page); };
-              const PathIcon = isExternal ? (p.page.includes("instagram") ? IcIG : null) : PATH_ICONS[p.page];
-              const meta = getPathMeta(p.page);
-              return (
-                <div key={i} onClick={goTo} style={{ background: WHITE, border: `1px solid ${BORDER}`, borderRadius: 16, padding: 28, cursor: "pointer", boxShadow: "0 2px 8px rgba(0,0,0,.04)", transition: "transform .3s, box-shadow .3s" }}
-                  onMouseEnter={e => { e.currentTarget.style.transform = "translateY(-6px)"; e.currentTarget.style.boxShadow = "0 20px 40px rgba(0,0,0,.1)"; }}
-                  onMouseLeave={e => { e.currentTarget.style.transform = "translateY(0)"; e.currentTarget.style.boxShadow = "0 2px 8px rgba(0,0,0,.04)"; }}
-                >
-                  <p style={{ fontSize: 11, color: O, fontWeight: 700, marginBottom: 12 }}>{p.label || meta.label}</p>
-                  <div style={{ width: 40, height: 40, borderRadius: 12, background: O2, color: O, display: "flex", alignItems: "center", justifyContent: "center", marginBottom: 16 }}>{PathIcon ? <div style={{ width: 20, height: 20 }}><PathIcon /></div> : null}</div>
-                  <h3 style={{ fontSize: 17, fontWeight: 500, color: CHAR, marginBottom: 8 }}>{p.title}</h3>
-                  <p style={{ fontSize: 13, color: MID, lineHeight: 1.8, marginBottom: 14 }}>{p.desc}</p>
-                  <span style={{ fontSize: 12, color: O, fontWeight: 500 }}>{p.cta || meta.cta} →</span>
-                </div>
-              );
-            })}
-          </div>
-        )}
-      </div>
-      {homeArticles.length > 0 && (
-        <div style={{ background: WHITE, padding: "64px 32px", borderTop: `1px solid ${BORDER}` }}>
-          <div style={{ maxWidth: 1100, margin: "0 auto" }}>
-            <div style={{ textAlign: "center", marginBottom: 40 }}>
-              <p className="section-label" style={{ marginBottom: 12 }}>{hc.latestLabel}</p>
-              <h2 style={{ fontSize: 22, fontWeight: 700, color: CHAR }}>{hc.latestHeading}</h2>
-              {isAdmin && <span onClick={() => { setTmpHomeCopy(hc); setEditHomeCopy(true); }} style={{ fontSize: 11, color: O, cursor: "pointer", marginTop: 6, display: "inline-block" }}>編輯</span>}
-            </div>
-            <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(260px,1fr))", gap: 20 }} className="grid3">
-              {homeArticles.map(a => (
-                <div key={a.id} className="card" onClick={() => open(a.id)}>
-                  <div style={{ height: 140, background: O2, overflow: "hidden" }}>
-                    {a.img && <img src={a.img} alt={a.title} style={{ width: "100%", height: "100%", objectFit: "cover" }} loading="lazy" />}
-                  </div>
-                  <div style={{ padding: 20 }}>
-                    <div style={{ display: "flex", gap: 6, alignItems: "center", flexWrap: "wrap", marginBottom: 10 }}>
-                      <span className="tag">{a.topicLabel || a.tag}</span>
-                      {a.member && <span style={{ fontSize: 10, padding: "2px 8px", borderRadius: 999, background: CORAL2, color: WHITE }}>會員限定</span>}
+            {editStats ? (
+              <div style={{ background: GRAY, padding: 20, border: `1px solid ${BORDER}`, borderRadius: 12 }}>
+                <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(180px,1fr))", gap: 14, marginBottom: 14 }}>
+                  {tmpStats.map((s, i) => (
+                    <div key={i}>
+                      <input value={s.num} onChange={e => setTmpStats(p => p.map((x, xi) => xi === i ? { ...x, num: e.target.value } : x))} placeholder="數字" style={{ marginBottom: 6 }} />
+                      <input value={s.label} onChange={e => setTmpStats(p => p.map((x, xi) => xi === i ? { ...x, label: e.target.value } : x))} placeholder="標籤" />
                     </div>
-                    <h4 style={{ fontSize: 15, fontWeight: 500, color: CHAR, lineHeight: 1.5, display: "-webkit-box", WebkitLineClamp: 2, WebkitBoxOrient: "vertical", overflow: "hidden" }}>{a.title}</h4>
-                  </div>
+                  ))}
                 </div>
-              ))}
-            </div>
-            <p style={{ textAlign: "center", marginTop: 28 }}><span onClick={() => setPage("journal")} style={{ fontSize: 13, color: O, cursor: "pointer" }}>看更多卡關解法 →</span></p>
+                <div style={{ display: "flex", gap: 10 }}><button className="pb" onClick={() => { setTrustStats(tmpStats); setEditStats(false); }}>儲存</button><button className="pg" onClick={() => setEditStats(false)}>取消</button></div>
+              </div>
+            ) : (
+              <p className="nx-proof">
+                {ts.slice(0, 3).map((s, i) => (
+                  <Fragment key={i}>{i > 0 && <i aria-hidden="true">·</i>}<span>{s.num} {s.label}</span></Fragment>
+                ))}
+                {isAdmin && <button onClick={() => { setTmpStats(ts); setEditStats(true); }} style={{ background: "none", border: "none", padding: 0, fontFamily: "inherit", fontSize: 12, color: O, cursor: "pointer", textDecoration: "underline" }}>編輯信任數據</button>}
+              </p>
+            )}
           </div>
-        </div>
-      )}
-      <div style={{ background: CHAR, padding: "56px 32px", textAlign: "center" }}>
-        <h2 style={{ fontSize: 22, fontWeight: 700, color: WHITE, marginBottom: 14 }}>{hc.ctaHeading}</h2>
-        <p style={{ fontSize: 14, color: "rgba(255,255,255,.6)", marginBottom: 24 }}>{hc.ctaSub}</p>
-        <button className="pb" onClick={() => setPage("tool-quiz")}>{hc.ctaBtn}</button>
-        {isAdmin && <div style={{ marginTop: 10 }}><span onClick={() => { setTmpHomeCopy(hc); setEditHomeCopy(true); }} style={{ fontSize: 11, color: "rgba(255,255,255,.5)", cursor: "pointer", textDecoration: "underline" }}>編輯</span></div>}
+          <div className="nx-shot-wrap">
+            <img className="nx-shot" src={HM_SHOT + "alert.webp"} width="940" height="1175" alt="88La財務導航 快訊頁：本月可用餘額 $4,729、本期卡費已預留 $4,249、提醒中心" />
+          </div>
+        </section>
       </div>
-      {editHomeCopy && (
-        <div style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,.6)", zIndex: 61, display: "flex", alignItems: "center", justifyContent: "center", padding: "20px" }}>
-          <div style={{ background: WHITE, padding: 32, width: "100%", maxWidth: 480, maxHeight: "80vh", overflowY: "auto" }}>
-            <p style={{ fontSize: 13, letterSpacing: "2px", color: CORAL2, marginBottom: 20, fontWeight: 500 }}>編輯首頁文字</p>
-            <div style={{ display: "flex", flexDirection: "column", gap: 14, marginBottom: 24 }}>
-              <div><p style={{ fontSize: 12, color: MID, marginBottom: 6 }}>「最新文章」標籤</p><input value={tmpHomeCopy.latestLabel} onChange={e => setTmpHomeCopy(p => ({ ...p, latestLabel: e.target.value }))} /></div>
-              <div><p style={{ fontSize: 12, color: MID, marginBottom: 6 }}>最新文章區標題</p><input value={tmpHomeCopy.latestHeading} onChange={e => setTmpHomeCopy(p => ({ ...p, latestHeading: e.target.value }))} /></div>
-              <div><p style={{ fontSize: 12, color: MID, marginBottom: 6 }}>結尾 CTA 標題</p><input value={tmpHomeCopy.ctaHeading} onChange={e => setTmpHomeCopy(p => ({ ...p, ctaHeading: e.target.value }))} /></div>
-              <div><p style={{ fontSize: 12, color: MID, marginBottom: 6 }}>結尾 CTA 說明</p><input value={tmpHomeCopy.ctaSub} onChange={e => setTmpHomeCopy(p => ({ ...p, ctaSub: e.target.value }))} /></div>
-              <div><p style={{ fontSize: 12, color: MID, marginBottom: 6 }}>結尾 CTA 按鈕文字</p><input value={tmpHomeCopy.ctaBtn} onChange={e => setTmpHomeCopy(p => ({ ...p, ctaBtn: e.target.value }))} /></div>
+
+      {/* 痛點 */}
+      <section className="nx-band" style={{ paddingBlock: "clamp(26px,4vw,52px)" }}>
+        <div className="nx-in">
+          <p className="nx-eyebrow nx-eyebrow-mute" style={{ marginBottom: 22 }}>如果你也是這樣</p>
+          <div className="hm-pain">
+            {HM_PAINS.map(([t, d]) => (
+              <div key={t}><h3>{t}</h3><p className="nx-hide-mob">{d}</p></div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* 一個月的故事 */}
+      <div className="nx-in hm-month-head">
+        <p className="nx-eyebrow">怎麼運作</p>
+        <h2 className="nx-h2">用 88La財務導航<br />過完一個月</h2>
+        <p className="nx-lead">從薪水入帳那天，到月底知道下個月該調哪。</p>
+      </div>
+
+      <div className="nx-in">
+        <section className="hm-story nx-anchor" id="month">
+          <div>
+            <span className="nx-mono">8 / 05 &nbsp;月初</span>
+            <h2>薪水入帳了。<br />先分配，再開始花。</h2>
+            <p className="hm-story-p">NT$ 38,000 進來，四個步驟帶你走完：盤點收入、看分配建議、自己分配、完成本月預算。待分配的錢一直顯示在下面，排到哪都看得到。</p>
+            <p className="hm-quote">「依照你的收入，這個月可以存 NT$ 8,000。剩下的 NT$ 26,162 再一起排。」</p>
+          </div>
+          <div className="nx-shot-wrap">
+            <img className="nx-shot" src={HM_SHOT + "budget.webp"} width="940" height="1175" loading="lazy" alt="88La財務導航 預算頁：四步驟流程、盤點收入 $38,000、可存 $8,000、待分配 $26,162" />
+          </div>
+        </section>
+      </div>
+
+      <section className="nx-band">
+        <div className="nx-in">
+          <div className="hm-story hm-story-flip">
+            <div className="nx-shot-wrap">
+              <img className="nx-shot" src={HM_SHOT + "quick-record.webp"} width="940" height="1175" loading="lazy" alt="88La財務導航 快速記帳：金額、類別、支出類型、付款方式、帳目歸屬與需要或想要" />
             </div>
-            <div style={{ display: "flex", gap: 10 }}>
-              <button className="pb" onClick={() => { setHomeCopy(tmpHomeCopy); setEditHomeCopy(false); }}>儲存</button>
-              <button className="pg" onClick={() => setEditHomeCopy(false)}>取消</button>
+            <div>
+              <span className="nx-mono">8 / 05 ~ 8 / 31 &nbsp;平常</span>
+              <h2>5 秒鐘記一筆，<br />連心情一起記。</h2>
+              <p className="hm-story-p">每筆花費標好：固定或變動、現金或刷卡、需要或想要，還有你按下去那一刻的心情。</p>
+              <p className="hm-story-p" style={{ marginBottom: 0 }}>心情這一欄是重點，月底你會看到，那些後悔的花費幾乎都長得一樣。</p>
             </div>
           </div>
         </div>
-      )}
+      </section>
+
+      {/* 月底診斷 */}
+      <section className="nx-dark" style={{ paddingBlock: "clamp(32px,5.5vw,72px)" }}>
+        <div className="nx-in">
+          <div style={{ textAlign: "center", marginBottom: "clamp(22px,3.4vw,44px)" }}>
+            <span className="nx-mono nx-eyebrow-dark" style={{ display: "block", marginBottom: 14, fontSize: 13 }}>8 / 31 &nbsp;月底</span>
+            <h2 className="nx-h2" style={{ color: "var(--nx-dt)", marginBottom: 16 }}>然後你拿到這個</h2>
+            <p style={{ maxWidth: 520, margin: "0 auto", fontSize: "clamp(14px,1.5vw,16px)", lineHeight: 1.85, color: "rgba(252,250,246,.6)" }}>
+              不是圓餅圖，是一段告訴你「差多少、差在哪、下個月調哪」的建議。<br />這一段，才是你記帳的理由。
+            </p>
+          </div>
+          <div className="hm-diag">
+            <div className="nx-shot-wrap">
+              <picture>
+                <source media="(max-width:900px)" srcSet={HM_SHOT + "diagnosis-mobile.webp"} />
+                <img className="nx-shot" src={HM_SHOT + "diagnosis.webp"} width="940" height="1175" loading="lazy" style={{ filter: "drop-shadow(0 26px 46px rgba(0,0,0,.5))" }} alt="88La財務導航 診斷頁：本月你的支出發生了什麼，逐項說明缺口與判斷依據" />
+              </picture>
+            </div>
+            <div className="hm-advice">
+              <p>下個月可以這樣調</p>
+              <ul style={{ margin: 0, padding: 0 }}>
+                <li>半年繳的保險 NT$ 3,600，之後每月預存 NT$ 600，不要把整筆加進下月固定預算。</li>
+                <li className="nx-hide-mob">購物那筆 NT$ 1,450 是臨時支出，下個月先維持原本的日常預算就好。</li>
+                <li>情緒消費 4 筆多半在週五晚上，要不要留一筆說好可以花的犒賞預算？</li>
+              </ul>
+            </div>
+          </div>
+          <div className="nx-dark-foot">
+            <a className="nx-btn nx-btn-pri nx-btn-lg" {...to("app")}>開始我的第一個月 →</a>
+            <p>月初先分配，月底就會有自己的診斷</p>
+          </div>
+        </div>
+      </section>
+
+      {/* 不只是記帳 */}
+      <section style={{ paddingBlock: "clamp(32px,5vw,64px) clamp(28px,4.5vw,56px)", borderBottom: "1px solid var(--nx-bd)" }}>
+        <div className="nx-in">
+          <div style={{ marginBottom: "clamp(20px,2.8vw,36px)" }}>
+            <p className="nx-eyebrow" style={{ marginBottom: 12 }}>不只是記帳</p>
+            <h2 className="nx-h2" style={{ marginBottom: 12 }}>會影響財務的那些事</h2>
+            <p className="nx-lead" style={{ maxWidth: 520 }}>卡費、學貸、目標帳戶、想買但還沒買的東西，這些平常散在各處的數字，都放在同一個月的視角下。</p>
+          </div>
+          <div className="hm-feat">
+            {HM_FEATURES.map(([t, d, img, alt]) => (
+              <article key={t} className="nx-card">
+                <h3>{t}</h3>
+                <p className="nx-hide-mob">{d}</p>
+                <img src={HM_SHOT + img} width="940" height="1175" loading="lazy" alt={alt} />
+              </article>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* 上手三件事 */}
+      <section style={{ background: "var(--nx-bg2)", paddingBlock: "clamp(32px,5vw,64px) clamp(28px,4.5vw,56px)" }}>
+        <div className="nx-in">
+          <div className="nx-sect-head">
+            <div>
+              <p className="nx-eyebrow">開始之前</p>
+              <h2 className="nx-h2">第一次進來，你只要做這三件事</h2>
+              <p className="nx-lead">加起來大約 10 分鐘。做完之後，每天只需要記帳那 5 秒。</p>
+            </div>
+            <p className="nx-pill"><IcClock />設定一次，約 10 分鐘</p>
+          </div>
+          <div className="nx-steps">
+            {HM_STEPS.map(([mins, t, d, img, alt], i) => (
+              <article key={t} className="nx-card">
+                <div className="nx-step-no"><b>{i + 1}</b><span>{mins}</span></div>
+                <h3 className="nx-h3">{t}</h3>
+                <p>{d}</p>
+                <div className="nx-thumb"><img src={HM_SHOT + img} width="940" height="1175" loading="lazy" alt={alt} /></div>
+              </article>
+            ))}
+          </div>
+          <p className="nx-lead nx-hr">還沒填完也沒關係，空著也能開始記帳，之後任何時候補都可以</p>
+        </div>
+      </section>
+
+      {/* 不用一次全用 */}
+      <section className="nx-dark" style={{ paddingBlock: "clamp(32px,5vw,64px)" }}>
+        <div className="nx-in">
+          <div className="nx-stack">
+            <div>
+              <p className="nx-eyebrow nx-eyebrow-dark" style={{ marginBottom: 14 }}>不用一次全用</p>
+              <h2 className="nx-h2" style={{ color: "var(--nx-dt)", lineHeight: 1.4, marginBottom: 18 }}>功能很多，但你第一個月只需要用兩個。</h2>
+              <p style={{ fontSize: "clamp(14px,1.5vw,16px)", lineHeight: 1.9, color: "var(--nx-ds)" }}>88La財務導航是為了陪你走好幾年設計的，所以功能會跟一般記帳 App 不同，但你不必一開始就全部搞懂，照下面的順序慢慢開就好。</p>
+            </div>
+            <div className="nx-stack-list">
+              <article className="nx-stack-now">
+                <h3>第一個月：只用快訊 + 快速記帳</h3>
+                <p>每天花 5 秒記一筆，看一眼餘額，這樣月底就已經有一份診斷可以看。</p>
+                <span className="nx-stack-tag">先做到這裡就夠</span>
+              </article>
+              <article className="nx-stack-next">
+                <h3>第二個月：打開預算與卡費預留</h3>
+                <p>看過一次自己的真實花費之後，再排預算會準得多，也比較不會脫離現實生活。</p>
+              </article>
+              <article className="nx-stack-next">
+                <h3>未來：目標、負債、願望清單、公費與家庭</h3>
+                <p>有需要再開，隨時為你準備好！</p>
+              </article>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* 名詞小辭典 */}
+      <section style={{ background: "var(--nx-bg2)", paddingBlock: "clamp(32px,5vw,64px)", borderBottom: "1px solid var(--nx-bd)" }}>
+        <div className="nx-in">
+          <div style={{ marginBottom: "clamp(20px,2.6vw,32px)" }}>
+            <p className="nx-eyebrow" style={{ marginBottom: 12 }}>先認識幾個詞</p>
+            <h2 className="nx-h2" style={{ marginBottom: 12 }}>導航器裡說的，<br />是這個意思！</h2>
+            <p className="nx-lead" style={{ maxWidth: 560 }}>記帳時會看到這幾個選項。先看過一遍，進去就不會卡在「這個要選哪個」。</p>
+          </div>
+          <div className="nx-terms">
+            {HM_TERMS.map(([t, d]) => (
+              <article key={t} className="nx-card" style={{ boxShadow: "none" }}><h3>{t}</h3><p>{d}</p></article>
+            ))}
+          </div>
+          <div className="nx-inline-cta nx-hr">
+            <p>還是不確定某一筆該怎麼記？使用說明裡有 30 個常見情境</p>
+            <div>
+              <a className="nx-btn nx-btn-sec nx-btn-sec-strong nx-btn-sm" {...to("guide")}>查看完整使用說明 →</a>
+              <a className="nx-btn nx-btn-sec nx-btn-sm" href={DEFAULTS.links.lineCommunity} target="_blank" rel="noopener noreferrer">在社群提問</a>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* 所以你訂閱的是什麼 */}
+      <section style={{ paddingBlock: "clamp(32px,5.2vw,66px) clamp(24px,4vw,40px)" }}>
+        <div className="nx-in">
+          <h2 className="nx-h2 hm-sub-head" style={{ textAlign: "center", marginBottom: "clamp(22px,3vw,32px)", fontSize: "clamp(24px,3vw,30px)" }}>所以，你訂閱的是什麼</h2>
+          <div className="hm-value">
+            {HM_VALUES.map(([t, d]) => (<div key={t}><h3>{t}</h3><p>{d}</p></div>))}
+          </div>
+        </div>
+      </section>
+
+      {/* 方案 */}
+      <section style={{ paddingBottom: "clamp(32px,5vw,64px)" }}>
+        <div className="nx-in">
+          <div className="hm-price">
+            <div className="hm-price-top">
+              <div>
+                <p className="hm-price-label">年方案 · 最多人選擇</p>
+                <p className="hm-price-num">{NT_YEARLY}<span> /年</span></p>
+                <p className="hm-price-save">相當於 NT$ {APP_YEARLY_MONTHLY_EQUIVALENT} / 月，省下約 {APP_YEARLY_DISCOUNT}%</p>
+              </div>
+              <a className="nx-btn nx-btn-pri nx-btn-lg" {...to("app")}>開始使用 →</a>
+            </div>
+            <div className="hm-price-bot">
+              <div>
+                <strong>想先試一個月？月訂閱 {NT_MONTHLY} / 月</strong>
+                <em>下次扣款日前都可以取消，資料留著</em>
+              </div>
+              <a className="nx-btn nx-btn-sec nx-btn-sm" {...to("app")}>選月訂閱</a>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* 免費入口 */}
+      <section className="nx-band" style={{ paddingBlock: "clamp(28px,3.4vw,40px)", borderBottom: "none" }}>
+        <div className="nx-in nx-inline-cta">
+          <p>還不確定？先從免費的開始也可以</p>
+          <div>
+            <a className="nx-btn nx-btn-sec nx-btn-sec-strong nx-btn-sm" {...to("tool-quiz")}>60 秒找到我的起點 →</a>
+            <a className="nx-btn nx-btn-sec nx-btn-sm" {...to("resources")}>免費工具與文章</a>
+            <a className="nx-btn nx-btn-sec nx-btn-sm" {...to("envelope")}>實體存錢袋</a>
+          </div>
+        </div>
+      </section>
+
+      {/* 手機置底 CTA */}
+      <div className="nx-sticky">
+        <div>
+          <b>88La財務導航</b>
+          <span>{NT_MONTHLY} / 月起</span>
+        </div>
+        <a className="nx-btn nx-btn-pri nx-btn-sm" {...to("app")}>開始使用</a>
+      </div>
     </div>
   );
 }
 
 //  Journal（理財觀點文章列表）
-function Journal({ articles, setArticles, setId, setPage, isAdmin, siteTitle, setSiteTitle, tags, setTags }) {
+//  Journal（2026-09 改版：Hero → 分類 chips → 頭條大圖 → 六篇格狀 → 會員限定說明 → 新手三篇 → CTA）
+//
+// 「新手三篇」用 slug 完全比對指定，不是拿標題去猜關鍵字：Barbara 改標題不會換掉這三篇，
+// 只有改 slug 才會，改完那一格就自動消失（看得見的降級）。
+const JOURNAL_STARTERS = [
+  ["30歲應該要存多少錢", "先算出自己的最低生活成本"],
+  ["你想存多少錢-只有數字恐怕很難存的到", "找出你的財務目標內核"],
+  ["記帳習慣難養成先從改變大腦捷徑開始", "養成不用意志力的習慣"],
+];
+const MEMBER_FILTER = "__member__";
+const fmtArticleDate = d => (d || "").replace(/-/g, ".");
+
+function Journal({ articles, setId, setPage, isAdmin, siteTitle, setSiteTitle, tags, setTags, links }) {
   const [filter, setFilter] = useState("全部");
   const [sort, setSort] = useState("newest");
   const [editTitle, setEditTitle] = useState(false);
@@ -2502,117 +3248,203 @@ function Journal({ articles, setArticles, setId, setPage, isAdmin, siteTitle, se
   const [editTags, setEditTags] = useState(false);
   const [newTag, setNewTag] = useState("");
   const viewCounts = useArticleViewCounts();
-  const filtered = articles.filter(a => filter === "全部" || a.tag === filter).slice().sort((a, b) => {
-    if (sort === "newest") return (b.date || "").localeCompare(a.date || "");
+  const all = articles || [];
+  const sorted = all.slice().sort((a, b) => {
     if (sort === "oldest") return (a.date || "").localeCompare(b.date || "");
     if (sort === "views") return viewCount(b, viewCounts) - viewCount(a, viewCounts);
-    return 0;
+    return (b.date || "").localeCompare(a.date || "");
   });
-  const open = id => { const a = articles.find(x => x.id === id); setId(id); setPage("article"); window.scrollTo({ top: 0, behavior: "instant" }); history.pushState({}, "", "/article/" + encodeURIComponent(a?.slug || id)); };
+  const matches = a => filter === "全部" || (filter === MEMBER_FILTER ? !!a.member : a.tag === filter);
+  const filtered = sorted.filter(matches);
+  const [lead, ...rest] = filtered;
+  // 分類 chips 的數量由文章資料算出來，不寫死
+  const chips = [
+    ["全部", "全部", all.length],
+    ...tags.map(t => [t, t, all.filter(a => a.tag === t).length]),
+    ["只看會員限定", MEMBER_FILTER, all.filter(a => a.member).length],
+  ].filter(([, key, n]) => key === "全部" || n > 0);
+  const href = a => "/article/" + encodeURIComponent(a.slug || a.id);
+  const open = (a, e) => {
+    if (e && (e.metaKey || e.ctrlKey || e.shiftKey || e.button)) return;
+    e?.preventDefault();
+    setId(a.id); setPage("article");
+    window.scrollTo({ top: 0, behavior: "instant" });
+    history.pushState({}, "", href(a));
+  };
+  const to = p => ({ href: pathForPage(p), onClick: e => { if (e.metaKey || e.ctrlKey || e.shiftKey || e.button) return; e.preventDefault(); setPage(p); } });
   const addTag = () => { const t = newTag.trim(); if (t && !tags.includes(t)) setTags(prev => [...prev, t]); setNewTag(""); };
   const delTag = t => { if (confirm("確定刪除標籤「" + t + "」？")) setTags(prev => prev.filter(x => x !== t)); };
-  const moveA = (idx, dir) => setArticles(prev => {
-    const ti = idx + dir;
-    if (ti < 0 || ti >= filtered.length) return prev;
-    const a = [...prev];
-    const ri = a.findIndex(x => x.id === filtered[idx].id);
-    const ni = a.findIndex(x => x.id === filtered[ti].id);
-    if (ri === -1 || ni === -1) return prev;
-    [a[ri], a[ni]] = [a[ni], a[ri]]; return a;
-  });
+  const starters = JOURNAL_STARTERS
+    .map(([slug, note]) => [all.find(a => a.slug === slug), note])
+    .filter(([a]) => a);
+  const igUrl = (links || DEFAULTS.links).instagram || DEFAULTS.links.instagram;
+
+  const Cover = ({ a, className }) => (
+    <a href={href(a)} onClick={e => open(a, e)} style={{ display: "block" }}>
+      {a.img
+        ? <img className={className} src={a.img} alt={a.title} loading="lazy" />
+        : <span className={className} style={{ display: "block" }} />}
+    </a>
+  );
+
   return (
-    <div>
-      <div style={{ background: GRAD, padding: "52px 32px", borderBottom: `1px solid ${BORDER}` }}>
-        <div style={{ maxWidth: 1100, margin: "0 auto", display: "flex", justifyContent: "space-between", alignItems: "flex-end", flexWrap: "wrap", gap: 16 }}>
-          <div>
-            <p className="section-label" style={{ marginBottom: 10 }}>JOURNAL</p>
+    <div className="nx-page">
+      {/* Hero */}
+      <div className="nx-in jn-hero">
+        <p className="nx-eyebrow" style={{ letterSpacing: ".16em" }}>文章</p>
+        <h1>看得懂、做得到的理財筆記</h1>
+        <p>不談投資、不推商品，從我的生活經驗、書本知識出發，用最淺顯易懂的方式，讓你認識理財、找到屬於自己的理財方式！</p>
+        {isAdmin && (
+          <div style={{ display: "flex", gap: 10, flexWrap: "wrap", alignItems: "center", marginTop: 18 }}>
             {editTitle ? (
-              <div style={{ display: "flex", gap: 10, alignItems: "center", flexWrap: "wrap" }}>
-                <input value={tmpTitle} onChange={e => setTmpTitle(e.target.value)} style={{ fontSize: 24, fontWeight: 700, flex: 1, minWidth: 200 }} />
+              <>
+                <input value={tmpTitle} onChange={e => setTmpTitle(e.target.value)} style={{ maxWidth: 260 }} />
                 <button className="pb" style={{ fontSize: 12, padding: "8px 16px" }} onClick={() => { setSiteTitle(tmpTitle); setEditTitle(false); }}>儲存</button>
                 <button className="pg" style={{ fontSize: 12 }} onClick={() => { setTmpTitle(siteTitle); setEditTitle(false); }}>取消</button>
-              </div>
+              </>
             ) : (
-              <div style={{ display: "flex", gap: 16, alignItems: "baseline", flexWrap: "wrap" }}>
-                <h1 style={{ fontSize: 30, fontWeight: 700, color: TITLE_COLOR }}>{siteTitle}</h1>
-                {isAdmin && <span style={{ fontSize: 12, color: O, cursor: "pointer" }} onClick={() => { setTmpTitle(siteTitle); setEditTitle(true); }}>編輯</span>}
-              </div>
+              <>
+                <button className="pb" style={{ fontSize: 12, padding: "8px 16px" }} onClick={() => setPage("write")}>＋ 新增文章</button>
+                <button className="pg" style={{ fontSize: 12 }} onClick={() => exportArticlesCSV(all, viewCounts)}>匯出文章 CSV</button>
+                <button className="pg" style={{ fontSize: 12 }} onClick={() => setEditTags(p => !p)}>{editTags ? "關閉標籤管理" : "管理標籤"}</button>
+                <button className="pg" style={{ fontSize: 12 }} onClick={() => { setTmpTitle(siteTitle); setEditTitle(true); }}>編輯站內標題</button>
+                <select value={sort} onChange={e => setSort(e.target.value)} style={{ fontSize: 12, border: "1px solid #D0D5DA", borderRadius: 4, padding: "8px 12px", background: WHITE, appearance: "auto", WebkitAppearance: "menulist", width: "auto" }}>
+                  <option value="newest">最新文章</option>
+                  <option value="oldest">最舊文章</option>
+                  <option value="views">最多瀏覽</option>
+                </select>
+              </>
             )}
           </div>
-          {isAdmin && !editTitle && (
-            <div style={{ display: "flex", gap: 10 }}>
-              <button className="pg" onClick={() => exportArticlesCSV(articles, viewCounts)}>匯出文章 CSV</button>
-              <button className="pb" onClick={() => setPage("write")}>＋ 新增文章</button>
-            </div>
-          )}
-        </div>
-      </div>
-      <div style={{ maxWidth: 1100, margin: "0 auto", padding: "56px 32px 72px" }} className="page-wrap">
-        <div style={{ display: "flex", gap: 8, flexWrap: "wrap", marginBottom: 16, alignItems: "center", justifyContent: "space-between" }}>
-          <div style={{ display: "flex", gap: 8, flexWrap: "wrap", alignItems: "center" }}>
-            {["全部", ...tags].map(t => (
-              <span key={t} onClick={() => setFilter(t)} style={{ fontSize: 12, padding: "8px 16px", borderRadius: 999, cursor: "pointer", background: filter === t ? CORAL : GRAY, color: filter === t ? WHITE : MID, fontWeight: filter === t ? "500" : "400", transition: "background .15s" }}>{t}</span>
-            ))}
-            {isAdmin && <span onClick={() => setEditTags(p => !p)} style={{ fontSize: 12, color: O, cursor: "pointer", marginLeft: 8 }}>{editTags ? "關閉" : "管理標籤"}</span>}
-          </div>
-          <select value={sort} onChange={e => setSort(e.target.value)} style={{ fontSize: 12, color: MID, border: `1px solid #D0D5DA`, borderRadius: 4, padding: "8px 12px", background: WHITE, cursor: "pointer", appearance: "auto", WebkitAppearance: "menulist", width: "auto" }}>
-            <option value="newest">最新文章</option>
-            <option value="oldest">最舊文章</option>
-            <option value="views">最多瀏覽</option>
-          </select>
-        </div>
+        )}
         {isAdmin && editTags && (
-          <div style={{ background: O2, padding: "20px 24px", marginBottom: 32 }}>
-            <p style={{ fontSize: 11, letterSpacing: "1px", color: MID, marginBottom: 14 }}>標籤管理</p>
-            <div style={{ display: "flex", flexWrap: "wrap", gap: 8, marginBottom: 14 }}>
+          <div style={{ background: GRAY, border: `1px solid ${BORDER}`, padding: 16, marginTop: 14 }}>
+            <div style={{ display: "flex", gap: 8, flexWrap: "wrap", marginBottom: 12 }}>
               {tags.map(t => (
-                <span key={t} style={{ display: "inline-flex", alignItems: "center", gap: 6, background: GRAY, padding: "4px 12px", fontSize: 12, color: MID }}>
-                  {t}<span onClick={() => delTag(t)} style={{ cursor: "pointer", color: LIGHT, fontSize: 14 }}>×</span>
+                <span key={t} style={{ fontSize: 12, padding: "6px 12px", background: WHITE, border: `1px solid ${BORDER}`, borderRadius: 999 }}>
+                  {t}<span onClick={() => delTag(t)} style={{ marginLeft: 8, color: "#E74C3C", cursor: "pointer" }}>×</span>
                 </span>
               ))}
             </div>
-            <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
-              <input placeholder="新增標籤" value={newTag} onChange={e => setNewTag(e.target.value)} onKeyDown={e => e.key === "Enter" && addTag()} style={{ maxWidth: 200, border: "1px solid #D0D5DA", padding: "8px 12px", background: WHITE }} />
-              <button className="pb" style={{ fontSize: 12, padding: "8px 16px" }} onClick={addTag} disabled={!newTag.trim()}>新增</button>
+            <div style={{ display: "flex", gap: 10, alignItems: "center" }}>
+              <input value={newTag} onChange={e => setNewTag(e.target.value)} placeholder="新標籤" style={{ maxWidth: 200 }} />
+              <button className="pb" style={{ fontSize: 12, padding: "8px 16px" }} onClick={addTag}>新增</button>
             </div>
           </div>
         )}
-        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill,minmax(320px,1fr))", gap: 20 }} className="grid3">
-          {filtered.map((a, idx) => (
-            <Reveal key={a.id} delay={Math.min(idx * 80, 400)}>
-            <div className="card" onClick={() => open(a.id)} style={{ position: "relative", height: 440, display: "flex", flexDirection: "column" }}>
-              {a.img
-                ? <div style={{ height: 200, flexShrink: 0, overflow: "hidden", background: GRAY }}><img src={a.img} alt={a.title} style={{ width: "100%", height: "100%", objectFit: "cover", transition: "transform .3s" }} loading="lazy" onMouseEnter={e => e.currentTarget.style.transform = "scale(1.04)"} onMouseLeave={e => e.currentTarget.style.transform = "scale(1)"} /></div>
-                : <div style={{ height: 8, flexShrink: 0, background: `linear-gradient(90deg, ${CORAL} 0%, ${O2} 100%)` }} />
-              }
-              <div style={{ padding: "24px 28px 24px", flex: 1, display: "flex", flexDirection: "column", overflow: "hidden" }}>
-                <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 12, alignItems: "flex-start", flexShrink: 0, gap: 8 }}>
-                  <div style={{ display: "flex", gap: 6, alignItems: "center", flexWrap: "wrap" }}>
-                    <span className="tag">{a.tag}</span>
-                    {a.member && <span style={{ fontSize: 10, padding: "2px 8px", borderRadius: 999, background: CORAL2, color: WHITE }}>會員限定</span>}
-                  </div>
-                  <span style={{ fontSize: 11, color: LIGHT, flexShrink: 0, marginLeft: 8 }}>{a.date}</span>
-                </div>
-                <h3 style={{ fontSize: 17, fontWeight: 500, lineHeight: 1.55, marginBottom: 10, color: TITLE_COLOR, flexShrink: 0, display: "-webkit-box", WebkitLineClamp: 2, WebkitBoxOrient: "vertical", overflow: "hidden" }}>{a.title}</h3>
-                <p style={{ fontSize: 14, color: MID, lineHeight: 1.9, marginBottom: 20, whiteSpace: "pre-wrap", flex: 1, display: "-webkit-box", WebkitLineClamp: 3, WebkitBoxOrient: "vertical", overflow: "hidden" }}>{a.excerpt}</p>
-                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", flexShrink: 0 }}>
-                  <span style={{ fontSize: 12, color: O, fontWeight: 500 }}>閱讀全文 →</span>
-                  <span style={{ fontSize: 11, color: LIGHT }}>瀏覽 {viewCount(a, viewCounts)}</span>
-                </div>
+      </div>
+
+      {/* 分類 */}
+      <div className="nx-in jn-chips">
+        {chips.map(([label, key, n]) => (
+          <button key={key} className={"jn-chip" + (filter === key ? " is-on" : "")} onClick={() => setFilter(key)} aria-pressed={filter === key}>
+            {label}<b>{n}</b>
+          </button>
+        ))}
+      </div>
+
+      {/* 頭條 */}
+      {lead && (
+        <div className="nx-in" style={{ paddingBottom: "clamp(26px,3.8vw,44px)" }}>
+          <div className="jn-lead">
+            <Cover a={lead} className="jn-lead-cover" />
+            <div>
+              <div className="jn-meta">
+                <span className="jn-tag">{lead.tag}</span>
+                {lead.member && <span className="jn-member">會員限定</span>}
+                <span className="jn-date">{fmtArticleDate(lead.date)}　最新一篇</span>
               </div>
-              {isAdmin && <OrdBtns idx={idx} total={filtered.length} onMove={moveA} style={{ position: "absolute", top: 12, right: 12, zIndex: 1 }} />}
+              <h2><a href={href(lead)} onClick={e => open(lead, e)} style={{ color: "inherit" }}>{lead.title}</a></h2>
+              <p>{lead.excerpt}</p>
+              <a className="jn-more" href={href(lead)} onClick={e => open(lead, e)}>{lead.member ? "輸入密碼閱讀 →" : "閱讀全文 →"}</a>
             </div>
-            </Reveal>
-          ))}
+          </div>
+        </div>
+      )}
+
+      {/* 其餘文章 */}
+      {rest.length > 0 && (
+        <div className="nx-in" style={{ paddingBottom: "clamp(30px,4.4vw,52px)" }}>
+          <div className="jn-grid">
+            {rest.map(a => (
+              <article key={a.id} className="jn-card">
+                <Cover a={a} className="jn-card-cover" />
+                <div className="jn-card-meta">
+                  <p className="jn-card-tag">{a.tag}</p>
+                  {a.member && <span className="jn-member jn-member-sm">會員限定</span>}
+                  {isAdmin && <span className="jn-date">{viewCount(a, viewCounts)} 次瀏覽</span>}
+                </div>
+                <h3><a href={href(a)} onClick={e => open(a, e)}>{a.title}</a></h3>
+                <p>{a.excerpt}</p>
+              </article>
+            ))}
+          </div>
+        </div>
+      )}
+      {filtered.length === 0 && (
+        <p className="nx-in nx-lead" style={{ paddingBottom: 52 }}>這個分類目前還沒有文章</p>
+      )}
+
+      {/* 會員限定說明 */}
+      <div className="nx-in" style={{ paddingBottom: "clamp(30px,4.4vw,52px)" }}>
+        <div className="jn-note">
+          <div>
+            <span className="jn-note-tag">會員限定</span>
+            <h2>成為 88La Instagram 訂閱會員，解鎖「會員限定」</h2>
+            <p>會員限定涵蓋理財影片、文章等獨家資訊，如果你想了解更多 88La 的理財觀念，歡迎到 Instagram 成為訂閱會員，支持 88La 做出更優質的理財內容！</p>
+          </div>
+          <div className="jn-note-box">
+            {isAdmin ? (
+              <>
+                <p>密碼可在後台隨時更新</p>
+                <p>更新後舊密碼立即失效，已解鎖的訪客需重新輸入</p>
+                <a {...to("resources")}>到後台設定密碼 →</a>
+              </>
+            ) : (
+              <>
+                <p>已經是訂閱會員？</p>
+                <p>密碼會在 Instagram 訂閱會員專屬貼文裡公告，輸入一次，這次瀏覽期間所有會員文章都保持解鎖。</p>
+                <a href={igUrl} target="_blank" rel="noopener noreferrer">到 Instagram 加入訂閱 →</a>
+              </>
+            )}
+          </div>
+        </div>
+      </div>
+
+      {/* 新手三篇 */}
+      {starters.length > 0 && (
+        <section className="nx-band" style={{ paddingBlock: "clamp(28px,4vw,48px)" }}>
+          <div className="nx-in">
+            <h2 className="nx-h2" style={{ fontSize: "clamp(20px,2.2vw,24px)", marginBottom: 8 }}>第一次想認真理財？從這三篇開始</h2>
+            <p className="nx-lead" style={{ marginBottom: 26, color: "var(--nx-t2)", fontSize: 15 }}>照順序讀，大概 20 分鐘</p>
+            <div className="jn-starter">
+              {starters.map(([a, note], i) => (
+                <article key={a.id}>
+                  <b>{String(i + 1).padStart(2, "0")}</b>
+                  <h3><a href={href(a)} onClick={e => open(a, e)}>{a.title}</a></h3>
+                  <p>{note}</p>
+                </article>
+              ))}
+            </div>
+          </div>
+        </section>
+      )}
+
+      {/* CTA */}
+      <div className="nx-in rs-cta">
+        <h2>讀完了，換成自己的數字試一次</h2>
+        <p>免費工具算一次，或直接用財務導航排這個月的預算</p>
+        <div className="rs-cta-row">
+          <a className="nx-btn nx-btn-pri nx-btn-md" {...to("app")}>免費體驗財務導航</a>
+          <a className="nx-btn nx-btn-sec nx-btn-sec-strong nx-btn-md" {...to("resources")}>先用免費工具</a>
         </div>
       </div>
     </div>
   );
 }
 
-//  Article detail
+// 文章「相關內容」可以指到的站內頁面
 const PAGE_OPTIONS = [["home","首頁"],["tool-quiz","工具診斷"],["journal","理財觀點文章列表"],["app","記帳 App"],["resources","免費資源"],["shop","商品"],["goods","推薦好物"],["newsletter","電子報"],["contact","合作洽談"]];
-
 function RelatedLinkEditor({ relatedLinks, onChange, products, resources }) {
   const [type, setType] = useState("page");
   const [key, setKey] = useState("app");
@@ -2674,6 +3506,7 @@ function Article({ article, onBack, setArticles, isAdmin, tags, links, setPage, 
     try {
       const content = await fetchMemberArticleContent(article.id, pwdInput.trim());
       setMemberContent(content);
+      setMemberSessionPassword(pwdInput.trim());
       setPwdInput("");
     } catch {
       setPwdErr(true);
@@ -2710,6 +3543,17 @@ function Article({ article, onBack, setArticles, isAdmin, tags, links, setPage, 
     fetchMemberArticleContent(article.id)
       .then(content => setMemberContent(content))
       .catch(() => setMemberContent(article.content || ""));
+  }, [article.id, article.member, isAdmin]);
+  // 這次瀏覽期間已經解鎖過，換一篇會員文章時直接拿全文，不用再輸入一次
+  useEffect(() => {
+    if (!article.member || isAdmin) return;
+    const pwd = getMemberSessionPassword();
+    if (!pwd) return;
+    let alive = true;
+    fetchMemberArticleContent(article.id, pwd)
+      .then(content => { if (alive) setMemberContent(content); })
+      .catch(() => { clearMemberSessionPassword(); });  // 密碼被後台換掉了，回到要求輸入的狀態
+    return () => { alive = false; };
   }, [article.id, article.member, isAdmin]);
   useEffect(() => {
     if (editing) return;
@@ -2748,108 +3592,111 @@ function Article({ article, onBack, setArticles, isAdmin, tags, links, setPage, 
       </div>
     </div>
   );
+  const relKindLabel = { product: "商品", resource: "免費資源", page: "前往頁面" };
+  const IcRelProduct = () => <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>;
+  const IcRelResource = () => <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg>;
+  const IcRelPage = () => <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>;
+  const REL_ICONS = { product: IcRelProduct, resource: IcRelResource, page: IcRelPage };
   return (
-    <div>
-      <div style={{ background: GRAD, padding: "52px 32px 44px", borderBottom: `1px solid ${BORDER}` }}>
-        <div style={{ maxWidth: 740, margin: "0 auto" }}>
-          <button onClick={onBack} style={{ background: "transparent", color: MID, border: `1px solid ${BORDER}`, padding: "7px 16px", fontSize: 12, cursor: "pointer", fontFamily: "inherit", marginBottom: 28 }}>← 返回</button>
-          <span className="tag" style={{ marginBottom: 14, display: "inline-block" }}>{article.tag}</span>
-          <h1 style={{ fontSize: 30, fontWeight: 700, color: CHAR, lineHeight: 1.45, marginBottom: 14 }}>{article.title}</h1>
-          <div style={{ display: "flex", gap: 20, alignItems: "center", flexWrap: "wrap" }}>
-            <span style={{ fontSize: 12, color: LIGHT }}>{article.date}</span>
-            <span style={{ fontSize: 12, color: LIGHT }}>瀏覽 <CountUp end={viewCount(article, viewCounts)} /></span>
-            {isAdmin && <><span style={{ fontSize: 12, color: O, cursor: "pointer" }} onClick={() => setEditing(true)}>編輯</span><span style={{ fontSize: 12, color: "#E74C3C", cursor: "pointer" }} onClick={del}>刪除</span></>}
-          </div>
+    <div className="nx-page">
+      <div className="ar-wrap ar-head">
+        <button className="ar-back" onClick={onBack}>← 回文章列表</button>
+        <div className="jn-meta">
+          <span className="jn-tag">{article.tag}</span>
+          {article.member && <span className="jn-member">會員限定</span>}
+          <span className="jn-date">{fmtArticleDate(article.date)}</span>
+          <span className="jn-date">瀏覽 <CountUp end={viewCount(article, viewCounts)} /></span>
+          {isAdmin && (
+            <span className="ar-admin">
+              <button onClick={() => setEditing(true)}>編輯</button>
+              <button onClick={del}>刪除</button>
+            </span>
+          )}
         </div>
+        <h1 className="ar-title">{article.title}</h1>
+        {article.img && <img className="ar-cover" src={article.img} alt={article.title} />}
       </div>
-      {article.img && (
-        <div style={{ maxWidth: 740, margin: "0 auto", overflow: "hidden" }}>
-          <img src={article.img} alt={article.title} style={{ width: "100%", height: "auto", display: "block", maxHeight: 400, objectFit: "cover" }} />
-        </div>
-      )}
-      <div style={{ maxWidth: 740, margin: "0 auto", padding: "52px 32px" }} className="page-wrap">
+
+      <div className="ar-wrap ar-body">
         {locked ? (
-          <div style={{ marginBottom: 56 }}>
-            <p style={{ fontSize: 16, lineHeight: 1.8, color: CHAR, marginBottom: 24 }}>{article.excerpt}</p>
-            <div style={{ background: O2, border: `1px solid ${O}25`, padding: "18px 20px", marginBottom: 28 }}>
-              <p style={{ fontSize: 13, color: MID, lineHeight: 1.8 }}>會員全文已鎖定，解鎖前不會載入到瀏覽器。</p>
+          <>
+            {/* 前段自由閱讀：會員全文在解鎖前完全沒有送到瀏覽器，這裡淡出的是公開的摘要 */}
+            <div className="ar-fade" style={{ marginBottom: 28 }}>
+              <p style={{ fontSize: 17, lineHeight: 2.05, color: "var(--nx-t1)", whiteSpace: "pre-wrap" }}>{article.excerpt}</p>
             </div>
-            <div style={{ background: GRAY, border: `1px solid ${BORDER}`, padding: "28px 28px", textAlign: "center" }}>
-              <p style={{ fontSize: 14, fontWeight: 500, color: CHAR, marginBottom: 4 }}>🔒 這是會員限定文章</p>
-              <p style={{ fontSize: 13, color: MID, marginBottom: 18 }}>輸入會員密碼即可閱讀全文</p>
-              <div style={{ display: "flex", gap: 10, justifyContent: "center", flexWrap: "wrap" }}>
-                <input type="password" value={pwdInput} onChange={e => { setPwdInput(e.target.value); setPwdErr(false); }} onKeyDown={e => e.key === "Enter" && tryUnlock()} placeholder="請輸入密碼" style={{ maxWidth: 200 }} />
-                <button className="pb" onClick={tryUnlock} disabled={unlocking}>{unlocking ? "確認中..." : "解鎖"}</button>
+            <div className="ar-gate">
+              <span className="ar-gate-tag">會員限定</span>
+              <h2>剩下的內容需要會員密碼</h2>
+              <p>88La 訂閱會員會拿到專屬密碼。輸入一次，這次瀏覽期間所有會員文章都保持解鎖；關掉瀏覽器後需重新輸入。</p>
+              <div className="ar-gate-form">
+                <input type="password" value={pwdInput} onChange={e => { setPwdInput(e.target.value); setPwdErr(false); }} onKeyDown={e => e.key === "Enter" && tryUnlock()} placeholder="輸入會員密碼" aria-label="會員密碼" />
+                <button className="nx-btn nx-btn-pri nx-btn-md" onClick={tryUnlock} disabled={unlocking}>{unlocking ? "確認中..." : "解鎖"}</button>
               </div>
-              {pwdErr && <p style={{ fontSize: 12, color: "#C0392B", marginTop: 10 }}>密碼不正確，請再試一次</p>}
+              {pwdErr && <p className="ar-gate-err">密碼不正確，請再試一次</p>}
+              <p className="ar-gate-foot">還不是會員？<a href={l.instagram || DEFAULTS.links.instagram} target="_blank" rel="noopener noreferrer">到 Instagram 加入訂閱 →</a></p>
             </div>
-          </div>
+          </>
         ) : (
-          <div className="article-content" style={{ fontSize: 16, lineHeight: 1.8, color: CHAR, marginBottom: 56 }}
+          <div className="article-content" style={{ marginBottom: 40 }}
             dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(/<[a-z][\s\S]*>/i.test(displayContent || "") ? displayContent : (displayContent || "").replace(/\n/g, "<br>")) }} />
         )}
+
         {relLinks.length > 0 && (
-          <div style={{ marginBottom: 48 }}>
-            <p style={{ fontSize: 11, letterSpacing: "2px", color: MID, marginBottom: 16 }}>相關內容</p>
-            <div style={{ display: "flex", flexDirection: "column", gap: 2 }}>
-              {relLinks.map(rl => {
-                const product = rl.type === "product" ? (products || []).find(p => String(p.id) === String(rl.key)) : null;
-                const resource = rl.type === "resource" ? (resources || []).find(r => String(r.id) === String(rl.key)) : null;
-                return (
-                  <div key={rl.id} onClick={() => handleRelNav(rl)} style={{ display: "flex", alignItems: "center", gap: 16, padding: "16px 20px", background: O2, border: `1px solid rgba(200,90,20,.15)`, cursor: "pointer", transition: "box-shadow .18s" }}
-                    onMouseEnter={e => e.currentTarget.style.boxShadow = `0 4px 16px rgba(200,90,20,.12)`}
-                    onMouseLeave={e => e.currentTarget.style.boxShadow = "none"}
-                  >
-                    <div style={{ width: 36, height: 36, background: O, display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
-                      {rl.type === "product" && <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke={WHITE} strokeWidth="2"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/></svg>}
-                      {rl.type === "resource" && <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke={WHITE} strokeWidth="2"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg>}
-                      {rl.type === "page" && <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke={WHITE} strokeWidth="2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>}
-                    </div>
-                    <div style={{ flex: 1 }}>
-                      <p style={{ fontSize: 10, color: O, letterSpacing: ".5px", marginBottom: 2, fontWeight: 600 }}>{rl.type === "product" ? "商品" : rl.type === "resource" ? "免費資源" : "前往頁面"}</p>
-                      <p style={{ fontSize: 14, color: CHAR, fontWeight: 500 }}>{rl.label}</p>
-                      {product && <p style={{ fontSize: 12, color: MID, marginTop: 2 }}>{product.price}</p>}
-                      {resource && <p style={{ fontSize: 12, color: MID, marginTop: 2 }}>{resource.type}</p>}
-                    </div>
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke={O} strokeWidth="2"><polyline points="9 18 15 12 9 6"/></svg>
-                  </div>
-                );
-              })}
-            </div>
+          <div className="ar-rel">
+            <p>相關內容</p>
+            {relLinks.map(rl => {
+              const product = rl.type === "product" ? (products || []).find(p => String(p.id) === String(rl.key)) : null;
+              const resource = rl.type === "resource" ? (resources || []).find(r => String(r.id) === String(rl.key)) : null;
+              const Icon = REL_ICONS[rl.type] || IcRelPage;
+              return (
+                <button key={rl.id} className="ar-rel-item" onClick={() => handleRelNav(rl)}>
+                  <i><Icon /></i>
+                  <span style={{ flex: 1, minWidth: 0 }}>
+                    <span className="ar-rel-kind" style={{ display: "block" }}>{relKindLabel[rl.type] || "前往頁面"}</span>
+                    <span className="ar-rel-label" style={{ display: "block" }}>{rl.label}</span>
+                    {product && <span className="ar-rel-meta" style={{ display: "block" }}>{product.price}</span>}
+                    {resource && <span className="ar-rel-meta" style={{ display: "block" }}>{resource.type}</span>}
+                  </span>
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--nx-o)" strokeWidth="2" style={{ flexShrink: 0 }}><polyline points="9 18 15 12 9 6" /></svg>
+                </button>
+              );
+            })}
           </div>
         )}
-        <div style={{ display: "flex", gap: 12, marginBottom: 56, flexWrap: "wrap" }}>
-          <button className="pg" onClick={copy}>{copied ? "✓ 已複製連結" : "複製連結"}</button>
-          <a href={"https://social-plugins.line.me/lineit/share?url=" + encodeURIComponent(articleUrl)} target="_blank" rel="noopener noreferrer"><button className="pg">分享至 LINE</button></a>
+
+        <div className="ar-share">
+          <button className="nx-btn nx-btn-sec nx-btn-sm" onClick={copy}>{copied ? "✓ 已複製連結" : "複製連結"}</button>
+          <a className="nx-btn nx-btn-sec nx-btn-sm" href={"https://social-plugins.line.me/lineit/share?url=" + encodeURIComponent(articleUrl)} target="_blank" rel="noopener noreferrer">分享至 LINE</a>
         </div>
-        <div style={{ background: CORAL, padding: "36px" }}>
-          <p style={{ fontSize: 16, fontWeight: 500, color: WHITE, marginBottom: 6 }}>加入 8友 社群</p>
-          <p style={{ fontSize: 13, color: "rgba(255,255,255,.6)", marginBottom: 22, lineHeight: 1.8 }}>一起聊聊關於錢的事，不說教，只分享。</p>
-          <div style={{ display: "flex", gap: 12, flexWrap: "wrap" }}>
-            <a href={l.lineCommunity} target="_blank" rel="noopener noreferrer"><button className="pb">LINE 社群</button></a>
-            <a href={l.instagram} target="_blank" rel="noopener noreferrer"><button style={{ background: "rgba(255,255,255,.15)", color: WHITE, border: "1px solid rgba(255,255,255,.3)", padding: "11px 24px", fontSize: 13, cursor: "pointer", fontFamily: "inherit" }}>Instagram</button></a>
+
+        <div className="ar-community">
+          <div>
+            <strong>加入 8友 社群</strong>
+            <em>一起聊聊關於錢的事，不說教，只分享。</em>
+          </div>
+          <div>
+            <a className="nx-btn nx-btn-pri nx-btn-sm" href={l.lineCommunity || DEFAULTS.links.lineCommunity} target="_blank" rel="noopener noreferrer">LINE 社群</a>
+            <a className="nx-btn nx-btn-sec nx-btn-sm" href={l.instagram || DEFAULTS.links.instagram} target="_blank" rel="noopener noreferrer">Instagram</a>
           </div>
         </div>
-        <p style={{ fontSize: 11, letterSpacing: "2px", color: MID, margin: "48px 0 24px" }}>COMMENTS (<CountUp end={article.comments.length} duration={600} />)</p>
-        <div style={{ marginBottom: 36 }}>
-          {article.comments.length === 0 && <p style={{ fontSize: 14, color: LIGHT, padding: "20px 0" }}>還沒有留言，來說說你的想法吧。</p>}
+
+        <div className="ar-comments">
+          <p>留言（<CountUp end={article.comments.length} duration={600} />）</p>
+          {article.comments.length === 0 && <p className="nx-lead">還沒有留言，來說說你的想法吧。</p>}
           {article.comments.map((c, i) => (
-            <div key={i} style={{ padding: "18px 0", borderBottom: `1px solid ${BORDER}` }}>
-              <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 6, flexWrap: "wrap", gap: 4 }}>
-                <span style={{ fontSize: 14, fontWeight: 500, color: CORAL2 }}>{c.name}</span>
-                <span style={{ fontSize: 11, color: LIGHT }}>{c.date}</span>
-              </div>
-              <p style={{ fontSize: 14, color: MID, lineHeight: 1.8 }}>{c.text}</p>
+            <div key={i} className="ar-comment">
+              <div className="ar-comment-head"><b>{c.name}</b><span>{c.date}</span></div>
+              <p>{c.text}</p>
             </div>
           ))}
-        </div>
-        <div style={{ background: GRAY, padding: "28px 28px" }}>
-          <p style={{ fontSize: 12, letterSpacing: "1px", color: MID, marginBottom: 18 }}>留下你的想法</p>
-          <input placeholder="暱稱（選填）" value={name} onChange={e => setName(e.target.value)} maxLength={50} style={{ marginBottom: 14 }} />
-          <textarea placeholder="你的留言⋯" value={text} onChange={e => setText(e.target.value)} maxLength={500} style={{ marginBottom: 18, border: "none", background: "transparent", borderBottom: "1px solid #D0D5DA" }} />
-          <div style={{ display: "flex", gap: 12, alignItems: "center" }}>
-            <button className="pb" onClick={submit} disabled={!text.trim()}>送出留言</button>
-            {cooldown > 0 && <span style={{ fontSize: 12, color: "#C0392B" }}>請等待 {cooldown} 秒後再送出</span>}
+          <div className="ar-form">
+            <p>留下你的想法</p>
+            <input placeholder="暱稱（選填）" value={name} onChange={e => setName(e.target.value)} maxLength={50} />
+            <textarea placeholder="你的留言⋯" value={text} onChange={e => setText(e.target.value)} maxLength={500} />
+            <div className="ar-form-foot">
+              <button className="nx-btn nx-btn-pri nx-btn-md" onClick={submit} disabled={!text.trim()}>送出留言</button>
+              {cooldown > 0 && <span>請等待 {cooldown} 秒後再送出</span>}
+            </div>
           </div>
         </div>
       </div>
@@ -2891,176 +3738,206 @@ function Write({ onSave, onBack, tags, products, resources }) {
 }
 
 //  About
-function About({ about, setAbout, isAdmin, links, setLinks, setPage, aboutCopy, setAboutCopy }) {
-  const ac = { ...DEFAULTS.aboutCopy, ...(aboutCopy || {}) };
-  const [editing, setEditing] = useState(false);
+//  About（2026-09 改版：從紙本開始 → 三種工具 → 堅持的四件事 → 8友社群 → 數字 → CTA）
+const AB_IMG = "/about/";
+const AB_TOOLS = [
+  { kind: "實體", name: "存錢袋與預算卡", desc: "現金分配、一週一張卡！\n適合想戒掉刷卡、需要看得見錢變少的人。", foot: "文青手帳風、復古電玩風、百鈔分配等款式，可加購便條紙" },
+  { kind: "表格", name: "Google Sheets 模板", desc: "免費的分配計劃範本可以直接下載；進階版模板 2.0 一次買斷，終身使用。", foot: "表格永遠屬於你，可以自己改公式" },
+  { kind: "訂閱", name: "88La財務導航", desc: "把分配、記帳、診斷串成循環系統！\n適合記帳容易斷掉、需要有人每個月分析數據的人。", foot: "串聯 Google 帳號，資料只有你能看", hi: true },
+];
+const AB_BELIEFS = [
+  ["不是叫你什麼都別買", "省到不像自己的生活，撐不了三個月！\n88La 的目標是讓想花的錢花得安心，不是為了存錢讓自己吃土。"],
+  ["數字要你自己輸入", "不介接任何金融機構！\n手動記那 5 秒是刻意留下的，就是要讓你意識到花費的那一秒。"],
+  ["不評分、不說教", "月底的診斷不會給你一個分數讓你難過，只會告訴你發生什麼、問題在哪、下個月從哪開始調整。"],
+  ["不是每個人都需要付費", "有些人用一張免費分配表就能開始，有些人喜歡自己改模板，有些人需要系統每個月陪著走，所以免費範本跟文章，我也會認真做。"],
+];
+const AB_QUOTES = [
+  "「這筆代墊的錢到底該記在哪？」不確定可以隨時進來問！",
+  "大家會貼自己的月底診斷，看別人也在調整，比較不會覺得只有自己做不好。",
+  "許願池裡提的功能，真的會出現在下一版。",
+];
+
+function About({ isAdmin, links, setLinks, setPage, trustStats, about, setAbout }) {
   const [editLinks, setEditLinks] = useState(false);
-  const [editCopy, setEditCopy] = useState(false);
-  const [tmp, setTmp] = useState(about);
-  const [tmpL, setTmpL] = useState(links || DEFAULTS.links);
-  const [tmpCopy, setTmpCopy] = useState(ac);
+  const [editIntro, setEditIntro] = useState(false);
+  const ab = { ...DEFAULTS.about, ...(about || {}) };
+  const [tmpIntro, setTmpIntro] = useState(ab.intro || "");
   const l = links || DEFAULTS.links;
-  const save = () => { setAbout(tmp); setEditing(false); };
+  const [tmpL, setTmpL] = useState(l);
   const saveLinks = () => { setLinks(tmpL); setEditLinks(false); };
-  const saveCopy = () => { setAboutCopy(tmpCopy); setEditCopy(false); };
-  const setTimelineItem = (i, field, v) => setTmpCopy(p => ({ ...p, timeline: p.timeline.map((x, xi) => xi === i ? { ...x, [field]: v } : x) }));
-  const setBeliefItem = (i, field, v) => setTmpCopy(p => ({ ...p, beliefs: p.beliefs.map((x, xi) => xi === i ? { ...x, [field]: v } : x) }));
-  if (editing) return (
-    <div style={{ maxWidth: 860, margin: "0 auto", padding: "60px 32px" }} className="page-wrap">
-      <button className="pg" onClick={() => setEditing(false)} style={{ marginBottom: 32 }}>← 取消</button>
-      <p className="section-label" style={{ marginBottom: 28 }}>編輯關於我</p>
-      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 32, marginBottom: 32 }} className="grid2">
-        <div style={{ background: GRAY, aspectRatio: "3/4", borderRadius: 14, display: "flex", alignItems: "center", justifyContent: "center", overflow: "hidden" }}>
-          {tmp.img ? <img src={tmp.img} style={{ width: "100%", height: "100%", objectFit: "cover" }} alt="about" /> : <span style={{ fontSize: 12, color: LIGHT }}>封面圖片</span>}
-        </div>
-        <div style={{ display: "flex", flexDirection: "column", gap: 20 }}>
-          <ImgUploader label="封面圖片" value={tmp.img} onChange={v => setTmp(p => ({ ...p, img: v }))} aspect="3/4" />
-          <div><p style={{ fontSize: 12, color: MID, marginBottom: 8 }}>自我介紹</p><textarea value={tmp.intro} onChange={e => setTmp(p => ({ ...p, intro: e.target.value }))} style={{ minHeight: 200 }} /></div>
-        </div>
-      </div>
-      <div style={{ display: "flex", gap: 10 }}><button className="pb" onClick={save}>儲存</button><button className="pg" onClick={() => setEditing(false)}>取消</button></div>
-    </div>
-  );
-  if (editCopy) return (
-    <div style={{ maxWidth: 860, margin: "0 auto", padding: "60px 32px" }} className="page-wrap">
-      <button className="pg" onClick={() => setEditCopy(false)} style={{ marginBottom: 32 }}>← 取消</button>
-      <p className="section-label" style={{ marginBottom: 28 }}>編輯關於我們頁文字</p>
-      <div style={{ display: "flex", flexDirection: "column", gap: 14, marginBottom: 32 }}>
-        <p style={{ fontSize: 13, color: MID, fontWeight: 500 }}>開頭</p>
-        <div><p style={{ fontSize: 12, color: MID, marginBottom: 6 }}>主標題</p><textarea value={tmpCopy.heroHeading} onChange={e => setTmpCopy(p => ({ ...p, heroHeading: e.target.value }))} style={{ minHeight: 60 }} /></div>
-        <div><p style={{ fontSize: 12, color: MID, marginBottom: 6 }}>副標題</p><textarea value={tmpCopy.heroSub} onChange={e => setTmpCopy(p => ({ ...p, heroSub: e.target.value }))} style={{ minHeight: 50 }} /></div>
-      </div>
-      <div style={{ display: "flex", flexDirection: "column", gap: 14, marginBottom: 32 }}>
-        <p style={{ fontSize: 13, color: MID, fontWeight: 500 }}>故事區塊</p>
-        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 16 }} className="grid2">
-          <div><p style={{ fontSize: 12, color: MID, marginBottom: 6 }}>標籤</p><input value={tmpCopy.storyLabel} onChange={e => setTmpCopy(p => ({ ...p, storyLabel: e.target.value }))} /></div>
-          <div><p style={{ fontSize: 12, color: MID, marginBottom: 6 }}>標題</p><input value={tmpCopy.storyHeading} onChange={e => setTmpCopy(p => ({ ...p, storyHeading: e.target.value }))} /></div>
-        </div>
-        {tmpCopy.timeline.map((t, i) => (
-          <div key={i} style={{ display: "grid", gridTemplateColumns: "70px 1fr", gap: 12, padding: "12px 0", borderTop: `1px solid ${BORDER}` }}>
-            <input value={t.year} onChange={e => setTimelineItem(i, "year", e.target.value)} placeholder="年份標籤" />
-            <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
-              <input value={t.title} onChange={e => setTimelineItem(i, "title", e.target.value)} placeholder="標題" />
-              <textarea value={t.desc} onChange={e => setTimelineItem(i, "desc", e.target.value)} placeholder="說明" style={{ minHeight: 50 }} />
-            </div>
-          </div>
-        ))}
-      </div>
-      <div style={{ display: "flex", flexDirection: "column", gap: 14, marginBottom: 32 }}>
-        <p style={{ fontSize: 13, color: MID, fontWeight: 500 }}>我們相信區塊</p>
-        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 16 }} className="grid2">
-          <div><p style={{ fontSize: 12, color: MID, marginBottom: 6 }}>標籤</p><input value={tmpCopy.beliefsLabel} onChange={e => setTmpCopy(p => ({ ...p, beliefsLabel: e.target.value }))} /></div>
-          <div><p style={{ fontSize: 12, color: MID, marginBottom: 6 }}>標題</p><input value={tmpCopy.beliefsHeading} onChange={e => setTmpCopy(p => ({ ...p, beliefsHeading: e.target.value }))} /></div>
-        </div>
-        {tmpCopy.beliefs.map((b, i) => (
-          <div key={i} style={{ display: "flex", flexDirection: "column", gap: 8, padding: "12px 0", borderTop: `1px solid ${BORDER}` }}>
-            <input value={b.title} onChange={e => setBeliefItem(i, "title", e.target.value)} placeholder="標題" />
-            <textarea value={b.desc} onChange={e => setBeliefItem(i, "desc", e.target.value)} placeholder="說明" style={{ minHeight: 50 }} />
-          </div>
-        ))}
-      </div>
-      <div style={{ display: "flex", flexDirection: "column", gap: 14, marginBottom: 32 }}>
-        <p style={{ fontSize: 13, color: MID, fontWeight: 500 }}>其他</p>
-        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 16 }} className="grid2">
-          <div><p style={{ fontSize: 12, color: MID, marginBottom: 6 }}>HELLO 區標籤</p><input value={tmpCopy.helloLabel} onChange={e => setTmpCopy(p => ({ ...p, helloLabel: e.target.value }))} /></div>
-          <div><p style={{ fontSize: 12, color: MID, marginBottom: 6 }}>結尾按鈕1</p><input value={tmpCopy.ctaBtn1} onChange={e => setTmpCopy(p => ({ ...p, ctaBtn1: e.target.value }))} /></div>
-          <div><p style={{ fontSize: 12, color: MID, marginBottom: 6 }}>結尾按鈕2</p><input value={tmpCopy.ctaBtn2} onChange={e => setTmpCopy(p => ({ ...p, ctaBtn2: e.target.value }))} /></div>
-        </div>
-      </div>
-      <div style={{ display: "flex", gap: 10 }}><button className="pb" onClick={saveCopy}>儲存</button><button className="pg" onClick={() => setEditCopy(false)}>取消</button></div>
-    </div>
-  );
-  if (editLinks) return (
-    <div style={{ maxWidth: 600, margin: "0 auto", padding: "60px 32px" }} className="page-wrap">
-      <button className="pg" onClick={() => setEditLinks(false)} style={{ marginBottom: 32 }}>← 取消</button>
-      <p className="section-label" style={{ marginBottom: 28 }}>連結設定</p>
-      <div style={{ display: "flex", flexDirection: "column", gap: 24 }}>
-        {[["LINE 社群連結","lineCommunity"],["LINE 官方帳號連結","lineOfficial"],["Instagram 連結","instagram"],["合作信箱","email"]].map(([label,key]) => (
-          <div key={key}><p style={{ fontSize: 12, color: MID, marginBottom: 8 }}>{label}</p><input value={tmpL[key]} onChange={e => setTmpL(p => ({ ...p, [key]: e.target.value }))} /></div>
-        ))}
-      </div>
-      <div style={{ display: "flex", gap: 10, marginTop: 32 }}><button className="pb" onClick={saveLinks}>儲存</button><button className="pg" onClick={() => setEditLinks(false)}>取消</button></div>
-    </div>
-  );
+  // 數字只有這一組來源：後台的「信任數據」，跟首頁 Hero 同一份，內文不再重複寫死任何數字
+  // 前三格是會變動的實績數字，取後台「信任數據」（跟首頁 Hero 同一份）。
+  // 第四格是產品線的結構事實，不是會成長的指標，所以固定寫在這裡不進後台。
+  const stats = (trustStats && trustStats.length ? trustStats : DEFAULTS.trustStats).slice(0, 3);
+  const AB_STAT_TOOLS = { num: "3", label: "種工具，同一套方法" };
+  const to = p => ({ href: pathForPage(p), onClick: e => { if (e.metaKey || e.ctrlKey || e.shiftKey || e.button) return; e.preventDefault(); setPage(p); } });
+  const ext = { target: "_blank", rel: "noopener noreferrer" };
   return (
-    <div>
-      <div style={{ background: GRAD, padding: "64px 32px", textAlign: "center" }}>
-        <div style={{ maxWidth: 640, margin: "0 auto" }}>
-          <p className="section-label" style={{ marginBottom: 16 }}>88La · ABOUT</p>
-          <h1 style={{ fontSize: 30, fontWeight: 700, color: CHAR, lineHeight: 1.5, marginBottom: 16 }}>{ac.heroHeading}</h1>
-          <p style={{ fontSize: 15, color: MID, lineHeight: 1.85 }}>{ac.heroSub}</p>
-          {isAdmin && <span onClick={() => { setTmpCopy(ac); setEditCopy(true); }} style={{ fontSize: 12, color: O, cursor: "pointer", marginTop: 12, display: "inline-block" }}>編輯本頁文字</span>}
+    <div className="nx-page">
+      {/* Hero */}
+      <div className="nx-in ab-hero">
+        <p className="nx-eyebrow" style={{ letterSpacing: ".16em" }}>關於 88La</p>
+        <h1>我不是因為很會理財，<br />才開始做這些工具。</h1>
+        <p>我做的每一樣東西，都是為了回答同一個問題：怎麼用最簡單的方式，理好自己的每一分錢，擺脫月光族。</p>
+      </div>
+
+      {/* 自我介紹（內容來自後台，Barbara 自己寫的那段） */}
+      {ab.intro && (
+        <div className="nx-in ab-intro">
+          {ab.img && <img src={ab.img} alt="88La" loading="lazy" />}
+          <div>
+            <p className="nx-eyebrow" style={{ marginBottom: 14 }}>我是誰</p>
+            <p className="ab-intro-text">{ab.intro}</p>
+          </div>
+        </div>
+      )}
+
+      {/* 從紙本開始 */}
+      <div className="nx-in" style={{ paddingTop: "clamp(32px,5.6vw,72px)" }}>
+        <div className="ab-lede">
+          <p className="nx-mono" style={{ display: "block", marginBottom: 16, fontSize: 13, color: "var(--nx-o)" }}>最開始</p>
+          <h2>一開始，我只是想找到一個<br />自己真的做得下去的方法</h2>
+          <p>最早的 88La 沒有 App，只有一本活頁夾、一疊分配卡跟一支筆。<br />月初把收入、固定支出、儲蓄、變動支出寫下來，這週能花的現金放進袋子，花完就是花完了，很土，但確實有效幫我擺脫月光族。</p>
+          <p>因為它讓「錢變少」這件事，變成看得到、摸得到的！<br />這個原則後來沒有變過，只是換了載體。</p>
+        </div>
+        <img className="ab-shot" src={AB_IMG + "binder.webp"} loading="lazy" alt="88La 分配手帳：活頁夾攤開，分配頁上手寫收入、固定支出與儲蓄" />
+        <p className="ab-caption">最早的分配頁。收入、固定支出、儲蓄、變動支出，一頁寫完。</p>
+      </div>
+
+      <div className="nx-in" style={{ paddingBlock: "clamp(26px,3.4vw,44px) clamp(32px,5.6vw,72px)" }}>
+        <div className="ab-pair">
+          <div>
+            <img src={AB_IMG + "cards.webp"} loading="lazy" alt="88La 每週預算卡與現金放在半透明存錢袋裡" />
+            <p><b>一週一張卡。</b>這週能花的現金裝進袋子，花完就是花完了。</p>
+          </div>
+          <div>
+            <img src={AB_IMG + "retro.webp"} loading="lazy" alt="88La 復古電玩風每週預算卡：WEEK1 到 WEEK5 與月結欄位" style={{ objectPosition: "center 30%" }} />
+            <p><b>後來有了各種款式。</b>復古電玩風、文青手帳風，因為記帳本身也可以是件想做的事。</p>
+          </div>
         </div>
       </div>
-      <div style={{ background: WHITE, padding: "64px 32px", borderTop: `1px solid ${BORDER}`, borderBottom: `1px solid ${BORDER}` }}>
-        <div style={{ maxWidth: 640, margin: "0 auto" }}>
-          <div style={{ textAlign: "center", marginBottom: 40 }}>
-            <p className="section-label" style={{ marginBottom: 10 }}>{ac.storyLabel}</p>
-            <h2 style={{ fontSize: 20, fontWeight: 700, color: CHAR }}>{ac.storyHeading}</h2>
+
+      {/* 為什麼有三種工具 */}
+      <section className="nx-band" style={{ paddingBlock: "clamp(32px,5.6vw,72px)" }}>
+        <div className="nx-in">
+          <div style={{ maxWidth: 640, marginBottom: "clamp(24px,3.2vw,40px)" }}>
+            <p className="nx-eyebrow" style={{ marginBottom: 14 }}>為什麼有三種工具</p>
+            <h2 className="nx-h2" style={{ marginBottom: 16 }}>不是三個產品線，是三種生活方式</h2>
+            <p className="nx-body">有人喜歡手寫的儀式感，有人喜歡自己掌控表格，有人需要每月幫他分析！<br />三種產品、三種生活方式，服務的是不同的人。</p>
           </div>
-          {ac.timeline.map((t, i) => (
-            <div key={i} style={{ display: "grid", gridTemplateColumns: "70px 1fr", gap: 20, padding: "20px 0", borderBottom: i < ac.timeline.length - 1 ? `1px solid ${BORDER}` : "none" }}>
-              <p style={{ fontSize: 13, fontWeight: 700, color: O }}>{t.year}</p>
-              <div>
-                <h4 style={{ fontSize: 15, fontWeight: 500, color: CHAR, marginBottom: 6 }}>{t.title}</h4>
-                <p style={{ fontSize: 13, color: MID, lineHeight: 1.8 }}>{t.desc}</p>
-              </div>
+          <div className="ab-tools">
+            {AB_TOOLS.map(t => (
+              <article key={t.name} className={t.hi ? "ab-hi" : ""}>
+                <p className="ab-kind">{t.kind}</p>
+                <h3>{t.name}</h3>
+                <p className="ab-desc" style={{ whiteSpace: "pre-line" }}>{t.desc}</p>
+                <p className="ab-foot">{t.foot}</p>
+              </article>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* 我相信什麼 */}
+      <section className="nx-dark" style={{ paddingBlock: "clamp(32px,5.6vw,72px)" }}>
+        <div className="nx-in">
+          <p className="nx-eyebrow nx-eyebrow-dark" style={{ marginBottom: 14 }}>我相信什麼</p>
+          <h2 className="nx-h2" style={{ color: "var(--nx-dt)", marginBottom: "clamp(24px,3.2vw,40px)" }}>88La 堅持的四件事</h2>
+          <div className="ab-beliefs">
+            {AB_BELIEFS.map(([t, d]) => (
+              <div key={t}><h3>{t}</h3><p style={{ whiteSpace: "pre-line" }}>{d}</p></div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* 8友社群 */}
+      <div className="nx-in" style={{ paddingBlock: "clamp(32px,5.6vw,72px) clamp(30px,5vw,64px)" }}>
+        <div className="ab-community">
+          <div className="ab-quotes">
+            {AB_QUOTES.map(q => <article key={q}><p>{q}</p></article>)}
+          </div>
+          <div>
+            <p className="nx-eyebrow" style={{ marginBottom: 14 }}>8友社群</p>
+            <h2>一個人記帳容易混亂，<br />有一個地方可以盡量問。</h2>
+            <p className="ab-community-p">社群成員會在裡面問「這筆該怎麼記」。這是 88La 最不像產品、但最貼近你的心。</p>
+            <p className="ab-community-sub">財務導航的功能，有很多是從社群裡許願來的。</p>
+            <div className="ab-community-row">
+              <a className="nx-btn nx-btn-sec nx-btn-sec-strong nx-btn-md" href={l.lineCommunity || DEFAULTS.links.lineCommunity} {...ext}>在社群提問</a>
+              <a className="nx-btn nx-btn-sec nx-btn-md" href={l.instagram || DEFAULTS.links.instagram} {...ext}>看 Instagram</a>
             </div>
+          </div>
+        </div>
+      </div>
+
+      {/* 數字 */}
+      <section className="nx-band" style={{ paddingBlock: "clamp(28px,4vw,52px)" }}>
+        <div className="nx-in ab-stats">
+          {[...stats, AB_STAT_TOOLS].map((s, i) => (
+            <div key={i}><b>{s.num}</b><span>{s.label}</span></div>
           ))}
         </div>
-      </div>
-      <div style={{ maxWidth: 1100, margin: "0 auto", padding: "64px 32px" }} className="page-wrap">
-        <div style={{ textAlign: "center", marginBottom: 40 }}>
-          <p className="section-label" style={{ marginBottom: 10 }}>{ac.beliefsLabel}</p>
-          <h2 style={{ fontSize: 20, fontWeight: 700, color: CHAR }}>{ac.beliefsHeading}</h2>
-        </div>
-        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(240px,1fr))", gap: 20 }} className="grid3">
-          {ac.beliefs.map((b, i) => (
-            <div key={b.n} style={{ background: WHITE, border: `1px solid ${BORDER}`, borderRadius: 20, padding: 28, transition: "transform .3s, box-shadow .3s" }}
-              onMouseEnter={e => { e.currentTarget.style.transform = "translateY(-6px)"; e.currentTarget.style.boxShadow = "0 20px 32px rgba(0,0,0,.1)"; }}
-              onMouseLeave={e => { e.currentTarget.style.transform = "translateY(0)"; e.currentTarget.style.boxShadow = "none"; }}
-            >
-              <div style={{ width: 44, height: 44, borderRadius: 14, background: O2, color: O, display: "flex", alignItems: "center", justifyContent: "center", marginBottom: 18 }}>{(() => { const AboutIcon = ABOUT_ICONS[i]; return AboutIcon ? <div style={{ width: 22, height: 22 }}><AboutIcon /></div> : null; })()}</div>
-              <h4 style={{ fontSize: 16, fontWeight: 500, color: CHAR, marginBottom: 8 }}>{b.title}</h4>
-              <p style={{ fontSize: 13, color: MID, lineHeight: 1.8 }}>{b.desc}</p>
-            </div>
-          ))}
+      </section>
+
+      {/* CTA */}
+      <div className="nx-in ab-cta">
+        <h2>從哪裡開始都可以</h2>
+        <p>不確定自己適合哪一種？花 60 秒回答幾個問題，我告訴你先從哪個開始。</p>
+        <div className="ab-cta-row">
+          <a className="nx-btn nx-btn-pri nx-btn-lg" {...to("tool-quiz")}>60 秒找到我的起點 →</a>
+          <a className="nx-btn nx-btn-sec nx-btn-sec-strong nx-btn-md" {...to("app")}>看 88La財務導航</a>
+          <a className="nx-btn nx-btn-sec nx-btn-md" {...to("resources")}>下載免費範本</a>
         </div>
       </div>
-      <div style={{ background: GRAD, padding: "72px 32px", borderTop: `1px solid ${BORDER}` }}>
-        <div style={{ maxWidth: 1100, margin: "0 auto", display: "grid", gridTemplateColumns: "1fr 1fr", gap: 64, alignItems: "start" }} className="about-grid">
-          <div style={{ background: GRAY, aspectRatio: "3/4", borderRadius: 14, overflow: "hidden", display: "flex", alignItems: "center", justifyContent: "center" }} className="about-img">
-            {about.img ? <img src={about.img} style={{ width: "100%", height: "100%", objectFit: "cover" }} alt="88La" /> : <span style={{ fontSize: 12, color: LIGHT, letterSpacing: "1px" }}>PHOTO</span>}
-          </div>
-          <div style={{ paddingTop: 20 }}>
-            <p className="section-label" style={{ marginBottom: 20 }}>{ac.helloLabel}</p>
-            <div style={{ fontSize: 16, color: MID, lineHeight: 2.2, whiteSpace: "pre-wrap", marginBottom: 36 }}>{about.intro}</div>
-            <div style={{ display: "flex", gap: 10, flexWrap: "wrap", marginBottom: 20 }}>
-              <a href={l.lineCommunity} target="_blank" rel="noopener noreferrer"><button className="pb">LINE 社群</button></a>
-              <a href={l.lineOfficial} target="_blank" rel="noopener noreferrer"><button className="pbn">LINE 官方帳號</button></a>
-              <a href={l.instagram} target="_blank" rel="noopener noreferrer"><button className="pg">Instagram</button></a>
-              <a href={"mailto:" + l.email}><button className="pg">合作信箱</button></a>
-            </div>
-            {isAdmin && (
-              <div style={{ display: "flex", gap: 10 }}>
-                <button onClick={() => { setTmpL(l); setEditLinks(true); }} className="pg" style={{ fontSize: 12, padding: "6px 14px" }}>連結設定</button>
-                <button onClick={() => { setTmp(about); setEditing(true); }} className="pg" style={{ fontSize: 12, padding: "6px 14px" }}>編輯頁面</button>
+
+      {isAdmin && (
+        <div style={{ borderTop: `2px dashed ${BORDER}`, background: GRAY, padding: "20px" }}>
+          <div style={{ maxWidth: 1040, margin: "0 auto" }}>
+            <p style={{ fontSize: 13, color: MID, marginBottom: 10, fontWeight: 500 }}>後台：聯絡與社群連結（頁尾、文章頁也會用到）</p>
+            {!editLinks ? (
+              <button className="pg" style={{ fontSize: 12 }} onClick={() => { setTmpL(l); setEditLinks(true); }}>編輯連結</button>
+            ) : (
+              <div style={{ background: WHITE, border: `1px solid ${BORDER}`, padding: 20 }}>
+                <div style={{ display: "flex", flexDirection: "column", gap: 12, marginBottom: 16 }}>
+                  {[["lineCommunity", "LINE 社群"], ["lineOfficial", "LINE 官方帳號"], ["instagram", "Instagram"], ["email", "聯絡 Email"]].map(([k, label]) => (
+                    <div key={k}>
+                      <p style={{ fontSize: 12, color: MID, marginBottom: 4 }}>{label}</p>
+                      <input value={tmpL[k] ?? ""} onChange={e => setTmpL(p => ({ ...p, [k]: e.target.value }))} />
+                    </div>
+                  ))}
+                </div>
+                <div style={{ display: "flex", gap: 10 }}>
+                  <button className="pb" onClick={saveLinks}>儲存</button>
+                  <button className="pg" onClick={() => setEditLinks(false)}>取消</button>
+                </div>
               </div>
             )}
+            <div style={{ marginTop: 18, background: WHITE, border: `1px solid ${BORDER}`, padding: 20 }}>
+              <p style={{ fontSize: 12, color: MID, marginBottom: 10, fontWeight: 500 }}>自我介紹（頁面上「我是誰」那段）</p>
+              {!editIntro ? (
+                <button className="pg" style={{ fontSize: 12 }} onClick={() => { setTmpIntro(ab.intro || ""); setEditIntro(true); }}>編輯自我介紹</button>
+              ) : (
+                <>
+                  <textarea value={tmpIntro} onChange={e => setTmpIntro(e.target.value)} style={{ minHeight: 200, border: "1px solid #D0D5DA", padding: 10, background: WHITE, marginBottom: 12 }} />
+                  <ImgUploader label="頭像／照片（選填）" value={ab.img} onChange={v => setAbout({ ...ab, img: v })} aspect="1/1" maxHeight={160} />
+                  <div style={{ display: "flex", gap: 10, marginTop: 12 }}>
+                    <button className="pb" onClick={() => { setAbout({ ...ab, intro: tmpIntro }); setEditIntro(false); }}>儲存</button>
+                    <button className="pg" onClick={() => setEditIntro(false)}>取消</button>
+                  </div>
+                </>
+              )}
+            </div>
+            <p style={{ fontSize: 12, color: LIGHT, marginTop: 14, lineHeight: 1.8 }}>
+              下方那排數字：前三格取自後台的「信任數據」（與首頁 Hero 同一份，在首頁編輯），第四格「3 種工具」寫死在程式裡。本頁內文刻意不重複寫任何數字，改一個地方就全站一致。
+              三張實拍照放在 repo 的 <code>public/about/</code>。
+            </p>
           </div>
         </div>
-      </div>
-      <div style={{ padding: "64px 32px", textAlign: "center" }}>
-        <div style={{ display: "flex", gap: 12, justifyContent: "center", flexWrap: "wrap" }}>
-          <a {...appLockProps("about-page")}><button className="pb">{ac.ctaBtn1}</button></a>
-          <button className="pg" onClick={() => setPage && setPage("community")}>{ac.ctaBtn2}</button>
-        </div>
-      </div>
+      )}
     </div>
   );
 }
 
-//  Shop
 function Shop({ products, setProducts, isAdmin, shopCopy, setShopCopy }) {
   const sc = { ...DEFAULTS.shopCopy, ...(shopCopy || {}) };
   const [editCopy, setEditCopy] = useState(false);
@@ -3518,137 +4395,161 @@ function Community({ igPosts, links, setPage, isAdmin, communityHero, setCommuni
   );
 }
 
-//  存錢袋 (Envelope)
-const ENVELOPE_HERO_FIELDS = [
-  { key: "eyebrow", label: "小標籤（Eyebrow）" },
-  { key: "headline", label: "主標題" },
-  { key: "subhead", label: "副標題", multiline: true },
-  { key: "ctaPrimary", label: "主要按鈕文字" },
-  { key: "ctaSecondary", label: "次要按鈕文字" },
-  { key: "buyTagline", label: "底部購買區標語" },
-  { key: "heroImg", label: "產品實拍圖", type: "image", aspect: "1/1" }
+
+//  Envelope（2026-09 改版：大圖 Hero → 存錢袋測驗 → 為什麼是紙袋 → 怎麼用三步 → 誰適合＋規格 → 搭配 App）
+const BAG_IMG = "/bag/";
+const BAG_STORE_URL = "https://myship.7-11.com.tw/general/detail/GM2510287339100";
+const BAG_WHY = [
+  ["分開放，就不會混著花", "一個袋子一個用途。生活費、大筆開銷預存、儲蓄各自分開"],
+  ["看得見剩多少", "不用打開 App，摸一下厚度就知道這週還能不能出去吃"],
+  ["不用電、不會忘", "放在抽屜或包包裡，每次拿錢都會經過它"],
+];
+const BAG_STEPS = [
+  ["01", "寫上用途和金額", "領薪後照 App 排好的預算，把每個袋子要放多少寫在上面", "step-1.webp", "在存錢袋的週別卡片上寫下用途與金額"],
+  ["02", "一次領好、一次裝好", "月初領一次現金分裝完，之後就不再回 ATM。省下最容易失守的那個動作", "step-2.webp", "把現金一次分裝進各個存錢袋"],
+  ["03", "月底看剩下多少", "袋子裡剩的就是這個月省下的。想留就留，想存就存進儲蓄", "step-3.webp", "存錢袋收在活頁夾裡，月底翻開清點"],
+];
+const BAG_FIT = [
+  ["刷卡容易失控的人", "改成現金消費，額度就是袋子裡那些，花完就結束"],
+  ["記帳老是斷掉的人", "忘記記帳沒關係，袋子的厚度就是最誠實的餘額"],
+  ["在存特定目標的人", "旅遊、換手機、年繳保費，一個目標一個袋子，進度一眼看見"],
+  ["和家人共用開銷的人", "共同生活費放在同一個袋子，不用互相報帳"],
+];
+// 規格：尺寸／數量／價格三項各款不同，一律導到賣貨便看，不在官網另外維護一份會過期的數字
+const BAG_SPEC = [
+  ["尺寸", "依款式而定"],
+  ["材質", "PVC+膠片"],
+  ["一組數量", "依款式而定"],
+  ["價格", "依款式而定"],
+  ["出貨方式", "7-11 賣貨便"],
 ];
 
-function Envelope({ products, setPage, isAdmin, envelopeHero, setEnvelopeHero, envelopeCopy, setEnvelopeCopy }) {
-  const physical = (products || []).filter(p => p.type === "physical");
-  const storeUrl = physical.find(p => p.url)?.url || "";
-  const buyHref = storeUrl || "#products";
-  const ec = { ...DEFAULTS.envelopeCopy, ...(envelopeCopy || {}) };
-  const [editCopy, setEditCopy] = useState(false);
-  const [tmpCopy, setTmpCopy] = useState(ec);
-  const setWhyItem = (i, field, v) => setTmpCopy(p => ({ ...p, why: p.why.map((x, xi) => xi === i ? { ...x, [field]: v } : x) }));
+function Envelope({ products, setPage, isAdmin }) {
+  // 賣場網址以商品資料為準（跟 /shop 同一份），沒設定時退回已知的賣貨便網址
+  const storeUrl = (products || []).find(p => p.type === "physical" && p.url)?.url || BAG_STORE_URL;
+  const to = p => ({ href: pathForPage(p), onClick: e => { if (e.metaKey || e.ctrlKey || e.shiftKey || e.button) return; e.preventDefault(); setPage(p); } });
+  const ext = { target: "_blank", rel: "noopener noreferrer" };
   return (
-    <PageHero title="存錢袋頁文字" fields={ENVELOPE_HERO_FIELDS} data={envelopeHero} setData={setEnvelopeHero} defaults={DEFAULTS.envelopeHero} isAdmin={isAdmin}>
-      {(h, editLink) => (
-    <div>
-      <div style={{ background: GRAD, padding: "64px 32px" }}>
-        <div style={{ maxWidth: 1100, margin: "0 auto", display: "grid", gridTemplateColumns: "1fr 1fr", gap: 56, alignItems: "center" }} className="grid2">
+    <div className="nx-page">
+      {/* Hero */}
+      <section className="bg-hero">
+        <div className="bg-hero-copy">
+          <p className="nx-eyebrow" style={{ letterSpacing: ".16em", marginBottom: 16 }}>實體工具</p>
+          <h1>88La 存錢袋</h1>
+          <p className="bg-hero-sub">把消費回歸現金！<br className="nx-hide-mob" />鈔票實際裝進袋子裡，看得到、摸得到，比信用卡更有「消費痛感」。</p>
+          <div style={{ marginBottom: 20 }}>
+            <a className="nx-btn nx-btn-pri nx-btn-md" href={storeUrl} {...ext}>到賣場逛逛 ↗</a>
+          </div>
+          <p className="bg-hero-note">於 7-11 賣貨便下單、超商取貨付款。價格與庫存以賣貨便頁面為準</p>
+        </div>
+        <img className="bg-hero-img" src={BAG_IMG + "hero.webp"} alt="88La 存錢袋：透明週別預算袋與現金" />
+      </section>
+
+      {/* 存錢袋測驗 */}
+      <section className="bg-quiz">
+        <div>
+          <h2>不確定哪一種工具適合你？</h2>
+          <p>3 到 5 題，從你最想解決的事情開始，結果只給一個第一推薦</p>
+        </div>
+        <a className="nx-btn nx-btn-pri nx-btn-sm" href={QUIZ_URL} {...ext}>開始測驗 →</a>
+      </section>
+
+      {/* 為什麼是紙袋 */}
+      <section style={{ paddingBlock: "clamp(28px,4.2vw,52px)", borderBottom: "1px solid var(--nx-bd)" }}>
+        <div className="nx-in bg-why">
+          <h2>讓你的支出，不被忽略</h2>
+          <p>App 裡的「儲蓄」是一個欄位；存錢袋是一個位置。錢從錢包移到袋子那一秒，你才真的做了決定。這是 88La 的三種理財工具中，最有「實體感」的一個。</p>
+          <div className="bg-why-cards">
+            {BAG_WHY.map(([t, d]) => (
+              <article key={t}><h3>{t}</h3><p>{d}</p></article>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* 怎麼用 */}
+      <section className="nx-band" style={{ paddingBlock: "clamp(28px,4.2vw,52px)" }}>
+        <div className="nx-in">
+          <p className="nx-eyebrow nx-eyebrow-mute" style={{ marginBottom: 28, letterSpacing: ".12em" }}>怎麼用</p>
+          <div className="bg-steps">
+            {BAG_STEPS.map(([n, t, d, img, alt]) => (
+              <div key={n}>
+                <img src={BAG_IMG + img} loading="lazy" alt={alt} />
+                <div className="bg-step-head"><b>{n}</b><span>{t}</span></div>
+                <p>{d}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* 誰適合用 + 規格 */}
+      <section style={{ paddingBlock: "clamp(28px,4.2vw,52px)", borderBottom: "1px solid var(--nx-bd)" }}>
+        <div className="nx-in bg-fit">
           <div>
-            <p className="section-label" style={{ marginBottom: 16 }}>{h.eyebrow}</p>
-            <h1 style={{ fontSize: 36, fontWeight: 700, color: CHAR, lineHeight: 1.4, marginBottom: 16 }}>{h.headline}</h1>
-            <p style={{ fontSize: 15, color: MID, lineHeight: 1.85, marginBottom: 28, maxWidth: 420 }}>{h.subhead}</p>
-            <div style={{ display: "flex", gap: 12, flexWrap: "wrap", alignItems: "center" }}>
-              <a href={buyHref} target={storeUrl ? "_blank" : undefined} rel="noopener noreferrer"><button className="pb">{h.ctaPrimary}</button></a>
-              <a href={QUIZ_URL} target="_blank" rel="noopener noreferrer"><button className="pg">{h.ctaSecondary}</button></a>
-              {editLink}
-            </div>
-            <p style={{ fontSize: 12, color: LIGHT, marginTop: 14 }}>{ec.storeNote}</p>
-            {isAdmin && <span onClick={() => { setTmpCopy(ec); setEditCopy(true); }} style={{ fontSize: 11, color: O, cursor: "pointer", marginTop: 8, display: "inline-block" }}>編輯其他文字</span>}
+            <h2>誰適合用</h2>
+            {BAG_FIT.map(([t, d]) => (
+              <div key={t} className="bg-fit-item"><strong>{t}</strong><span>{d}</span></div>
+            ))}
           </div>
-          <div style={{ background: WHITE, border: `1px solid ${BORDER}`, borderRadius: 24, aspectRatio: "1/1", overflow: "hidden", display: "flex", alignItems: "center", justifyContent: "center", color: O, fontSize: 13, fontWeight: 500 }}>
-            {h.heroImg ? <img src={h.heroImg} alt="88La 存錢袋" style={{ width: "100%", height: "100%", objectFit: "cover" }} /> : ec.heroImgPlaceholder}
+          <div className="bg-spec">
+            <p>規格</p>
+            <dl>
+              {BAG_SPEC.map(([k, v]) => (
+                <div key={k} className="bg-spec-row"><dt>{k}</dt><dd>{v}</dd></div>
+              ))}
+            </dl>
+            <a className="nx-btn nx-btn-pri nx-btn-block nx-btn-md" href={storeUrl} {...ext}>到賣場看完整規格 ↗</a>
+            <p style={{ marginTop: 14, fontSize: 13, textAlign: "center" }}>
+              <a className="nx-link" {...to("shop")}>看三款存錢袋的差別與定價</a>
+            </p>
           </div>
         </div>
-      </div>
-      <div id="products" style={{ background: WHITE, padding: "64px 32px", borderTop: `1px solid ${BORDER}` }}>
-        <div style={{ maxWidth: 1100, margin: "0 auto" }}>
-          <div style={{ textAlign: "center", marginBottom: 44 }}>
-            <p className="section-label" style={{ marginBottom: 12 }}>{ec.productsLabel}</p>
-            <h2 style={{ fontSize: 22, fontWeight: 700, color: CHAR }}>{ec.productsHeading}</h2>
-            {isAdmin && <p style={{ marginTop: 10 }}><span onClick={() => setPage("shop")} style={{ fontSize: 12, color: O, cursor: "pointer" }}>{ec.manageLink}</span></p>}
+      </section>
+
+      {/* 搭配 App */}
+      <section style={{ background: "var(--nx-os)", paddingBlock: "clamp(28px,4.2vw,52px)" }}>
+        <div className="nx-in bg-app">
+          <div>
+            <h2>袋子負責「不要動」<br />App 負責「知道去哪」</h2>
+            <p>存錢袋不會算給你聽。金額怎麼分、卡費要留多少、月底該調哪一塊，那些在財務導航裡。兩個一起用最順：App 排好比例，袋子執行。</p>
+            <div className="bg-app-row">
+              <a className="nx-btn nx-btn-pri nx-btn-md" {...to("app")}>免費體驗財務導航</a>
+              <a className="nx-btn nx-btn-sec nx-btn-sec-strong nx-btn-md" {...to("resources")}>先用免費工具算</a>
+            </div>
           </div>
-          {physical.length === 0 ? (
-            <p style={{ textAlign: "center", fontSize: 14, color: LIGHT }}>{ec.emptyState}</p>
-          ) : (
-            <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(260px,1fr))", gap: 24 }} className="grid3">
-              {physical.map(p => (
-                <div key={p.id} className="card" style={{ display: "flex", flexDirection: "column" }}>
-                  <div style={{ aspectRatio: "4/3", background: O2, display: "flex", alignItems: "center", justifyContent: "center", overflow: "hidden" }}>
-                    {p.img ? <img src={p.img} alt={p.name} style={{ width: "100%", height: "100%", objectFit: "cover" }} /> : <span style={{ fontSize: 13, color: O, fontWeight: 500 }}>{p.name}</span>}
-                  </div>
-                  <div style={{ padding: 20, flex: 1, display: "flex", flexDirection: "column" }}>
-                    <h4 style={{ fontSize: 15, fontWeight: 500, color: CHAR, marginBottom: 8 }}>{p.name}</h4>
-                    <p style={{ fontSize: 13, color: MID, marginBottom: 16, whiteSpace: "pre-wrap", flex: 1 }}>{p.desc}</p>
-                    {p.url
-                      ? <a href={p.url} target="_blank" rel="noopener noreferrer" style={{ fontSize: 13, fontWeight: 500, color: O }}>{ec.buyLink}</a>
-                      : <span style={{ fontSize: 13, color: LIGHT }}>{ec.comingSoonLink}</span>}
-                  </div>
-                </div>
-              ))}
-            </div>
-          )}
+          <img src={BAG_IMG + "with-app.webp"} loading="lazy" alt="旅遊目標存錢袋，袋面寫著目標金額與進度" />
         </div>
-      </div>
-      <div style={{ maxWidth: 1100, margin: "0 auto", padding: "80px 32px" }} className="page-wrap">
-        <div style={{ textAlign: "center", marginBottom: 44 }}>
-          <p className="section-label" style={{ marginBottom: 12 }}>{ec.whyLabel}</p>
-          <h2 style={{ fontSize: 22, fontWeight: 700, color: CHAR }}>{ec.whyHeading}</h2>
+      </section>
+
+      {/* 手機置底 CTA */}
+      <div className="nx-sticky">
+        <div>
+          <b>88La 存錢袋</b>
+          <span>7-11 賣貨便下單</span>
         </div>
-        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(240px,1fr))", gap: 20 }} className="grid3">
-          {ec.why.map((w, i) => (
-            <div key={i} className="card" style={{ padding: 28 }}>
-              <div style={{ width: 44, height: 44, borderRadius: 14, background: O2, color: O, display: "flex", alignItems: "center", justifyContent: "center", marginBottom: 18 }}>{(() => { const WhyIcon = WHY_ICONS[i]; return WhyIcon ? <div style={{ width: 22, height: 22 }}><WhyIcon /></div> : null; })()}</div>
-              <h4 style={{ fontSize: 16, fontWeight: 500, color: CHAR, marginBottom: 8 }}>{w.title}</h4>
-              <p style={{ fontSize: 13, color: MID, lineHeight: 1.8 }}>{w.desc}</p>
-            </div>
-          ))}
-        </div>
+        <a className="nx-btn nx-btn-pri nx-btn-sm" href={storeUrl} {...ext}>到賣場逛逛 ↗</a>
       </div>
-      <div style={{ background: CHAR, padding: "64px 32px", textAlign: "center" }}>
-        <p style={{ fontSize: 12, color: CORAL, letterSpacing: "1px", fontWeight: 600, marginBottom: 14 }}>{ec.ctaLabel}</p>
-        <h2 style={{ fontSize: 24, fontWeight: 700, color: WHITE, marginBottom: 14 }}>{ec.ctaHeading}</h2>
-        <p style={{ fontSize: 14, color: "rgba(255,255,255,.6)", marginBottom: 28 }}>{h.buyTagline}</p>
-        <a href={buyHref} target={storeUrl ? "_blank" : undefined} rel="noopener noreferrer"><button style={{ background: CORAL, color: CHAR, border: "none", padding: "12px 26px", borderRadius: 999, fontSize: 14, fontWeight: 500, cursor: "pointer", fontFamily: "inherit" }}>{ec.ctaBtn}</button></a>
-      </div>
-      {editCopy && (
-        <div style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,.6)", zIndex: 61, display: "flex", alignItems: "center", justifyContent: "center", padding: "20px" }}>
-          <div style={{ background: WHITE, padding: 32, width: "100%", maxWidth: 560, maxHeight: "80vh", overflowY: "auto" }}>
-            <p style={{ fontSize: 13, letterSpacing: "2px", color: CORAL2, marginBottom: 20, fontWeight: 500 }}>編輯存錢袋頁其他文字</p>
-            <div style={{ display: "flex", flexDirection: "column", gap: 12, marginBottom: 20 }}>
-              {[
-                ["storeNote", "賣場提示文字"], ["heroImgPlaceholder", "產品圖預設文字"],
-                ["productsLabel", "「商品系列」標籤"], ["productsHeading", "「商品系列」標題"], ["manageLink", "管理商品連結"], ["emptyState", "無商品時的提示"],
-                ["buyLink", "前往購買連結文字"], ["comingSoonLink", "無連結時的文字"],
-                ["whyLabel", "「為什麼選實體」標籤"], ["whyHeading", "「為什麼選實體」標題"],
-                ["ctaLabel", "結尾標籤"], ["ctaHeading", "結尾標題"], ["ctaBtn", "結尾按鈕"],
-              ].map(([k, label]) => (
-                <div key={k}>
-                  <p style={{ fontSize: 12, color: MID, marginBottom: 4 }}>{label}</p>
-                  <input value={tmpCopy[k] ?? ""} onChange={e => setTmpCopy(p => ({ ...p, [k]: e.target.value }))} />
-                </div>
-              ))}
-              <p style={{ fontSize: 13, color: MID, fontWeight: 500, marginTop: 8 }}>為什麼選實體工具（3 項）</p>
-              {tmpCopy.why.map((w, i) => (
-                <div key={i} style={{ display: "flex", flexDirection: "column", gap: 6, padding: "10px 0", borderTop: `1px solid ${BORDER}` }}>
-                  <input value={w.title} onChange={e => setWhyItem(i, "title", e.target.value)} placeholder="標題" />
-                  <textarea value={w.desc} onChange={e => setWhyItem(i, "desc", e.target.value)} placeholder="說明" style={{ minHeight: 50 }} />
-                </div>
-              ))}
-            </div>
-            <div style={{ display: "flex", gap: 10 }}>
-              <button className="pb" onClick={() => { setEnvelopeCopy(tmpCopy); setEditCopy(false); }}>儲存</button>
-              <button className="pg" onClick={() => setEditCopy(false)}>取消</button>
-            </div>
+
+      {isAdmin && (
+        <div style={{ borderTop: `2px dashed ${BORDER}`, background: GRAY, padding: "20px" }}>
+          <div style={{ maxWidth: 1040, margin: "0 auto" }}>
+            <p style={{ fontSize: 12, color: MID, marginBottom: 10, fontWeight: 500 }}>後台說明</p>
+            <p style={{ fontSize: 12, color: LIGHT, lineHeight: 1.8 }}>
+              本頁的五張實拍照放在 repo 的 <code>public/bag/</code>（主視覺、三張步驟圖、搭配 App 圖），要換照片給我新檔案即可，不從後台上傳。
+            </p>
+            <p style={{ fontSize: 12, color: LIGHT, marginTop: 14, lineHeight: 1.8 }}>
+              款式、價格與賣場連結在
+              <span onClick={() => setPage("shop")} style={{ color: O, cursor: "pointer", textDecoration: "underline", margin: "0 4px" }}>商品管理</span>
+              維護；本頁只取實體商品的賣場連結，不再重複列出價格，避免跟賣貨便的數字不一致。
+            </p>
           </div>
         </div>
       )}
     </div>
-      )}
-    </PageHero>
   );
 }
 
-//  Goods
 const GOODS_HERO_FIELDS = [
   { key: "eyebrow", label: "小標籤（Eyebrow）" },
   { key: "headline", label: "主標題" },
@@ -3767,71 +4668,223 @@ function Goods({ goods, setGoods, isAdmin, goodsHero, setGoodsHero, goodsCopy, s
 
 //  NEW: App 介紹頁
 //  使用說明 (Guide, standalone)
-function Guide({ appContent, isAdmin, setPage }) {
-  const c = normalizeAppContent(appContent);
-  const guideData = c.guideData || DEFAULTS.appContent.guideData;
-  const phases = guideData.phases || [];
-  const scrollTo = id => document.getElementById(id)?.scrollIntoView({ behavior: "smooth" });
+//  Guide（2026-09 改版：卡在哪就從哪一段看，六個段落＋側邊目錄）
+const GD_SECTIONS = [
+  ["g-01", "01", "第一次設定"],
+  ["g-02", "02", "一個月怎麼走"],
+  ["g-03", "03", "這筆該怎麼記"],
+  ["g-04", "04", "名詞對照"],
+  ["g-05", "05", "三種帳本"],
+  ["g-06", "06", "疑難排解"],
+];
+const GD_JUMPS = [
+  ["我剛註冊，第一步做什麼？", "g-01"],
+  ["這筆花費該選哪個類型？", "g-03"],
+  ["餘額跟我銀行不一樣", "g-06"],
+  ["中間漏記了幾天", "g-06"],
+];
+const GD_SETUP = [
+  ["填入你手上有多少錢", "到「帳戶」新增你的帳戶，依照「專款專用」概念，將每個帳戶賦予一個角色、用途。金額之後靠記帳自己更新。",
+    "常見疑問：定存、股票要填嗎？想追蹤淨資產就填，只想管每月現金流可以先跳過。",
+    "accounts.webp", "88La財務導航 帳戶管理：淨資產、總資產與負債、目標帳戶與其他帳戶"],
+  ["設好每張卡的結帳日", "到「信用卡」填每張卡的結帳日與繳費日。這步做完，導航才知道要幫你預留多少卡費，你看到的餘額才是真的能花的。",
+    "不知道日期？看帳單第一頁，或致電客服問「結帳日幾號」。",
+    "credit-card.webp", "88La財務導航 信用卡帳期管理：三張卡的結帳與繳費日、本期應還 $5,774"],
+  ["寫下一個想存的目標", "一個就好，可以是腦海中第一個想到的。\n有目標，你才知道還有多遠！",
+    "三個月內、或有明確預計達成日期，目標建議設成「時效性儲蓄」，時間到就結束，不會長期綁著你。",
+    "goals.webp", "88La財務導航 儲蓄目標頁：儲蓄目標進度、預存管理與短期衝刺目標"],
+];
+const GD_MONTH = [
+  ["月初 · 薪水入帳那天", "排這個月的預算",
+    ["盤點這個月的收入", "看導航建議你可以存多少", "把剩下的分到固定與變動", "確認「待分配」歸零，完成"],
+    "排不平也沒關係，先送出，月中隨時可以改。", false],
+  ["平常 · 每天 5 秒", "花完就記一筆",
+    ["輸入金額、選類別", "固定或變動、現金或刷卡", "需要還是想要", "按下去那一刻的心情"],
+    "心情不是裝飾。月底你會看到，後悔的花費幾乎都長得一樣。", false],
+  ["月底 · 最後一兩天", "看診斷，只改一格",
+    ["看「本月發生了什麼」", "看下個月具體建議", "挑一個你做得到的", "寫進月度筆記"],
+    "一次改一件事就好。三個都改，下個月大概會放棄。", true],
+];
+const GD_CASES = [
+  ["刷卡買東西", "當天就記，付款方式選「信用卡」，導航會自動把它算進當期的卡費預留。"],
+  ["半年繳的保險", "設成「未來預存」，每月存進去一點。真正扣款那個月才記成支出，這樣單月不會突然需要花大筆。"],
+  ["分期付款", "在「記帳」選擇信用卡分期，記下這一筆，之後每個月的還款會自動出現在預算分配頁面提醒你，不用重複記。"],
+  ["跟朋友吃飯先代墊", "一樣記一筆帳，並備注代墊，他們還你的時候再直接把這筆帳刪除，個人帳完全不受影響。"],
+  ["存錢進目標帳戶", "選「儲蓄」，不是支出。錢只是換了位置，淨資產沒有變少。"],
+  ["領到獎金或紅包", "記成收入，然後回到預算頁重新分配！不分配它就會默默混進日常花掉。"],
+  ["買了又退貨", "直接刪掉那筆，或記一筆同金額的收入在同一個類別。前者乾淨，後者留得住紀錄。"],
+  ["把儲蓄帳戶的錢移到其他帳戶", "需要先建立兩個帳戶，再把儲蓄帳戶的錢「轉帳」過去。想記錄當月儲蓄，就到記帳區按「儲蓄」並選擇該帳戶。"],
+];
+const GD_TERMS = [
+  ["固定 / 變動", "每月幾乎不變的（房租、保險）是固定；會浮動的（吃飯、交通）是變動。"],
+  ["儲蓄", "存起來不打算動的錢，是往目標走的那一筆。不算支出。"],
+  ["未來預存", "為了以後某筆一定會來的支出先放的錢，例如半年繳的保險、年繳的稅。錢還是會花掉，只是提前準備。"],
+  ["時效性儲蓄", "短期內想達成的目標，例如三個月後的旅行。時間到就結束，不長期綁著。"],
+  ["卡費預留", "這個月刷掉、下個月要付的錢。導航會先扣下來，所以你看到的餘額是真的可以花的。"],
+  ["需要 / 想要", "沒有它日子會出問題的是需要，其他是想要。想要不是壞事，是月底診斷用來看比例的。"],
+];
+const GD_BOOKS = [
+  ["個人", "自己的薪水、支出、儲蓄。"],
+  ["公費", "兩個以上的人各自拿錢出來共同使用。"],
+  ["家庭", "家庭收入與支出本來就一起管理。"],
+];
+const GD_FAQ = [
+  ["導航器的帳戶金額跟實際不一樣", "一鍵校正。可以到帳戶管理的指定帳戶按下「校正」，把金額改回實際數字，系統會幫你記下混亂頻率。"],
+  ["中間漏記了好幾天，還救得回來嗎？", "救得回來。翻信用卡明細跟電子支付紀錄補大筆的就好，小額的抓個大概金額記一筆「補記」。"],
+  ["預算排不平，怎麼都超出", "先把儲蓄調低，甚至這個月設 0！預算的目的是能執行，不是好看！\n第一個月排不平很常見，看過一次真實花費之後，第二個月會準得多。"],
+  ["月底診斷說我情緒消費太多，我覺得沒有", "診斷是觀察，不是判決。它只是把「心情不好那天你花了什麼」放在一起給你看！如果你看完覺得那些花得值得，那就不用改。"],
+  ["換手機了，資料會不見嗎？", "不會。導航是 Web App，資料跟著帳號！新手機開瀏覽器登入同一組帳號就接得上，不用備份也不用轉移。"],
+  ["想放到手機桌面，像 App 一樣打開", "可以。iPhone 用 Safari 開 → 分享 → 加入主畫面；Android 用 Chrome 開 → 選單 → 加到主畫面。\n之後點圖示直接進，不用打開瀏覽器。"],
+];
+
+function Guide({ isAdmin, setPage, links }) {
+  const [active, setActive] = useState("g-01");
+  const l = links || DEFAULTS.links;
+  const ext = { target: "_blank", rel: "noopener noreferrer" };
+  const lineUrl = l.lineCommunity || DEFAULTS.links.lineCommunity;
+  const mailUrl = `mailto:${l.email || PUBLIC_CONTACT_EMAIL}`;
+  // 側邊目錄跟著捲動高亮，用 IntersectionObserver 而不是算捲動位置
+  useEffect(() => {
+    const els = GD_SECTIONS.map(([id]) => document.getElementById(id)).filter(Boolean);
+    if (!els.length) return;
+    const obs = new IntersectionObserver(entries => {
+      const shown = entries.filter(e => e.isIntersecting).sort((a, b) => a.boundingClientRect.top - b.boundingClientRect.top)[0];
+      if (shown) setActive(shown.target.id);
+    }, { rootMargin: "-20% 0px -70% 0px" });
+    els.forEach(el => obs.observe(el));
+    return () => obs.disconnect();
+  }, []);
   return (
-    <div>
-      <div style={{ padding: "56px 32px 32px", textAlign: "center" }}>
-        <p className="section-label" style={{ marginBottom: 12 }}>使用說明</p>
-        <h1 style={{ fontSize: 28, fontWeight: 700, color: CHAR, marginBottom: 10 }}>{c.guideTitle || "88La財務導航，完整使用說明"}</h1>
-        <p style={{ fontSize: 14, color: MID }}>從初次設定到每個月的節奏，一步步帶你熟悉整個系統</p>
-        {isAdmin && <p style={{ marginTop: 12 }}><span onClick={() => setPage("app")} style={{ fontSize: 12, color: O, cursor: "pointer" }}>在88La財務導航頁編輯內容 →</span></p>}
-      </div>
-      <div style={{ position: "sticky", top: 60, zIndex: 9, background: WHITE, padding: "16px 0", display: "flex", gap: 10, justifyContent: "center", flexWrap: "wrap", borderBottom: `1px solid ${BORDER}` }}>
-        {phases.map(phase => (
-          <span key={phase.id} onClick={() => scrollTo("phase-" + phase.id)} style={{ padding: "8px 18px", borderRadius: 999, fontSize: 13, fontWeight: 500, border: `1px solid ${BORDER}`, background: WHITE, color: CHAR, cursor: "pointer" }}>{phase.sub}</span>
-        ))}
-      </div>
-      <div style={{ maxWidth: 960, margin: "0 auto", padding: "0 32px" }} className="page-wrap">
-        {phases.map((phase, pi) => (
-          <div key={phase.id} id={"phase-" + phase.id} style={{ padding: "56px 0", borderBottom: pi < phases.length - 1 ? `1px solid ${BORDER}` : "none" }}>
-            <div style={{ marginBottom: 32 }}>
-              <span style={{ fontSize: 12, color: O, fontWeight: 700, letterSpacing: "1px" }}>{phase.label}</span>
-              {phase.isSetup && <span style={{ fontSize: 11, color: "#E8806E", background: O2, padding: "3px 10px", borderRadius: 999, marginLeft: 10 }}>開始使用，設定一次即可</span>}
-              <h2 style={{ fontSize: 24, fontWeight: 700, color: CHAR, marginTop: 6 }}>{phase.sub}</h2>
-            </div>
-            {phase.steps.map(step => (
-              <div key={step.id} className="card" style={{ padding: "22px 24px", marginBottom: 14, cursor: "default" }}>
-                <div style={{ display: "flex", alignItems: "baseline", gap: 12, marginBottom: 10 }}>
-                  <span style={{ fontSize: 12, fontWeight: 700, color: O }}>{step.num}</span>
-                  <span style={{ fontSize: 15, fontWeight: 500, color: CHAR }}>{step.title}</span>
-                </div>
-                <p style={{ fontSize: 13, color: MID, lineHeight: 1.8 }}>{step.body}</p>
-                {step.bullets?.length > 0 && (
-                  <ul style={{ marginTop: 10, paddingLeft: 18 }}>
-                    {step.bullets.map((b, bi) => <li key={bi} style={{ fontSize: 13, color: MID, marginBottom: 4 }}>{b}</li>)}
-                  </ul>
-                )}
-              </div>
-            ))}
-          </div>
-        ))}
-        <div style={{ background: O2, borderRadius: 16, padding: "20px 24px", margin: "40px 0", textAlign: "center" }}>
-          <p style={{ fontSize: 13, color: CHAR, lineHeight: 1.85 }}>{guideData.dataNote}</p>
+    <div className="nx-page">
+      {/* Hero */}
+      <div className="nx-in gd-hero">
+        <p className="nx-eyebrow" style={{ letterSpacing: ".16em" }}>使用說明</p>
+        <h1>卡在哪，就從哪一段看</h1>
+        <p>不用從頭讀完。下面每一段都可以單獨看懂，遇到卡住的地方再回來找。</p>
+        <div className="gd-jump">
+          {GD_JUMPS.map(([label, id]) => <a key={label} href={"#" + id}>{label}</a>)}
         </div>
-        {guideData.faqs?.length > 0 && (
-          <div style={{ padding: "40px 0 56px", borderTop: `1px solid ${BORDER}` }}>
-            <h2 style={{ fontSize: 24, fontWeight: 700, color: CHAR, marginBottom: 24, textAlign: "center" }}>常見問題</h2>
-            <div style={{ maxWidth: 720, margin: "0 auto", display: "flex", flexDirection: "column", gap: 14 }}>
-              {guideData.faqs.map(faq => (
-                <div key={faq.id} style={{ background: WHITE, border: `1px solid ${BORDER}`, borderRadius: 16, padding: "22px 26px" }}>
-                  <p style={{ fontSize: 15, fontWeight: 500, color: CHAR, marginBottom: 8 }}>{faq.q}</p>
-                  <p style={{ fontSize: 13, color: MID, lineHeight: 1.8 }}>{faq.a}</p>
-                </div>
+      </div>
+
+      <div className="gd-layout">
+        {/* 側邊目錄 */}
+        <aside className="gd-toc">
+          <p>目錄</p>
+          <nav>
+            {GD_SECTIONS.map(([id, n, name]) => (
+              <a key={id} href={"#" + id} className={active === id ? "is-on" : ""}>{n}　{name}</a>
+            ))}
+          </nav>
+          <div className="gd-toc-ask">
+            <p>找不到答案？</p>
+            <a className="nx-btn nx-btn-sec nx-btn-sec-strong nx-btn-block nx-btn-sm" href={lineUrl} {...ext}>在社群提問</a>
+          </div>
+        </aside>
+
+        <div className="gd-body">
+          {/* 01 第一次設定 */}
+          <section className="gd-sect" id="g-01">
+            <div className="gd-sect-head"><b>01</b><h2>第一次設定</h2><span>約 10 分鐘，只做一次</span></div>
+            <p className="gd-intro">這三件事做完，導航之後給你的分析會更完整！沒填完也沒關係，可以先開始記帳，之後補。</p>
+            <div className="gd-steps">
+              {GD_SETUP.map(([t, body, tip, img, alt], i) => (
+                <article key={t} className="gd-step">
+                  <b>{i + 1}</b>
+                  <div>
+                    <h3>{t}</h3>
+                    <p className="gd-step-body" style={{ whiteSpace: "pre-line" }}>{body}</p>
+                    <p className="gd-tip">{tip}</p>
+                  </div>
+                  <img src={HM_SHOT + img} width="940" height="1175" loading="lazy" alt={alt} />
+                </article>
               ))}
             </div>
-          </div>
-        )}
+          </section>
+
+          {/* 02 一個月怎麼走 */}
+          <section className="gd-sect" id="g-02">
+            <div className="gd-sect-head"><b>02</b><h2>一個月怎麼走</h2></div>
+            <p className="gd-intro">導航是一個月一個循環。你只要記得月初做一次、平常隨手做、月底看一次。</p>
+            <div className="gd-month">
+              {GD_MONTH.map(([when, title, steps, note, hi]) => (
+                <article key={when} className={hi ? "gd-hi" : ""}>
+                  <p className="gd-month-when">{when}</p>
+                  <h3>{title}</h3>
+                  <ol>{steps.map((s, i) => <li key={s}>{i + 1}　{s}</li>)}</ol>
+                  <p className="gd-month-note">{note}</p>
+                </article>
+              ))}
+            </div>
+          </section>
+
+          {/* 03 這筆該怎麼記 */}
+          <section className="gd-sect" id="g-03">
+            <div className="gd-sect-head"><b>03</b><h2>這筆該怎麼記</h2><span>最多人卡住的地方</span></div>
+            <p className="gd-intro">下面是社群裡問最多的情境。找不到你的情況？記錯也沒關係，之後可以改。</p>
+            <dl className="gd-table" style={{ margin: 0 }}>
+              <div className="gd-tr gd-thead"><div>情境</div><div>怎麼記</div></div>
+              {GD_CASES.map(([q, a]) => (
+                <div key={q} className="gd-tr"><dt>{q}</dt><dd>{a}</dd></div>
+              ))}
+            </dl>
+          </section>
+
+          {/* 04 名詞對照 */}
+          <section className="gd-sect" id="g-04">
+            <div className="gd-sect-head"><b>04</b><h2>名詞對照</h2></div>
+            <div className="gd-terms nx-hide-mob">
+              {GD_TERMS.map(([t, d]) => <div key={t}><h3>{t}</h3><p>{d}</p></div>)}
+            </div>
+            <div className="gd-acc nx-only-mob">
+              <p className="gd-intro" style={{ marginBottom: 8 }}>點一下看解釋。</p>
+              {GD_TERMS.map(([t, d]) => (
+                <details key={t}><summary>{t}</summary><p>{d}</p></details>
+              ))}
+            </div>
+          </section>
+
+          {/* 05 三種帳本 */}
+          <section className="gd-sect" id="g-05">
+            <div className="gd-sect-head"><b>05</b><h2>三種帳本</h2></div>
+            <p className="gd-intro">不知道自己要用哪本？先用「個人」就好。</p>
+            <div className="gd-books">
+              {GD_BOOKS.map(([t, d]) => <article key={t}><h3>{t}</h3><p>{d}</p></article>)}
+            </div>
+          </section>
+
+          {/* 06 疑難排解 */}
+          <section className="gd-sect" id="g-06">
+            <div className="gd-sect-head"><b>06</b><h2>疑難排解</h2></div>
+            <div className="gd-faq">
+              {GD_FAQ.map(([q, a]) => (
+                <div key={q}><h3>{q}</h3><p style={{ whiteSpace: "pre-line" }}>{a}</p></div>
+              ))}
+            </div>
+            <div className="gd-ask">
+              <div>
+                <strong>上面都沒有你的問題？</strong>
+                <em>在社群提問，或直接來信，通常三天內回覆</em>
+              </div>
+              <div>
+                <a className="nx-btn nx-btn-sec nx-btn-sec-strong nx-btn-sm" href={lineUrl} {...ext}>在社群提問</a>
+                <a className="nx-btn nx-btn-pri nx-btn-sm" href={mailUrl}>聯絡我們</a>
+              </div>
+            </div>
+            {isAdmin && (
+              <p style={{ marginTop: 20, fontSize: 12, color: LIGHT, lineHeight: 1.8 }}>
+                本頁文案已改為設計定稿，不再讀後台的「使用說明」資料（舊資料仍保留在
+                <span onClick={() => setPage("app")} style={{ color: O, cursor: "pointer", textDecoration: "underline", margin: "0 4px" }}>財務導航頁的後台編輯區</span>
+                ，確認不需要後可以移除）。
+              </p>
+            )}
+          </section>
+        </div>
       </div>
     </div>
   );
 }
 
 const demoMoney = value => `$${Number(value || 0).toLocaleString("en-US")}`;
-
 function DemoPhoneReport({ state }) {
   const data = deriveDemoPhonePreview(state);
 
@@ -3937,7 +4990,7 @@ function DemoPhoneReport({ state }) {
   );
 }
 
-function AppPage({ appContent, setAppContent, isAdmin, setPage, demoStory, setDemoStory }) {
+function AppLegacyAdmin({ appContent, setAppContent, isAdmin, setPage, demoStory, setDemoStory }) {
   const c = normalizeAppContent(appContent);
   const ds = normalizeDemoStory(demoStory);
   const upd = patch => setAppContent(prev => ({ ...DEFAULTS.appContent, ...(prev || {}), ...patch }));
@@ -4481,11 +5534,461 @@ function AppPage({ appContent, setAppContent, isAdmin, setPage, demoStory, setDe
 }
 
 //  NEW: 免費資源
-const RESOURCES_HERO_FIELDS = [
-  { key: "eyebrow", label: "小標籤（Eyebrow）" },
-  { key: "headline", label: "主標題" },
-  { key: "subhead", label: "副標題", multiline: true }
+//  AppPage（2026-09 改版：先看畫面 → 自己滑 demo → 完整功能 → 誠實比較 → 上手 → 方案 → FAQ）
+// 模板 2.0 的名稱與售價以商品資料（Firestore products）為唯一來源，跟 /shop 同一份，
+// 不在這頁另外寫一組。用 type === "digital" 這個結構化欄位辨識，不是拿名稱去猜；
+// 取不到商品資料時才退回下面的備援值（2026-09 對照正式站商品資料確認過）。
+const TEMPLATE_20_FALLBACK = { name: "理財自動導航器 2.0", price: "NT$ 699" };
+const findTemplateProduct = products => (products || []).find(p => p.type === "digital") || null;
+
+const IcBudget = () => (
+  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--nx-o)" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+    <path d="M19 7V5a2 2 0 0 0-2-2H5a2 2 0 0 0 0 4h14a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5" /><circle cx="16.5" cy="13" r="1.2" />
+  </svg>
+);
+const IcPen = () => (
+  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--nx-o)" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+    <path d="M12 20h9" /><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4Z" />
+  </svg>
+);
+const IcCompass = () => (
+  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--nx-o)" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+    <circle cx="12" cy="12" r="9" /><polygon points="15.5 8.5 10.5 10.5 8.5 15.5 13.5 13.5" />
+  </svg>
+);
+
+const AP_FEATURES_MAIN = [
+  [IcBudget, "預算編排", "四步驟走完月初分配，一路帶你分配完整", "budget.webp", "88La財務導航 預算頁：四步驟流程、盤點收入 $38,000、可存 $8,000、待分配 $26,162"],
+  [IcPen, "快速記帳", "類別、付款方式、需要或想要、當下心情，5 秒完成", "quick-record.webp", "88La財務導航 快速記帳：類別、支出類型、付款方式、帳目歸屬、需要或想要"],
+  [IcCompass, "月底診斷", "依據你的情況，偵測當月問題，給下個月的具體調整", "diagnosis.webp", "88La財務導航 診斷頁：本月你的支出發生了什麼，逐項說明缺口與判斷依據"],
 ];
+const AP_FEATURES_SUB = [
+  ["信用卡帳期", "結帳日、繳費日、本期應還，預留多少，一目瞭然", "credit-card.webp", "88La財務導航 信用卡帳期管理：三張卡的結帳與繳費日、本期應還 $5,774"],
+  ["負債追蹤", "學貸、分期還了多少、還剩多少，不漏繳", "debt.webp", "88La財務導航 負債追蹤：大學學貸已還 $28,896、本月還款提醒"],
+  ["帳戶與淨資產", "目標帳戶與活存分開看，錢有沒有往目標走", "accounts.webp", "88La財務導航 帳戶管理：淨資產、總資產與負債、目標帳戶與其他帳戶"],
+  ["儲蓄目標與預存", "長期目標、短期衝刺、半年繳的保險都算進來", "goals.webp", "88La財務導航 儲蓄目標頁：儲蓄目標進度、預存管理與短期衝刺目標"],
+];
+const AP_FEATURES_TEXT = [
+  ["願望清單", "想買的先記下來，冷靜幾天再決定"],
+  ["個人 / 公費 / 家庭", "三本各自獨立帳本，個人使用、情侶各自拿一筆公積金、雙薪家庭混用，三種模式互不混在一起"],
+  ["桌面快速記帳", "在電腦前工作時，也能兩秒記一筆"],
+  ["月度筆記", "寫下自己的心得，明年回看會很有感"],
+];
+// 三方比較。desktop 為完整敘述，mobile 為精簡版；first=true 的四項在手機預設展開
+const AP_COMPARE = [
+  { key: "月初分配", first: true,
+    app: "大多只能設類別上限，不幫你把整筆薪水分完", tpl: "五種分配模式可選，填完就看到比例與紅字示警", la: "四步驟帶著走，待分配金額一路跟著你",
+    mApp: "只設類別上限，不分完整筆薪水", mTpl: "五種分配模式，自己填", mLa: "四步驟帶著走，待分配金額一路跟著你" },
+  { key: "平常記一筆", first: false,
+    app: "很快，這是記帳 App 最擅長的事", tpl: "在表格裡填寫，適合每天固定坐下來記的人", la: "手機 5 秒，還能記下需要／想要與心情",
+    mApp: "很快，這是它最擅長的事", mTpl: "在表格裡填一列", mLa: "手機 5 秒，還記下需要／想要與心情" },
+  { key: "卡費預留", first: true,
+    app: "刷卡算當月支出，下個月要付多少看不到", tpl: "有信用卡待還款預警欄位，自己填", la: "自動計算你現在真正能花的有多少",
+    mApp: "刷卡當支出，看不到下月要付多少", mTpl: "需自己填預留金額", mLa: "自動算出現在真正能花多少" },
+  { key: "月底分析", first: true,
+    app: "圖表與類別佔比，要自己解讀", tpl: "診斷報告是我事先寫好的規則：符合哪個條件，就給哪一段建議，偏穩定、可預期", la: "讀你這個月的每一筆之後才寫，所以每個月分析狀況不一樣，給你的建議也會不同",
+    mApp: "告訴你錢花去哪", mTpl: "依固定規則給建議", mLa: "依這個月實際狀況，告訴你下月先改什麼" },
+  { key: "設備同步", first: true,
+    app: "通常只能在手機，或要另外付費才有雲端", tpl: "手機、平板、電腦都可以，存在你的 Google 雲端", la: "同一組帳號，手機、平板、電腦即時同步",
+    mApp: "多半只能在手機，雲端要加購", mTpl: "存在你的 Google 雲端", mLa: "同一組帳號，手機、平板、電腦即時同步" },
+  { key: "會不會改版", first: false,
+    app: "看各家更新", tpl: "買到的版本就是那個版本，表格完全屬於你的，可以自己改公式", la: "持續更新、優化，新功能自動出現，開放許願池",
+    mApp: "看各家更新", mTpl: "版本固定，但可以自己改公式", mLa: "持續更新，新功能自動出現，開放許願池" },
+  { key: "資料在哪", first: false,
+    app: "各家的伺服器，能不能匯出看它們", tpl: "你自己的 Google 雲端，永遠都在", la: "保存在你自己的 Google Sheets，隱私安全、還可以匯出歷史資料保存",
+    mApp: "各家伺服器，能否匯出看它們", mTpl: "你自己的 Google 雲端，永遠都在", mLa: "存在你的 Google Sheets，可匯出歷史資料" },
+  { key: "適合誰", first: false,
+    app: "只想知道這個月花了多少的人", tpl: "喜歡用表格整理資料、想自己掌控欄位填寫方式", la: "記帳容易斷掉、不知道記了之後要如何調整、想脫離被卡費追著跑的人",
+    mApp: "只想知道這個月花了多少", mTpl: "喜歡表格、想自己掌控欄位", mLa: "記帳容易斷掉、想脫離被卡費追著跑" },
+];
+const AP_STEPS = [
+  ["約 3 分鐘", "填入你手上有多少錢", "活存、目標帳戶、還有正在還的學貸或分期。只填一次，之後靠記帳自己更新。"],
+  ["約 4 分鐘", "設好每張卡的結帳日", "這一步做完，才知道你要預留多少卡費，也是最多人做完之後說「原來差在這裡」的一步。"],
+  ["約 3 分鐘", "寫下一個想存的目標", "一個就好 ～ 之後月底除了看支出狀況，也能一起看你有沒有離目標更近一步。"],
+];
+const AP_TERMS = [
+  ["固定 / 變動", "每月幾乎不變的（房租、保險）是固定；會浮動的（吃飯、交通）是變動。"],
+  ["儲蓄", "存起來不打算動的錢，是往目標走的那一筆。"],
+  ["未來預存", "為了以後某筆一定會來的支出先放的錢，例如半年繳的保險、年繳的稅。錢還是會花掉，只是提前準備。"],
+  ["時效性儲蓄", "短期內想達成的目標，例如三個月後的旅行。時間到就結束，不長期綁著。"],
+  ["卡費預留", "這個月刷掉、下個月要付的錢。88La 會先扣下來，所以你看到的餘額是真的可以花的。"],
+  ["個人 / 公費 / 家庭", "三本各自獨立帳本。個人的帳、情侶各自拿一筆當公積金、雙薪家庭薪資混用，三種模式互不混在一起。"],
+];
+const AP_DEVICES = [
+  ["支援裝置與同步", "Web App 不用下載，放置桌面體感接近原生 App。iPhone、Android、平板、電腦登入同一組帳號即時同步，手機記一筆，電腦馬上看得到。"],
+  ["登入方式", "Google 帳號一鍵登入，或用 Email 註冊。同一組帳號手機與電腦同步。"],
+  ["你的資料", "不連接你的銀行、不讀取交易紀錄，所有數字都是你自己輸入、資料都保存在你自己的 Google 帳號。"],
+  ["取消之後", "資料保留，隨時可以回來，也可以匯出成試算表帶走。"],
+];
+// 退費與續約的說法必須跟 /terms 的服務條款一致，改這裡前先看 DEFAULTS.termsContent 第三、四節
+const AP_FAQ = [
+  ["可以退費嗎？", "數位商品恕無試用期，月訂閱在下次扣款日前取消即可，不會再扣款，當期還能用到結束。"],
+  ["我完全沒記過帳，適合用嗎？", "可以，而且可能比記過帳的人更順，因為你沒有舊習慣要改，建議照上面的「第一個月只用兩個功能」開始。"],
+  ["手機記的帳，電腦看得到嗎？", "看得到。財務導航 Web App 支援跨裝置使用，手機、平板、電腦只要登入同一組帳號，看到的就是同一份資料，不用匯入匯出。在外面用手機 5 秒記一筆，回到電腦前排預算或看診斷，都是接得上的。"],
+  ["需要連接我的銀行帳戶嗎？", "不用。88La 不介接任何金融機構，所有數字都是你自己輸入的，這是刻意的選擇，手動記那 5 秒，本身就是讓你意識到花費的一部分。"],
+  ["跟另一半一起用可以嗎？", "目前一組帳號一個人使用，裡面有「公費」、「家庭」帳本可以記共同開銷，多人共用同一本帳的功能還在規劃中。"],
+  ["我買過實體存錢袋，還需要訂閱嗎？", "兩者可以搭著用：存錢袋負責現金的儀式感，導航負責整月的分配與診斷，想只用存錢袋也完全沒問題。"],
+  ["中間停用幾個月，資料還在嗎？", "在。取消訂閱只是暫停使用，資料留著，回來就接得上，也可以匯出成試算表。"],
+];
+
+function ApCompareRowM({ row }) {
+  return (
+    <div className="ap-row-m">
+      <p>{row.key}</p>
+      <dl>
+        <dt>記帳 App</dt><dd>{row.mApp}</dd>
+        <dt>模板</dt><dd>{row.mTpl}</dd>
+        <dt>88La</dt><dd>{row.mLa}</dd>
+      </dl>
+    </div>
+  );
+}
+
+function AppPage({ appContent, setAppContent, isAdmin, setPage, demoStory, setDemoStory, products }) {
+  const tpl = findTemplateProduct(products) || TEMPLATE_20_FALLBACK;
+  const TEMPLATE_20_NAME = tpl.name;
+  const TEMPLATE_20_PRICE = tpl.price;
+  const [moreOpen, setMoreOpen] = useState(false);
+  const [showLegacyAdmin, setShowLegacyAdmin] = useState(false);
+  const to = p => ({ href: pathForPage(p), onClick: e => { if (e.metaKey || e.ctrlKey || e.shiftKey || e.button) return; e.preventDefault(); setPage(p); } });
+  const mobileRows = [...AP_COMPARE.filter(r => r.first), ...AP_COMPARE.filter(r => !r.first)];
+  return (
+    <div className="nx-page">
+      {/* Hero */}
+      <div className="nx-in">
+        <section className="nx-hero">
+          <div>
+            <p className="nx-badge">
+              <b>訂閱制</b>
+              <span className="nx-hide-mob">{NT_MONTHLY} / 月，或年方案 {NT_YEARLY}</span>
+              <span className="nx-only-mob">{NT_MONTHLY} / 月起</span>
+            </p>
+            <h1 className="nx-h1">88La財務導航</h1>
+            <p className="nx-hero-p" style={{ color: "var(--nx-t1)", maxWidth: 480, fontSize: "clamp(17px,1.9vw,19px)", lineHeight: 1.78 }}>月初把錢安排好，平常 5 秒記一筆，月底告訴你下個月該從哪裡調整。</p>
+            <p className="nx-hero-p2">不是又一個記帳 App。是一整套「分配 → 記錄 → 診斷」的循環<span className="nx-hide-mob">，陪你把每個月走完</span>。</p>
+            <div className="nx-cta-row">
+              <a className="nx-btn nx-btn-pri nx-btn-lg" {...to("app")}>開始使用 →</a>
+              <a className="nx-btn nx-btn-sec nx-btn-lg" href="#demo">先滑滑看 demo ↓</a>
+            </div>
+            <p className="ap-hero-note">不用訂閱 · 免費試玩</p>
+          </div>
+          <div className="nx-shot-wrap">
+            <img className="nx-shot" src={HM_SHOT + "alert.webp"} width="940" height="1175" alt="88La財務導航 快訊頁：本月可用餘額 $4,729、本期卡費已預留 $4,249、提醒中心" />
+          </div>
+        </section>
+      </div>
+
+      {/* demo：官網現成的可滑示範 */}
+      <section className="nx-band nx-anchor" id="demo" style={{ paddingBlock: "clamp(32px,5vw,64px)" }}>
+        <div className="nx-in ap-demo">
+          <div>
+            <p className="nx-eyebrow" style={{ marginBottom: 14 }}>先試，再決定</p>
+            <h2 className="nx-h2" style={{ marginBottom: 16 }}>與其一堆說明，<br />不如自己滑一次！</h2>
+            <p className="ap-demo-p">這是完整的 88La財務導航，載入了一個月的示範資料。你可以真的按下去、切分頁、體驗看看。</p>
+            <p className="ap-demo-note">不用訂閱、不用信用卡，也不會存下任何東西。</p>
+            <div className="ap-demo-actions">
+              <a className="nx-btn nx-btn-dark nx-btn-md" href="/app-demo/index.html" target="_blank" rel="noopener noreferrer">開始試玩 →</a>
+              <span>約 1 分鐘</span>
+            </div>
+          </div>
+          <div>
+            {/* 示範畫面是 public/app-demo/ 的靜態頁，不是正式 App 的 iframe。
+                正式 App 的 ?demo=true 靠十幾處鎖點遮住建議層，訪客滑完只看得到
+                「待補充答案」與一堆 🔒，看不出系統要他改什麼；每次 App 改版
+                還要重補鎖點。靜態頁改放診斷「完成後」的樣子，數字寫死、
+                不需鎖點，也不會被 App 改版打壞（2026-08-22）。 */}
+            {/* 指到 index.html 而不是目錄：vercel.json 的 catch-all rewrite
+                會把取不到檔案的路徑導向官網首頁，官網就會嵌進自己。 */}
+            <div className="ap-phone">
+              <div className="ap-phone-notch nx-hide-mob"><i /></div>
+              <div className="ap-phone-screen">
+                <iframe src="/app-demo/index.html" title="88La財務導航示範" loading="lazy" />
+              </div>
+              <div className="ap-phone-bar nx-hide-mob"><i /></div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* 完整功能 */}
+      <section style={{ paddingBlock: "clamp(32px,5vw,64px) clamp(28px,4.5vw,56px)" }}>
+        <div className="nx-in">
+          <div style={{ marginBottom: "clamp(20px,2.8vw,36px)" }}>
+            <p className="nx-eyebrow" style={{ marginBottom: 12 }}>完整功能</p>
+            <h2 className="nx-h2" style={{ marginBottom: 12 }}>訂閱後，這些全部都在</h2>
+            <p className="nx-lead" style={{ maxWidth: 520 }}>十一個功能，圍繞著同一件事：讓你在花錢之前，就知道這筆錢屬於哪裡。</p>
+          </div>
+          <div className="ap-grid ap-grid-3" style={{ marginBottom: 20 }}>
+            {AP_FEATURES_MAIN.map(([Icon, t, d, img, alt]) => (
+              <article key={t} className="nx-card ap-card">
+                <div className="ap-card-head"><Icon /><h3>{t}</h3></div>
+                <p>{d}</p>
+                <img src={HM_SHOT + img} width="940" height="1175" loading="lazy" alt={alt} />
+              </article>
+            ))}
+          </div>
+          <div className="ap-grid ap-grid-4" style={{ marginBottom: 20 }}>
+            {AP_FEATURES_SUB.map(([t, d, img, alt]) => (
+              <article key={t} className="nx-card ap-card ap-card-sm">
+                <h3>{t}</h3>
+                <p className="nx-hide-mob">{d}</p>
+                <img src={HM_SHOT + img} width="940" height="1175" loading="lazy" alt={alt} />
+              </article>
+            ))}
+          </div>
+          <div className="ap-grid ap-grid-4 nx-hide-mob">
+            {AP_FEATURES_TEXT.map(([t, d]) => (
+              <article key={t} className="ap-card-plain"><h3>{t}</h3><p>{d}</p></article>
+            ))}
+          </div>
+          <div className="ap-chips nx-only-mob">
+            {AP_FEATURES_TEXT.map(([t]) => <span key={t}>{t}</span>)}
+          </div>
+        </div>
+      </section>
+
+      {/* 誠實比較 */}
+      <section className="nx-dark" style={{ paddingBlock: "clamp(32px,5vw,64px)" }}>
+        <div className="nx-in" style={{ maxWidth: 1020 }}>
+          <div style={{ marginBottom: "clamp(20px,2.6vw,32px)" }}>
+            <p className="nx-eyebrow nx-eyebrow-dark" style={{ marginBottom: 14 }}>誠實比較</p>
+            <h2 className="nx-h2" style={{ color: "var(--nx-dt)", marginBottom: 14 }}>一般記帳 App，或模板 2.0 呢？</h2>
+            <p style={{ maxWidth: 640, fontSize: "clamp(14px,1.5vw,16px)", lineHeight: 1.9, color: "rgba(255,255,255,.62)" }}>
+              一般記帳 App 很多都免費；Google Sheets 版的「{TEMPLATE_20_NAME}」是 {TEMPLATE_20_PRICE} 一次買斷，它沒有被取代，也不是舊版，三者都能管錢，但解決的不是同一件事。
+            </p>
+          </div>
+          <div className="ap-vs">
+            <article>
+              <h3>一般記帳 App</h3>
+              <p className="ap-vs-meta">市面上大多數</p>
+              <p className="ap-vs-price" style={{ fontSize: "clamp(17px,1.9vw,20px)" }}>多為免費，匯出檔案才訂閱</p>
+              <p className="ap-vs-sub">把花過的錢記下來，幫你算好圖表</p>
+              <p className="ap-vs-foot">強項是「記錄」，月底給你一張圓餅圖，但要調哪裡，還是你自己想。</p>
+            </article>
+            <article>
+              <div className="ap-vs-kicker"><h3>{TEMPLATE_20_NAME}</h3><span>Google Sheets</span></div>
+              <p className="ap-vs-price">{TEMPLATE_20_PRICE}<span> 一次買斷</span></p>
+              <p className="ap-vs-sub">付一次，用到你不想用為止</p>
+              <img src={HM_SHOT + "sheets-template.webp"} width="1100" height="550" loading="lazy" alt={`${TEMPLATE_20_NAME} 進階版：五種分配模式、月底各項診斷報告、即時動態進度條`} />
+            </article>
+            <article className="ap-vs-hi">
+              <div className="ap-vs-kicker"><h3>88La財務導航</h3><span>手機與網頁</span></div>
+              <p className="ap-vs-price">{NT_MONTHLY}<span> / 月起</span></p>
+              <p className="ap-vs-sub">陪你走每一個月，隨時可停</p>
+              <div className="ap-vs-shot">
+                <img src={HM_SHOT + "alert.webp"} width="940" height="1175" loading="lazy" alt="88La財務導航 快訊頁：本月可用餘額 $4,729、本期卡費已預留 $4,249" />
+              </div>
+            </article>
+          </div>
+
+          <div className="ap-table nx-hide-mob">
+            <div className="ap-tr ap-thead">
+              <div>比較項目</div><div>一般記帳 App</div><div>模板 2.0（買斷）</div><div>財務導航（訂閱）</div>
+            </div>
+            {AP_COMPARE.map(r => (
+              <div key={r.key} className="ap-tr ap-tbody">
+                <div>{r.key}</div><div>{r.app}</div><div>{r.tpl}</div><div>{r.la}</div>
+              </div>
+            ))}
+          </div>
+          <div className="ap-table-m nx-only-mob">
+            {mobileRows.slice(0, 4).map(r => <ApCompareRowM key={r.key} row={r} />)}
+            {moreOpen && mobileRows.slice(4).map(r => <ApCompareRowM key={r.key} row={r} />)}
+            <button className="ap-more" onClick={() => setMoreOpen(v => !v)} aria-expanded={moreOpen}>
+              {moreOpen ? "收合" : `看其他 ${mobileRows.length - 4} 項`}
+            </button>
+          </div>
+
+          <p className="ap-note">沒有哪個更好！記帳 App 告訴你「花了多少」，模板與導航幫你決定「還能花多少」；而模板與導航的差別，在你要的是一張永遠屬於你的表，還是一個每個月會來幫你分析、給你建議。<br />兩個都用的人也不少，模板記全年大帳，導航管當月流水。</p>
+          <p className="ap-note-weak">另外還有免費的分配計劃（Google Sheets 範本），先從免費的開始也完全可以。</p>
+        </div>
+      </section>
+
+      {/* 上手三件事 */}
+      <section className="nx-band" style={{ paddingBlock: "clamp(32px,5vw,64px) clamp(28px,4.5vw,56px)" }}>
+        <div className="nx-in">
+          <div className="nx-sect-head">
+            <div>
+              <p className="nx-eyebrow">開始之前</p>
+              <h2 className="nx-h2">第一次進來，你只要做這三件事</h2>
+              <p className="nx-lead">加起來大約 10 分鐘！做完之後，每天只需要記帳那 5 秒。</p>
+            </div>
+            <p className="nx-pill"><IcClock />設定一次，約 10 分鐘</p>
+          </div>
+          <div className="nx-steps">
+            {AP_STEPS.map(([mins, t, d], i) => (
+              <article key={t} className="nx-card">
+                <div className="nx-step-no"><b>{i + 1}</b><span>{mins}</span></div>
+                <h3 className="nx-h3">{t}</h3>
+                <p style={{ marginBottom: 0 }}>{d}</p>
+              </article>
+            ))}
+          </div>
+          <p className="nx-lead nx-hr">還沒填完也沒關係，空著也能開始記帳，之後任何時候補都可以</p>
+        </div>
+      </section>
+
+      {/* 不用一次全用 */}
+      <section style={{ paddingBlock: "clamp(32px,5vw,64px)", borderBottom: "1px solid var(--nx-bd)" }}>
+        <div className="nx-in nx-stack">
+          <div>
+            <p className="nx-eyebrow" style={{ marginBottom: 14 }}>不用一次全用</p>
+            <h2 className="nx-h2" style={{ lineHeight: 1.4, marginBottom: 18 }}>設定完，第一個月日常只做兩件事</h2>
+            <p className="nx-body">88La 是為了陪你走好幾年設計的「理財工具」，所以功能會跟一般記帳 App 不同。但你不必一開始就全部搞懂，照下面的順序慢慢開就好。</p>
+          </div>
+          <div className="nx-stack-list">
+            <article className="nx-stack-now" style={{ background: "var(--nx-os)" }}>
+              <div style={{ display: "flex", alignItems: "baseline", justifyContent: "space-between", gap: 16, marginBottom: 10 }}>
+                <h3>第一個月：只用快訊 + 快速記帳</h3>
+                <span className="nx-stack-tag" style={{ marginTop: 0, whiteSpace: "nowrap" }}>先做到這裡就夠</span>
+              </div>
+              <p>每天花 5 秒記一筆，看一眼餘額。這樣月底就已經有一份診斷可以看。</p>
+            </article>
+            <article className="nx-stack-now" style={{ background: "var(--nx-bg2)", border: "1px solid var(--nx-bd)" }}>
+              <h3>第二個月：打開預算與卡費預留</h3>
+              <p>看過一次自己的真實花費之後，再排預算會準得多，也比較不會偏離現實生活太遠。</p>
+            </article>
+            <article className="nx-stack-now" style={{ background: "var(--nx-bg2)", border: "1px solid var(--nx-bd)" }}>
+              <h3>未來：目標、負債、願望清單、公費與家庭</h3>
+              <p>有需要再開，隨時都在為你準備好！</p>
+            </article>
+          </div>
+        </div>
+      </section>
+
+      {/* 名詞小辭典 */}
+      <section className="nx-band" style={{ paddingBlock: "clamp(32px,5vw,64px)" }}>
+        <div className="nx-in">
+          <div style={{ marginBottom: "clamp(20px,2.6vw,32px)" }}>
+            <p className="nx-eyebrow" style={{ marginBottom: 12 }}>先認識幾個詞</p>
+            <h2 className="nx-h2" style={{ marginBottom: 12 }}>88La財務導航裡說的，<br />是這個意思！</h2>
+            <p className="nx-lead" style={{ maxWidth: 560 }}>記帳時會看到這幾個選項，先看過一遍，進去就不會卡在「這個要選哪個」。</p>
+          </div>
+          <div className="nx-terms">
+            {AP_TERMS.map(([t, d]) => (
+              <article key={t} className="nx-card" style={{ boxShadow: "none" }}><h3>{t}</h3><p>{d}</p></article>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* beta 回饋 */}
+      <section style={{ paddingBlock: "clamp(32px,5vw,64px) clamp(28px,4.5vw,56px)", borderBottom: "1px solid var(--nx-bd)" }}>
+        <div className="nx-in">
+          <div style={{ marginBottom: "clamp(20px,2.6vw,32px)" }}>
+            <p className="nx-eyebrow" style={{ marginBottom: 12 }}>beta 使用者說</p>
+            <h2 className="nx-h2" style={{ marginBottom: 12 }}>體驗真實回饋</h2>
+            <p className="nx-lead" style={{ maxWidth: 520 }}>以下是 88La財務導航 beta 期間收到的回饋</p>
+          </div>
+          <div className="ap-quotes">
+            <article className="nx-card">
+              <blockquote>好用的記帳理財工具，會讓我每天主動想打開記帳、看看自己的財務狀況，完全是對每個人量身打造的工具！</blockquote>
+              <cite>beta 使用者 · Ｙ先生</cite>
+            </article>
+            <article className="nx-card">
+              <blockquote>這款理財工具是我用過最棒的，而且持之以恆的邁入第二個月了！</blockquote>
+              <cite>beta 使用者 · Ｌ小姐</cite>
+            </article>
+            <article className="nx-card ap-crit">
+              <p className="ap-crit-tag">批評，以及我們怎麼改</p>
+              <blockquote style={{ marginBottom: 14 }}>「功能說明不清，第一次使用阻力比較大。」</blockquote>
+              <p className="ap-crit-fix">所以有了上面的「三件事」與名詞小辭典，App 內也加了第一次使用的欄位說明。</p>
+            </article>
+          </div>
+        </div>
+      </section>
+
+      {/* 支援裝置 */}
+      <section className="nx-band" style={{ paddingBlock: "clamp(28px,4vw,52px)" }}>
+        <div className="nx-in">
+          <dl className="ap-devices">
+            {AP_DEVICES.map(([t, d]) => <div key={t}><dt>{t}</dt><dd>{d}</dd></div>)}
+          </dl>
+        </div>
+      </section>
+
+      {/* 方案 */}
+      <section style={{ paddingBlock: "clamp(32px,5vw,64px) clamp(28px,4.5vw,56px)" }}>
+        <div className="nx-in">
+          <div style={{ textAlign: "center", marginBottom: "clamp(24px,3.4vw,36px)" }}>
+            <p className="nx-eyebrow" style={{ marginBottom: 12 }}>方案</p>
+            <h2 className="nx-h2" style={{ marginBottom: 12 }}>每月一頓飯的錢，換來不焦慮</h2>
+            <p className="nx-lead">兩個方案功能完全一樣，只差付款週期</p>
+          </div>
+          <div className="ap-plans">
+            <div className="ap-plan">
+              <p className="ap-plan-name">月訂閱</p>
+              <p className="ap-plan-price">{NT_MONTHLY}<span> /月</span></p>
+              <p className="ap-plan-sub">隨時可取消</p>
+              <ul><li>完整功能</li><li>桌面快速記帳</li><li>下次扣款前可取消</li></ul>
+              <a className="nx-btn nx-btn-sec nx-btn-sec-strong nx-btn-block nx-btn-md" {...to("app")}>選這個方案</a>
+            </div>
+            <div className="ap-plan ap-plan-dark">
+              <span className="ap-plan-badge">最多人選擇</span>
+              <p className="ap-plan-name">年方案</p>
+              <p className="ap-plan-price">{NT_YEARLY}<span> /年</span></p>
+              <p className="ap-plan-sub">相當於 NT$ {APP_YEARLY_MONTHLY_EQUIVALENT} / 月，省下約 {APP_YEARLY_DISCOUNT}%</p>
+              <ul><li>完整功能</li><li>桌面快速記帳</li><li>單筆付款，不自動續約</li></ul>
+              <a className="nx-btn nx-btn-pri nx-btn-block nx-btn-md" {...to("app")}>開始使用 →</a>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* FAQ */}
+      <section style={{ paddingBottom: "clamp(32px,5vw,64px)" }}>
+        <div className="nx-in">
+          <div className="ap-faq">
+            <h2>常見問題</h2>
+            {AP_FAQ.map(([q, a]) => (
+              <details key={q} open>
+                <summary>{q}</summary>
+                <p>{a}</p>
+              </details>
+            ))}
+            <div className="ap-ask">
+              <div>
+                <strong>還有其他問題？</strong>
+                <em>來信或在社群提問，通常三天內回覆</em>
+              </div>
+              <div>
+                <a className="nx-btn nx-btn-sec nx-btn-sec-strong nx-btn-sm" href={`mailto:${PUBLIC_CONTACT_EMAIL}`}>聯絡我們</a>
+                <a className="nx-btn nx-btn-pri nx-btn-sm" {...to("app")}>開始使用 →</a>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section className="nx-band" style={{ paddingBlock: "clamp(24px,3vw,32px)", borderBottom: "none" }}>
+        <p className="nx-in nx-lead" style={{ textAlign: "center" }}>
+          88La 也有免費的 Excel 範本、理財文章與實體存錢袋，<a className="nx-link" {...to("resources")}>先從免費的開始</a>也完全可以
+        </p>
+      </section>
+
+      {/* 手機置底 CTA */}
+      <div className="nx-sticky">
+        <div>
+          <b>88La財務導航</b>
+          <span>{NT_MONTHLY} / 月起</span>
+        </div>
+        <a className="nx-btn nx-btn-pri nx-btn-sm" {...to("app")}>開始使用</a>
+      </div>
+
+      {/* 後台：舊版 /app 頁只是保留下來當編輯器，方案與使用說明資料還是從這裡改。
+          等 /guide 改版做完會把這些編輯器搬到合適的地方（2026-09） */}
+      {isAdmin && (
+        <div style={{ borderTop: `2px dashed ${BORDER}`, padding: "24px 20px", background: GRAY }}>
+          <button onClick={() => setShowLegacyAdmin(v => !v)} style={{ background: "none", border: "none", padding: 0, fontFamily: "inherit", fontSize: 13, color: O, cursor: "pointer", textDecoration: "underline" }}>
+            {showLegacyAdmin ? "收合" : "展開"}後台編輯區（方案、功能、使用說明 FAQ）
+          </button>
+          {showLegacyAdmin && <AppLegacyAdmin appContent={appContent} setAppContent={setAppContent} isAdmin={isAdmin} setPage={setPage} demoStory={demoStory} setDemoStory={setDemoStory} />}
+        </div>
+      )}
+    </div>
+  );
+}
+
 
 const TOOL_QUIZ_QUESTIONS = [
   {
@@ -4666,14 +6169,54 @@ function ToolQuiz({ setPage }) {
   );
 }
 
-function Resources({ resources, setResources, isAdmin, articles, setId, setPage, resourcesHero, setResourcesHero, resourcesCopy, setResourcesCopy }) {
-  const rc = { ...DEFAULTS.resourcesCopy, ...(resourcesCopy || {}) };
-  const [editCopy, setEditCopy] = useState(false);
-  const [tmpCopy, setTmpCopy] = useState(rc);
+//  Resources（2026-09 改版：卡點分流 → 頭條工具 → 工具卡 → 模板 → 工具/App/手帳分工 → CTA）
+//
+// 版面角色表：key 是資源連結的「路徑」，做完全比對，不是拿名稱去猜關鍵字。
+// Barbara 在後台改資源名稱不會改變版面行為；改連結才會，改完該項就退回一般工具卡（可見的降級）。
+// 分類標籤（試算/測驗/盤點/目標/懶人包/判斷準則）目前 Firestore 的 type 只有「工具」「模板」兩種，
+// 所以細分類放在這張表；沒登記的資源就用 type 當標籤。
+const RESOURCE_LAYOUT = {
+  "/resources/budget-planner/index.html": { order: 1, category: "試算", featured: true, anchor: "t-budget", cta: "開始練習 →", meta: "約 3 分鐘 · 免註冊", badge: "最多人從這裡開始" },
+  "/resources/credit-card-reserve/index.html": { order: 2, category: "試算", anchor: "t-card", cta: "打開工具 →" },
+  "/resources/survival-line/index.html": { order: 3, category: "試算", cta: "打開工具 →" },
+  "/resources/spending-check/index.html": { order: 4, category: "盤點", cta: "打開工具 →" },
+  "/resources/golden-circle/index.html": { order: 5, category: "目標", cta: "打開工具 →" },
+  "/file/d/1tlGyY_TZHKBy-H6SMttFsuM7UNQy5lep/view": { order: 6, category: "懶人包", cta: "下載懶人包 →" },
+  "/resources/savings-bag-quiz/index.html": { order: 7, category: "測驗", anchor: "t-save", cta: "開始測驗 →" },
+  "/resources/emergency-fund-quiz/index.html": { order: 8, category: "測驗", cta: "開始測驗 →" },
+  "/resources/declutter-check/index.html": { order: 20, category: "判斷準則", highlight: true, cta: "產生我的準則 →" },
+};
+const resourceLayout = r => {
+  try { return RESOURCE_LAYOUT[new URL(normalizeResourceUrl(r.url || ""), window.location.origin).pathname] || {}; }
+  catch { return {}; }
+};
+// 工具診斷是站內頁面，不是 Firestore 的資源項目，所以固定放在工具格的最後一張
+const RS_TOOL_QUIZ = {
+  category: "測驗",
+  name: "你現在最需要哪一種理財工具？",
+  desc: "3 到 5 題，從你最想解決的事情開始，不用先判斷自己是哪種理財程度。結果只給一個第一推薦。",
+  cta: "開始測驗 →",
+};
+const RS_BLOCKERS = [
+  ["錢不知道花去哪", "→ 預算分配練習器、最低生存線", "t-budget"],
+  ["卡費一直追著跑", "→ 卡費預留試算工具", "t-card"],
+  ["存不下來、不知道怎麼存", "→ 存錢方式測驗、預備金順序", "t-save"],
+];
+const RS_ROLES = [
+  ["工具", "算一次就好。看清楚卡在哪個數字"],
+  ["App", "每個月重來一次。預算 → 記帳 → 診斷"],
+  ["手帳", "看得見、摸得到。想離開螢幕的時候用"],
+];
+
+function Resources({ resources, setResources, isAdmin, setPage }) {
   const [editPwd, setEditPwd] = useState(false);
   const [pwdVal, setPwdVal] = useState("");
   const [pwdSaving, setPwdSaving] = useState(false);
   const [pwdMsg, setPwdMsg] = useState("");
+  const [editing, setEditing] = useState(null);
+  const [form, setForm] = useState({ name: "", type: "模板", desc: "", url: "", img: "", active: true });
+  const [resUrlErr, setResUrlErr] = useState("");
+  const sf = k => e => setForm(p => ({ ...p, [k]: e.target.value }));
   const savePwd = async () => {
     if (pwdVal.trim().length < 4) { setPwdMsg("密碼至少要 4 個字元"); return; }
     setPwdSaving(true); setPwdMsg("");
@@ -4687,188 +6230,206 @@ function Resources({ resources, setResources, isAdmin, articles, setId, setPage,
       setPwdSaving(false);
     }
   };
-  const [mainFilter, setMainFilter] = useState("all");
-  const showTools = mainFilter === "all" || mainFilter === "tools";
-  const showArticles = mainFilter === "all" || mainFilter === "free" || mainFilter === "member";
-  const articleList = [...(articles || [])].sort((a, b) => (b.date || "").localeCompare(a.date || ""));
-  const filteredArticles = articleList.filter(a => mainFilter === "member" ? a.member : mainFilter === "free" ? !a.member : true);
-  const openArticle = id => { const a = (articles || []).find(x => x.id === id); setId(id); setPage("article"); window.scrollTo({ top: 0, behavior: "instant" }); history.pushState({}, "", "/article/" + encodeURIComponent(a?.slug || id)); };
-  const [editing, setEditing] = useState(null);
-  const [form, setForm] = useState({ name: "", type: "模板", desc: "", url: "", img: "", active: true });
-  const [resUrlErr, setResUrlErr] = useState("");
-  const sf = k => e => setForm(p => ({ ...p, [k]: e.target.value }));
-  const items = resources || [];
-  const filtered = items.filter(r => r.active).sort((a, b) => b.id - a.id);
   const startAdd = () => { setForm({ name: "", type: "模板", desc: "", url: "", img: "", active: true }); setEditing("new"); setResUrlErr(""); };
   const startEdit = r => { setForm({ ...r }); setEditing(r.id); setResUrlErr(""); };
   const save = () => {
     if (form.url && !isValidUrl(form.url)) { setResUrlErr("連結格式不正確，需以 https:// 開頭"); return; }
     setResUrlErr("");
-    if (editing === "new") setResources(prev => [{ ...form, id: Date.now() }, ...(prev || [])]); else setResources(prev => (prev || []).map(r => r.id === editing ? { ...r, ...form } : r)); setEditing(null);
+    if (editing === "new") setResources(prev => [{ ...form, id: Date.now() }, ...(prev || [])]);
+    else setResources(prev => (prev || []).map(r => r.id === editing ? { ...r, ...form } : r));
+    setEditing(null);
   };
   const del = id => { if (confirm("確定刪除？")) setResources(prev => (prev || []).filter(r => r.id !== id)); };
-  return (
-    <PageHero title="資源中心頁文字" fields={RESOURCES_HERO_FIELDS} data={resourcesHero} setData={setResourcesHero} defaults={DEFAULTS.resourcesHero} isAdmin={isAdmin}>
-      {(h, editLink) => (
-    <div>
-      <div style={{ background: GRAD, padding: "64px 32px" }}>
-        <div style={{ maxWidth: 1100, margin: "0 auto" }}>
-          <p className="section-label" style={{ marginBottom: 12 }}>{h.eyebrow}</p>
-          <h1 style={{ fontSize: 30, fontWeight: 700, color: CHAR, marginBottom: 12 }}>{h.headline}</h1>
-          <p style={{ fontSize: 14, color: MID, maxWidth: 480 }}>{h.subhead}</p>
-          {editLink}
-        </div>
-      </div>
-      <div style={{ maxWidth: 1100, margin: "0 auto", padding: "40px 32px 0" }} className="page-wrap">
-        <div style={{ display: "flex", gap: 8, flexWrap: "wrap", marginBottom: 8 }}>
-          {[["all", rc.filterAll], ["tools", rc.filterTools], ["free", rc.filterFree], ["member", rc.filterMember]].map(([k, label]) => (
-            <span key={k} onClick={() => setMainFilter(k)} style={{ fontSize: 13, padding: "8px 18px", borderRadius: 999, cursor: "pointer", border: `1px solid ${mainFilter === k ? O : BORDER}`, background: mainFilter === k ? O : "transparent", color: mainFilter === k ? WHITE : CHAR, transition: "background .15s" }}>{label}</span>
-          ))}
-          {isAdmin && <span onClick={() => { setTmpCopy(rc); setEditCopy(true); }} style={{ fontSize: 12, color: O, cursor: "pointer", alignSelf: "center", marginLeft: 4 }}>編輯本頁文字</span>}
-        </div>
-        {editCopy && (
-          <div style={{ background: GRAY, padding: "24px", marginBottom: 20, border: `1px solid ${BORDER}` }}>
-            <p style={{ fontSize: 11, color: MID, marginBottom: 16, letterSpacing: "1px" }}>編輯頁面文字</p>
-            <div style={{ display: "flex", flexDirection: "column", gap: 12, marginBottom: 16 }}>
-              {[
-                ["filterAll", "篩選：全部"], ["filterTools", "篩選：互動工具"], ["filterFree", "篩選：免費文章"], ["filterMember", "篩選：會員文章"],
-                ["toolsHeading", "互動工具區標題"], ["toolsSub", "互動工具區說明"],
-                ["toolsEmpty1", "無互動工具提示（第一行）"], ["toolsEmpty2", "無互動工具提示（第二行）"],
-                ["articlesHeading", "文章區標題"], ["articlesSub", "文章區說明"], ["articlesEmpty", "無文章提示"],
-              ].map(([k, label]) => (
-                <div key={k}>
-                  <p style={{ fontSize: 12, color: MID, marginBottom: 4 }}>{label}</p>
-                  <input value={tmpCopy[k] ?? ""} onChange={e => setTmpCopy(p => ({ ...p, [k]: e.target.value }))} />
-                </div>
-              ))}
-            </div>
-            <div style={{ display: "flex", gap: 10 }}><button className="pb" onClick={() => { setResourcesCopy(tmpCopy); setEditCopy(false); }}>儲存</button><button className="pg" onClick={() => setEditCopy(false)}>取消</button></div>
-          </div>
+  const countClick = r => setResources(prev => (prev || []).map(x => x.id === r.id ? { ...x, clicks: (x.clicks || 0) + 1 } : x), { silent: true });
+
+  const items = resources || [];
+  const live = items.filter(r => r.active);
+  const byOrder = (a, b) => (resourceLayout(a).order ?? 99) - (resourceLayout(b).order ?? 99) || b.id - a.id;
+  const featured = live.find(r => resourceLayout(r).featured) || null;
+  const templates = live.filter(r => r.type === "模板").sort(byOrder);
+  const tools = live.filter(r => r !== featured && r.type !== "模板").sort(byOrder);
+  const to = p => ({ href: pathForPage(p), onClick: e => { if (e.metaKey || e.ctrlKey || e.shiftKey || e.button) return; e.preventDefault(); setPage(p); } });
+
+  const ToolCard = ({ r }) => {
+    const L = resourceLayout(r);
+    return (
+      <article className={"rs-tool" + (L.highlight ? " rs-tool-hi" : "") + (L.anchor ? " nx-anchor" : "")} id={L.anchor}>
+        <p className="rs-tag">{L.category || r.type}</p>
+        <h3>{r.name}</h3>
+        <p>{r.desc}</p>
+        {r.url && (
+          <a className="rs-tool-cta" href={normalizeResourceUrl(r.url)} target="_blank" rel="noopener noreferrer" onClick={() => countClick(r)}>
+            {L.cta || (r.type === "模板" ? "取得模板 →" : "打開工具 →")}
+          </a>
         )}
         {isAdmin && (
-          <div style={{ marginTop: 20, background: GRAY, border: `1px solid ${BORDER}`, padding: "16px 20px" }}>
-            <p style={{ fontSize: 12, color: MID, lineHeight: 1.8 }}>會員文章密碼，讀者需輸入此密碼才能看到會員限定文章全文。</p>
-            <p style={{ fontSize: 11, color: LIGHT, marginTop: 6, marginBottom: 12, lineHeight: 1.6 }}>會員全文會透過受保護 API 讀取，解鎖前不會載入到瀏覽器 DOM。密碼儲存後不會在畫面上顯示原始內容。</p>
-            {!editPwd ? (
-              <span onClick={() => { setEditPwd(true); setPwdVal(""); setPwdMsg(""); }} style={{ fontSize: 12, color: O, cursor: "pointer", textDecoration: "underline" }}>修改密碼</span>
-            ) : (
-              <div style={{ display: "flex", gap: 10, flexWrap: "wrap", alignItems: "center" }}>
-                <input type="text" value={pwdVal} onChange={e => setPwdVal(e.target.value)} placeholder="輸入新密碼" style={{ maxWidth: 220 }} />
-                <button className="pb" disabled={pwdSaving} onClick={savePwd}>{pwdSaving ? "儲存中..." : "儲存"}</button>
-                <button className="pg" onClick={() => { setEditPwd(false); setPwdVal(""); setPwdMsg(""); }}>取消</button>
-              </div>
-            )}
-            {pwdMsg && <p style={{ fontSize: 12, color: pwdMsg.includes("已更新") ? "#4a8c5c" : "#C0392B", marginTop: 8 }}>{pwdMsg}</p>}
+          <div className="rs-admin-row">
+            <span>{r.clicks || 0} 次點擊</span>
+            <button className="pg" style={{ fontSize: 11, padding: "4px 10px" }} onClick={() => startEdit(r)}>編輯</button>
+            <button className="pg" style={{ fontSize: 11, padding: "4px 10px", color: "#E74C3C", borderColor: "#E74C3C" }} onClick={() => del(r.id)}>刪除</button>
           </div>
         )}
-        <div style={{ marginTop: 26, background: O2, border: `1px solid ${O}24`, borderRadius: 16, padding: "22px 24px", display: "flex", alignItems: "center", justifyContent: "space-between", gap: 18, flexWrap: "wrap" }}>
-          <div style={{ flex: 1, minWidth: 240 }}>
-            <h2 style={{ fontSize: 18, color: CHAR, fontWeight: 700, marginBottom: 6 }}>不確定自己需要哪個工具？</h2>
-            <p style={{ fontSize: 13, color: MID, lineHeight: 1.8 }}>用 60 秒找到目前最值得先處理的卡點，結果只給一個主要入口。</p>
-          </div>
-          <button className="pb" onClick={() => setPage("tool-quiz")} style={{ flexShrink: 0 }}>開始工具診斷</button>
-        </div>
+      </article>
+    );
+  };
+
+  return (
+    <div className="nx-page">
+      {/* Hero */}
+      <div className="nx-in rs-hero">
+        <p className="nx-eyebrow" style={{ letterSpacing: ".16em" }}>免費工具</p>
+        <h1>先算清楚，再決定最適合你的</h1>
+        <p>免費工具都不用註冊、不用下載，填幾個數字就有結果！<br className="nx-hide-mob" />挑一個現在最讓你頭痛的開始。</p>
       </div>
-      {showTools && (
-      <div style={{ maxWidth: 1100, margin: "0 auto", padding: "48px 32px" }} className="page-wrap">
-        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "baseline", flexWrap: "wrap", gap: 12, marginBottom: 28 }}>
-          <h2 style={{ fontSize: 20, fontWeight: 500, color: CHAR }}>{rc.toolsHeading}</h2>
-          <div style={{ display: "flex", alignItems: "center", gap: 16 }}>
-            <span style={{ fontSize: 13, color: MID }}>{rc.toolsSub}</span>
-            {isAdmin && <button className="pb" style={{ fontSize: 12, padding: "6px 14px" }} onClick={startAdd}>＋ 新增</button>}
+
+      {/* 卡點分流 */}
+      <section className="nx-band" style={{ paddingBlock: "clamp(24px,3vw,36px)" }}>
+        <div className="nx-in">
+          <p className="nx-eyebrow nx-eyebrow-mute" style={{ marginBottom: 18, letterSpacing: ".12em" }}>你現在卡在哪？</p>
+          <div className="rs-banner">
+            <div>
+              <h2>不確定的話，先花 60 秒找起點</h2>
+              <p>三個問題，找出目前最值得先處理的卡點</p>
+            </div>
+            <a className="nx-btn nx-btn-pri nx-btn-sm" {...to("tool-quiz")}>開始測驗 →</a>
+          </div>
+          <div className="rs-blocks">
+            {RS_BLOCKERS.map(([t, d, anchor]) => (
+              <a key={anchor} className="rs-block" href={"#" + anchor}><strong>{t}</strong><span>{d}</span></a>
+            ))}
           </div>
         </div>
-        {editing && (
-          <div style={{ background: GRAY, padding: "32px", marginBottom: 32, border: `1px solid ${BORDER}` }}>
-            <p style={{ fontSize: 11, color: MID, letterSpacing: "1px", marginBottom: 20 }}>{editing === "new" ? "新增資源" : "編輯資源"}</p>
-            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 20, marginBottom: 20 }} className="grid2">
-              <div><p style={{ fontSize: 12, color: MID, marginBottom: 8 }}>名稱</p><input value={form.name} onChange={sf("name")} /></div>
-              <div><p style={{ fontSize: 12, color: MID, marginBottom: 8 }}>類型</p><select value={form.type} onChange={sf("type")} style={{ border: "1px solid #D0D5DA", padding: "10px 12px", background: WHITE, width: "100%" }}>{["模板","教學","工具","其他"].map(t => <option key={t}>{t}</option>)}</select></div>
-              <div><p style={{ fontSize: 12, color: MID, marginBottom: 8 }}>連結</p><input value={form.url} onChange={e => { sf("url")(e); setResUrlErr(""); }} placeholder="https://..." />{resUrlErr && <p style={{ fontSize: 11, color: "#C0392B", marginTop: 4 }}>{resUrlErr}</p>}</div>
-            </div>
-            <div style={{ marginBottom: 20 }}><ImgUploader label="圖片（選填）" value={form.img} onChange={v => setForm(p => ({ ...p, img: v }))} aspect="16/9" /></div>
-            <div style={{ marginBottom: 16 }}><p style={{ fontSize: 12, color: MID, marginBottom: 8 }}>說明</p><textarea value={form.desc} onChange={sf("desc")} style={{ minHeight: 80, border: "1px solid #D0D5DA", padding: "10px", background: WHITE }} /></div>
-            <label style={{ fontSize: 12, color: MID, display: "flex", gap: 8, alignItems: "center", marginBottom: 24, cursor: "pointer" }}>
-              <input type="checkbox" checked={form.active} onChange={e => setForm(p => ({ ...p, active: e.target.checked }))} style={{ width: "auto" }} />上架顯示
-            </label>
-            <div style={{ display: "flex", gap: 10 }}><button className="pb" onClick={save} disabled={!form.name.trim()}>儲存</button><button className="pg" onClick={() => setEditing(null)}>取消</button></div>
-          </div>
-        )}
-        {filtered.length === 0 ? (
-          <div style={{ textAlign: "center", padding: "80px 0" }}>
-            <p style={{ fontSize: 14, color: LIGHT, lineHeight: 2.4 }}>{rc.toolsEmpty1}<br /><span style={{ fontSize: 12 }}>{rc.toolsEmpty2}</span></p>
-          </div>
-        ) : (
-          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill,minmax(300px,1fr))", gap: 20 }} className="grid3">
-            {filtered.map((r, ri) => (
-              <Reveal key={r.id} delay={Math.min(ri * 80, 400)}>
-              <div style={{ background: WHITE, border: `1px solid ${BORDER}`, borderRadius: 20, boxShadow: "0 2px 10px rgba(0,0,0,.06)", overflow: "hidden", height: 400, display: "flex", flexDirection: "column", transition: "box-shadow .3s, transform .3s" }}
-                onMouseEnter={e => { e.currentTarget.style.boxShadow = "0 20px 40px rgba(0,0,0,.1)"; e.currentTarget.style.transform = "translateY(-6px)"; }}
-                onMouseLeave={e => { e.currentTarget.style.boxShadow = "0 2px 10px rgba(0,0,0,.06)"; e.currentTarget.style.transform = "translateY(0)"; }}
-              >
-                <div style={{ height: 160, flexShrink: 0, overflow: "hidden", background: GRAY }}>{r.img && <img src={r.img} alt={r.name} style={{ width: "100%", height: "100%", objectFit: "cover" }} loading="lazy" />}</div>
-                <div style={{ padding: "22px 24px 24px", flex: 1, display: "flex", flexDirection: "column", overflow: "hidden" }}>
-                  <span className="tag" style={{ marginBottom: 10, display: "inline-block", flexShrink: 0 }}>{r.type}</span>
-                  <h3 style={{ fontSize: 16, fontWeight: 500, color: CHAR, marginBottom: 8, flexShrink: 0, display: "-webkit-box", WebkitLineClamp: 1, WebkitBoxOrient: "vertical", overflow: "hidden" }}>{r.name}</h3>
-                  <p style={{ fontSize: 13, color: MID, lineHeight: 1.85, marginBottom: 18, whiteSpace: "pre-wrap", flex: 1, display: "-webkit-box", WebkitLineClamp: 3, WebkitBoxOrient: "vertical", overflow: "hidden" }}>{r.desc}</p>
-                  <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", flexShrink: 0 }}>
-                    <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
-                      {r.url && <a href={normalizeResourceUrl(r.url)} target="_blank" rel="noopener noreferrer" onClick={() => setResources(prev => (prev || []).map(x => x.id === r.id ? { ...x, clicks: (x.clicks || 0) + 1 } : x), { silent: true })}><button className="pb" style={{ fontSize: 12, padding: "8px 16px" }}>下載 / 查看 →</button></a>}
-                      {isAdmin && <span style={{ fontSize: 11, color: LIGHT }}>{r.clicks || 0} 次點擊</span>}
-                    </div>
-                    {isAdmin && <div style={{ display: "flex", gap: 8 }}>
-                      <button className="pg" style={{ fontSize: 11, padding: "5px 10px" }} onClick={() => startEdit(r)}>編輯</button>
-                      <button className="pg" style={{ fontSize: 11, padding: "5px 10px", color: "#E74C3C", borderColor: "#E74C3C" }} onClick={() => del(r.id)}>刪除</button>
-                    </div>}
+      </section>
+
+      <section style={{ paddingBlock: "clamp(28px,4vw,48px) clamp(26px,3.4vw,40px)" }}>
+        <div className="nx-in">
+          {/* 頭條工具 */}
+          {featured && (() => {
+            const L = resourceLayout(featured);
+            return (
+              <div className="rs-lead nx-anchor" id={L.anchor}>
+                <div>
+                  {L.badge && <span className="rs-lead-badge">{L.badge}</span>}
+                  <h2>{featured.name}</h2>
+                  <p>{featured.desc}</p>
+                  <div className="rs-lead-actions">
+                    <a className="nx-btn nx-btn-pri nx-btn-md" href={normalizeResourceUrl(featured.url)} target="_blank" rel="noopener noreferrer" onClick={() => countClick(featured)}>{L.cta || "打開工具 →"}</a>
+                    {L.meta && <span>{L.meta}</span>}
                   </div>
                 </div>
+                {featured.img
+                  ? <img className="rs-lead-img" src={featured.img} alt={featured.name} loading="lazy" />
+                  : <div className="rs-lead-img" />}
               </div>
-              </Reveal>
-            ))}
+            );
+          })()}
+
+          {/* 工具卡 */}
+          <div className="rs-tools">
+            {tools.filter(r => !resourceLayout(r).highlight).map(r => <ToolCard key={r.id} r={r} />)}
+            <article className="rs-tool">
+              <p className="rs-tag">{RS_TOOL_QUIZ.category}</p>
+              <h3>{RS_TOOL_QUIZ.name}</h3>
+              <p>{RS_TOOL_QUIZ.desc}</p>
+              <a className="rs-tool-cta" {...to("tool-quiz")}>{RS_TOOL_QUIZ.cta}</a>
+            </article>
+            {tools.filter(r => resourceLayout(r).highlight).map(r => <ToolCard key={r.id} r={r} />)}
           </div>
-        )}
-        {isAdmin && items.filter(r => !r.active).length > 0 && (
-          <div style={{ marginTop: 40 }}>
-            <p style={{ fontSize: 11, color: LIGHT, marginBottom: 12 }}>未上架</p>
-            {items.filter(r => !r.active).map(r => (
-              <div key={r.id} style={{ display: "flex", justifyContent: "space-between", padding: "12px 0", borderBottom: `1px solid ${BORDER}`, alignItems: "center" }}>
-                <span style={{ fontSize: 13, color: LIGHT }}>{r.name}</span>
-                <div style={{ display: "flex", gap: 8 }}>
-                  <button className="pg" style={{ fontSize: 11, padding: "4px 10px" }} onClick={() => startEdit(r)}>編輯</button>
-                  <button className="pg" style={{ fontSize: 11, padding: "4px 10px", color: "#E74C3C", borderColor: "#E74C3C" }} onClick={() => del(r.id)}>刪除</button>
-                </div>
+
+          {/* 模板 */}
+          {templates.length > 0 && (
+            <div className="rs-templates">
+              <h2>拿去直接用的模板</h2>
+              <p>複製一份到自己的雲端硬碟就能開始填</p>
+              <div className="rs-tools" style={{ marginTop: 0 }}>
+                {templates.map(r => <ToolCard key={r.id} r={r} />)}
               </div>
-            ))}
-          </div>
-        )}
-      </div>
-      )}
-      {showArticles && (
-      <div style={{ maxWidth: 1100, margin: "0 auto", padding: "16px 32px 64px" }} className="page-wrap">
-        <div style={{ marginBottom: 24 }}>
-          <h2 style={{ fontSize: 20, fontWeight: 500, color: CHAR, marginBottom: 6 }}>{rc.articlesHeading}</h2>
-          <span style={{ fontSize: 13, color: MID }}>{rc.articlesSub}</span>
-        </div>
-        <div style={{ display: "flex", flexDirection: "column" }}>
-          {filteredArticles.map(a => (
-            <div key={a.id} onClick={() => openArticle(a.id)} style={{ display: "flex", justifyContent: "space-between", alignItems: "center", gap: 16, padding: "18px 0", borderBottom: `1px solid ${BORDER}`, cursor: "pointer" }}>
-              <div style={{ flex: 1, minWidth: 0 }}>
-                <div style={{ display: "flex", gap: 8, alignItems: "center", marginBottom: 6 }}>
-                  <span className="tag">{a.tag}</span>
-                  {a.member && <span style={{ fontSize: 10, padding: "2px 8px", borderRadius: 999, background: CORAL2, color: WHITE }}>會員限定</span>}
-                </div>
-                <p style={{ fontSize: 15, color: CHAR, fontWeight: 500, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{a.title}</p>
-              </div>
-              <span style={{ fontSize: 12, color: LIGHT, flexShrink: 0 }}>{a.date}</span>
             </div>
-          ))}
-          {filteredArticles.length === 0 && <p style={{ fontSize: 13, color: LIGHT, padding: "20px 0" }}>{rc.articlesEmpty}</p>}
+          )}
+        </div>
+      </section>
+
+      {/* 工具 / App / 手帳的分工 */}
+      <section className="nx-band" style={{ paddingBlock: "clamp(28px,3.4vw,40px)" }}>
+        <div className="nx-in rs-roles">
+          <div>
+            <h2>工具告訴你「現在的數字」<br />App 陪你走完一整個月</h2>
+            <p>免費工具是單次的一張快照：算完你會知道問題在哪。真正的改變發生在下個月，預算排好、每天記下來、月底看診斷。那一段是 88La財務導航在做的事。</p>
+          </div>
+          <div className="rs-role-list">
+            {RS_ROLES.map(([k, d]) => (
+              <div key={k} className="rs-role"><b>{k}</b><p>{d}</p></div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* CTA */}
+      <div className="nx-in rs-cta">
+        <h2>算完了，想試著排一次完整的預算？</h2>
+        <p>財務導航可以免費體驗，不用綁信用卡</p>
+        <div className="rs-cta-row">
+          <a className="nx-btn nx-btn-pri nx-btn-md" {...to("app")}>免費體驗財務導航</a>
+          <a className="nx-btn nx-btn-sec nx-btn-sec-strong nx-btn-md" {...to("guide")}>先看功能說明</a>
         </div>
       </div>
+
+      {/* 後台：資源維護與會員文章密碼 */}
+      {isAdmin && (
+        <div style={{ borderTop: `2px dashed ${BORDER}`, background: GRAY, padding: "24px 20px" }}>
+          <div style={{ maxWidth: 1040, margin: "0 auto" }}>
+            <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 16, flexWrap: "wrap" }}>
+              <p style={{ fontSize: 13, color: MID, fontWeight: 500 }}>後台：資源維護</p>
+              <button className="pb" style={{ fontSize: 12, padding: "6px 14px" }} onClick={startAdd}>＋ 新增資源</button>
+            </div>
+            {editing && (
+              <div style={{ background: WHITE, padding: 24, marginBottom: 24, border: `1px solid ${BORDER}` }}>
+                <p style={{ fontSize: 11, color: MID, letterSpacing: "1px", marginBottom: 20 }}>{editing === "new" ? "新增資源" : "編輯資源"}</p>
+                <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 20, marginBottom: 20 }} className="grid2">
+                  <div><p style={{ fontSize: 12, color: MID, marginBottom: 8 }}>名稱</p><input value={form.name} onChange={sf("name")} /></div>
+                  <div><p style={{ fontSize: 12, color: MID, marginBottom: 8 }}>類型</p><select value={form.type} onChange={sf("type")} style={{ border: "1px solid #D0D5DA", padding: "10px 12px", background: WHITE, width: "100%" }}>{["模板", "教學", "工具", "其他"].map(t => <option key={t}>{t}</option>)}</select></div>
+                  <div><p style={{ fontSize: 12, color: MID, marginBottom: 8 }}>連結</p><input value={form.url} onChange={e => { sf("url")(e); setResUrlErr(""); }} placeholder="https://..." />{resUrlErr && <p style={{ fontSize: 11, color: "#C0392B", marginTop: 4 }}>{resUrlErr}</p>}</div>
+                </div>
+                <div style={{ marginBottom: 20 }}><ImgUploader label="圖片（頭條工具會用到）" value={form.img} onChange={v => setForm(p => ({ ...p, img: v }))} aspect="16/9" /></div>
+                <div style={{ marginBottom: 16 }}><p style={{ fontSize: 12, color: MID, marginBottom: 8 }}>說明</p><textarea value={form.desc} onChange={sf("desc")} style={{ minHeight: 80, border: "1px solid #D0D5DA", padding: "10px", background: WHITE }} /></div>
+                <label style={{ fontSize: 12, color: MID, display: "flex", gap: 8, alignItems: "center", marginBottom: 24, cursor: "pointer" }}>
+                  <input type="checkbox" checked={form.active} onChange={e => setForm(p => ({ ...p, active: e.target.checked }))} style={{ width: "auto" }} />上架顯示
+                </label>
+                <div style={{ display: "flex", gap: 10 }}><button className="pb" onClick={save} disabled={!form.name.trim()}>儲存</button><button className="pg" onClick={() => setEditing(null)}>取消</button></div>
+              </div>
+            )}
+            {items.filter(r => !r.active).length > 0 && (
+              <div style={{ marginBottom: 24 }}>
+                <p style={{ fontSize: 11, color: LIGHT, marginBottom: 12 }}>未上架</p>
+                {items.filter(r => !r.active).map(r => (
+                  <div key={r.id} style={{ display: "flex", justifyContent: "space-between", padding: "12px 0", borderBottom: `1px solid ${BORDER}`, alignItems: "center" }}>
+                    <span style={{ fontSize: 13, color: LIGHT }}>{r.name}</span>
+                    <div style={{ display: "flex", gap: 8 }}>
+                      <button className="pg" style={{ fontSize: 11, padding: "4px 10px" }} onClick={() => startEdit(r)}>編輯</button>
+                      <button className="pg" style={{ fontSize: 11, padding: "4px 10px", color: "#E74C3C", borderColor: "#E74C3C" }} onClick={() => del(r.id)}>刪除</button>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+            <div style={{ background: WHITE, border: `1px solid ${BORDER}`, padding: "16px 20px", marginBottom: 16 }}>
+              <p style={{ fontSize: 12, color: MID, lineHeight: 1.8 }}>會員文章密碼，讀者需輸入此密碼才能看到會員限定文章全文。</p>
+              <p style={{ fontSize: 11, color: LIGHT, marginTop: 6, marginBottom: 12, lineHeight: 1.6 }}>會員全文會透過受保護 API 讀取，解鎖前不會載入到瀏覽器 DOM。密碼儲存後不會在畫面上顯示原始內容。</p>
+              {!editPwd ? (
+                <span onClick={() => { setEditPwd(true); setPwdVal(""); setPwdMsg(""); }} style={{ fontSize: 12, color: O, cursor: "pointer", textDecoration: "underline" }}>修改密碼</span>
+              ) : (
+                <div style={{ display: "flex", gap: 10, flexWrap: "wrap", alignItems: "center" }}>
+                  <input type="text" value={pwdVal} onChange={e => setPwdVal(e.target.value)} placeholder="輸入新密碼" style={{ maxWidth: 220 }} />
+                  <button className="pb" disabled={pwdSaving} onClick={savePwd}>{pwdSaving ? "儲存中..." : "儲存"}</button>
+                  <button className="pg" onClick={() => { setEditPwd(false); setPwdVal(""); setPwdMsg(""); }}>取消</button>
+                </div>
+              )}
+              {pwdMsg && <p style={{ fontSize: 12, color: pwdMsg.includes("已更新") ? "#4a8c5c" : "#C0392B", marginTop: 8 }}>{pwdMsg}</p>}
+            </div>
+          </div>
+        </div>
       )}
     </div>
-      )}
-    </PageHero>
   );
 }
 
@@ -5667,14 +7228,10 @@ export default function App() {
   const [mobileTabLabels, setMobileTabLabels, mtL] = useFS("mobileTabLabels", DEFAULTS.mobileTabLabels);
   const [footerLabels, setFooterLabels, flbL] = useFS("footerLabels", DEFAULTS.footerLabels);
   const [subscriptionCopy, setSubscriptionCopy, scL] = useFS("subscriptionCopy", DEFAULTS.subscriptionCopy);
-  const [homeCopy, setHomeCopy, hcL] = useFS("homeCopy", DEFAULTS.homeCopy);
-  const [aboutCopy, setAboutCopy, acpL] = useFS("aboutCopy", DEFAULTS.aboutCopy);
   const [shopCopy, setShopCopy, shcL] = useFS("shopCopy", DEFAULTS.shopCopy);
   const [igCopy, setIgCopy, igcL] = useFS("igCopy", DEFAULTS.igCopy);
   const [communityCopy, setCommunityCopy, ccpL] = useFS("communityCopy", DEFAULTS.communityCopy);
-  const [envelopeCopy, setEnvelopeCopy, ecpL] = useFS("envelopeCopy", DEFAULTS.envelopeCopy);
   const [goodsCopy, setGoodsCopy, gcpL] = useFS("goodsCopy", DEFAULTS.goodsCopy);
-  const [resourcesCopy, setResourcesCopy, rcpL] = useFS("resourcesCopy", DEFAULTS.resourcesCopy);
   const [demoStory, setDemoStory, dsL] = useFS("demoStory", DEFAULTS.demoStory);
   const [termsContent, setTermsContent, tcL] = useFS("termsContent", DEFAULTS.termsContent);
   const [privacyContent, setPrivacyContent, pcL] = useFS("privacyContent", DEFAULTS.privacyContent);
@@ -5684,12 +7241,8 @@ export default function App() {
   const [appContent, setAppContent, acL] = useFS("appContent", DEFAULTS.appContent);
   const [contactContent, setContactContent, ccL] = useFS("contactContent", DEFAULTS.contactContent);
   const [savingsBagQuiz, setSavingsBagQuiz, sbqL] = useFS("savingsBagQuiz", DEFAULTS.savingsBagQuiz);
-  const [homeHero, setHomeHero, hhL] = useFS("homeHero", DEFAULTS.homeHero);
   const [trustStats, setTrustStats, tsL] = useFS("trustStats", DEFAULTS.trustStats);
-  const [paths, setPaths, pthL] = useFS("paths", DEFAULTS.paths);
-  const [envelopeHero, setEnvelopeHero, ehL] = useFS("envelopeHero", DEFAULTS.envelopeHero);
   const [goodsHero, setGoodsHero, ghL] = useFS("goodsHero", DEFAULTS.goodsHero);
-  const [resourcesHero, setResourcesHero, rhL] = useFS("resourcesHero", DEFAULTS.resourcesHero);
   const [communityHero, setCommunityHero, chL] = useFS("communityHero", DEFAULTS.communityHero);
   const [page, setPageState] = useState("home");
   const setPage = p => {
@@ -5888,18 +7441,18 @@ export default function App() {
       <Toast />
       <Nav page={page} setPage={nav} isAdmin={isAdmin} navLabels={navLabels} setNavLabels={setNavLabels} mobileTabLabels={mobileTabLabels} setMobileTabLabels={setMobileTabLabels} />
       <div key={page} className="page-anim">
-        {page === "home" && <Home articles={articles} setPage={setPage} setId={setId} isAdmin={isAdmin} about={about} setAbout={setAbout} links={links} homeHero={homeHero} setHomeHero={setHomeHero} trustStats={trustStats} setTrustStats={setTrustStats} paths={paths} setPaths={setPaths} homeCopy={homeCopy} setHomeCopy={setHomeCopy} />}
-        {page === "journal" && <Journal articles={articles} setArticles={setArticles} setId={setId} setPage={setPage} isAdmin={isAdmin} siteTitle={siteTitle} setSiteTitle={setSiteTitle} tags={tags} setTags={setTags} />}
-        {page === "about" && <About about={about} setAbout={setAbout} isAdmin={isAdmin} links={links} setLinks={setLinks} setPage={nav} aboutCopy={aboutCopy} setAboutCopy={setAboutCopy} />}
+        {page === "home" && <Home setPage={nav} isAdmin={isAdmin} trustStats={trustStats} setTrustStats={setTrustStats} />}
+        {page === "journal" && <Journal articles={articles} setId={setId} setPage={setPage} isAdmin={isAdmin} siteTitle={siteTitle} setSiteTitle={setSiteTitle} tags={tags} setTags={setTags} links={links} />}
+        {page === "about" && <About isAdmin={isAdmin} links={links} setLinks={setLinks} setPage={nav} trustStats={trustStats} about={about} setAbout={setAbout} />}
         {page === "ig" && <IG igPosts={igPosts} setIgPosts={setIgPosts} isAdmin={isAdmin} links={links} igCopy={igCopy} setIgCopy={setIgCopy} />}
         {page === "community" && <Community igPosts={igPosts} links={links} setPage={nav} isAdmin={isAdmin} communityHero={communityHero} setCommunityHero={setCommunityHero} communityCopy={communityCopy} setCommunityCopy={setCommunityCopy} memberFeedback={memberFeedback} setMemberFeedback={setMemberFeedback} />}
         {page === "shop" && <Shop products={products} setProducts={setProducts} isAdmin={isAdmin} shopCopy={shopCopy} setShopCopy={setShopCopy} />}
-        {page === "envelope" && <Envelope products={products} setPage={nav} isAdmin={isAdmin} envelopeHero={envelopeHero} setEnvelopeHero={setEnvelopeHero} envelopeCopy={envelopeCopy} setEnvelopeCopy={setEnvelopeCopy} />}
+        {page === "envelope" && <Envelope products={products} setPage={nav} isAdmin={isAdmin} />}
         {page === "goods" && <Goods goods={goods} setGoods={setGoods} isAdmin={isAdmin} goodsHero={goodsHero} setGoodsHero={setGoodsHero} goodsCopy={goodsCopy} setGoodsCopy={setGoodsCopy} />}
-        {page === "app" && <AppPage appContent={appContent} setAppContent={setAppContent} isAdmin={isAdmin} setPage={nav} demoStory={demoStory} setDemoStory={setDemoStory} />}
-        {page === "guide" && <Guide appContent={appContent} isAdmin={isAdmin} setPage={nav} />}
+        {page === "app" && <AppPage appContent={appContent} setAppContent={setAppContent} isAdmin={isAdmin} setPage={nav} demoStory={demoStory} setDemoStory={setDemoStory} products={products} />}
+        {page === "guide" && <Guide isAdmin={isAdmin} setPage={nav} links={links} />}
         {page === "tool-quiz" && <ToolQuiz setPage={nav} />}
-        {page === "resources" && <Resources resources={resources} setResources={setResources} isAdmin={isAdmin} articles={articles} setId={setId} setPage={setPage} resourcesHero={resourcesHero} setResourcesHero={setResourcesHero} resourcesCopy={resourcesCopy} setResourcesCopy={setResourcesCopy} />}
+        {page === "resources" && <Resources resources={resources} setResources={setResources} isAdmin={isAdmin} setPage={nav} />}
         {page === "newsletter" && <Newsletter newsletter={newsletter} setNewsletter={setNewsletter} isAdmin={isAdmin} articles={articles} setId={setId} setPage={setPage} />}
         {page === "contact" && <Contact links={links} contactContent={contactContent} setContactContent={setContactContent} isAdmin={isAdmin} />}
         {page === "savings-quiz" && isAdmin && <SavingsBagQuizAdmin savingsBagQuiz={savingsBagQuiz} setSavingsBagQuiz={setSavingsBagQuiz} />}
