@@ -1150,14 +1150,23 @@ button:focus-visible{border-radius:4px;}
 .ap-note{margin-top:24px;font-size:15px;line-height:1.85;color:rgba(252,250,246,.55);}
 .ap-note-weak{margin-top:14px;font-size:14px;line-height:1.85;color:rgba(252,250,246,.4);}
 
+/* 手機版比較表：跟桌機同一組欄位，只是欄名移到表頭、項目名獨立成一列。
+   三欄並排在 390px 下每欄約 100px，12px 字約放得下 8 個字，最長的一句 17 字排三行。
+   比較表的價值就在同一列能左右對照，所以寧可窄一點也不拆成上下堆疊。 */
 .ap-table-m{border-radius:16px;background:var(--nx-bg);overflow:hidden;}
-.ap-row-m{padding:16px 18px;border-bottom:1px dotted var(--nx-bd);}
-.ap-row-m>p{margin-bottom:10px;font-size:15px;font-weight:700;}
-.ap-row-m dl{display:grid;grid-template-columns:62px 1fr;gap:7px 10px;align-items:baseline;margin:0;}
-.ap-row-m dt{font-size:12px;color:var(--nx-t4);}
-.ap-row-m dd{margin:0;font-size:13px;color:var(--nx-t3);line-height:1.6;}
-.ap-row-m dt:last-of-type{font-weight:700;color:var(--nx-ol);}
-.ap-row-m dd:last-of-type{font-size:14px;font-weight:600;color:var(--nx-t1);line-height:1.65;}
+.ap-mh{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));background:var(--nx-bg2);border-bottom:1px solid var(--nx-bd);}
+.ap-mh>div{padding:10px 8px;font-size:11px;font-weight:700;line-height:1.4;text-align:center;color:var(--nx-t3);}
+.ap-mh>div+div{border-left:1px solid var(--nx-bd);}
+.ap-mh>div:last-child{background:var(--nx-os);color:var(--nx-ol);}
+.ap-row-m{border-bottom:1px dotted var(--nx-bd);}
+.ap-row-m>p{margin:0;padding:13px 14px 9px;font-size:15px;font-weight:700;}
+.ap-cells{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));}
+.ap-cells>div{padding:0 8px 14px;font-size:12px;line-height:1.7;}
+.ap-cells>div+div{border-left:1px solid var(--nx-bd);}
+.ap-cells>div:first-child{padding-left:14px;color:var(--nx-t3);}
+.ap-cells>div:nth-child(2){color:var(--nx-t2);}
+.ap-cells>div:last-child{padding-right:14px;font-weight:600;color:var(--nx-t1);}
+.ap-table-title{margin:clamp(22px,3vw,32px) 0 12px;color:var(--nx-dt);}
 .ap-more{display:flex;align-items:center;justify-content:center;gap:8px;width:100%;padding:15px 18px;border:none;border-top:1px solid var(--nx-bd);background:var(--nx-bg2);font-family:inherit;font-size:14px;font-weight:600;color:var(--nx-t2);cursor:pointer;}
 .ap-more:hover{color:var(--nx-od);}
 
@@ -5697,11 +5706,11 @@ function ApCompareRowM({ row }) {
   return (
     <div className="ap-row-m">
       <p>{row.key}</p>
-      <dl>
-        <dt>記帳 App</dt><dd>{row.mApp}</dd>
-        <dt>模板</dt><dd>{row.mTpl}</dd>
-        <dt>88La</dt><dd>{row.mLa}</dd>
-      </dl>
+      <div className="ap-cells">
+        <div>{row.mApp}</div>
+        <div>{row.mTpl}</div>
+        <div>{row.mLa}</div>
+      </div>
     </div>
   );
 }
@@ -5843,6 +5852,7 @@ function AppPage({ appContent, setAppContent, isAdmin, setPage, demoStory, setDe
             </article>
           </div>
 
+          <h3 className="nx-h3 ap-table-title">功能比較表</h3>
           <div className="ap-table nx-hide-mob">
             <div className="ap-tr ap-thead">
               <div>比較項目</div><div>一般記帳 App</div><div>模板 2.0（買斷）</div><div>財務導航（訂閱）</div>
@@ -5854,6 +5864,7 @@ function AppPage({ appContent, setAppContent, isAdmin, setPage, demoStory, setDe
             ))}
           </div>
           <div className="ap-table-m nx-only-mob">
+            <div className="ap-mh"><div>記帳 App</div><div>模板 2.0</div><div>88La</div></div>
             {mobileRows.slice(0, 4).map(r => <ApCompareRowM key={r.key} row={r} />)}
             {moreOpen && mobileRows.slice(4).map(r => <ApCompareRowM key={r.key} row={r} />)}
             <button className="ap-more" onClick={() => setMoreOpen(v => !v)} aria-expanded={moreOpen}>
