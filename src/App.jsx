@@ -3191,7 +3191,7 @@ function Home({ setPage, isAdmin, trustStats, setTrustStats }) {
             </div>
             <div className="nx-stack-list">
               <article className="nx-stack-now">
-                <h3>第一個月：只用快訊 + 快速記帳</h3>
+                <h3>第一個月：只用預算 + 快速記帳</h3>
                 <p>每天花 5 秒記一筆，看一眼餘額，這樣月底就已經有一份診斷可以看。</p>
                 <span className="nx-stack-tag">先做到這裡就夠</span>
               </article>
@@ -5901,7 +5901,7 @@ function AppPage({ appContent, setAppContent, isAdmin, setPage, demoStory, setDe
           <div className="nx-stack-list">
             <article className="nx-stack-now" style={{ background: "var(--nx-os)" }}>
               <div style={{ display: "flex", alignItems: "baseline", justifyContent: "space-between", gap: 16, marginBottom: 10 }}>
-                <h3>第一個月：只用快訊 + 快速記帳</h3>
+                <h3>第一個月：只用預算 + 快速記帳</h3>
                 <span className="nx-stack-tag" style={{ marginTop: 0, whiteSpace: "nowrap" }}>先做到這裡就夠</span>
               </div>
               <p>每天花 5 秒記一筆，看一眼餘額。這樣月底就已經有一份診斷可以看。</p>

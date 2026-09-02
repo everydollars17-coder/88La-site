@@ -254,7 +254,16 @@ const prepare = () => page.evaluate(() => {
     e.style.filter = ''; e.style.pointerEvents = ''; e.style.userSelect = '';
     e.removeAttribute('data-demo-blurred');
   });
-  document.querySelectorAll('[data-demo-locked]').forEach(e => e.removeAttribute('data-demo-locked'));
+  // 鎖點會在宿主元素上留下 min-height:110px，那是 _lockElRef 幫 overlay 空出來的位置
+  // （它只在原本沒設定時才設，所以留著的一定是鎖點自己加的）。overlay 在上面已經移掉，
+  // 這段預留高度沒清掉就是一塊撐開的空白：時效性儲蓄的說明列被撐成 110px、
+  // 月曆統計多出 93px、負債總覽多出 44px。
+  // 同一個函式寫的 position / overflow 不動：那兩個是無條件覆寫，原值無從得知，
+  // 且至少有一張卡片的絕對定位子元素靠這個 position:relative 定位。
+  document.querySelectorAll('[data-demo-locked]').forEach(e => {
+    if (e.style.minHeight === '110px') e.style.minHeight = '';
+    e.removeAttribute('data-demo-locked');
+  });
   const guard = document.getElementById('demo-mode-guard');
   if (guard) guard.remove();
 
@@ -427,9 +436,11 @@ body{background:#F5F0EB;-webkit-tap-highlight-color:transparent}
    demo 模式一致：大數字看得到，拆解糊掉。prepare() 會清掉抓取時的 inline filter，
    所以改用 CSS 蓋回來。 */
 #d-balance-formula{filter:blur(5px);pointer-events:none;user-select:none}
-/* 快速記帳面板：App 的 CSS 是 left:50%，靠 GSAP 的 xPercent:-50 拉回中間。
-   靜態頁沒有 GSAP，這裡直接用 CSS 補上，不然面板會整個偏到右邊被切掉。 */
-#quick-panel{display:none!important;transform:translateX(-50%)!important;opacity:1!important}
+/* 快速記帳面板：抓下來的 inline style 是 inset:0 + margin:0 auto，元素自己就置中，
+   不需要任何位移補償。這裡曾經補過 translateX(-50%)（誤以為 App 用的是 left:50%），
+   結果面板整個往左偏半個寬度，一半切在畫面外。transform 明確歸零，
+   避免 app.css 或抓取殘留的位移跑進來。 */
+#quick-panel{display:none!important;transform:none!important;opacity:1!important}
 #quick-panel.demo-open{display:flex!important}
 `;
 
@@ -774,7 +785,21 @@ ${bnav}
 </html>
 `;
 
-const normalizedHtml = html.replace(/[ \t]+$/gm, '');
+/* App 的資源路徑是站台根目錄（/logo-ui.webp）。示範頁掛在官網的 /app-demo/ 底下，
+   照抄會打到官網根目錄，取不到檔案又被 vercel.json 的 catch-all 導回官網首頁，
+   圖片就變成破圖（快速記帳面板標題左邊那顆 logo）。複製過來的檔案改指相對路徑。
+   沒預期到的根目錄資源一律擋下來：它們會用同樣的方式破圖，而且破得很安靜。 */
+const ROOT_ASSETS = ['/logo-ui.webp'];
+let normalizedHtml = html.replace(/[ \t]+$/gm, '');
+ROOT_ASSETS.forEach(asset => {
+  normalizedHtml = normalizedHtml.split('"' + asset + '"').join('".' + asset + '"');
+});
+const strayRootAssets = [...new Set(
+  [...normalizedHtml.matchAll(/(?:src|href)="(\/[^"\/][^"]*)"/g)].map(m => m[1]),
+)];
+if (strayRootAssets.length) {
+  throw new Error('示範頁還有指向官網根目錄的資源，上線會破圖：' + strayRootAssets.join('、'));
+}
 writeFileSync(join(OUT_DIR, 'index.html'), normalizedHtml);
 
 const kb = n => (n / 1024).toFixed(0) + ' KB';
