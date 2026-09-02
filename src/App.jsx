@@ -1863,7 +1863,7 @@ const DEFAULTS = {
     heroTitle: "記帳 App，讓你真的",
     heroHighlight: "存到錢",
     heroSub: "雲端同步 Google Sheets，智慧診斷消費模式，支援家庭記帳。不只記帳，更幫你看懂錢的流向。",
-    pricingNote: "所有方案皆包含桌面快速記帳功能，選擇最適合你的方案",
+    pricingNote: "這不是記帳的錢，是每個月一次解讀的錢。",
     comingSoonTitle: "目前開放第二批內測",
     comingSoonSub: "正式開放時間另行公告，功能介紹可以先查看。",
     heroEyebrow: "88LA FINANCE · APP",
@@ -3028,7 +3028,7 @@ function Home({ setPage, isAdmin, trustStats, setTrustStats }) {
           <div>
             <p className="nx-badge"><b>訂閱制</b><span><span className="nx-hide-mob">88La財務導航 · </span>每月 <Price>{NT_MONTHLY}</Price></span></p>
             <h1 className="nx-h1">不用再問<br />「記帳了，然後勒？」</h1>
-            <p className="nx-hero-p nx-hide-mob">88La財務導航是一套理財工具：月初幫你把薪水分配好，平常 5 秒記一筆，月底告訴你哪裡超支、下個月該從哪裡開始調整。</p>
+            <p className="nx-hero-p nx-hide-mob">88La財務導航幫你月初把薪水分配好，平常 5 秒記一筆，月底告訴你哪裡超支、下個月該從哪裡開始調整。</p>
             <p className="nx-hero-p nx-only-mob">月初分配、平常 5 秒記一筆、月底告訴你下個月該從哪裡開始調整。</p>
             <p className="nx-hero-p2 nx-hide-mob">不是叫你什麼都別買，是讓想花的錢花得安心。</p>
             <div className="nx-cta-row">
@@ -7022,7 +7022,6 @@ function PricingPage({ appContent, setPage }) {
     "即時記帳（情緒、類別、分期）",
     "Google Sheets 雲端同步，資料永遠屬於你",
     "CSV / PDF 匯出",
-    "月度智慧診斷分析",
     "信用卡帳單與分期追蹤",
     "負債還款進度視覺化",
     "個人 / 公費 / 家庭三種模式",
@@ -7036,7 +7035,7 @@ function PricingPage({ appContent, setPage }) {
         <div style={{ maxWidth: 860, margin: "0 auto" }}>
           <p className="section-label" style={{ marginBottom: 10 }}>PRICING</p>
           <h1 style={{ fontSize: 36, fontWeight: 700, color: CHAR, lineHeight: 1.3, marginBottom: 14 }}>選擇最適合你的方案</h1>
-          <p style={{ fontSize: 15, color: MID, lineHeight: 1.9, maxWidth: 520 }}>{c.pricingNote || "選擇適合你的方案，開始掌握每一筆錢"}</p>
+          <p style={{ fontSize: 15, color: MID, lineHeight: 1.9, maxWidth: 520 }}>{c.pricingNote || "這不是記帳的錢，是每個月一次解讀的錢。"}</p>
           <PriceNote style={{ marginTop: 18 }} />
         </div>
       </div>
@@ -7075,6 +7074,14 @@ function PricingPage({ appContent, setPage }) {
       </div>
       <div style={{ padding: "72px 32px" }}>
         <div style={{ maxWidth: 860, margin: "0 auto" }}>
+          {/* 月度智慧解讀：定價頁的價值錨點。刻意放在九項規格清單「上方」且視覺層級更高，
+              先讓訪客看見解讀這件事，再看功能列表。底色沿用同頁 hero 的 O2，不另開色票。
+              B 句保留「診斷」兩字，那是 App 裡的功能名稱，不跟標題的「解讀」統一。 */}
+          <div style={{ background: O2, border: `1px solid ${BORDER}`, borderRadius: 20, padding: "clamp(28px,4vw,40px) clamp(24px,3.4vw,36px)", marginBottom: 56 }}>
+            <h2 style={{ fontSize: 26, fontWeight: 700, color: CHAR, marginBottom: 16 }}>月度智慧解讀</h2>
+            <p style={{ fontSize: 15, color: CHAR, lineHeight: 1.9, marginBottom: 4 }}>不想再被卡費追著跑，看見「真正可用餘額」剩多少。</p>
+            <p style={{ fontSize: 15, color: CHAR, lineHeight: 1.9 }}>預算一直超支？診斷幫你揪出真相。</p>
+          </div>
           <p className="section-label" style={{ marginBottom: 10 }}>FEATURES</p>
           <h2 style={{ fontSize: 26, fontWeight: 700, color: CHAR, marginBottom: 40 }}>所有方案都包含</h2>
           <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 14 }} className="grid2">
@@ -7194,9 +7201,26 @@ function SubscriptionPage({ setPage, isAdmin, appContent, subscriptionCopy, setS
       <div style={{ background: GRAD, padding: "72px 32px 56px", borderBottom: `1px solid ${BORDER}` }}>
         <div style={{ maxWidth: 920, margin: "0 auto" }}>
           <p className="section-label" style={{ marginBottom: 10 }}>PRICING</p>
-          <h1 style={{ fontSize: 36, fontWeight: 700, color: CHAR, lineHeight: 1.3, marginBottom: 14 }}>{sc.heading}</h1>
+          <h1 style={{ fontSize: 36, fontWeight: 700, color: CHAR, lineHeight: 1.3, marginBottom: 12 }}>{sc.heading}</h1>
+          {/* 錨定句：刻意寫死不吃 Firestore。它的任務是在價格數字出現前先定調，
+              放進 sc.intro 會落到那行小灰字的樣式裡，份量會被吃掉。
+              要改這句請改這裡，後台編輯不到是預期行為。 */}
+          <p style={{ fontSize: 17, fontWeight: 700, color: CHAR, lineHeight: 1.7, maxWidth: 540, marginBottom: 10 }}>這不是記帳的錢，是每個月一次解讀的錢。</p>
           <p style={{ fontSize: 15, color: MID, lineHeight: 1.9, maxWidth: 540, whiteSpace: "pre-wrap" }}>{sc.intro}</p>
           {isAdmin && <span onClick={() => { setTmp(sc); setEditing(true); }} style={{ fontSize: 12, color: O, cursor: "pointer", marginTop: 10, display: "inline-block" }}>編輯本頁文字</span>}
+        </div>
+      </div>
+
+      {/* 月度智慧解讀：價值先於價格，所以擺在方案卡片上方。
+          底色沿用同頁 hero 的 O2，不另開色票；B 句保留「診斷」，那是 App 裡的功能名稱，
+          不跟標題的「解讀」統一。同一段內容在 PricingPage（/plans）也有一份。 */}
+      <div style={{ padding: "56px 32px 8px" }}>
+        <div style={{ maxWidth: 920, margin: "0 auto" }}>
+          <div style={{ background: O2, border: `1px solid ${BORDER}`, borderRadius: 20, padding: "clamp(28px,4vw,40px) clamp(24px,3.4vw,36px)" }}>
+            <h2 style={{ fontSize: 26, fontWeight: 700, color: CHAR, marginBottom: 16 }}>月度智慧解讀</h2>
+            <p style={{ fontSize: 15, color: CHAR, lineHeight: 1.9, marginBottom: 4 }}>不想再被卡費追著跑，看見「真正可用餘額」剩多少。</p>
+            <p style={{ fontSize: 15, color: CHAR, lineHeight: 1.9 }}>預算一直超支？診斷幫你揪出真相。</p>
+          </div>
         </div>
       </div>
 
