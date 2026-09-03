@@ -1038,22 +1038,6 @@ button:focus-visible{border-radius:4px;}
 .hm-feat img{width:100%;display:block;}
 @media(max-width:900px){.hm-feat{grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;}.hm-feat article{padding:16px 16px 6px;}.hm-feat h3{margin-bottom:10px;}}
 
-.nx-sect-head{display:flex;justify-content:space-between;align-items:flex-end;gap:24px;flex-wrap:wrap;margin-bottom:clamp(22px,3vw,36px);}
-.nx-sect-head h2{margin-block:12px;}
-.nx-sect-head .nx-lead{max-width:520px;}
-.nx-pill{display:inline-flex;align-items:center;gap:10px;padding:11px 18px;border-radius:999px;background:var(--nx-os);font-size:clamp(13px,1.4vw,14px);font-weight:700;color:var(--nx-ost);}
-.nx-pill svg{flex-shrink:0;}
-
-.nx-steps{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:clamp(14px,2vw,22px);}
-.nx-steps article{padding:clamp(20px,2.4vw,26px);}
-.nx-step-no{display:flex;align-items:center;gap:10px;margin-bottom:14px;}
-.nx-step-no b{display:inline-flex;align-items:center;justify-content:center;width:26px;height:26px;border-radius:999px;background:var(--nx-o);color:#fff;font-size:13px;font-weight:700;}
-.nx-step-no span{font-size:13px;color:var(--nx-t3);}
-.nx-steps h3{margin-bottom:10px;}
-.nx-steps p{margin-bottom:20px;font-size:14px;color:var(--nx-t2);line-height:1.85;}
-.nx-thumb{padding:10px;border:1px solid var(--nx-bd);border-radius:12px;background:var(--nx-bg);overflow:hidden;}
-.nx-thumb img{width:100%;display:block;}
-@media(max-width:900px){.nx-steps{grid-template-columns:minmax(0,1fr);gap:14px;}}
 
 .nx-stack{display:grid;grid-template-columns:.85fr 1.15fr;gap:clamp(24px,4.5vw,56px);align-items:start;}
 .nx-stack-list{display:flex;flex-direction:column;gap:14px;}
@@ -1068,11 +1052,6 @@ button:focus-visible{border-radius:4px;}
 .nx-stack-tag{display:inline-block;margin-top:10px;font-size:12px;font-weight:700;color:var(--nx-ol);}
 @media(max-width:900px){.nx-stack{grid-template-columns:minmax(0,1fr);gap:22px;}}
 
-.nx-terms{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:clamp(12px,1.8vw,20px);}
-.nx-terms article{padding:clamp(18px,2.2vw,24px);}
-.nx-terms h3{margin-bottom:8px;font-size:clamp(16px,1.7vw,18px);font-weight:700;}
-.nx-terms p{font-size:14px;color:var(--nx-t2);line-height:1.85;}
-@media(max-width:900px){.nx-terms{grid-template-columns:minmax(0,1fr);}}
 
 .nx-inline-cta{display:flex;justify-content:space-between;align-items:center;gap:24px;flex-wrap:wrap;}
 .nx-inline-cta p{font-size:clamp(14px,1.5vw,15px);color:var(--nx-t2);}
@@ -1113,11 +1092,8 @@ button:focus-visible{border-radius:4px;}
 @media(max-width:900px){.nx-sticky{display:flex;}}
 
 /* ===== /app 財務導航產品頁 ===== */
-.ap-hero-note{font-size:13px;color:var(--nx-t3);}
-@media(max-width:900px){.ap-hero-note{text-align:center;}}
 .ap-demo{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,400px);gap:clamp(24px,4.5vw,56px);align-items:center;}
 .ap-demo-p{max-width:440px;margin-bottom:18px;font-size:clamp(15px,1.6vw,16px);line-height:1.9;color:var(--nx-t2);}
-.ap-demo-note{max-width:440px;margin-bottom:34px;font-size:15px;line-height:1.85;color:var(--nx-t3);}
 .ap-demo-actions{display:flex;align-items:center;gap:16px;flex-wrap:wrap;}
 .ap-demo-actions span{font-size:13px;color:var(--nx-t3);}
 .nx-btn-dark{background:var(--nx-dark);color:var(--nx-dt);}
@@ -1166,43 +1142,58 @@ button:focus-visible{border-radius:4px;}
 }
 
 /* 三方比較 */
-.ap-vs{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px;margin-bottom:22px;}
-.ap-vs article{padding:26px;border-radius:18px;background:var(--nx-bg);}
-.ap-vs h3{font-size:clamp(17px,1.8vw,19px);font-weight:700;}
-.ap-vs-kicker{display:flex;align-items:baseline;justify-content:space-between;gap:12px;margin-bottom:6px;}
-.ap-vs-kicker span{font-size:12px;font-weight:700;color:var(--nx-t3);white-space:nowrap;}
-.ap-vs-meta{margin-bottom:10px;font-size:12px;font-weight:700;color:var(--nx-t3);}
-.ap-vs-price{margin-bottom:4px;font-size:clamp(20px,2.4vw,26px);font-weight:700;letter-spacing:-.02em;font-variant-numeric:tabular-nums;}
-.ap-vs-price span{font-size:14px;font-weight:500;color:var(--nx-t3);}
-.ap-vs-sub{margin-bottom:18px;font-size:13px;color:var(--nx-t3);}
-.ap-vs-foot{padding-top:14px;border-top:1px dotted var(--nx-t5);font-size:13px;color:var(--nx-t2);line-height:1.85;}
-.ap-vs img{width:100%;display:block;border-radius:10px;}
-.ap-vs-hi{background:var(--nx-os);}
-.ap-vs-hi h3{color:var(--nx-ost);}
-.ap-vs-hi .ap-vs-kicker span,.ap-vs-hi .ap-vs-sub{color:var(--nx-ol);}
-.ap-vs-hi .ap-vs-price{color:var(--nx-t1);}
-.ap-vs-hi .ap-vs-price span{color:var(--nx-ol);}
-.ap-vs-shot{display:flex;justify-content:center;}
-.ap-vs-shot img{max-width:170px;border-radius:0;}
-@media(max-width:900px){.ap-vs{grid-template-columns:minmax(0,1fr);gap:12px;}.ap-vs article{padding:20px;border-radius:16px;}}
+/* 三方比較：一張真表格跑兩種寬度。88La 那欄底色 #FDF3E8、表頭 #FBE6D2，
+   讓視線在窄螢幕上仍能鎖定同一欄；手機超過四列的部分由 .ap-tr-more 收起。 */
+.ap-tbl-wrap{border-radius:18px;background:var(--nx-bg);overflow:hidden;}
+.ap-tbl{width:100%;border-collapse:collapse;table-layout:fixed;}
+.ap-tbl col:nth-child(1){width:20%;}
+.ap-tbl col:nth-child(2){width:27%;}
+.ap-tbl col:nth-child(3){width:27%;}
+.ap-tbl col:nth-child(4){width:26%;}
+.ap-tbl thead tr{background:var(--nx-bg2);}
+.ap-tbl th{padding:14px 16px;text-align:left;vertical-align:bottom;font-size:clamp(11px,1.3vw,13px);font-weight:700;letter-spacing:.04em;color:var(--nx-t2);border-bottom:1px solid var(--nx-bd);}
+.ap-tbl thead th:first-child{color:var(--nx-t3);}
+.ap-tbl thead th+th{border-left:1px solid var(--nx-bd);}
+.ap-tbl thead th:last-child{background:var(--nx-os);color:var(--nx-ol);}
+.ap-tbl tbody th{vertical-align:top;font-size:clamp(12px,1.5vw,14px);font-weight:700;line-height:1.5;color:var(--nx-t1);border-bottom:1px dotted var(--nx-bd);letter-spacing:0;}
+.ap-tbl td{padding:14px 16px;vertical-align:top;font-size:clamp(11px,1.4vw,13px);line-height:1.7;color:var(--nx-t3);border-bottom:1px dotted var(--nx-bd);border-left:1px solid var(--nx-hair);}
+.ap-tbl td:nth-child(3){color:var(--nx-t2);}
+.ap-td-la{background:#FDF3E8;font-weight:600;color:var(--nx-t1)!important;}
+.ap-tbl tbody tr:last-child th,.ap-tbl tbody tr:last-child td{border-bottom:none;}
+.ap-tr-more{display:none;}
+@media(max-width:768px){
+  .ap-tbl col:nth-child(1){width:20%;}
+  .ap-tbl col:nth-child(2){width:26%;}
+  .ap-tbl col:nth-child(3){width:24%;}
+  .ap-tbl col:nth-child(4){width:30%;}
+  .ap-tbl th,.ap-tbl td{padding:11px 8px;}
+  .ap-tbl thead th{font-size:10px;}
+}
+@media(min-width:769px){.ap-tr-more{display:table-row;}}
 
-.ap-table{border-radius:18px;background:var(--nx-bg);overflow:hidden;}
-.ap-tr{display:grid;grid-template-columns:.75fr 1fr 1fr 1fr;}
-.ap-thead{background:var(--nx-bg2);border-bottom:1px solid var(--nx-bd);}
-.ap-thead>div{padding:16px 18px;font-size:13px;font-weight:700;color:var(--nx-t2);}
-.ap-thead>div:first-child{letter-spacing:.08em;color:var(--nx-t3);}
-.ap-thead>div:not(:first-child){border-left:1px solid var(--nx-bd);}
-.ap-thead>div:last-child{background:var(--nx-os);color:var(--nx-ol);}
-.ap-tbody{border-bottom:1px dotted var(--nx-bd);}
-.ap-tbody:last-child{border-bottom:none;}
-.ap-tbody>div{padding:16px 18px;font-size:13px;line-height:1.75;}
-.ap-tbody>div:first-child{font-size:14px;font-weight:600;color:var(--nx-t1);}
-.ap-tbody>div:not(:first-child){border-left:1px solid var(--nx-bd);}
-.ap-tbody>div:nth-child(2){color:var(--nx-t3);}
-.ap-tbody>div:nth-child(3){color:var(--nx-t2);}
-.ap-tbody>div:nth-child(4){color:var(--nx-t1);}
+/* 漸進揭露的按鈕，功能清單與比較表共用同一種外觀 */
+.ap-toggle,.ap-more{display:flex;align-items:center;justify-content:center;gap:8px;width:100%;padding:14px 18px;border:1px solid var(--nx-bd);border-radius:999px;background:var(--nx-bg2);font-family:inherit;font-size:clamp(14px,1.5vw,15px);font-weight:600;color:var(--nx-t2);cursor:pointer;}
+.ap-toggle{margin-top:20px;}
+.ap-toggle:hover,.ap-more:hover{color:var(--nx-od);}
+.ap-more{border:none;border-top:1px solid var(--nx-bd);border-radius:0;}
+@media(max-width:768px){.ap-feat-sub:not(.is-open){display:none;}}
+
+/* 第一個月只需要用兩個功能 */
+.ap-ramp{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:clamp(12px,1.8vw,16px);}
+.ap-ramp article{padding:clamp(20px,2.4vw,26px);border:1px solid var(--nx-bd);border-radius:16px;background:var(--nx-card);}
+.ap-ramp-now{border-color:transparent!important;background:var(--nx-os)!important;}
+.ap-ramp-when{margin-bottom:8px;font-size:12px;font-weight:700;color:var(--nx-t3);}
+.ap-ramp-now .ap-ramp-when{color:var(--nx-ol);}
+.ap-ramp h3{margin-bottom:10px;font-size:clamp(17px,1.9vw,20px);font-weight:700;}
+.ap-ramp-d{font-size:14px;color:var(--nx-t2);line-height:1.85;}
+@media(max-width:768px){.ap-ramp{grid-template-columns:minmax(0,1fr);}}
+
 .ap-note{margin-top:24px;font-size:15px;line-height:1.85;color:rgba(252,250,246,.55);}
 .ap-note-weak{margin-top:14px;font-size:14px;line-height:1.85;color:rgba(252,250,246,.4);}
+/* 模板 2.0 的購買指引，深色區塊上的連結用 --nx-dl，不用主橘（在深底上對比不夠） */
+.ap-buy{margin-top:16px;font-size:clamp(13px,1.4vw,14px);line-height:1.85;color:rgba(252,250,246,.55);}
+.ap-buy a{color:var(--nx-dl);font-weight:600;white-space:nowrap;}
+.ap-buy a:hover{color:var(--nx-o);}
 
 /* 手機版比較表：跟桌機同一組欄位，只是欄名移到表頭、項目名獨立成一列。
    三欄並排在 390px 下每欄約 100px，12px 字約放得下 8 個字，最長的一句 17 字排三行。
@@ -1233,10 +1224,12 @@ button:focus-visible{border-radius:4px;}
 .ap-crit-fix{padding-left:14px;border-left:2px solid var(--nx-o);font-size:14px;line-height:1.85;color:var(--nx-t2);}
 @media(max-width:900px){.ap-quotes{grid-template-columns:minmax(0,1fr);}}
 
-.ap-devices{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:clamp(18px,2.6vw,32px);}
-.ap-devices dt{margin-bottom:12px;font-size:13px;font-weight:700;letter-spacing:.12em;color:var(--nx-t3);}
-.ap-devices dd{margin:0;font-size:clamp(14px,1.5vw,15px);line-height:1.85;color:var(--nx-t1);}
-@media(max-width:900px){.ap-devices{grid-template-columns:minmax(0,1fr);gap:18px;}}
+.ap-devices{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:clamp(12px,1.8vw,16px);}
+.ap-devices>div{padding:clamp(18px,2.2vw,24px);box-shadow:none;}
+.ap-devices dt{margin-bottom:10px;font-size:12px;font-weight:700;letter-spacing:.1em;color:var(--nx-ol);}
+.ap-devices dd{margin:0;font-size:clamp(13px,1.5vw,14px);line-height:1.85;color:var(--nx-t2);}
+@media(max-width:900px){.ap-devices{grid-template-columns:repeat(2,minmax(0,1fr));}}
+@media(max-width:560px){.ap-devices{grid-template-columns:minmax(0,1fr);}}
 
 .ap-plans{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:22px;max-width:760px;margin:0 auto;}
 .ap-plan{position:relative;padding:30px;border:1px solid var(--nx-bd);border-radius:16px;background:#fff;}
@@ -1259,8 +1252,8 @@ button:focus-visible{border-radius:4px;}
 .ap-faq details:last-of-type{border-bottom:1px dotted var(--nx-t5);}
 .ap-faq summary{display:flex;align-items:flex-start;justify-content:space-between;gap:16px;font-size:clamp(16px,1.7vw,18px);font-weight:700;line-height:1.5;cursor:pointer;list-style:none;}
 .ap-faq summary::-webkit-details-marker{display:none;}
-.ap-faq summary::after{content:"＋";flex-shrink:0;color:var(--nx-o);font-weight:700;transition:transform .2s var(--nx-ease);}
-.ap-faq details[open] summary::after{content:"－";}
+.ap-faq summary::after{content:"＋";display:inline-block;flex-shrink:0;color:var(--nx-o);font-weight:700;transition:transform .2s var(--nx-ease);}
+.ap-faq details[open] summary::after{transform:rotate(45deg);}
 .ap-faq details p{margin-top:10px;font-size:clamp(14px,1.5vw,15px);line-height:1.9;color:var(--nx-t2);}
 .ap-ask{display:flex;align-items:center;justify-content:space-between;gap:24px;flex-wrap:wrap;margin-top:32px;padding:clamp(20px,2.4vw,26px) clamp(20px,2.6vw,28px);border-radius:16px;background:var(--nx-bg2);}
 .ap-ask strong{display:block;margin-bottom:6px;font-size:17px;font-weight:700;}
@@ -3059,11 +3052,6 @@ const HM_VALUES = [
   ["預算是照你的生活訂的", "卡費、分期、預存、心情都收在同一個地方，預算才不會偏離現實。"],
   ["下個月不用重新猜一次", "不評分、不說教，每個月都給你一份下個月能照做的調整。"],
 ];
-const IcClock = () => (
-  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#A4471D" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-    <circle cx="12" cy="12" r="9" /><polyline points="12 7 12 12 15.5 14" />
-  </svg>
-);
 
 function Home({ setPage, isAdmin, trustStats, setTrustStats }) {
   const ts = trustStats && trustStats.length ? trustStats : DEFAULTS.trustStats;
@@ -5644,10 +5632,14 @@ function AppLegacyAdmin({ appContent, setAppContent, isAdmin, setPage, demoStory
 
 //  NEW: 免費資源
 //  AppPage（2026-09 改版：先看畫面 → 自己滑 demo → 完整功能 → 誠實比較 → 上手 → 方案 → FAQ）
-// 模板 2.0 的名稱與售價以商品資料（Firestore products）為唯一來源，跟 /shop 同一份，
-// 不在這頁另外寫一組。用 type === "digital" 這個結構化欄位辨識，不是拿名稱去猜；
-// 取不到商品資料時才退回下面的備援值（2026-09 對照正式站商品資料確認過）。
-const TEMPLATE_20_FALLBACK = { name: "理財自動導航器 2.0", price: "NT$ 699" };
+// 模板 2.0 的名稱、售價與賣場連結以商品資料（Firestore products）為唯一來源，
+// 跟 /shop 同一份，不在這頁另外寫一組，否則兩頁會各自漂移。
+// 用 type === "digital" 這個結構化欄位辨識，不是拿名稱去猜；取不到商品資料時才退回備援值。
+const TEMPLATE_20_FALLBACK = {
+  name: "理財自動導航模板2.0（Google sheets版）",
+  price: "NT$ 699",
+  url: "https://portaly.cc/everydollars",
+};
 const findTemplateProduct = products => (products || []).find(p => p.type === "digital") || null;
 
 const IcBudget = () => (
@@ -5668,7 +5660,7 @@ const IcCompass = () => (
 
 const AP_FEATURES_MAIN = [
   [IcBudget, "預算編排", "四步驟走完月初分配，一路帶你分配完整", "budget.webp", "88La財務導航 預算頁：四步驟流程、盤點收入 $38,000、可存 $8,000、待分配 $26,162"],
-  [IcPen, "快速記帳", "類別、付款方式、需要或想要、當下心情，5 秒完成", "quick-record.webp", "88La財務導航 快速記帳：類別、支出類型、付款方式、帳目歸屬、需要或想要"],
+  [IcPen, "快速記帳", "智慧記憶你的記帳習慣，不用每次重選細項，自動幫你選好！5 秒快速記一筆", "quick-record.webp", "88La財務導航 快速記帳：類別、支出類型、付款方式、帳目歸屬、需要或想要"],
   [IcCompass, "月底診斷", "依據你的情況，偵測當月問題，給下個月的具體調整", "diagnosis.webp", "88La財務導航 診斷頁：本月你的支出發生了什麼，逐項說明缺口與判斷依據"],
 ];
 const AP_FEATURES_SUB = [
@@ -5686,48 +5678,43 @@ const AP_FEATURES_TEXT = [
 // 三方比較。desktop 為完整敘述，mobile 為精簡版；first=true 的四項在手機預設展開
 const AP_COMPARE = [
   { key: "月初分配", first: true,
-    app: "大多只能設類別上限，不幫你把整筆薪水分完", tpl: "五種分配模式可選，填完就看到比例與紅字示警", la: "四步驟帶著走，待分配金額一路跟著你",
-    mApp: "只設類別上限，不分完整筆薪水", mTpl: "五種分配模式，自己填", mLa: "四步驟帶著走，待分配金額一路跟著你" },
+    app: "大多只能設類別上限，不幫你把整筆薪水分完", tpl: "五種分配模式可選，填完就看到比例與紅字示警", la: "四步驟帶著走，分完整筆薪水",
+    mApp: "只設類別上限", mTpl: "五種模式，自己填", mLa: "四步驟帶著走，分完整筆薪水" },
   { key: "平常記一筆", first: false,
     app: "很快，這是記帳 App 最擅長的事", tpl: "在表格裡填寫，適合每天固定坐下來記的人", la: "手機 5 秒，還能記下需要／想要與心情",
-    mApp: "很快，這是它最擅長的事", mTpl: "在表格裡填一列", mLa: "手機 5 秒，還記下需要／想要與心情" },
+    mApp: "很快，它最擅長", mTpl: "表格裡填一列", mLa: "5 秒，含需要／想要與心情" },
   { key: "卡費預留", first: true,
     app: "刷卡算當月支出，下個月要付多少看不到", tpl: "有信用卡待還款預警欄位，自己填", la: "自動計算你現在真正能花的有多少",
-    mApp: "刷卡當支出，看不到下月要付多少", mTpl: "需自己填預留金額", mLa: "自動算出現在真正能花多少" },
+    mApp: "看不到下月要付多少", mTpl: "自己填預留金額", mLa: "自動算出真正能花多少" },
   { key: "月底分析", first: true,
     app: "圖表與類別佔比，要自己解讀", tpl: "診斷報告是我事先寫好的規則：符合哪個條件，就給哪一段建議，偏穩定、可預期", la: "讀你這個月的每一筆之後才寫，所以每個月分析狀況不一樣，給你的建議也會不同",
-    mApp: "告訴你錢花去哪", mTpl: "依固定規則給建議", mLa: "依這個月實際狀況，告訴你下月先改什麼" },
+    mApp: "只說錢花去哪", mTpl: "固定規則給建議", mLa: "照實際狀況，說下月先改什麼" },
   { key: "設備同步", first: true,
-    app: "通常只能在手機，或要另外付費才有雲端", tpl: "手機、平板、電腦都可以，存在你的 Google 雲端", la: "同一組帳號，手機、平板、電腦即時同步",
-    mApp: "多半只能在手機，雲端要加購", mTpl: "存在你的 Google 雲端", mLa: "同一組帳號，手機、平板、電腦即時同步" },
+    app: "通常只能在手機，或要另外付費才有雲端", tpl: "手機、平板、電腦都可以，你的 Google 雲端", la: "手機、平板、電腦即時同步",
+    mApp: "多半只有手機", mTpl: "你的 Google 雲端", mLa: "手機、平板、電腦即時同步" },
   { key: "會不會改版", first: false,
     app: "看各家更新", tpl: "買到的版本就是那個版本，表格完全屬於你的，可以自己改公式", la: "持續更新、優化，新功能自動出現，開放許願池",
-    mApp: "看各家更新", mTpl: "版本固定，但可以自己改公式", mLa: "持續更新，新功能自動出現，開放許願池" },
+    mApp: "看各家更新", mTpl: "版本固定，可改公式", mLa: "持續更新，開放許願池" },
   { key: "資料在哪", first: false,
-    app: "各家的伺服器，能不能匯出看它們", tpl: "你自己的 Google 雲端，永遠都在", la: "保存在你自己的 Google Sheets，隱私安全、還可以匯出歷史資料保存",
-    mApp: "各家伺服器，能否匯出看它們", mTpl: "你自己的 Google 雲端，永遠都在", mLa: "存在你的 Google Sheets，可匯出歷史資料" },
+    app: "各家的伺服器，能不能匯出看它們", tpl: "你的 Google 雲端", la: "保存在你自己的 Google Sheets，隱私安全、還可以匯出歷史資料保存",
+    mApp: "各家伺服器", mTpl: "你的 Google 雲端", mLa: "你的 Google Sheets，可匯出" },
   { key: "適合誰", first: false,
-    app: "只想知道這個月花了多少的人", tpl: "喜歡用表格整理資料、想自己掌控欄位填寫方式", la: "記帳容易斷掉、不知道記了之後要如何調整、想脫離被卡費追著跑的人",
-    mApp: "只想知道這個月花了多少", mTpl: "喜歡表格、想自己掌控欄位", mLa: "記帳容易斷掉、想脫離被卡費追著跑" },
+    app: "只想知道花了多少的人", tpl: "喜歡用表格整理資料、想自己掌控欄位填寫方式", la: "記帳容易斷掉、不知道記了之後要如何調整、想脫離被卡費追著跑的人",
+    mApp: "只想知道花了多少", mTpl: "喜歡表格、想自己掌控", mLa: "記帳容易斷、被卡費追著跑" },
 ];
-const AP_STEPS = [
-  ["約 3 分鐘", "填入你手上有多少錢", "活存、目標帳戶、還有正在還的學貸或分期。只填一次，之後靠記帳自己更新。"],
-  ["約 4 分鐘", "設好每張卡的結帳日", "這一步做完，才知道你要預留多少卡費，也是最多人做完之後說「原來差在這裡」的一步。"],
-  ["約 3 分鐘", "寫下一個想存的目標", "一個就好 ～ 之後月底除了看支出狀況，也能一起看你有沒有離目標更近一步。"],
-];
-const AP_TERMS = [
-  ["固定 / 變動", "每月幾乎不變的（房租、保險）是固定；會浮動的（吃飯、交通）是變動。"],
-  ["儲蓄", "存起來不打算動的錢，是往目標走的那一筆。"],
-  ["未來預存", "為了以後某筆一定會來的支出先放的錢，例如半年繳的保險、年繳的稅。錢還是會花掉，只是提前準備。"],
-  ["時效性儲蓄", "短期內想達成的目標，例如三個月後的旅行。時間到就結束，不長期綁著。"],
-  ["卡費預留", "這個月刷掉、下個月要付的錢。88La 會先扣下來，所以你看到的餘額是真的可以花的。"],
-  ["個人 / 公費 / 家庭", "三本各自獨立帳本。個人的帳、情侶各自拿一筆當公積金、雙薪家庭薪資混用，三種模式互不混在一起。"],
+// 第一個月只用兩個功能。第一格用主色淺底標成「現在做這個」。
+// 註：設計稿寫「只用快訊 ＋ 快速記帳」，這裡沿用 2026-09 已定案的「預算」，
+// 首頁與這頁一致；要改回快訊請兩頁一起改。
+const AP_RAMP = [
+  ["第一個月", "只用預算 ＋ 快速記帳", "每天 5 秒記一筆，看一眼餘額。月底就有一份診斷可以看。"],
+  ["第二個月", "打開預算與卡費預留", "看過一次真實花費再排預算，會準得多。"],
+  ["之後", "目標、負債、願望清單", "有需要再開，隨時都在為你準備好。"],
 ];
 const AP_DEVICES = [
-  ["支援裝置與同步", "Web App 不用下載，放置桌面體感接近原生 App。iPhone、Android、平板、電腦登入同一組帳號即時同步，手機記一筆，電腦馬上看得到。"],
-  ["登入方式", "Google 帳號一鍵登入，或用 Email 註冊。同一組帳號手機與電腦同步。"],
-  ["你的資料", "不連接你的銀行、不讀取交易紀錄，所有數字都是你自己輸入、資料都保存在你自己的 Google 帳號。"],
-  ["取消之後", "資料保留，隨時可以回來，也可以匯出成試算表帶走。"],
+  ["支援裝置與同步", "Web App 不用下載，放到桌面體感接近原生 App。手機、平板、電腦登入同一組帳號即時同步。"],
+  ["登入方式", "Google 一鍵登入，或用 Email 註冊。"],
+  ["你的資料", "不介接銀行、不讀取交易紀錄，資料存在你自己的 Google 帳號。"],
+  ["取消之後", "資料保留，隨時可以回來，也能匯出成試算表帶走。"],
 ];
 // 退費與續約的說法必須跟 /terms 的服務條款一致，改這裡前先看 DEFAULTS.termsContent 第三、四節
 const AP_FAQ = [
@@ -5740,27 +5727,14 @@ const AP_FAQ = [
   ["中間停用幾個月，資料還在嗎？", "在。取消訂閱只是暫停使用，資料留著，回來就接得上，也可以匯出成試算表。"],
 ];
 
-function ApCompareRowM({ row }) {
-  return (
-    <div className="ap-row-m">
-      <p>{row.key}</p>
-      <div className="ap-cells">
-        <div>{row.mApp}</div>
-        <div>{row.mTpl}</div>
-        <div>{row.mLa}</div>
-      </div>
-    </div>
-  );
-}
-
 function AppPage({ appContent, setAppContent, isAdmin, setPage, demoStory, setDemoStory, products }) {
   const tpl = findTemplateProduct(products) || TEMPLATE_20_FALLBACK;
-  const TEMPLATE_20_NAME = tpl.name;
-  const TEMPLATE_20_PRICE = tpl.price;
   const [moreOpen, setMoreOpen] = useState(false);
+  // 完整功能的漸進揭露：桌機預設露 7 項（3 大 + 4 小），手機只露 3 大，其餘收在按鈕後面
+  const [featOpen, setFeatOpen] = useState(false);
   const [showLegacyAdmin, setShowLegacyAdmin] = useState(false);
   const to = p => ({ href: pathForPage(p), onClick: e => { if (e.metaKey || e.ctrlKey || e.shiftKey || e.button) return; e.preventDefault(); setPage(p); } });
-  const mobileRows = [...AP_COMPARE.filter(r => r.first), ...AP_COMPARE.filter(r => !r.first)];
+  const rows = [...AP_COMPARE.filter(r => r.first), ...AP_COMPARE.filter(r => !r.first)];
   return (
     <div className="nx-page">
       {/* Hero */}
@@ -5774,12 +5748,11 @@ function AppPage({ appContent, setAppContent, isAdmin, setPage, demoStory, setDe
             </p>
             <h1 className="nx-h1">88La財務導航</h1>
             <p className="nx-hero-p" style={{ color: "var(--nx-t1)", maxWidth: 480, fontSize: "clamp(17px,1.9vw,19px)", lineHeight: 1.78 }}>月初把錢安排好，平常 5 秒記一筆，月底告訴你下個月該從哪裡調整。</p>
-            <p className="nx-hero-p2">不是又一個記帳 App。是一整套「分配 → 記錄 → 診斷」的循環<span className="nx-hide-mob">，陪你把每個月走完</span>。</p>
             <div className="nx-cta-row">
               <a className="nx-btn nx-btn-pri nx-btn-lg" {...appCtaProps("app-hero")}>開始使用 →</a>
-              <a className="nx-btn nx-btn-sec nx-btn-lg" href="#demo">先滑滑看 demo ↓</a>
+              <a className="nx-btn nx-btn-sec nx-btn-lg" href="#demo">先免費體驗 ↓</a>
             </div>
-            <p className="ap-hero-note">不用訂閱 · 免費試玩</p>
+            <p className="nx-hero-p2" style={{ marginTop: 18, marginBottom: 0 }}>不是又一個記帳 App。是一整套「分配 → 記錄 → 診斷」的循環<span className="nx-hide-mob">，陪你把每個月走完</span>。</p>
           </div>
           <div className="nx-shot-wrap">
             <img className="nx-shot" src={HM_SHOT + "alert.webp"} width="940" height="1175" alt="88La財務導航 快訊頁：本月可用餘額 $4,729、本期卡費已預留 $4,249、提醒中心" />
@@ -5792,12 +5765,10 @@ function AppPage({ appContent, setAppContent, isAdmin, setPage, demoStory, setDe
         <div className="nx-in ap-demo">
           <div>
             <p className="nx-eyebrow" style={{ marginBottom: 14 }}>先試，再決定</p>
-            <h2 className="nx-h2" style={{ marginBottom: 16 }}>與其一堆說明，<br />不如自己滑一次！</h2>
-            <p className="ap-demo-p">這是完整的 88La財務導航，載入了一個月的示範資料。你可以真的按下去、切分頁、體驗看看。</p>
-            <p className="ap-demo-note">不用訂閱、不用信用卡，也不會存下任何東西。</p>
+            <h2 className="nx-h2" style={{ marginBottom: 16 }}>免訂閱·搶先體驗！</h2>
+            <p className="ap-demo-p" style={{ marginBottom: 26 }}>這是完整的 88La財務導航，載入了一個月的示範資料。你可以真的按下去、切分頁、體驗看看。</p>
             <div className="ap-demo-actions">
-              <a className="nx-btn nx-btn-dark nx-btn-md" href="/app-demo/index.html" target="_blank" rel="noopener noreferrer">開始試玩 →</a>
-              <span>約 1 分鐘</span>
+              <a className="nx-btn nx-btn-dark nx-btn-md" href="/app-demo/index.html" target="_blank" rel="noopener noreferrer">開新分頁試玩 →</a>
             </div>
           </div>
           <div>
@@ -5824,8 +5795,8 @@ function AppPage({ appContent, setAppContent, isAdmin, setPage, demoStory, setDe
         <div className="nx-in">
           <div style={{ marginBottom: "clamp(20px,2.8vw,36px)" }}>
             <p className="nx-eyebrow" style={{ marginBottom: 12 }}>完整功能</p>
-            <h2 className="nx-h2" style={{ marginBottom: 12 }}>訂閱後，這些全部都在</h2>
-            <p className="nx-lead" style={{ maxWidth: 520 }}>十一個功能，圍繞著同一件事：讓你在花錢之前，就知道這筆錢屬於哪裡。</p>
+            <h2 className="nx-h2" style={{ marginBottom: 12 }}>11 種強大功能·全方位照顧</h2>
+            <p className="nx-lead" style={{ maxWidth: 520 }}>讓你在花錢之前，就知道這筆錢屬於哪裡。</p>
           </div>
           <div className="ap-grid ap-grid-3" style={{ marginBottom: 20 }}>
             {AP_FEATURES_MAIN.map(([Icon, t, d, img, alt]) => (
@@ -5836,7 +5807,8 @@ function AppPage({ appContent, setAppContent, isAdmin, setPage, demoStory, setDe
               </article>
             ))}
           </div>
-          <div className="ap-grid ap-grid-4" style={{ marginBottom: 20 }}>
+          {/* 四張小卡：桌機屬於預設露出的 7 項，手機才收進「看其他功能」裡 */}
+          <div className={"ap-grid ap-grid-4 ap-feat-sub" + (featOpen ? " is-open" : "")} style={{ marginBottom: 20 }}>
             {AP_FEATURES_SUB.map(([t, d, img, alt]) => (
               <article key={t} className="nx-card ap-card ap-card-sm">
                 <h3>{t}</h3>
@@ -5845,139 +5817,82 @@ function AppPage({ appContent, setAppContent, isAdmin, setPage, demoStory, setDe
               </article>
             ))}
           </div>
-          <div className="ap-grid ap-grid-4 nx-hide-mob">
-            {AP_FEATURES_TEXT.map(([t, d]) => (
-              <article key={t} className="ap-card-plain"><h3>{t}</h3><p>{d}</p></article>
-            ))}
-          </div>
-          <div className="ap-chips nx-only-mob">
-            {AP_FEATURES_TEXT.map(([t]) => <span key={t}>{t}</span>)}
-          </div>
+          {featOpen && (
+            <>
+              <div className="ap-grid ap-grid-4 nx-hide-mob">
+                {AP_FEATURES_TEXT.map(([t, d]) => (
+                  <article key={t} className="ap-card-plain"><h3>{t}</h3><p>{d}</p></article>
+                ))}
+              </div>
+              <div className="ap-chips nx-only-mob">
+                {AP_FEATURES_TEXT.map(([t]) => <span key={t}>{t}</span>)}
+              </div>
+            </>
+          )}
+          <button className="ap-toggle" onClick={() => setFeatOpen(v => !v)} aria-expanded={featOpen}>
+            {featOpen ? "收起其他功能 ↑" : "看其他功能 ↓"}
+          </button>
         </div>
       </section>
 
-      {/* 誠實比較 */}
+      {/* 工具篩選：三方比較 */}
       <section className="nx-dark" style={{ paddingBlock: "clamp(32px,5vw,64px)" }}>
         <div className="nx-in" style={{ maxWidth: 1020 }}>
           <div style={{ marginBottom: "clamp(20px,2.6vw,32px)" }}>
-            <p className="nx-eyebrow nx-eyebrow-dark" style={{ marginBottom: 14 }}>誠實比較</p>
-            <h2 className="nx-h2" style={{ color: "var(--nx-dt)", marginBottom: 14 }}>一般記帳 App，或模板 2.0 呢？</h2>
-            <p style={{ maxWidth: 640, fontSize: "clamp(14px,1.5vw,16px)", lineHeight: 1.9, color: "rgba(255,255,255,.62)" }}>
-              一般記帳 App 很多都免費；Google Sheets 版的「{TEMPLATE_20_NAME}」是 {TEMPLATE_20_PRICE} 一次買斷，它沒有被取代，也不是舊版，三者都能管錢，但解決的不是同一件事。
-            </p>
-          </div>
-          <div className="ap-vs">
-            <article>
-              <h3>一般記帳 App</h3>
-              <p className="ap-vs-meta">市面上大多數</p>
-              <p className="ap-vs-price" style={{ fontSize: "clamp(17px,1.9vw,20px)" }}>多為免費，匯出檔案才訂閱</p>
-              <p className="ap-vs-sub">把花過的錢記下來，幫你算好圖表</p>
-              <p className="ap-vs-foot">強項是「記錄」，月底給你一張圓餅圖，但要調哪裡，還是你自己想。</p>
-            </article>
-            <article>
-              <div className="ap-vs-kicker"><h3>{TEMPLATE_20_NAME}</h3><span>Google Sheets</span></div>
-              <p className="ap-vs-price">{TEMPLATE_20_PRICE}<span> 一次買斷</span></p>
-              <p className="ap-vs-sub">付一次，用到你不想用為止</p>
-              <img src={HM_SHOT + "sheets-template.webp"} width="1100" height="550" loading="lazy" alt={`${TEMPLATE_20_NAME} 進階版：五種分配模式、月底各項診斷報告、即時動態進度條`} />
-            </article>
-            <article className="ap-vs-hi">
-              <div className="ap-vs-kicker"><h3>88La財務導航</h3><span>手機與網頁</span></div>
-              <p className="ap-vs-price"><Price>{NT_MONTHLY}</Price><span> / 月起</span></p>
-              <p className="ap-vs-sub">陪你走每一個月，隨時可停</p>
-              <div className="ap-vs-shot">
-                <img src={HM_SHOT + "alert.webp"} width="940" height="1175" loading="lazy" alt="88La財務導航 快訊頁：本月可用餘額 $4,729、本期卡費已預留 $4,249" />
-              </div>
-            </article>
+            <p className="nx-eyebrow nx-eyebrow-dark" style={{ marginBottom: 14 }}>工具篩選</p>
+            <h2 className="nx-h2" style={{ color: "var(--nx-dt)" }}>你更適合哪種工具？</h2>
           </div>
 
-          <h3 className="nx-h3 ap-table-title">功能比較表</h3>
-          <div className="ap-table nx-hide-mob">
-            <div className="ap-tr ap-thead">
-              <div>比較項目</div><div>一般記帳 App</div><div>模板 2.0（買斷）</div><div>財務導航（訂閱）</div>
-            </div>
-            {AP_COMPARE.map(r => (
-              <div key={r.key} className="ap-tr ap-tbody">
-                <div>{r.key}</div><div>{r.app}</div><div>{r.tpl}</div><div>{r.la}</div>
-              </div>
-            ))}
-          </div>
-          <div className="ap-table-m nx-only-mob">
-            <div className="ap-mh"><div>記帳 App</div><div>模板 2.0</div><div>88La</div></div>
-            {mobileRows.slice(0, 4).map(r => <ApCompareRowM key={r.key} row={r} />)}
-            {moreOpen && mobileRows.slice(4).map(r => <ApCompareRowM key={r.key} row={r} />)}
-            <button className="ap-more" onClick={() => setMoreOpen(v => !v)} aria-expanded={moreOpen}>
-              {moreOpen ? "收合" : `看其他 ${mobileRows.length - 4} 項`}
+          {/* 一張真表格跑兩種寬度：桌機吃 app/tpl/la 的完整敘述並列出全部八列，
+              手機吃 mApp/mTpl/mLa 的精簡版、先給四列再展開。欄寬 20/26/24/30 是
+              設計稿為 390px 算好的，桌機放寬第二、三欄讓長句少斷行。 */}
+          <div className="ap-tbl-wrap">
+            <table className="ap-tbl">
+              <colgroup><col /><col /><col /><col /></colgroup>
+              <thead>
+                <tr>
+                  <th>比較項目</th>
+                  <th><span className="nx-hide-mob">一般記帳 App</span><span className="nx-only-mob">記帳 App</span></th>
+                  <th><span className="nx-hide-mob">Google Sheets 模板 2.0（買斷）</span><span className="nx-only-mob">模板 2.0</span></th>
+                  <th><span className="nx-hide-mob">財務導航（訂閱）</span><span className="nx-only-mob">88La 導航</span></th>
+                </tr>
+              </thead>
+              <tbody>
+                {rows.map((r, i) => (
+                  <tr key={r.key} className={!moreOpen && i >= 4 ? "ap-tr-more" : undefined}>
+                    <th scope="row">{r.key}</th>
+                    <td><span className="nx-hide-mob">{r.app}</span><span className="nx-only-mob">{r.mApp}</span></td>
+                    <td><span className="nx-hide-mob">{r.tpl}</span><span className="nx-only-mob">{r.mTpl}</span></td>
+                    <td className="ap-td-la"><span className="nx-hide-mob">{r.la}</span><span className="nx-only-mob">{r.mLa}</span></td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+            <button className="ap-more nx-only-mob" onClick={() => setMoreOpen(v => !v)} aria-expanded={moreOpen}>
+              {moreOpen ? "收起其他 " + (rows.length - 4) + " 項 ↑" : "看其他 " + (rows.length - 4) + " 項差異 ↓"}
             </button>
           </div>
 
           <p className="ap-note">沒有哪個更好！記帳 App 告訴你「花了多少」，模板與導航幫你決定「還能花多少」；而模板與導航的差別，在你要的是一張永遠屬於你的表，還是一個每個月會來幫你分析、給你建議。<br />兩個都用的人也不少，模板記全年大帳，導航管當月流水。</p>
-          <p className="ap-note-weak">另外還有免費的分配計劃（Google Sheets 範本），先從免費的開始也完全可以。</p>
-        </div>
-      </section>
-
-      {/* 上手三件事 */}
-      <section className="nx-band" style={{ paddingBlock: "clamp(32px,5vw,64px) clamp(28px,4.5vw,56px)" }}>
-        <div className="nx-in">
-          <div className="nx-sect-head">
-            <div>
-              <p className="nx-eyebrow">開始之前</p>
-              <h2 className="nx-h2">第一次進來，你只要做這三件事</h2>
-              <p className="nx-lead">加起來大約 10 分鐘！做完之後，每天只需要記帳那 5 秒。</p>
-            </div>
-            <p className="nx-pill"><IcClock />設定一次，約 10 分鐘</p>
-          </div>
-          <div className="nx-steps">
-            {AP_STEPS.map(([mins, t, d], i) => (
-              <article key={t} className="nx-card">
-                <div className="nx-step-no"><b>{i + 1}</b><span>{mins}</span></div>
-                <h3 className="nx-h3">{t}</h3>
-                <p style={{ marginBottom: 0 }}>{d}</p>
-              </article>
-            ))}
-          </div>
-          <p className="nx-lead nx-hr">還沒填完也沒關係，空著也能開始記帳，之後任何時候補都可以</p>
+          <p className="ap-buy">看完覺得自己適合表格？{tpl.name} {tpl.price} 一次買斷，<a href={tpl.url || TEMPLATE_20_FALLBACK.url} target="_blank" rel="noopener noreferrer">到賣場看看 →</a></p>
+          <p className="ap-note-weak">另外還有免費的分配計劃（Google Sheets 範本），下載超過 4,700 次，先從免費的開始也完全可以。</p>
         </div>
       </section>
 
       {/* 不用一次全用 */}
-      <section style={{ paddingBlock: "clamp(32px,5vw,64px)", borderBottom: "1px solid var(--nx-bd)" }}>
-        <div className="nx-in nx-stack">
-          <div>
-            <p className="nx-eyebrow" style={{ marginBottom: 14 }}>不用一次全用</p>
-            <h2 className="nx-h2" style={{ lineHeight: 1.4, marginBottom: 18 }}>設定完，第一個月日常只做兩件事</h2>
-            <p className="nx-body">88La 是為了陪你走好幾年設計的「理財工具」，所以功能會跟一般記帳 App 不同。但你不必一開始就全部搞懂，照下面的順序慢慢開就好。</p>
-          </div>
-          <div className="nx-stack-list">
-            <article className="nx-stack-now" style={{ background: "var(--nx-os)" }}>
-              <div style={{ display: "flex", alignItems: "baseline", justifyContent: "space-between", gap: 16, marginBottom: 10 }}>
-                <h3>第一個月：只用預算 + 快速記帳</h3>
-                <span className="nx-stack-tag" style={{ marginTop: 0, whiteSpace: "nowrap" }}>先做到這裡就夠</span>
-              </div>
-              <p>每天花 5 秒記一筆，看一眼餘額。這樣月底就已經有一份診斷可以看。</p>
-            </article>
-            <article className="nx-stack-now" style={{ background: "var(--nx-bg2)", border: "1px solid var(--nx-bd)" }}>
-              <h3>第二個月：打開預算與卡費預留</h3>
-              <p>看過一次自己的真實花費之後，再排預算會準得多，也比較不會偏離現實生活太遠。</p>
-            </article>
-            <article className="nx-stack-now" style={{ background: "var(--nx-bg2)", border: "1px solid var(--nx-bd)" }}>
-              <h3>未來：目標、負債、願望清單、公費與家庭</h3>
-              <p>有需要再開，隨時都在為你準備好！</p>
-            </article>
-          </div>
-        </div>
-      </section>
-
-      {/* 名詞小辭典 */}
-      <section className="nx-band" style={{ paddingBlock: "clamp(32px,5vw,64px)" }}>
+      <section className="nx-band" style={{ paddingBlock: "clamp(32px,5vw,64px) clamp(28px,4.5vw,56px)" }}>
         <div className="nx-in">
           <div style={{ marginBottom: "clamp(20px,2.6vw,32px)" }}>
-            <p className="nx-eyebrow" style={{ marginBottom: 12 }}>先認識幾個詞</p>
-            <h2 className="nx-h2" style={{ marginBottom: 12 }}>88La財務導航裡說的，<br />是這個意思！</h2>
-            <p className="nx-lead" style={{ maxWidth: 560 }}>記帳時會看到這幾個選項，先看過一遍，進去就不會卡在「這個要選哪個」。</p>
+            <p className="nx-eyebrow" style={{ marginBottom: 12 }}>不用一次全用</p>
+            <h2 className="nx-h2">第一個月，你只需要用兩個功能</h2>
           </div>
-          <div className="nx-terms">
-            {AP_TERMS.map(([t, d]) => (
-              <article key={t} className="nx-card" style={{ boxShadow: "none" }}><h3>{t}</h3><p>{d}</p></article>
+          <div className="ap-ramp">
+            {AP_RAMP.map(([when, t, d], i) => (
+              <article key={when} className={i === 0 ? "ap-ramp-now" : undefined}>
+                <p className="ap-ramp-when">{when}</p>
+                <h3>{t}</h3>
+                <p className="ap-ramp-d">{d}</p>
+              </article>
             ))}
           </div>
         </div>
@@ -5988,8 +5903,7 @@ function AppPage({ appContent, setAppContent, isAdmin, setPage, demoStory, setDe
         <div className="nx-in">
           <div style={{ marginBottom: "clamp(20px,2.6vw,32px)" }}>
             <p className="nx-eyebrow" style={{ marginBottom: 12 }}>beta 使用者說</p>
-            <h2 className="nx-h2" style={{ marginBottom: 12 }}>體驗真實回饋</h2>
-            <p className="nx-lead" style={{ maxWidth: 520 }}>以下是 88La財務導航 beta 期間收到的回饋</p>
+            <h2 className="nx-h2">體驗真實回饋</h2>
           </div>
           <div className="ap-quotes">
             <article className="nx-card">
@@ -6003,17 +5917,18 @@ function AppPage({ appContent, setAppContent, isAdmin, setPage, demoStory, setDe
             <article className="nx-card ap-crit">
               <p className="ap-crit-tag">批評，以及我們怎麼改</p>
               <blockquote style={{ marginBottom: 14 }}>「功能說明不清，第一次使用阻力比較大。」</blockquote>
-              <p className="ap-crit-fix">所以有了上面的「三件事」與名詞小辭典，App 內也加了第一次使用的欄位說明。</p>
+              <p className="ap-crit-fix">所以有了上面的「三件事」，名詞說明移到使用指南，App 內也加了第一次使用的欄位說明。</p>
             </article>
           </div>
         </div>
       </section>
 
-      {/* 支援裝置 */}
+      {/* 開始之前想知道的 */}
       <section className="nx-band" style={{ paddingBlock: "clamp(28px,4vw,52px)" }}>
         <div className="nx-in">
+          <p className="nx-eyebrow" style={{ marginBottom: "clamp(14px,1.8vw,22px)" }}>開始之前想知道的</p>
           <dl className="ap-devices">
-            {AP_DEVICES.map(([t, d]) => <div key={t}><dt>{t}</dt><dd>{d}</dd></div>)}
+            {AP_DEVICES.map(([t, d]) => <div key={t} className="nx-card"><dt>{t}</dt><dd>{d}</dd></div>)}
           </dl>
         </div>
       </section>
@@ -6023,8 +5938,7 @@ function AppPage({ appContent, setAppContent, isAdmin, setPage, demoStory, setDe
         <div className="nx-in">
           <div style={{ textAlign: "center", marginBottom: "clamp(24px,3.4vw,36px)" }}>
             <p className="nx-eyebrow" style={{ marginBottom: 12 }}>方案</p>
-            <h2 className="nx-h2" style={{ marginBottom: 12 }}>每月一頓飯的錢，換來不焦慮</h2>
-            <p className="nx-lead">兩個方案功能完全一樣，只差付款週期</p>
+            <h2 className="nx-h2">每月一頓飯的錢，換來不焦慮</h2>
             <PriceNote style={{ marginTop: 18 }} />
           </div>
           <div className="ap-plans">
@@ -6053,7 +5967,7 @@ function AppPage({ appContent, setAppContent, isAdmin, setPage, demoStory, setDe
           <div className="ap-faq">
             <h2>常見問題</h2>
             {AP_FAQ.map(([q, a]) => (
-              <details key={q} open>
+              <details key={q}>
                 <summary>{q}</summary>
                 <p>{a}</p>
               </details>
