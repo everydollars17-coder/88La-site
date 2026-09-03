@@ -1188,10 +1188,9 @@ button:focus-visible{border-radius:4px;}
 .ap-ramp-d{font-size:14px;color:var(--nx-t2);line-height:1.85;}
 @media(max-width:768px){.ap-ramp{grid-template-columns:minmax(0,1fr);}}
 
-.ap-note{margin-top:24px;font-size:15px;line-height:1.85;color:rgba(252,250,246,.55);}
 .ap-note-weak{margin-top:14px;font-size:14px;line-height:1.85;color:rgba(252,250,246,.4);}
 /* 模板 2.0 的購買指引，深色區塊上的連結用 --nx-dl，不用主橘（在深底上對比不夠） */
-.ap-buy{margin-top:16px;font-size:clamp(13px,1.4vw,14px);line-height:1.85;color:rgba(252,250,246,.55);}
+.ap-buy{margin-top:24px;font-size:clamp(13px,1.4vw,14px);line-height:1.85;color:rgba(252,250,246,.55);}
 .ap-buy a{color:var(--nx-dl);font-weight:600;white-space:nowrap;}
 .ap-buy a:hover{color:var(--nx-o);}
 
@@ -5873,7 +5872,6 @@ function AppPage({ appContent, setAppContent, isAdmin, setPage, demoStory, setDe
             </button>
           </div>
 
-          <p className="ap-note">沒有哪個更好！記帳 App 告訴你「花了多少」，模板與導航幫你決定「還能花多少」；而模板與導航的差別，在你要的是一張永遠屬於你的表，還是一個每個月會來幫你分析、給你建議。<br />兩個都用的人也不少，模板記全年大帳，導航管當月流水。</p>
           <p className="ap-buy">看完覺得自己適合表格？{tpl.name} {tpl.price} 一次買斷，<a href={tpl.url || TEMPLATE_20_FALLBACK.url} target="_blank" rel="noopener noreferrer">到賣場看看 →</a></p>
           <p className="ap-note-weak">另外還有免費的分配計劃（Google Sheets 範本），下載超過 4,700 次，先從免費的開始也完全可以。</p>
         </div>
