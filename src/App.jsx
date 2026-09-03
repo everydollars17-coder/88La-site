@@ -813,6 +813,8 @@ button:focus-visible{border-radius:4px;}
   --nx-dark:#494949;--nx-dt:#FCFAF6;--nx-ds:rgba(252,250,246,.62);--nx-dl:#E8A578;
   --nx-t1:#2E2A21;--nx-t2:#574F40;--nx-t3:#877C68;--nx-t4:#A79B85;--nx-t5:#B5A893;
   --nx-bd:#E4DCC9;--nx-hair:#F0E9DA;
+  /* 首頁月底診斷用：警示紅（超支數字）與改善綠（調整後的數字），只在診斷敘事裡出現 */
+  --nx-warn:#B84A3E;--nx-good:#9BBF77;
   --nx-mono:'JetBrains Mono',ui-monospace,SFMono-Regular,monospace;
   --nx-ease:cubic-bezier(.2,.7,.2,1);
   --nx-sh:0 1px 0 rgba(46,42,33,.04),0 8px 24px -12px rgba(46,42,33,.10);
@@ -946,14 +948,8 @@ button:focus-visible{border-radius:4px;}
 
 .nx-band{background:var(--nx-bg2);border-block:1px solid var(--nx-bd);}
 .nx-dark{background:var(--nx-dark);}
-.hm-pain{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:clamp(0px,3vw,32px);}
-.hm-pain>div{padding-top:18px;border-top:1px dotted var(--nx-t5);}
-.hm-pain h3{margin-bottom:8px;font-size:clamp(17px,1.9vw,19px);font-weight:600;line-height:1.55;}
-.hm-pain p{font-size:14px;color:var(--nx-t3);line-height:1.8;}
-@media(max-width:768px){.hm-pain{grid-template-columns:minmax(0,1fr);gap:0;}.hm-pain>div{padding-block:14px 0;}}
 
 .hm-story{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:clamp(24px,5vw,56px);align-items:center;padding-block:clamp(28px,4.5vw,56px);}
-.hm-story-flip>.nx-shot-wrap{order:2;}
 .hm-story h2{margin-bottom:22px;font-size:clamp(26px,3.8vw,38px);font-weight:700;line-height:1.35;letter-spacing:-.02em;text-wrap:pretty;}
 .hm-story .nx-mono{display:block;margin-bottom:18px;font-size:clamp(12px,1.3vw,13px);color:var(--nx-o);}
 .hm-story .nx-shot{max-width:440px;}
@@ -962,28 +958,82 @@ button:focus-visible{border-radius:4px;}
 @media(max-width:900px){
   .hm-story{grid-template-columns:minmax(0,1fr);gap:20px;}
   .hm-story-p,.hm-quote{max-width:none;}
+  /* 手機一律文字在上、截圖在下；桌機才照設計稿左右交替（.hm-story-flip 這一段圖在左） */
+  .hm-story-flip>.nx-shot-wrap{order:2;}
 }
 
-.hm-month-head{padding-block:clamp(36px,5vw,64px) 8px;text-align:center;}
-.hm-month-head h2{margin-block:12px;}
-.hm-diag{display:grid;grid-template-columns:minmax(0,500px) minmax(0,1fr);gap:32px;align-items:center;max-width:980px;margin:0 auto;}
-.hm-diag .nx-shot{max-width:500px;}
-.hm-advice{padding:clamp(20px,2.4vw,28px);border-radius:16px;background:var(--nx-bg);}
-.hm-advice>p:first-child{margin-bottom:18px;font-size:12px;font-weight:700;letter-spacing:.1em;color:var(--nx-t3);}
-.hm-advice li{margin-bottom:16px;padding-left:14px;border-left:2px solid var(--nx-bd);font-size:clamp(14px,1.5vw,15px);line-height:1.85;list-style:none;color:var(--nx-t2);}
-.hm-advice li:first-child{border-left-color:var(--nx-o);color:var(--nx-t1);}
-.hm-advice li:last-child{margin-bottom:0;}
-.nx-dark-foot{display:flex;flex-direction:column;align-items:center;gap:12px;margin-top:clamp(28px,4vw,48px);padding-top:clamp(24px,3.4vw,40px);border-top:1px dotted rgba(252,250,246,.22);}
-.nx-dark-foot p{font-size:clamp(13px,1.4vw,14px);color:rgba(252,250,246,.55);text-align:center;}
+/* 月底診斷導言：設計稿桌機 38px / 手機 27px，比 .nx-h2 大一階，所以獨立一個字級 */
+.hm-dg-h1{font-size:clamp(27px,4vw,38px);font-weight:700;line-height:1.3;letter-spacing:-.025em;color:var(--nx-t1);text-wrap:pretty;}
+
+/* 兩個情境：桌機並排、中間一條分隔線；手機上下堆疊，分隔線收掉 */
+.hm-sc{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));}
+.hm-sc>div{padding-block:clamp(26px,4vw,40px);}
+.hm-sc>div:first-child{padding-right:clamp(20px,3vw,40px);border-right:1px solid var(--nx-bd);}
+.hm-sc>div:last-child{padding-left:clamp(20px,3vw,40px);}
+.hm-sc-lb{margin-bottom:clamp(12px,1.6vw,16px);font-size:clamp(12px,1.3vw,13px);color:var(--nx-ol);}
+.hm-sc-h{margin-bottom:clamp(14px,1.8vw,18px);font-size:clamp(18px,2vw,20px);font-weight:700;line-height:1.6;text-wrap:pretty;}
+.hm-sc-box{padding:clamp(18px,2.4vw,24px);}
+.hm-sc-big{margin-bottom:6px;font-size:clamp(30px,3.6vw,34px);font-weight:700;letter-spacing:-.03em;font-variant-numeric:tabular-nums;color:var(--nx-warn);}
+.hm-sc-p{font-size:clamp(14px,1.5vw,15px);line-height:1.8;color:var(--nx-t2);}
+.hm-sc-note{margin-top:clamp(14px,1.6vw,16px);font-size:clamp(14px,1.5vw,15px);font-weight:600;line-height:1.8;}
+.hm-tri{display:flex;flex-direction:column;gap:8px;}
+.hm-tri>div{display:flex;align-items:baseline;justify-content:space-between;gap:12px;}
+.hm-tri span{font-size:clamp(13px,1.4vw,14px);color:var(--nx-t3);}
+.hm-tri b{font-size:clamp(15px,1.6vw,16px);font-weight:600;font-variant-numeric:tabular-nums;}
+.hm-tri-now{padding-top:8px;border-top:1px dotted var(--nx-t5);}
+.hm-tri-now b{font-weight:700;color:var(--nx-warn);}
+@media(max-width:768px){
+  .hm-sc{grid-template-columns:minmax(0,1fr);}
+  .hm-sc>div:first-child{padding-right:0;padding-bottom:0;border-right:none;}
+  .hm-sc>div:last-child{padding-left:0;padding-top:22px;}
+}
+
+/* 你的月底，通常是這樣：全站唯一一次痛點 */
+.hm-typ{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:clamp(12px,2vw,20px);}
+.hm-typ article{padding:clamp(18px,2.4vw,26px);}
+.hm-typ p:first-child{margin-bottom:clamp(8px,1.2vw,14px);font-size:clamp(16px,1.9vw,19px);font-weight:600;line-height:1.6;text-wrap:pretty;}
+.hm-typ p:last-child{font-size:clamp(13px,1.4vw,14px);color:var(--nx-t3);line-height:1.8;}
+@media(max-width:900px){.hm-typ{grid-template-columns:minmax(0,1fr);}}
+
+/* 深色診斷區：桌機左文右圖，手機依序 標題 → 截圖 → 兩張診斷卡 */
+.hm-dg{display:grid;grid-template-columns:1.05fr .95fr;gap:clamp(24px,4vw,48px);align-items:start;}
+.hm-dg-head{grid-column:1;grid-row:1;}
+.hm-dg-cards{grid-column:1;grid-row:2;display:flex;flex-direction:column;gap:14px;}
+.hm-dg-shot{grid-column:2;grid-row:1 / span 2;}
+.hm-dg-shot .nx-shot{max-width:500px;}
+.hm-dg-lb{margin-bottom:clamp(12px,1.6vw,16px);font-size:clamp(12px,1.3vw,13px);}
+.hm-dg-h2{margin-bottom:clamp(16px,2.2vw,24px);font-size:clamp(26px,3.6vw,34px);font-weight:700;line-height:1.35;letter-spacing:-.025em;color:var(--nx-dt);text-wrap:pretty;}
+.hm-dg-card{padding:clamp(20px,2.4vw,26px);border-radius:16px;background:var(--nx-bg);}
+.hm-dg-no{margin-bottom:clamp(10px,1.2vw,12px);font-size:clamp(11px,1.2vw,12px);font-weight:700;letter-spacing:.1em;color:var(--nx-ol);}
+.hm-dg-body{margin-bottom:clamp(12px,1.4vw,14px);padding-left:14px;border-left:2px solid var(--nx-o);font-size:clamp(14px,1.5vw,15px);line-height:1.85;}
+.hm-dg-act{padding-top:clamp(12px,1.4vw,14px);border-top:1px dotted var(--nx-t5);font-size:clamp(14px,1.5vw,15px);font-weight:600;line-height:1.8;}
+.hm-dg-foot{margin-top:clamp(16px,2vw,20px);font-size:clamp(13px,1.4vw,14px);line-height:1.85;color:rgba(252,250,246,.5);}
+
+/* 下個月只改兩件事 */
+.hm-next{margin-top:clamp(26px,3.6vw,44px);padding-top:clamp(22px,2.8vw,36px);border-top:1px dotted rgba(252,250,246,.24);}
+.hm-next-lb{margin-bottom:clamp(14px,1.6vw,16px);font-size:clamp(12px,1.3vw,13px);color:var(--nx-good);}
+.hm-next-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:clamp(10px,1.6vw,20px);}
+.hm-next-grid>div{padding:clamp(18px,2.2vw,24px);border:1px solid rgba(252,250,246,.16);border-radius:16px;background:rgba(252,250,246,.07);}
+.hm-next-k{margin-bottom:clamp(8px,1vw,10px);font-size:clamp(12px,1.3vw,13px);color:rgba(252,250,246,.55);}
+.hm-next-row{display:flex;align-items:baseline;gap:clamp(10px,1.2vw,12px);flex-wrap:wrap;margin-bottom:10px;}
+.hm-next-old{font-size:clamp(18px,2.2vw,22px);font-weight:600;font-variant-numeric:tabular-nums;color:rgba(252,250,246,.45);text-decoration:line-through;}
+.hm-next-arw{font-size:clamp(15px,1.8vw,18px);color:rgba(252,250,246,.45);}
+.hm-next-new{font-size:clamp(25px,3.2vw,30px);font-weight:700;letter-spacing:-.02em;font-variant-numeric:tabular-nums;color:var(--nx-good);}
+.hm-next-old2{margin-bottom:4px;font-size:clamp(15px,1.7vw,16px);color:rgba(252,250,246,.45);text-decoration:line-through;}
+.hm-next-new2{margin-bottom:10px;font-size:clamp(19px,2.2vw,22px);font-weight:700;line-height:1.5;color:var(--nx-dt);}
+.hm-next-d{font-size:clamp(13px,1.4vw,14px);line-height:1.8;color:rgba(252,250,246,.6);}
 @media(max-width:900px){
-  .hm-diag{grid-template-columns:minmax(0,1fr);gap:20px;}
-  .hm-diag .nx-shot{max-width:340px;filter:drop-shadow(0 20px 36px rgba(0,0,0,.45));}
-  .nx-dark-foot .nx-btn{width:100%;}
+  .hm-dg{grid-template-columns:minmax(0,1fr);gap:20px;}
+  .hm-dg-head,.hm-dg-shot,.hm-dg-cards{grid-column:1;grid-row:auto;}
+  .hm-dg-shot .nx-shot{max-width:340px;filter:drop-shadow(0 20px 36px rgba(0,0,0,.45));}
+  .hm-next-grid{grid-template-columns:minmax(0,1fr);}
+  .hm-next-row{margin-bottom:0;}
 }
 
-.hm-feat{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:20px;}
+.hm-feat{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:clamp(12px,2.2vw,24px);}
 .hm-feat article{padding:20px 20px 8px;}
-.hm-feat h3{margin-bottom:6px;font-size:clamp(15px,1.6vw,17px);font-weight:700;}
+.hm-feat h3{margin-bottom:6px;font-size:clamp(15px,1.8vw,19px);font-weight:700;}
+.hm-feat-more{font-weight:600;}
 .hm-feat p{margin-bottom:14px;font-size:13px;color:var(--nx-t3);line-height:1.8;}
 .hm-feat img{width:100%;display:block;}
 @media(max-width:900px){.hm-feat{grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;}.hm-feat article{padding:16px 16px 6px;}.hm-feat h3{margin-bottom:10px;}}
@@ -1030,11 +1080,15 @@ button:focus-visible{border-radius:4px;}
 @media(max-width:640px){.nx-inline-cta div{flex-direction:column;width:100%;}.nx-inline-cta .nx-btn{width:100%;}}
 
 .hm-value{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:clamp(18px,2.6vw,28px);max-width:920px;margin:0 auto;}
-.hm-value>div{padding-top:18px;border-top:2px solid var(--nx-o);}
-@media(max-width:768px){.hm-sub-head{text-align:left!important;}}
-.hm-value h3{margin-bottom:10px;font-size:clamp(16px,1.7vw,18px);font-weight:700;}
+.hm-value>div{padding-top:clamp(16px,2vw,20px);border-top:2px solid var(--nx-o);}
+.hm-value h3{margin-bottom:10px;font-size:clamp(18px,2vw,21px);font-weight:700;}
 .hm-value p{font-size:14px;color:var(--nx-t2);line-height:1.85;}
 @media(max-width:900px){.hm-value{grid-template-columns:minmax(0,1fr);gap:22px;}}
+/* 手機照設計稿在「走過三個月，」後換行；桌機維持一整行，所以用 span 切換 display */
+@media(max-width:768px){.hm-3m-br{display:block;}}
+.hm-3m-cta{display:flex;align-items:center;gap:20px;}
+.hm-3m-cta p{font-size:clamp(13px,1.4vw,14px);color:var(--nx-t3);}
+@media(max-width:640px){.hm-3m-cta{flex-direction:column;align-items:stretch;gap:10px;}.hm-3m-cta .nx-btn{width:100%;}.hm-3m-cta p{text-align:center;}}
 
 .hm-price{max-width:760px;margin:0 auto;padding:clamp(24px,3.2vw,36px);border:1px solid var(--nx-bd);border-radius:20px;background:#fff;box-shadow:0 8px 24px -12px rgba(46,42,33,.14);}
 .hm-price-top{display:flex;justify-content:space-between;align-items:flex-end;gap:24px;flex-wrap:wrap;padding-bottom:26px;margin-bottom:26px;border-bottom:1px dotted var(--nx-t5);}
@@ -1791,9 +1845,9 @@ const DEFAULTS = {
   },
   trustStats: [
     { num: "90+", label: "8友社群成員" },
-    { num: "4,000+", label: "記帳範本下載" },
-    { num: "113+", label: "付費工具使用者" },
-    { num: "5年+", label: "理財內容創作經驗" }
+    { num: "4700+", label: "記帳範本下載" },
+    { num: "150+", label: "付費工具使用者" },
+    { num: "3年+", label: "理財經驗" }
   ],
   envelopeHero: {
     eyebrow: "88La · 實體工具",
@@ -2977,36 +3031,33 @@ function PageHero({ title, fields, data, setData, defaults, isAdmin, children })
   return children(h, isAdmin ? <span onClick={() => { setTmp(h); setEditing(true); }} style={{ fontSize: 12, color: O, cursor: "pointer" }}>編輯文字</span> : null);
 }
 
-//  Home（2026-09 改版：先講產品與價格 → 帶你走完一個月 → 還有什麼 → 上手 → 才給價格）
+//  Home（2026-09 改版 3a：Hero → 月初分配 → 智慧預填 → 月底診斷四段 → 走過三個月 → 兩張功能卡 → 方案 → 免費入口）
+//  痛點只在「你的月底，通常是這樣」講一次；上手三件事與名詞辭典改放 /app 與 /guide，首頁不再重複。
 const HM_SHOT = "/app-shots/";
-const HM_PAINS = [
-  ["有記帳，但月底還是不知道要調哪裡", "記了一整個月，只換到一張看不懂的圓餅圖。"],
-  ["薪水一入帳，卡費一扣就沒了", "不是花太多，是沒有先把卡費留下來。"],
-  ["想存錢，但一犒賞自己就破功", "缺的是一筆說好可以花的預算。"],
-];
+// 首頁只留兩張功能卡，其餘功能用一句話帶到 /app（避免與 /app 的完整功能清單重複）
 const HM_FEATURES = [
   ["信用卡帳期", "每張卡的結帳日、繳費日與本期應還，月初就先預留", "credit-card.webp", "88La財務導航 信用卡帳期管理：三張卡的結帳與繳費日、本期應還 $5,774"],
-  ["負債追蹤", "學貸、分期還了多少、還剩多少，每月提醒不漏繳", "debt.webp", "88La財務導航 負債追蹤：大學學貸已還 $28,896、本月還款提醒"],
   ["帳戶與淨資產", "目標帳戶與活存分開看，錢有沒有往目標走一眼就懂", "accounts.webp", "88La財務導航 帳戶管理：淨資產、總資產與負債、目標帳戶與其他帳戶"],
-  ["願望清單", "想買的先記下來，冷靜幾天再決定要不要買", "wishlist.webp", "88La財務導航 願望清單：待決定 2 個共 $19,500，可延後或標記已購買"],
 ];
-const HM_STEPS = [
-  ["約 3 分鐘", "填入你手上有多少錢", "活存、目標帳戶、還有正在還的學貸或分期。只填一次，之後靠記帳自己更新。", "accounts.webp", "88La財務導航 帳戶管理：淨資產、總資產與負債、目標帳戶與其他帳戶"],
-  ["約 4 分鐘", "設好每張卡的結帳日", "這一步做完，才知道要幫你預留多少卡費，也是最多人做完之後說「原來差在這裡」的一步。", "credit-card.webp", "88La財務導航 信用卡帳期管理：三張卡的結帳與繳費日、本期應還 $5,774"],
-  ["約 3 分鐘", "寫下一個想存的目標", "一個就好。有目標，月底的診斷才有東西可以對照，不然只是看數字。", "goals.webp", "88La財務導航 儲蓄目標頁：股票 41%、儲蓄 10%、預存管理與短期衝刺目標"],
+// 情境 02 的三個月餐費趨勢：最後一列自動標成「本月」樣式，改資料不用改 JSX
+const HM_TREND = [
+  ["6 月", "NT$ 9,100"],
+  ["7 月", "NT$ 9,600"],
+  ["8 月", "NT$ 10,200"],
 ];
-const HM_TERMS = [
-  ["固定 / 變動", "每月幾乎不變的（房租、保險）是固定；會浮動的（吃飯、交通）是變動。"],
-  ["儲蓄", "存起來不打算動的錢。是往目標走的那一筆。"],
-  ["未來預存", "為了以後某筆一定會來的支出先放的錢，例如半年繳的保險、年繳的稅。錢還是會花掉，只是提前準備。"],
-  ["時效性儲蓄", "短期內想達成的目標，例如三個月後的旅行。時間到就結束，不長期綁著。"],
-  ["卡費預留", "這個月刷掉、下個月要付的錢。88La 會先扣下來，所以你看到的餘額是真的可以花的。"],
-  ["個人 / 公費 / 家庭", "三本各自獨立帳本。自己使用的帳、情侶各自拿出一筆當公積金的帳、雙薪家庭混用的帳，三種帳不混在一起看。"],
+const HM_TYPICAL = [
+  ["「這個月好像有剩一點，但不知道為什麼」", "好月份沒辦法複製，壞月份也不知道從哪裡開始檢查。"],
+  ["「圖表說吃飯占 32%，那是多還是少？」", "占比只講比例，沒講有沒有問題。"],
+  ["「又超支了，下個月要怎麼改？」", "沒有具體的調整方向，下個月只能重來一次。"],
+];
+const HM_DIAG = [
+  ["① 卡費正在吃下個月薪水", "本期卡費還有 NT$ 7,800 沒有預留。如果不調整，9 月薪水進來後，要先拿 NT$ 7,800 補這期卡費。", "動作：刷卡時同步預留卡費，先停止把消費延後付款。"],
+  ["② 餐費不是偶爾超支", "最近 3 個月餐費都高於 NT$ 8,000，平均約 NT$ 9,600。原本的 NT$ 8,000 已經不太符合你現在的生活。", "動作：下月餐費預算 NT$ 8,000 → NT$ 9,600。"],
 ];
 const HM_VALUES = [
-  ["一套先把錢安排好再花的方式", "月初先安排這個月能怎麼花，月中就能知道錢還夠不夠按照原計劃走。"],
-  ["一個記得住細節的紀錄", "卡費、分期、預存、儲蓄、心情，全部收在同一個地方。"],
-  ["一份每月的陪伴建議", "不評分、不說教，只給你下個月能調整的具體建議。"],
+  ["薪水不再先被卡費吃掉", "月初就把卡費預留好，也知道這個月真正能花多少。"],
+  ["預算是照你的生活訂的", "卡費、分期、預存、心情都收在同一個地方，預算才不會偏離現實。"],
+  ["下個月不用重新猜一次", "不評分、不說教，每個月都給你一份下個月能照做的調整。"],
 ];
 const IcClock = () => (
   <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#A4471D" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
@@ -3062,31 +3113,14 @@ function Home({ setPage, isAdmin, trustStats, setTrustStats }) {
         </section>
       </div>
 
-      {/* 痛點 */}
-      <section className="nx-band" style={{ paddingBlock: "clamp(26px,4vw,52px)" }}>
-        <div className="nx-in">
-          <p className="nx-eyebrow nx-eyebrow-mute" style={{ marginBottom: 22 }}>如果你也是這樣</p>
-          <div className="hm-pain">
-            {HM_PAINS.map(([t, d]) => (
-              <div key={t}><h3>{t}</h3><p className="nx-hide-mob">{d}</p></div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* 一個月的故事 */}
-      <div className="nx-in hm-month-head">
-        <p className="nx-eyebrow">怎麼運作</p>
-        <h2 className="nx-h2">用 88La財務導航<br />過完一個月</h2>
-        <p className="nx-lead">從薪水入帳那天，到月底知道下個月該調哪。</p>
-      </div>
-
+      {/* 一個月的故事：月初分配 */}
       <div className="nx-in">
         <section className="hm-story nx-anchor" id="month">
           <div>
+            <p className="nx-eyebrow" style={{ marginBottom: 10 }}>用 88La財務導航過完一個月</p>
             <span className="nx-mono">8 / 05 &nbsp;月初</span>
             <h2>薪水入帳了。<br />先分配，再開始花。</h2>
-            <p className="hm-story-p">NT$ 38,000 進來，四個步驟帶你走完：盤點收入、看分配建議、自己分配、完成本月預算。待分配的錢一直顯示在下面，排到哪都看得到。</p>
+            <p className="hm-story-p">NT$ 38,000 進來，四個步驟帶你走完：盤點收入、看分配建議、自己分配、完成本月預算。</p>
             <p className="hm-quote">「依照你的收入，這個月可以存 NT$ 8,000。剩下的 NT$ 26,162 再一起排。」</p>
           </div>
           <div className="nx-shot-wrap">
@@ -3095,6 +3129,7 @@ function Home({ setPage, isAdmin, trustStats, setTrustStats }) {
         </section>
       </div>
 
+      {/* 平常：智慧預填 */}
       <section className="nx-band">
         <div className="nx-in">
           <div className="hm-story hm-story-flip">
@@ -3103,43 +3138,129 @@ function Home({ setPage, isAdmin, trustStats, setTrustStats }) {
             </div>
             <div>
               <span className="nx-mono">8 / 05 ~ 8 / 31 &nbsp;平常</span>
-              <h2>5 秒鐘記一筆，<br />連心情一起記。</h2>
-              <p className="hm-story-p">每筆花費標好：固定或變動、現金或刷卡、需要或想要，還有你按下去那一刻的心情。</p>
-              <p className="hm-story-p" style={{ marginBottom: 0 }}>心情這一欄是重點，月底你會看到，那些後悔的花費幾乎都長得一樣。</p>
+              <h2 className="nx-hide-mob">紀錄使用習慣，<br />智慧預填，5 秒記一筆。</h2>
+              <h2 className="nx-only-mob">智慧預填·5秒記一筆</h2>
+              <p className="hm-story-p nx-hide-mob">每筆花費標好：固定或變動、現金或刷卡、需要或想要，還有你按下去那一刻的心情。</p>
+              <p className="hm-story-p nx-hide-mob" style={{ marginBottom: 0 }}>智慧預填系統，不用每次都重頭選一遍，自動記得你的習慣，預先幫你選好細項！</p>
+              <p className="hm-story-p nx-only-mob" style={{ marginBottom: 0 }}>智慧預填系統，自動記得你的使用習慣，預先幫你選好細項，不用每次都重頭選一遍！簡單 5 秒記一筆！</p>
             </div>
           </div>
         </div>
       </section>
 
-      {/* 月底診斷 */}
-      <section className="nx-dark" style={{ paddingBlock: "clamp(32px,5.5vw,72px)" }}>
+      {/* 月底診斷：導言 */}
+      <section style={{ paddingBlock: "clamp(32px,5vw,64px) clamp(22px,3.4vw,44px)" }}>
         <div className="nx-in">
-          <div style={{ textAlign: "center", marginBottom: "clamp(22px,3.4vw,44px)" }}>
-            <span className="nx-mono nx-eyebrow-dark" style={{ display: "block", marginBottom: 14, fontSize: 13 }}>8 / 31 &nbsp;月底</span>
-            <h2 className="nx-h2" style={{ color: "var(--nx-dt)", marginBottom: 16 }}>然後你拿到這個</h2>
-            <p style={{ maxWidth: 520, margin: "0 auto", fontSize: "clamp(14px,1.5vw,16px)", lineHeight: 1.85, color: "rgba(252,250,246,.6)" }}>
-              不是圓餅圖，是一段告訴你「差多少、差在哪、下個月調哪」的建議。<br />這一段，才是你記帳的理由。
-            </p>
+          <p className="nx-eyebrow" style={{ marginBottom: 12 }}>月底診斷</p>
+          <h2 className="hm-dg-h1">你或許更想知道，<br />超支紅字代表什麼？</h2>
+          <p className="hm-story-p" style={{ maxWidth: 580, marginTop: 14, marginBottom: 0 }}>「除了要改付款方式，也要重新調整預算。」得到這個結果，才是「診斷」跟「圓餅圖」的差異。</p>
+        </div>
+      </section>
+
+      {/* 月底診斷：兩個情境 */}
+      <section className="nx-band">
+        <div className="nx-in hm-sc">
+          <div>
+            <p className="nx-mono hm-sc-lb">情境 01&nbsp; 被卡費追著跑</p>
+            <p className="hm-sc-h nx-hide-mob">8 月刷了 NT$ 12,800，<br />但只預留 NT$ 5,000</p>
+            <p className="hm-sc-h nx-only-mob">8 月刷了 NT$ 12,800，預留 NT$ 5,000</p>
+            <div className="nx-card hm-sc-box">
+              <p className="hm-sc-big">NT$ 7,800</p>
+              <p className="hm-sc-p">要靠 9 月的薪水補！<br />這筆壓力被拖到下個月。</p>
+            </div>
           </div>
-          <div className="hm-diag">
-            <div className="nx-shot-wrap">
+          <div>
+            <p className="nx-mono hm-sc-lb">情境 02 &nbsp;餐費爆預算</p>
+            <p className="hm-sc-h nx-hide-mob">預算 NT$ 8,000，<br />實際花了 NT$ 10,200</p>
+            <p className="hm-sc-h nx-only-mob">預算 NT$ 8,000，實際花 NT$ 10,200</p>
+            <div className="nx-card hm-sc-box">
+              <p className="hm-sc-p" style={{ marginBottom: 16 }}>只看這個月，很容易得到一句「下個月少吃一點」。但往前看三個月：</p>
+              <div className="hm-tri">
+                {HM_TREND.map(([m, amt], i) => (
+                  <div key={m} className={i === HM_TREND.length - 1 ? "hm-tri-now" : undefined}><span>{m}</span><b>{amt}</b></div>
+                ))}
+              </div>
+              <p className="hm-sc-note">已經不是偶爾超支，是預算本身抓錯了。</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* 月底診斷：你的月底通常是這樣（全站只講這一次痛點） */}
+      <section style={{ paddingBlock: "clamp(30px,4.6vw,60px) clamp(28px,4.4vw,56px)" }}>
+        <div className="nx-in">
+          <h2 className="nx-h2" style={{ marginBottom: "clamp(18px,2.4vw,28px)" }}>你的月底，通常是這樣：</h2>
+          <div className="hm-typ">
+            {HM_TYPICAL.map(([q, d]) => (
+              <article key={q} className="nx-card"><p>{q}</p><p>{d}</p></article>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* 月底診斷：拿到的診斷 ＋ 下個月只改兩件事 */}
+      <section className="nx-dark" style={{ paddingBlock: "clamp(30px,4.6vw,60px)" }}>
+        <div className="nx-in">
+          <div className="hm-dg">
+            <div className="hm-dg-head">
+              <p className="nx-mono nx-eyebrow-dark hm-dg-lb">月底 ｜ 拿到的診斷</p>
+              <h2 className="hm-dg-h2">兩個問題，<br className="nx-hide-mob" />兩種調整方向。</h2>
+            </div>
+            <div className="nx-shot-wrap hm-dg-shot">
               <picture>
                 <source media="(max-width:900px)" srcSet={HM_SHOT + "diagnosis-mobile.webp"} />
-                <img className="nx-shot" src={HM_SHOT + "diagnosis.webp"} width="940" height="1175" loading="lazy" style={{ filter: "drop-shadow(0 26px 46px rgba(0,0,0,.5))" }} alt="88La財務導航 診斷頁：本月你的支出發生了什麼，逐項說明缺口與判斷依據" />
+                <img className="nx-shot" src={HM_SHOT + "diagnosis.webp"} width="940" height="1175" loading="lazy" alt="88La財務導航 診斷頁：本月你的支出發生了什麼，逐項說明缺口與判斷依據" />
               </picture>
             </div>
-            <div className="hm-advice">
-              <p>下個月可以這樣調</p>
-              <ul style={{ margin: 0, padding: 0 }}>
-                <li>半年繳的保險 NT$ 3,600，之後每月預存 NT$ 600，不要把整筆加進下月固定預算。</li>
-                <li className="nx-hide-mob">購物那筆 NT$ 1,450 是臨時支出，下個月先維持原本的日常預算就好。</li>
-                <li>情緒消費 4 筆多半在週五晚上，要不要留一筆說好可以花的犒賞預算？</li>
-              </ul>
+            <div className="hm-dg-cards">
+              {HM_DIAG.map(([no, body, act]) => (
+                <div key={no} className="hm-dg-card">
+                  <p className="hm-dg-no">{no}</p>
+                  <p className="hm-dg-body">{body}</p>
+                  <p className="hm-dg-act">{act}</p>
+                </div>
+              ))}
+              <p className="hm-dg-foot">不是一昧「要你更節省」！<br />同樣都是超支，有些要改預算，有些要改付款方式。</p>
             </div>
           </div>
-          <div className="nx-dark-foot">
-            <a className="nx-btn nx-btn-pri nx-btn-lg" {...appCtaProps("home-month")}>開始我的第一個月 →</a>
-            <p>月初先分配，月底就會有自己的診斷</p>
+
+          <div className="hm-next">
+            <p className="nx-mono hm-next-lb">下個月 ｜ <span className="nx-hide-mob">照建議調整，</span>只改兩件事</p>
+            <div className="hm-next-grid">
+              <div>
+                <p className="hm-next-k">餐費預算</p>
+                <div className="hm-next-row">
+                  <span className="hm-next-old">NT$ 8,000</span>
+                  <span className="hm-next-arw">→</span>
+                  <span className="hm-next-new">NT$ 9,600</span>
+                </div>
+                <p className="hm-next-d nx-hide-mob">不再出現一個假裝做得到的預算。</p>
+              </div>
+              <div>
+                <p className="hm-next-k">卡費</p>
+                <p className="hm-next-old2">刷了再想辦法繳</p>
+                <p className="hm-next-new2">刷多少，就先留多少</p>
+                <p className="hm-next-d nx-hide-mob">這期卡費不用再靠下個月的薪水補。</p>
+              </div>
+            </div>
+            <p className="hm-next-d nx-only-mob" style={{ marginTop: 14 }}>這期卡費不用再靠下個月的薪水補，餐費也不再是一個假裝做得到的預算。</p>
+          </div>
+        </div>
+      </section>
+
+      {/* 走過三個月，你訂閱的是這三件事 */}
+      <section style={{ paddingBlock: "clamp(30px,4.6vw,60px) clamp(30px,4.8vw,64px)", borderBottom: "1px solid var(--nx-bd)" }}>
+        <div className="nx-in">
+          <div style={{ maxWidth: 960, margin: "0 auto" }}>
+            <h2 className="nx-h2">走過三個月，<span className="hm-3m-br">你訂閱的是這三件事</span></h2>
+            <p className="nx-lead" style={{ marginTop: 12, marginBottom: "clamp(22px,2.8vw,36px)" }}>不是一個記帳的地方，是一套會跟著你的月份調整的方法。</p>
+            <div className="hm-value">
+              {HM_VALUES.map(([t, d]) => (<div key={t}><h3>{t}</h3><p>{d}</p></div>))}
+            </div>
+            <div className="hm-3m-cta nx-hr" style={{ marginTop: "clamp(26px,3.4vw,36px)" }}>
+              <a className="nx-btn nx-btn-pri nx-btn-lg" {...appCtaProps("home-3m")}>看我的第一份診斷</a>
+              <p>記滿一個月就會產生，不用等半年</p>
+            </div>
           </div>
         </div>
       </section>
@@ -3149,8 +3270,7 @@ function Home({ setPage, isAdmin, trustStats, setTrustStats }) {
         <div className="nx-in">
           <div style={{ marginBottom: "clamp(20px,2.8vw,36px)" }}>
             <p className="nx-eyebrow" style={{ marginBottom: 12 }}>不只是記帳</p>
-            <h2 className="nx-h2" style={{ marginBottom: 12 }}>會影響財務的那些事</h2>
-            <p className="nx-lead" style={{ maxWidth: 520 }}>卡費、學貸、目標帳戶、想買但還沒買的東西，這些平常散在各處的數字，都放在同一個月的視角下。</p>
+            <h2 className="nx-h2">其他財務狀況·輕易掌握</h2>
           </div>
           <div className="hm-feat">
             {HM_FEATURES.map(([t, d, img, alt]) => (
@@ -3161,92 +3281,10 @@ function Home({ setPage, isAdmin, trustStats, setTrustStats }) {
               </article>
             ))}
           </div>
-        </div>
-      </section>
-
-      {/* 上手三件事 */}
-      <section style={{ background: "var(--nx-bg2)", paddingBlock: "clamp(32px,5vw,64px) clamp(28px,4.5vw,56px)" }}>
-        <div className="nx-in">
-          <div className="nx-sect-head">
-            <div>
-              <p className="nx-eyebrow">開始之前</p>
-              <h2 className="nx-h2">第一次進來，你只要做這三件事</h2>
-              <p className="nx-lead">加起來大約 10 分鐘。做完之後，每天只需要記帳那 5 秒。</p>
-            </div>
-            <p className="nx-pill"><IcClock />設定一次，約 10 分鐘</p>
-          </div>
-          <div className="nx-steps">
-            {HM_STEPS.map(([mins, t, d, img, alt], i) => (
-              <article key={t} className="nx-card">
-                <div className="nx-step-no"><b>{i + 1}</b><span>{mins}</span></div>
-                <h3 className="nx-h3">{t}</h3>
-                <p>{d}</p>
-                <div className="nx-thumb"><img src={HM_SHOT + img} width="940" height="1175" loading="lazy" alt={alt} /></div>
-              </article>
-            ))}
-          </div>
-          <p className="nx-lead nx-hr">還沒填完也沒關係，空著也能開始記帳，之後任何時候補都可以</p>
-        </div>
-      </section>
-
-      {/* 不用一次全用 */}
-      <section className="nx-dark" style={{ paddingBlock: "clamp(32px,5vw,64px)" }}>
-        <div className="nx-in">
-          <div className="nx-stack">
-            <div>
-              <p className="nx-eyebrow nx-eyebrow-dark" style={{ marginBottom: 14 }}>不用一次全用</p>
-              <h2 className="nx-h2" style={{ color: "var(--nx-dt)", lineHeight: 1.4, marginBottom: 18 }}>功能很多，但你第一個月只需要用兩個。</h2>
-              <p style={{ fontSize: "clamp(14px,1.5vw,16px)", lineHeight: 1.9, color: "var(--nx-ds)" }}>88La財務導航是為了陪你走好幾年設計的，所以功能會跟一般記帳 App 不同，但你不必一開始就全部搞懂，照下面的順序慢慢開就好。</p>
-            </div>
-            <div className="nx-stack-list">
-              <article className="nx-stack-now">
-                <h3>第一個月：只用預算 + 快速記帳</h3>
-                <p>每天花 5 秒記一筆，看一眼餘額，這樣月底就已經有一份診斷可以看。</p>
-                <span className="nx-stack-tag">先做到這裡就夠</span>
-              </article>
-              <article className="nx-stack-next">
-                <h3>第二個月：打開預算與卡費預留</h3>
-                <p>看過一次自己的真實花費之後，再排預算會準得多，也比較不會脫離現實生活。</p>
-              </article>
-              <article className="nx-stack-next">
-                <h3>未來：目標、負債、願望清單、公費與家庭</h3>
-                <p>有需要再開，隨時為你準備好！</p>
-              </article>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* 名詞小辭典 */}
-      <section style={{ background: "var(--nx-bg2)", paddingBlock: "clamp(32px,5vw,64px)", borderBottom: "1px solid var(--nx-bd)" }}>
-        <div className="nx-in">
-          <div style={{ marginBottom: "clamp(20px,2.6vw,32px)" }}>
-            <p className="nx-eyebrow" style={{ marginBottom: 12 }}>先認識幾個詞</p>
-            <h2 className="nx-h2" style={{ marginBottom: 12 }}>導航器裡說的，<br />是這個意思！</h2>
-            <p className="nx-lead" style={{ maxWidth: 560 }}>記帳時會看到這幾個選項。先看過一遍，進去就不會卡在「這個要選哪個」。</p>
-          </div>
-          <div className="nx-terms">
-            {HM_TERMS.map(([t, d]) => (
-              <article key={t} className="nx-card" style={{ boxShadow: "none" }}><h3>{t}</h3><p>{d}</p></article>
-            ))}
-          </div>
-          <div className="nx-inline-cta nx-hr">
-            <p>還是不確定某一筆該怎麼記？使用說明裡有 30 個常見情境</p>
-            <div>
-              <a className="nx-btn nx-btn-sec nx-btn-sec-strong nx-btn-sm" {...to("guide")}>查看完整使用說明 →</a>
-              <a className="nx-btn nx-btn-sec nx-btn-sm" href={DEFAULTS.links.lineCommunity} target="_blank" rel="noopener noreferrer">在社群提問</a>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* 所以你訂閱的是什麼 */}
-      <section style={{ paddingBlock: "clamp(32px,5.2vw,66px) clamp(24px,4vw,40px)" }}>
-        <div className="nx-in">
-          <h2 className="nx-h2 hm-sub-head" style={{ textAlign: "center", marginBottom: "clamp(22px,3vw,32px)", fontSize: "clamp(24px,3vw,30px)" }}>所以，你訂閱的是什麼</h2>
-          <div className="hm-value">
-            {HM_VALUES.map(([t, d]) => (<div key={t}><h3>{t}</h3><p>{d}</p></div>))}
-          </div>
+          <p className="nx-lead nx-hr">
+            另外還有負債追蹤、儲蓄目標與預存、願望清單、<span className="nx-hide-mob">個人／公費／家庭</span>三本帳，
+            <a className="hm-feat-more" {...to("app")}>完整功能看這裡 →</a>
+          </p>
         </div>
       </section>
 
