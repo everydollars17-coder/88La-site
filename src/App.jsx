@@ -1491,6 +1491,8 @@ button:focus-visible{border-radius:4px;}
 .ab-tools .ab-kind{margin-bottom:12px;font-size:12px;font-weight:700;letter-spacing:.1em;color:var(--nx-t3);}
 .ab-tools .ab-desc{margin-bottom:16px;font-size:14px;color:var(--nx-t2);line-height:1.85;}
 .ab-tools .ab-foot{font-size:13px;color:var(--nx-t3);line-height:1.8;}
+/* 卡片裡引用後台信任數據的那一行，用主色深階跟灰色註腳分層 */
+.ab-tools .ab-stat-note{margin-top:8px;font-size:13px;font-weight:600;color:var(--nx-ol);line-height:1.8;}
 .ab-tools .ab-hi{border-color:transparent;background:var(--nx-os);box-shadow:none;}
 .ab-hi .ab-kind{color:var(--nx-ol);}
 .ab-hi h3{color:var(--nx-ost);}
@@ -1810,27 +1812,6 @@ const DEFAULTS = {
     quizDesc: "做完 7 題，直接告訴你哪款存錢工具最適合你。",
     quizBtn: "開始測驗 →",
     soldOut: "尚未上架"
-  },
-  aboutCopy: {
-    heroHeading: "理財是為了讓生活更自由，不是為了成為另一種壓力。",
-    heroSub: "我們不做「你應該要這樣做」的教學，只給你看懂自己數字的工具。",
-    storyLabel: "故事",
-    storyHeading: "從一份免費範本開始",
-    timeline: [
-      { year: "起點", title: "一份免費的 Google Sheets 記帳範本", desc: "從「先存後花」的概念出發，幫助超過 4,000 人下載使用。" },
-      { year: "進化", title: "推出付費 2.0 版本", desc: "加入五種儲蓄模式、支出追蹤、信用卡分析、診斷報告與行事曆檢視，超過百人使用。" },
-      { year: "現在", title: "88La財務導航 + 8友社群", desc: "把範本升級成完整的 Web App，同時也有一群人一起練習理財，不是一個人硬撐。" },
-    ],
-    beliefsLabel: "我們相信",
-    beliefsHeading: "做法可以不一樣，但方向很清楚",
-    beliefs: [
-      { n: "1", title: "行為改變優先", desc: "比起記帳工具本身，我們更在乎它有沒有真的幫你改變花錢的習慣。" },
-      { n: "2", title: "給數字不給評判", desc: "我們只呈現「差多少」和「去哪裡調」，不替你的選擇打分數。" },
-      { n: "3", title: "不說教的陪伴", desc: "理財很個人，每個人的節奏不一樣，我們不會用同一套標準要求所有人。" },
-    ],
-    helloLabel: "HELLO",
-    ctaBtn1: "開始使用88La財務導航",
-    ctaBtn2: "認識 8友社群"
   },
   subscriptionCopy: {
     heading: "選擇你的方案",
@@ -3839,9 +3820,14 @@ function Write({ onSave, onBack, tags, products, resources }) {
 //  About
 //  About（2026-09 改版：從紙本開始 → 三種工具 → 堅持的四件事 → 8友社群 → 數字 → CTA）
 const AB_IMG = "/about/";
+// 後台「信任數據」是固定四格的編輯表，不能新增、刪除或搬動順序，
+// 所以用索引指名是結構事實不是猜測：0 社群成員／1 範本下載／2 付費使用者／3 理財經驗。
+const AB_STAT_DOWNLOADS = 1;
+const AB_STAT_PAID = 2;
 const AB_TOOLS = [
   { kind: "實體", name: "存錢袋與預算卡", desc: "現金分配、一週一張卡！\n適合想戒掉刷卡、需要看得見錢變少的人。", foot: "文青手帳風、復古電玩風、百鈔分配等款式" },
-  { kind: "表格", name: "Google Sheets 模板", desc: "免費的分配計劃範本可以直接下載；進階版模板 2.0 一次買斷，終身使用。", foot: "表格永遠屬於你，可以自己改公式" },
+  // desc 的 {num} 與 statIdx 都取自後台信任數據，不在這裡寫死，避免跟頁尾數字帶各說各話
+  { kind: "表格", name: "Google Sheets 模板", desc: "免費的分配計劃範本下載 {num} 次；進階版模板 2.0 一次買斷，終身使用。", descStat: AB_STAT_DOWNLOADS, foot: "表格永遠屬於你，可以自己改公式", statIdx: AB_STAT_PAID },
   { kind: "訂閱", name: "88La財務導航", desc: "把分配、記帳、診斷串成循環系統！\n適合記帳容易斷掉、需要有人每個月分析數據的人。", foot: "串聯 Google 帳號，資料只有你能看", hi: true },
 ];
 const AB_BELIEFS = [
@@ -3867,7 +3853,9 @@ function About({ isAdmin, links, setLinks, setPage, trustStats, about, setAbout 
   // 數字只有這一組來源：後台的「信任數據」，跟首頁 Hero 同一份，內文不再重複寫死任何數字
   // 前三格是會變動的實績數字，取後台「信任數據」（跟首頁 Hero 同一份）。
   // 第四格是產品線的結構事實，不是會成長的指標，所以固定寫在這裡不進後台。
-  const stats = (trustStats && trustStats.length ? trustStats : DEFAULTS.trustStats).slice(0, 3);
+  const allStats = trustStats && trustStats.length ? trustStats : DEFAULTS.trustStats;
+  const statAt = i => (allStats[i] && allStats[i].num ? allStats[i] : DEFAULTS.trustStats[i]);
+  const stats = allStats.slice(0, 3);
   const AB_STAT_TOOLS = { num: "3", label: "種工具，同一套方法" };
   const to = p => ({ href: pathForPage(p), onClick: e => { if (e.metaKey || e.ctrlKey || e.shiftKey || e.button) return; e.preventDefault(); setPage(p); } });
   const ext = { target: "_blank", rel: "noopener noreferrer" };
@@ -3925,14 +3913,19 @@ function About({ isAdmin, links, setLinks, setPage, trustStats, about, setAbout 
             <p className="nx-body">有人喜歡手寫的儀式感，有人喜歡自己掌控表格，有人需要每月幫他分析！<br />三種產品、三種生活方式，服務的是不同的人。</p>
           </div>
           <div className="ab-tools">
-            {AB_TOOLS.map(t => (
-              <article key={t.name} className={t.hi ? "ab-hi" : ""}>
-                <p className="ab-kind">{t.kind}</p>
-                <h3>{t.name}</h3>
-                <p className="ab-desc" style={{ whiteSpace: "pre-line" }}>{t.desc}</p>
-                <p className="ab-foot">{t.foot}</p>
-              </article>
-            ))}
+            {AB_TOOLS.map(t => {
+              const ds = t.descStat != null ? statAt(t.descStat) : null;
+              const st = t.statIdx != null ? statAt(t.statIdx) : null;
+              return (
+                <article key={t.name} className={t.hi ? "ab-hi" : ""}>
+                  <p className="ab-kind">{t.kind}</p>
+                  <h3>{t.name}</h3>
+                  <p className="ab-desc" style={{ whiteSpace: "pre-line" }}>{ds ? t.desc.replace("{num}", ds.num) : t.desc}</p>
+                  <p className="ab-foot">{t.foot}</p>
+                  {st && <p className="ab-stat-note">目前有 {st.num} 位{st.label}</p>}
+                </article>
+              );
+            })}
           </div>
         </div>
       </section>
@@ -4784,7 +4777,7 @@ const GD_JUMPS = [
 ];
 const GD_SETUP = [
   ["填入你手上有多少錢", "到「帳戶」新增你的帳戶，依照「專款專用」概念，將每個帳戶賦予一個角色、用途。金額之後靠記帳自己更新。",
-    "常見疑問：定存、股票要填嗎？想追蹤淨資產就填，只想管每月現金流可以先跳過。",
+    "常見疑問：平常不會動到的帳戶要填嗎？想追蹤淨資產就填，只想管每月現金流可以先跳過。",
     "accounts.webp", "88La財務導航 帳戶管理：淨資產、總資產與負債、目標帳戶與其他帳戶"],
   ["設好每張卡的結帳日", "到「信用卡」填每張卡的結帳日與繳費日，導航將會自動追蹤你的花費、計算真正的可用餘額，避免又被卡費追著跑！",
     "不知道日期？看帳單第一頁，或致電客服問「結帳日幾號」。",
