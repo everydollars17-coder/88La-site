@@ -1533,6 +1533,9 @@ button:focus-visible{border-radius:4px;}
 /* ===== /guide 使用說明 ===== */
 .gd-hero{padding-block:clamp(30px,4.6vw,56px) clamp(26px,3.6vw,44px);border-bottom:1px solid var(--nx-bd);}
 .gd-hero h1{max-width:680px;margin-block:16px;font-size:clamp(27px,3.9vw,40px);font-weight:700;line-height:1.3;letter-spacing:-.025em;text-wrap:pretty;}
+/* 標題只在手機斷成兩行（桌機一行放得下），沿用首頁 .hm-3m-br 的做法 */
+.gd-h1-br{display:inline;}
+@media(max-width:768px){.gd-h1-br{display:block;}}
 .gd-hero>p{max-width:600px;margin-bottom:24px;font-size:clamp(14px,1.6vw,16px);color:var(--nx-t2);line-height:1.9;}
 .gd-jump{display:flex;gap:10px;flex-wrap:wrap;}
 .gd-jump a{padding:10px 18px;border:1px solid var(--nx-bd);border-radius:999px;background:#fff;font-size:clamp(13px,1.4vw,14px);color:var(--nx-t2);transition:border-color .2s var(--nx-ease),color .2s var(--nx-ease);}
@@ -3837,7 +3840,7 @@ function Write({ onSave, onBack, tags, products, resources }) {
 //  About（2026-09 改版：從紙本開始 → 三種工具 → 堅持的四件事 → 8友社群 → 數字 → CTA）
 const AB_IMG = "/about/";
 const AB_TOOLS = [
-  { kind: "實體", name: "存錢袋與預算卡", desc: "現金分配、一週一張卡！\n適合想戒掉刷卡、需要看得見錢變少的人。", foot: "文青手帳風、復古電玩風、百鈔分配等款式，可加購便條紙" },
+  { kind: "實體", name: "存錢袋與預算卡", desc: "現金分配、一週一張卡！\n適合想戒掉刷卡、需要看得見錢變少的人。", foot: "文青手帳風、復古電玩風、百鈔分配等款式" },
   { kind: "表格", name: "Google Sheets 模板", desc: "免費的分配計劃範本可以直接下載；進階版模板 2.0 一次買斷，終身使用。", foot: "表格永遠屬於你，可以自己改公式" },
   { kind: "訂閱", name: "88La財務導航", desc: "把分配、記帳、診斷串成循環系統！\n適合記帳容易斷掉、需要有人每個月分析數據的人。", foot: "串聯 Google 帳號，資料只有你能看", hi: true },
 ];
@@ -3873,7 +3876,7 @@ function About({ isAdmin, links, setLinks, setPage, trustStats, about, setAbout 
       {/* Hero */}
       <div className="nx-in ab-hero">
         <p className="nx-eyebrow" style={{ letterSpacing: ".16em" }}>關於 88La</p>
-        <h1>我不是因為很會理財，<br />才開始做這些工具。</h1>
+        <h1>我不是因為很會理財，<br />才開始做工具。</h1>
         <p>我做的每一樣東西，都是為了回答同一個問題：怎麼用最簡單的方式，理好自己的每一分錢，擺脫月光族。</p>
       </div>
 
@@ -3892,7 +3895,7 @@ function About({ isAdmin, links, setLinks, setPage, trustStats, about, setAbout 
       <div className="nx-in" style={{ paddingTop: "clamp(32px,5.6vw,72px)" }}>
         <div className="ab-lede">
           <p className="nx-mono" style={{ display: "block", marginBottom: 16, fontSize: 13, color: "var(--nx-o)" }}>最開始</p>
-          <h2>一開始，我只是想找到一個<br />自己真的做得下去的方法</h2>
+          <h2>一開始，我只想找一個<br />真的做得下去的方法</h2>
           <p>最早的 88La 沒有 App，只有一本活頁夾、一疊分配卡跟一支筆。<br />月初把收入、固定支出、儲蓄、變動支出寫下來，這週能花的現金放進袋子，花完就是花完了，很土，但確實有效幫我擺脫月光族。</p>
           <p>因為它讓「錢變少」這件事，變成看得到、摸得到的！<br />這個原則後來沒有變過，只是換了載體。</p>
         </div>
@@ -3918,7 +3921,7 @@ function About({ isAdmin, links, setLinks, setPage, trustStats, about, setAbout 
         <div className="nx-in">
           <div style={{ maxWidth: 640, marginBottom: "clamp(24px,3.2vw,40px)" }}>
             <p className="nx-eyebrow" style={{ marginBottom: 14 }}>為什麼有三種工具</p>
-            <h2 className="nx-h2" style={{ marginBottom: 16 }}>不是三個產品線，是三種生活方式</h2>
+            <h2 className="nx-h2" style={{ marginBottom: 16 }}>三個產品·三種生活方式</h2>
             <p className="nx-body">有人喜歡手寫的儀式感，有人喜歡自己掌控表格，有人需要每月幫他分析！<br />三種產品、三種生活方式，服務的是不同的人。</p>
           </div>
           <div className="ab-tools">
@@ -4783,7 +4786,7 @@ const GD_SETUP = [
   ["填入你手上有多少錢", "到「帳戶」新增你的帳戶，依照「專款專用」概念，將每個帳戶賦予一個角色、用途。金額之後靠記帳自己更新。",
     "常見疑問：定存、股票要填嗎？想追蹤淨資產就填，只想管每月現金流可以先跳過。",
     "accounts.webp", "88La財務導航 帳戶管理：淨資產、總資產與負債、目標帳戶與其他帳戶"],
-  ["設好每張卡的結帳日", "到「信用卡」填每張卡的結帳日與繳費日。這步做完，導航才知道要幫你預留多少卡費，你看到的餘額才是真的能花的。",
+  ["設好每張卡的結帳日", "到「信用卡」填每張卡的結帳日與繳費日，導航將會自動追蹤你的花費、計算真正的可用餘額，避免又被卡費追著跑！",
     "不知道日期？看帳單第一頁，或致電客服問「結帳日幾號」。",
     "credit-card.webp", "88La財務導航 信用卡帳期管理：三張卡的結帳與繳費日、本期應還 $5,774"],
   ["寫下一個想存的目標", "一個就好，可以是腦海中第一個想到的。\n有目標，你才知道還有多遠！",
@@ -4792,24 +4795,24 @@ const GD_SETUP = [
 ];
 const GD_MONTH = [
   ["月初 · 薪水入帳那天", "排這個月的預算",
-    ["盤點這個月的收入", "看導航建議你可以存多少", "把剩下的分到固定與變動", "確認「待分配」歸零，完成"],
+    ["盤點這個月的收入", "先預設你可以存到的金額", "把剩下的分到固定與變動", "確認「待分配」歸零，完成"],
     "排不平也沒關係，先送出，月中隨時可以改。", false],
   ["平常 · 每天 5 秒", "花完就記一筆",
     ["輸入金額、選類別", "固定或變動、現金或刷卡", "需要還是想要", "按下去那一刻的心情"],
-    "心情不是裝飾。月底你會看到，後悔的花費幾乎都長得一樣。", false],
-  ["月底 · 最後一兩天", "看診斷，只改一格",
-    ["看「本月發生了什麼」", "看下個月具體建議", "挑一個你做得到的", "寫進月度筆記"],
-    "一次改一件事就好。三個都改，下個月大概會放棄。", true],
+    "「桌面快速記帳」搭配「智慧預填」系統，記一筆只要 5 秒。", false],
+  ["月底 · 最後一兩天", "看診斷，下月改善計劃",
+    ["看「本月發生了什麼」", "回答問題補充資料", "看下個月的調整建議", "寫進月度筆記"],
+    "一次改一件事就好，你慢慢會看見成長的軌跡！", true],
 ];
 const GD_CASES = [
   ["刷卡買東西", "當天就記，付款方式選「信用卡」，導航會自動把它算進當期的卡費預留。"],
-  ["半年繳的保險", "設成「未來預存」，每月存進去一點。真正扣款那個月才記成支出，這樣單月不會突然需要花大筆。"],
-  ["分期付款", "在「記帳」選擇信用卡分期，記下這一筆，之後每個月的還款會自動出現在預算分配頁面提醒你，不用重複記。"],
+  ["半年繳的保險", "設成「未來預存」，回推每月存進去的金額！真正扣款那個月才記成支出。"],
+  ["分期付款", "在「記帳」選擇信用卡分期，之後每個月的還款會自動出現在預算分配頁面提醒你，不用重複記。"],
   ["跟朋友吃飯先代墊", "一樣記一筆帳，並備注代墊，他們還你的時候再直接把這筆帳刪除，個人帳完全不受影響。"],
-  ["存錢進目標帳戶", "選「儲蓄」，不是支出。錢只是換了位置，淨資產沒有變少。"],
+  ["存錢進目標帳戶", "選「儲蓄」，不是支出！因為錢只是換了位置，淨資產沒有變少。"],
   ["領到獎金或紅包", "記成收入，然後回到預算頁重新分配！不分配它就會默默混進日常花掉。"],
   ["買了又退貨", "直接刪掉那筆，或記一筆同金額的收入在同一個類別。前者乾淨，後者留得住紀錄。"],
-  ["把儲蓄帳戶的錢移到其他帳戶", "需要先建立兩個帳戶，再把儲蓄帳戶的錢「轉帳」過去。想記錄當月儲蓄，就到記帳區按「儲蓄」並選擇該帳戶。"],
+  ["把儲蓄帳戶的錢移到其他帳戶", "可以先建立兩個帳戶，再把儲蓄帳戶的錢「轉帳」過去。想記錄當月儲蓄，就到記帳區按「儲蓄」並選擇該帳戶。"],
 ];
 const GD_TERMS = [
   ["固定 / 變動", "每月幾乎不變的（房租、保險）是固定；會浮動的（吃飯、交通）是變動。"],
@@ -4855,8 +4858,8 @@ function Guide({ isAdmin, setPage, links }) {
       {/* Hero */}
       <div className="nx-in gd-hero">
         <p className="nx-eyebrow" style={{ letterSpacing: ".16em" }}>使用說明</p>
-        <h1>卡在哪，就從哪一段看</h1>
-        <p>不用從頭讀完。下面每一段都可以單獨看懂，遇到卡住的地方再回來找。</p>
+        <h1>手把手，<span className="gd-h1-br">帶你用「88La財務導航」</span></h1>
+        <p>「88La財務導航」不是一般的記帳 App，是一款把分配預算、反思財務狀況等步驟，真正落實的理財工具，花 5 分鐘設定就上手！</p>
         <div className="gd-jump">
           {GD_JUMPS.map(([label, id]) => <a key={label} href={"#" + id}>{label}</a>)}
         </div>
@@ -4916,7 +4919,7 @@ function Guide({ isAdmin, setPage, links }) {
           {/* 03 這筆該怎麼記 */}
           <section className="gd-sect" id="g-03">
             <div className="gd-sect-head"><b>03</b><h2>這筆該怎麼記</h2><span>最多人卡住的地方</span></div>
-            <p className="gd-intro">下面是社群裡問最多的情境。找不到你的情況？記錯也沒關係，之後可以改。</p>
+            <p className="gd-intro">下面是社群裡問最多的情境！找不到你的情況？歡迎私訊 88La</p>
             <dl className="gd-table" style={{ margin: 0 }}>
               <div className="gd-tr gd-thead"><div>情境</div><div>怎麼記</div></div>
               {GD_CASES.map(([q, a]) => (
