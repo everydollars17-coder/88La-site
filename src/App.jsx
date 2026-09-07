@@ -2014,10 +2014,13 @@ async function fbSet(key, value) {
   await setDoc(doc(db, "site", key), { value });
 }
 
-function useFS(key, def) {
+function useFS(key, def, enabled = true) {
   const [v, setV] = useState(() => normalizeValueForKey(key, def));
   const [loaded, setLoaded] = useState(false);
+  const started = useRef(false);
   useEffect(() => {
+    if (!enabled || started.current) return;
+    started.current = true;
     if (isLocalAdminPreviewMode()) {
       try {
         const raw = localStorage.getItem(localPreviewStorageKey(key));
@@ -2030,7 +2033,7 @@ function useFS(key, def) {
       .then(val => { if (val !== null) setV(normalizeValueForKey(key, val)); })
       .catch(e => console.error(`fbGet(${key}) failed, 使用預設內容繼續顯示`, e))
       .finally(() => setLoaded(true));
-  }, [key]);
+  }, [key, enabled]);
   const set = async (fn, opts) => {
     const n = typeof fn === "function" ? fn(v) : fn;
     const prev = v;
@@ -7258,39 +7261,69 @@ function SubscriptionPage({ setPage, isAdmin, appContent, subscriptionCopy, setS
   );
 }
 
+// 導覽與頁尾共用；其餘資料只在實際使用的頁面讀取。
+const COMMON_CMS_KEYS = ["links", "footerTagline", "navLabels", "footerLabels"];
+const PAGE_CMS_KEYS = {
+  home: ["trustStats"],
+  about: ["about", "trustStats"],
+  app: ["appContent", "demoStory", "products"],
+  journal: ["articles", "siteTitle", "tags"],
+  article: ["articles", "tags", "products", "resources"],
+  write: ["articles", "tags", "products", "resources"],
+  ig: ["igPosts", "igCopy"],
+  community: ["igPosts", "communityHero", "communityCopy", "memberFeedback"],
+  shop: ["products", "shopCopy"],
+  envelope: ["products"],
+  goods: ["goods", "goodsHero", "goodsCopy"],
+  guide: [],
+  "tool-quiz": [],
+  resources: ["resources"],
+  newsletter: ["newsletter", "articles"],
+  contact: ["contactContent"],
+  "savings-quiz": ["savingsBagQuiz"],
+  plans: ["appContent"],
+  pricing: ["appContent", "subscriptionCopy"],
+  terms: ["termsContent"],
+  privacy: ["privacyContent"],
+  disclaimer: ["disclaimerContent"],
+};
+
 //  App root
 export default function App() {
-  const [articles, setArticles, aL] = useFS("articles", DEFAULTS.articles);
-  const [products, setProducts, pL] = useFS("products", DEFAULTS.products);
-  const [igPosts, setIgPosts, iL] = useFS("igPosts", DEFAULTS.igPosts);
-  const [memberFeedback, setMemberFeedback, mfL] = useFS("memberFeedback", DEFAULTS.memberFeedback);
-  const [goods, setGoods, gL] = useFS("goods", DEFAULTS.goods);
-  const [about, setAbout, abL] = useFS("about", DEFAULTS.about);
-  const [siteTitle, setSiteTitle, tL] = useFS("siteTitle", DEFAULTS.siteTitle);
-  const [tags, setTags, taL] = useFS("tags", DEFAULTS.tags);
-  const [links, setLinks, lL] = useFS("links", DEFAULTS.links);
-  const [footerTagline, setFooterTagline, ftL] = useFS("footerTagline", DEFAULTS.footerTagline);
-  const [navLabels, setNavLabels, nvL] = useFS("navLabels", DEFAULTS.navLabels);
-  const [mobileTabLabels, setMobileTabLabels, mtL] = useFS("mobileTabLabels", DEFAULTS.mobileTabLabels);
-  const [footerLabels, setFooterLabels, flbL] = useFS("footerLabels", DEFAULTS.footerLabels);
-  const [subscriptionCopy, setSubscriptionCopy, scL] = useFS("subscriptionCopy", DEFAULTS.subscriptionCopy);
-  const [shopCopy, setShopCopy, shcL] = useFS("shopCopy", DEFAULTS.shopCopy);
-  const [igCopy, setIgCopy, igcL] = useFS("igCopy", DEFAULTS.igCopy);
-  const [communityCopy, setCommunityCopy, ccpL] = useFS("communityCopy", DEFAULTS.communityCopy);
-  const [goodsCopy, setGoodsCopy, gcpL] = useFS("goodsCopy", DEFAULTS.goodsCopy);
-  const [demoStory, setDemoStory, dsL] = useFS("demoStory", DEFAULTS.demoStory);
-  const [termsContent, setTermsContent, tcL] = useFS("termsContent", DEFAULTS.termsContent);
-  const [privacyContent, setPrivacyContent, pcL] = useFS("privacyContent", DEFAULTS.privacyContent);
-  const [disclaimerContent, setDisclaimerContent, dcL] = useFS("disclaimerContent", DEFAULTS.disclaimerContent);
-  const [resources, setResources, rlL] = useFS("resources", []);
-  const [newsletter, setNewsletter, nlL] = useFS("newsletter", DEFAULTS.newsletter);
-  const [appContent, setAppContent, acL] = useFS("appContent", DEFAULTS.appContent);
-  const [contactContent, setContactContent, ccL] = useFS("contactContent", DEFAULTS.contactContent);
-  const [savingsBagQuiz, setSavingsBagQuiz, sbqL] = useFS("savingsBagQuiz", DEFAULTS.savingsBagQuiz);
-  const [trustStats, setTrustStats, tsL] = useFS("trustStats", DEFAULTS.trustStats);
-  const [goodsHero, setGoodsHero, ghL] = useFS("goodsHero", DEFAULTS.goodsHero);
-  const [communityHero, setCommunityHero, chL] = useFS("communityHero", DEFAULTS.communityHero);
-  const [page, setPageState] = useState("home");
+  const [page, setPageState] = useState(() =>
+    new URLSearchParams(window.location.search).get("article") ? "article" : pageForPath(window.location.pathname));
+  const requiredKeys = [...COMMON_CMS_KEYS, ...(PAGE_CMS_KEYS[page] || [])];
+  const needsCMS = key => requiredKeys.includes(key);
+  const [articles, setArticles, aL] = useFS("articles", DEFAULTS.articles, needsCMS("articles"));
+  const [products, setProducts, pL] = useFS("products", DEFAULTS.products, needsCMS("products"));
+  const [igPosts, setIgPosts, iL] = useFS("igPosts", DEFAULTS.igPosts, needsCMS("igPosts"));
+  const [memberFeedback, setMemberFeedback, mfL] = useFS("memberFeedback", DEFAULTS.memberFeedback, needsCMS("memberFeedback"));
+  const [goods, setGoods, gL] = useFS("goods", DEFAULTS.goods, needsCMS("goods"));
+  const [about, setAbout, abL] = useFS("about", DEFAULTS.about, needsCMS("about"));
+  const [siteTitle, setSiteTitle, tL] = useFS("siteTitle", DEFAULTS.siteTitle, needsCMS("siteTitle"));
+  const [tags, setTags, taL] = useFS("tags", DEFAULTS.tags, needsCMS("tags"));
+  const [links, setLinks, lL] = useFS("links", DEFAULTS.links, needsCMS("links"));
+  const [footerTagline, setFooterTagline, ftL] = useFS("footerTagline", DEFAULTS.footerTagline, needsCMS("footerTagline"));
+  const [navLabels, setNavLabels, nvL] = useFS("navLabels", DEFAULTS.navLabels, needsCMS("navLabels"));
+  const [mobileTabLabels, setMobileTabLabels, mtL] = useFS("mobileTabLabels", DEFAULTS.mobileTabLabels, needsCMS("mobileTabLabels"));
+  const [footerLabels, setFooterLabels, flbL] = useFS("footerLabels", DEFAULTS.footerLabels, needsCMS("footerLabels"));
+  const [subscriptionCopy, setSubscriptionCopy, scL] = useFS("subscriptionCopy", DEFAULTS.subscriptionCopy, needsCMS("subscriptionCopy"));
+  const [shopCopy, setShopCopy, shcL] = useFS("shopCopy", DEFAULTS.shopCopy, needsCMS("shopCopy"));
+  const [igCopy, setIgCopy, igcL] = useFS("igCopy", DEFAULTS.igCopy, needsCMS("igCopy"));
+  const [communityCopy, setCommunityCopy, ccpL] = useFS("communityCopy", DEFAULTS.communityCopy, needsCMS("communityCopy"));
+  const [goodsCopy, setGoodsCopy, gcpL] = useFS("goodsCopy", DEFAULTS.goodsCopy, needsCMS("goodsCopy"));
+  const [demoStory, setDemoStory, dsL] = useFS("demoStory", DEFAULTS.demoStory, needsCMS("demoStory"));
+  const [termsContent, setTermsContent, tcL] = useFS("termsContent", DEFAULTS.termsContent, needsCMS("termsContent"));
+  const [privacyContent, setPrivacyContent, pcL] = useFS("privacyContent", DEFAULTS.privacyContent, needsCMS("privacyContent"));
+  const [disclaimerContent, setDisclaimerContent, dcL] = useFS("disclaimerContent", DEFAULTS.disclaimerContent, needsCMS("disclaimerContent"));
+  const [resources, setResources, rlL] = useFS("resources", [], needsCMS("resources"));
+  const [newsletter, setNewsletter, nlL] = useFS("newsletter", DEFAULTS.newsletter, needsCMS("newsletter"));
+  const [appContent, setAppContent, acL] = useFS("appContent", DEFAULTS.appContent, needsCMS("appContent"));
+  const [contactContent, setContactContent, ccL] = useFS("contactContent", DEFAULTS.contactContent, needsCMS("contactContent"));
+  const [savingsBagQuiz, setSavingsBagQuiz, sbqL] = useFS("savingsBagQuiz", DEFAULTS.savingsBagQuiz, needsCMS("savingsBagQuiz"));
+  const [trustStats, setTrustStats, tsL] = useFS("trustStats", DEFAULTS.trustStats, needsCMS("trustStats"));
+  const [goodsHero, setGoodsHero, ghL] = useFS("goodsHero", DEFAULTS.goodsHero, needsCMS("goodsHero"));
+  const [communityHero, setCommunityHero, chL] = useFS("communityHero", DEFAULTS.communityHero, needsCMS("communityHero"));
   const setPage = p => {
     setPageState(p);
     if (p !== "article") {
@@ -7370,7 +7403,8 @@ export default function App() {
     return () => document.removeEventListener("click", handler, true);
   }, []);
 
-  const loaded = aL && pL && iL && gL && abL && tL && taL && lL && ftL && rlL && nlL && acL && ccL && sbqL;
+  const cmsLoaded = { articles: aL, products: pL, igPosts: iL, memberFeedback: mfL, goods: gL, about: abL, siteTitle: tL, tags: taL, links: lL, footerTagline: ftL, navLabels: nvL, mobileTabLabels: mtL, footerLabels: flbL, subscriptionCopy: scL, shopCopy: shcL, igCopy: igcL, communityCopy: ccpL, goodsCopy: gcpL, demoStory: dsL, termsContent: tcL, privacyContent: pcL, disclaimerContent: dcL, resources: rlL, newsletter: nlL, appContent: acL, contactContent: ccL, savingsBagQuiz: sbqL, trustStats: tsL, goodsHero: ghL, communityHero: chL };
+  const loaded = requiredKeys.every(key => cmsLoaded[key]);
   const article = articles.find(a => a.id === id);
   const nav = p => { setPage(p); setId(null); };
 
@@ -7393,25 +7427,20 @@ export default function App() {
     if (ogUrl) ogUrl.setAttribute("content", `https://site.88lamoney.com${window.location.pathname}`);
   }, [page, article]);
 
-  // 初次載入：以網址路徑決定要顯示哪一頁；相容舊版 ?article= query 分享連結
+  // 文章資料到齊後解析網址，同時相容舊版分享連結。
   useEffect(() => {
-    if (!loaded) return;
-    const path = window.location.pathname;
-    const legacyArticleSlug = new URLSearchParams(window.location.search).get("article");
-    const slug = articleSlugFromPath(path) || legacyArticleSlug;
-    if (slug) {
-      const a = articles.find(x => x.slug === slug || String(x.id) === slug);
-      if (a) {
-        setId(a.id); setPageState("article");
-        if (path !== "/article/" + encodeURIComponent(a.slug || a.id)) {
-          history.replaceState({}, "", "/article/" + encodeURIComponent(a.slug || a.id));
-        }
-        return;
-      }
+    if (page !== "article" || !aL) return;
+    const slug = articleSlugFromPath(window.location.pathname) || new URLSearchParams(window.location.search).get("article");
+    if (!slug) return;
+    const found = articles.find(x => x.slug === slug || String(x.id) === slug);
+    if (found) {
+      setId(found.id);
+      const path = "/article/" + encodeURIComponent(found.slug || found.id);
+      if (window.location.pathname !== path) history.replaceState({}, "", path);
+    } else if (!articleSlugFromPath(window.location.pathname)) {
+      setPageState(pageForPath(window.location.pathname));
     }
-    const p = pageForPath(path);
-    if (p !== "home") setPageState(p);
-  }, [loaded]);
+  }, [page, aL, articles]);
 
   useEffect(() => {
     const onPop = () => {

@@ -6,6 +6,7 @@ const DEFAULT_ADMIN_EMAILS = "everydollars17@gmail.com";
 
 let cachedAccessToken = null;
 let cachedAccessTokenExp = 0;
+let accessTokenInFlight = null;
 
 export function adminEmails() {
   return (process.env.ADMIN_EMAILS || DEFAULT_ADMIN_EMAILS)
@@ -58,6 +59,15 @@ async function getAccessToken() {
   const now = Math.floor(Date.now() / 1000);
   if (cachedAccessToken && cachedAccessTokenExp - 60 > now) return cachedAccessToken;
 
+  if (!accessTokenInFlight) {
+    accessTokenInFlight = exchangeAccessToken(now).finally(() => {
+      accessTokenInFlight = null;
+    });
+  }
+  return accessTokenInFlight;
+}
+
+async function exchangeAccessToken(now) {
   const account = serviceAccount();
   const header = base64url(JSON.stringify({ alg: "RS256", typ: "JWT" }));
   const payload = base64url(JSON.stringify({
