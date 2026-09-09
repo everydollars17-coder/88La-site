@@ -4,7 +4,7 @@ import { initializeApp } from "firebase/app";
 import { getFirestore, doc, setDoc, collection, getDocs, query, orderBy, deleteDoc } from "firebase/firestore";
 import { getAuth, GoogleAuthProvider, signInWithPopup, onAuthStateChanged, signOut } from "firebase/auth";
 import DOMPurify from "dompurify";
-import { APP_LAUNCH_NOTICE, isAppLaunched } from "./siteLaunch.js";
+import { APP_LAUNCH_LABEL, APP_LAUNCH_NOTICE, isAppLaunched } from "./siteLaunch.js";
 import { deriveDemoPhonePreview } from "./demoPhonePreviewData.js";
 
 const firebaseConfig = {
@@ -29,7 +29,7 @@ const ADMIN_EMAILS = ["everydollars17@gmail.com"];
 const APP_URL = "https://app.88lamoney.com";
 const PUBLIC_CONTACT_EMAIL = "hello@88lamoney.com";
 // 進 App 的 CTA。上線日之前一律鎖住並顯示提示，當天起自動改成真的導過去，
-// 判斷在 siteLaunch.js（用台灣時間），9/10 不需要改程式或重新部署。
+// 判斷在 siteLaunch.js（用台灣時間），到日期當天自動放行，不需要改程式或重新部署。
 const appCtaProps = from => (isAppLaunched()
   ? { href: APP_URL, "data-app-source": from }
   : { href: "#app-launch", "data-app-locked": "true", "data-app-source": from });
@@ -866,7 +866,7 @@ button:focus-visible{border-radius:4px;}
 .nx-btn-md{padding:13px 24px;font-size:15px;}
 .nx-btn-sm{padding:11px 20px;font-size:14px;font-weight:600;}
 .nx-btn-block{display:flex;width:100%;}
-/* 上線前的 CTA 掛一個「9/10 開放」小標，讓人在按下去之前就知道。
+/* 上線前的 CTA 掛一個「開放日」小標，讓人在按下去之前就知道。
    靠 data-app-locked 判斷，上線日之後 appCtaProps 不再帶這個屬性，小標自動消失 */
 .nx-price-blur{display:inline-block;filter:blur(.2em);opacity:.5;user-select:none;-webkit-user-select:none;vertical-align:baseline;}
 .nx-price-note{display:inline-flex;align-items:center;gap:6px;padding:7px 14px;border-radius:999px;
@@ -874,7 +874,7 @@ button:focus-visible{border-radius:4px;}
 .nx-price-note::before{content:"";width:6px;height:6px;border-radius:50%;background:var(--nx-o);flex-shrink:0;}
 .nx-btn[data-app-locked="true"]{position:relative;overflow:visible;}
 .nx-btn[data-app-locked="true"]::after{
-  content:"9/10 開放";position:absolute;top:-10px;right:-6px;
+  content:"${APP_LAUNCH_LABEL} 開放";position:absolute;top:-10px;right:-6px;
   padding:3px 9px;border-radius:999px;background:var(--nx-dark);color:var(--nx-dt);
   font-size:10px;font-weight:700;line-height:1.5;white-space:nowrap;pointer-events:none;
   box-shadow:0 3px 10px -3px rgba(46,42,33,.5);}
@@ -2222,17 +2222,17 @@ async function migrateMemberArticles() {
 }
 
 let _showToast = () => {};
-// 上線前訂閱金額一律屏蔽，9/10 之後自動顯示原值（判斷同 appCtaProps）。
+// 上線前訂閱金額一律屏蔽，開放日之後自動顯示原值（判斷同 appCtaProps）。
 // 只蓋 88La財務導航的訂閱價，存錢袋與模板 2.0 已經在賣，價格照常顯示。
 function Price({ children }) {
   if (isAppLaunched()) return <>{children}</>;
-  return <span className="nx-price-blur" aria-label="價格 9/10 公布">{children}</span>;
+  return <span className="nx-price-blur" aria-label={`價格 ${APP_LAUNCH_LABEL} 公布`}>{children}</span>;
 }
 
 // 每個有價格的區塊只標一次，不要每個數字都掛一個標籤
 function PriceNote({ style }) {
   if (isAppLaunched()) return null;
-  return <p className="nx-price-note" style={style}>完整方案與價格 9/10 公布</p>;
+  return <p className="nx-price-note" style={style}>完整方案與價格 {APP_LAUNCH_LABEL} 公布</p>;
 }
 
 function Toast() {
@@ -3302,7 +3302,7 @@ function Home({ setPage, isAdmin, trustStats, setTrustStats }) {
       <div className="nx-sticky">
         <div>
           <b>88La財務導航</b>
-          <span>{isAppLaunched() ? `${NT_MONTHLY} / 月起` : "9/10 正式上線"}</span>
+          <span>{isAppLaunched() ? `${NT_MONTHLY} / 月起` : `${APP_LAUNCH_LABEL} 正式上線`}</span>
         </div>
         <a className="nx-btn nx-btn-pri nx-btn-sm" {...appCtaProps("home-sticky")}>開始使用</a>
       </div>
@@ -5993,7 +5993,7 @@ function AppPage({ appContent, setAppContent, isAdmin, setPage, demoStory, setDe
       <div className="nx-sticky">
         <div>
           <b>88La財務導航</b>
-          <span>{isAppLaunched() ? `${NT_MONTHLY} / 月起` : "9/10 正式上線"}</span>
+          <span>{isAppLaunched() ? `${NT_MONTHLY} / 月起` : `${APP_LAUNCH_LABEL} 正式上線`}</span>
         </div>
         <a className="nx-btn nx-btn-pri nx-btn-sm" {...appCtaProps("app-sticky")}>開始使用</a>
       </div>

@@ -13,7 +13,9 @@
     "verify:demo:states": "node scripts/app_demo_state_preview_verification.mjs",
     "verify:demo:states:browser": "node scripts/app_demo_state_preview_browser_check.mjs",
     "verify:domain": "node scripts/domain_migration_verification.mjs",
-    "verify:demo:clicks": "node scripts/app_demo_interaction_check.mjs"
+    "verify:demo:clicks": "node scripts/app_demo_interaction_check.mjs",
+    "verify:launch-lock": "node scripts/app_launch_lock_verification.mjs",
+    "verify:launch-lock:browser": "node scripts/app_launch_lock_browser_check.mjs"
   },
   "dependencies": {
     "dompurify": "^3.4.11",
