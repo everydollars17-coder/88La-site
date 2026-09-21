@@ -6,7 +6,6 @@ import { getAuth, GoogleAuthProvider, signInWithPopup, onAuthStateChanged, signO
 import DOMPurify from "dompurify";
 import { APP_LAUNCH_LABEL, APP_LAUNCH_NOTICE, isAppLaunched } from "./siteLaunch.js";
 import { deriveDemoPhonePreview } from "./demoPhonePreviewData.js";
-import PayPalSubscriptionButton from "./PayPalSubscriptionButton.jsx";
 
 const firebaseConfig = {
   apiKey: "AIzaSyCW8TU318MtXe50MjjqWmmHDydFXv-zA3E",
@@ -53,18 +52,6 @@ const APP_MONTHLY_PRICE = `NT$${APP_MONTHLY_AMOUNT.toLocaleString("en-US")}`;
 const APP_YEARLY_PRICE = `NT$${APP_YEARLY_AMOUNT.toLocaleString("en-US")}`;
 const FOUNDER_MONTHLY_PRICE = `NT$${FOUNDER_MONTHLY_AMOUNT.toLocaleString("en-US")}`;
 const FOUNDER_YEARLY_PRICE = `NT$${FOUNDER_YEARLY_AMOUNT.toLocaleString("en-US")}`;
-const PAYPAL_PLAN_IDS = Object.freeze({
-  monthly: "P-0FK62319ED870344ANKYP5WY",
-  yearly: "P-2ED87151CE647480PNKYP7DA",
-  founderMonthly: "P-11R45855RA663083UNKYP7WA",
-  founderYearly: "P-1GW96481V37613622NKYQBBY",
-});
-const PAYPAL_BUTTON_STYLES = Object.freeze({
-  monthly: Object.freeze({ shape: "pill", color: "blue", layout: "vertical", label: "subscribe" }),
-  yearly: Object.freeze({ shape: "pill", color: "gold", layout: "vertical", label: "paypal" }),
-  founder: Object.freeze({ shape: "rect", color: "silver", layout: "vertical", label: "paypal" }),
-});
-const FOUNDER_ELIGIBILITY_COPY = "曾購買模板 2.0 的會員會自動取得創始會員資格，並享有創始優惠價格。系統會依當時購買 Email 比對資格，請確認本次提供的 88La 財務導航登入 Email 與當時購買 Email 一致。";
 // 改版文案規範：金額一律 NT$ + 半形空格 + 千分位（NT$ 1,988）。金額本身仍只有上面那組常數是來源
 const ntSpaced = amount => `NT$ ${amount.toLocaleString("en-US")}`;
 const NT_MONTHLY = ntSpaced(APP_MONTHLY_AMOUNT);
@@ -1256,31 +1243,7 @@ button:focus-visible{border-radius:4px;}
 .ap-plan-dark .ap-plan-price span{color:rgba(252,250,246,.55);}
 .ap-plan-dark .ap-plan-sub{color:#EB8A48;}
 .ap-plan-dark ul{color:rgba(252,250,246,.72);}
-.ap-payment-label{margin:0 0 8px;font-size:11px;font-weight:700;letter-spacing:.06em;color:var(--nx-t3);text-align:center;}
-.ap-plan-dark .ap-payment-label{color:rgba(252,250,246,.62);}
-.ap-paypal-divider{display:flex;align-items:center;gap:10px;margin:18px 0 12px;font-size:11px;color:var(--nx-t3);}
-.ap-paypal-divider::before,.ap-paypal-divider::after{content:"";height:1px;flex:1;background:var(--nx-bd);}
-.ap-plan-dark .ap-paypal-divider{color:rgba(252,250,246,.55);}
-.ap-plan-dark .ap-paypal-divider::before,.ap-plan-dark .ap-paypal-divider::after{background:rgba(252,250,246,.18);}
-.paypal-subscription{min-height:46px;}
-.paypal-button-mount{min-height:45px;}
-.paypal-subscription-status{margin-top:8px;font-size:12px;line-height:1.65;color:var(--nx-t3);text-align:center;}
-.ap-plan-dark .paypal-subscription-status{color:rgba(252,250,246,.68);}
-.paypal-approved{display:flex;flex-direction:column;gap:4px;padding:12px;border:1px solid rgba(74,140,92,.3);border-radius:10px;background:#F6FBF7;color:#2A6040;text-align:left;overflow-wrap:anywhere;}
-.paypal-approved strong{font-size:13px;}
-.paypal-approved a{font-weight:700;color:var(--nx-od);text-decoration:underline;}
-.paypal-founder{max-width:760px;margin:24px auto 0;padding:clamp(22px,3vw,30px);border:1px solid var(--nx-bd);border-radius:16px;background:var(--nx-bg2);}
-.paypal-founder-head{display:flex;align-items:flex-start;justify-content:space-between;gap:24px;margin-bottom:22px;}
-.paypal-founder-tag{margin-bottom:7px;font-size:11px;font-weight:700;letter-spacing:.1em;color:var(--nx-od);}
-.paypal-founder h3{font-size:clamp(18px,2vw,21px);font-weight:700;}
-.paypal-founder-head>p:last-child{max-width:360px;font-size:13px;line-height:1.75;color:var(--nx-t2);}
-.paypal-founder-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px;}
-.paypal-founder-plan{padding:18px;border:1px solid var(--nx-bd);border-radius:12px;background:#fff;}
-.paypal-founder-plan strong{display:block;margin-bottom:5px;font-size:14px;}
-.paypal-founder-plan>span{display:block;margin-bottom:14px;font-size:13px;color:var(--nx-t3);}
-.paypal-founder-note{margin-top:16px;font-size:12px;line-height:1.75;color:var(--nx-t3);}
 @media(max-width:900px){.ap-plans{grid-template-columns:minmax(0,1fr);gap:24px;}.ap-plan{padding:24px;}.ap-plan-badge{left:24px;}}
-@media(max-width:640px){.paypal-founder-head{flex-direction:column;gap:10px;}.paypal-founder-grid{grid-template-columns:minmax(0,1fr);}}
 
 .ap-faq{max-width:820px;margin:0 auto;}
 .ap-faq h2{margin-bottom:clamp(18px,2.4vw,28px);font-size:clamp(24px,2.6vw,28px);font-weight:700;letter-spacing:-.02em;}
@@ -1739,21 +1702,21 @@ const DEFAULTS = {
   termsContent: {
     eyebrow: "LEGAL",
     title: "88La財務導航\n服務條款與退款政策",
-    lastUpdated: "最後更新：2026 年 9 月",
-    body: `<h2>一、服務說明</h2><p>88La財務導航（以下簡稱「本服務」）由 88La 提供，為個人理財記帳管理工具，提供收支記錄、預算規劃及桌面快速記帳等功能。本服務以訂閱制提供，訂閱期間內可無限制使用所有功能。</p><h2>二、訂閱方案與收費</h2><p>本服務提供以下訂閱方案：</p><ul><li>月訂閱：${APP_MONTHLY_PRICE} / 月</li><li>年方案：${APP_YEARLY_PRICE} / 年</li></ul><p>所有金額均為新台幣計價。信用卡付款由綠界科技股份有限公司代為處理，月訂閱採定期定額，年方案採單筆付款。PayPal 月訂閱與年訂閱均採自動續訂，付款後由 88La 人工核對訂閱編號與登入 Email，再開通會員權限。</p><h2>三、續約方式</h2><p>綠界月訂閱會依原方案金額定期扣款，可於下次扣款日前至帳戶設定頁面取消。PayPal 月訂閱與年訂閱會依所選週期自動續訂，可於下一次扣款前至 PayPal 帳戶的自動付款設定取消。綠界年方案為單筆付款，不會自動續約。取消後，服務仍可使用至當期訂閱到期日為止。</p><h2>四、退款政策</h2><p>本服務所販售之內容為數位服務，依消費者保護法第 19 條規定，數位內容於開通後不適用七天鑑賞期退換貨規定。</p><p>如有特殊情形，請聯繫 everydollars17@gmail.com，由 88La 個案審酌處理。</p><h2>五、帳戶與資料</h2><p>用戶須自行保管帳戶登入資訊。用戶的記帳資料儲存於個人 Google 雲端帳號中，訂閱取消後資料仍保留於用戶自己的 Google 試算表，88La 不持有用戶資料。</p><h2>六、服務變更</h2><p>88La 保留調整訂閱方案定價及功能內容之權利，並將提前 30 天以電子郵件通知用戶。現有訂閱者不受漲價影響，直至當期訂閱到期。</p><h2>七、帳號到期與資料保留</h2><ol><li>訂閱方案到期前三天，系統將透過 Email 及 App 推播通知提醒續訂。</li><li>方案到期後，帳號進入 7 天緩衝期：<ul><li>可瀏覽所有歷史記帳紀錄</li><li>可匯出個人資料</li><li>新增、編輯、刪除等寫入功能暫停使用</li></ul></li><li>緩衝期結束後（到期後第 8 天起），帳號功能將完全停用，但資料不會主動刪除。</li><li>如需恢復使用，續訂即可立即解鎖所有功能。</li></ol><h2>八、聯絡方式</h2><p>Email：everydollars17@gmail.com<br>官方網站：https://site.88lamoney.com</p>`,
+    lastUpdated: "最後更新：2026 年 7 月",
+    body: `<h2>一、服務說明</h2><p>88La財務導航（以下簡稱「本服務」）由 88La 提供，為個人理財記帳管理工具，提供收支記錄、預算規劃及桌面快速記帳等功能。本服務以訂閱制提供，訂閱期間內可無限制使用所有功能。</p><h2>二、訂閱方案與收費</h2><p>本服務提供以下訂閱方案：</p><ul><li>月訂閱：${APP_MONTHLY_PRICE} / 月</li><li>年方案：${APP_YEARLY_PRICE} / 年</li></ul><p>所有金額均為新台幣計價。付款由綠界科技股份有限公司代為處理，月訂閱採信用卡定期定額，年方案採單筆付款。</p><h2>三、續約方式</h2><p>月訂閱將依原方案金額定期扣款，如不希望續約，請於下次扣款日前至帳戶設定頁面取消。年方案不會自動續約，到期前將另行提醒。方案到期前仍可使用當期服務。</p><h2>四、退款政策</h2><p>本服務所販售之內容為數位服務，依消費者保護法第 19 條規定，數位內容於開通後不適用七天鑑賞期退換貨規定。</p><p>如有特殊情形，請聯繫 everydollars17@gmail.com，由 88La 個案審酌處理。</p><h2>五、帳戶與資料</h2><p>用戶須自行保管帳戶登入資訊。用戶的記帳資料儲存於個人 Google 雲端帳號中，訂閱取消後資料仍保留於用戶自己的 Google 試算表，88La 不持有用戶資料。</p><h2>六、服務變更</h2><p>88La 保留調整訂閱方案定價及功能內容之權利，並將提前 30 天以電子郵件通知用戶。現有訂閱者不受漲價影響，直至當期訂閱到期。</p><h2>七、帳號到期與資料保留</h2><ol><li>訂閱方案到期前三天，系統將透過 Email 及 App 推播通知提醒續訂。</li><li>方案到期後，帳號進入 7 天緩衝期：<ul><li>可瀏覽所有歷史記帳紀錄</li><li>可匯出個人資料</li><li>新增、編輯、刪除等寫入功能暫停使用</li></ul></li><li>緩衝期結束後（到期後第 8 天起），帳號功能將完全停用，但資料不會主動刪除。</li><li>如需恢復使用，續訂即可立即解鎖所有功能。</li></ol><h2>八、聯絡方式</h2><p>Email：everydollars17@gmail.com<br>官方網站：https://site.88lamoney.com</p>`,
     footerNote: "使用本服務即代表你已閱讀並同意以上服務條款。\n如對條款有任何疑問，請於訂閱前透過 Email 與我們聯繫。"
   },
   privacyContent: {
     eyebrow: "PRIVACY",
     title: "88La財務導航\n隱私政策",
-    lastUpdated: "最後更新：2026 年 9 月",
+    lastUpdated: "最後更新：2026 年 7 月",
     intro: "88La 由個人創作者獨立營運，我們深知理財記帳涉及您最私密的財務細節，因此特別撰寫此份隱私政策，以清楚說明本服務蒐集何種資料、如何運用、儲存於何處，以及哪些人能夠接觸這些資訊。",
     body: `<h2>一、適用範圍</h2><p>本隱私政策適用於 88La財務導航（官網與網頁應用程式），說明本服務如何處理您於使用過程中提供或產生之個人資料。本政策不適用於本服務以外之外部連結網站，亦不適用於非本服務委託或參與管理之第三方。</p><h2>二、我們蒐集的資料</h2><p><strong>【登入時】</strong><br>本服務採用 Google 帳號登入機制，系統將取得您的電子郵件位址，作為識別您帳號身分之唯一依據。您無需另行設定獨立的帳號密碼。</p><p><strong>【使用記帳功能時】</strong><br>您於使用過程中主動輸入之內容，包括每一筆記帳明細（金額、類別、付款方式、備註、消費當下之心情記錄）、月度預算規劃、信用卡與帳戶設定、負債資料，以及理財筆記，皆屬於您所提供之資料範疇。</p><p><strong>【付款時】</strong><br>訂閱費用係由綠界科技股份有限公司代為收取，您的信用卡卡號、有效期限等付款資訊將直接於綠界之付款頁面輸入，88La 不會接觸、亦不會儲存任何與您的付款工具相關之資訊。本服務僅會收到付款是否成功之通知，以憑此開通您的訂閱權限。</p><p><strong>【瀏覽網站時（自動蒐集）】</strong><br>本服務官網使用 Vercel Web Analytics 統計流量，此工具不使用第三方 cookie，而是以傳入請求產生的雜湊值識別訪客，所記錄之資料皆為匿名性質，不會與任何個人、客戶或 IP 位址綁定或關聯，相關瀏覽紀錄亦不會永久保存，將於 24 小時後自動清除。我們僅藉此瞭解整體網站使用狀況（如頁面瀏覽量），不會用來識別您的個人身分。</p><h2>三、未成年使用者</h2><p>本服務之受眾可能包含未滿 18 歲之學生族群。若您未滿 18 歲，建議於監護人知悉並同意之情況下使用本服務。若您是未滿 18 歲使用者之監護人，並認為您的子女未經同意提供了個人資料，請透過第七條所列聯絡方式與我們聯繫，我們將協助處理相關資料之刪除或更正事宜。</p><h2>四、資料儲存之處所</h2><table style="width:100%;border-collapse:collapse;font-size:13px;"><thead><tr style="background:#FDF0E8;"><th style="padding:10px 14px;text-align:left;font-weight:600;border-bottom:2px solid #C85A14;font-size:12px;">資料類型</th><th style="padding:10px 14px;text-align:left;font-weight:600;border-bottom:2px solid #C85A14;font-size:12px;">儲存位置</th><th style="padding:10px 14px;text-align:left;font-weight:600;border-bottom:2px solid #C85A14;font-size:12px;">說明</th></tr></thead><tbody><tr style="border-bottom:1px solid rgba(0,0,0,0.07);"><td style="padding:12px 14px;vertical-align:top;">記帳明細、預算、筆記</td><td style="padding:12px 14px;vertical-align:top;">您個人之 Google 試算表</td><td style="padding:12px 14px;vertical-align:top;">登入後，系統將自動於您的 Google 雲端硬碟建立專屬檔案，相關資料即時寫入其中</td></tr><tr style="border-bottom:1px solid rgba(0,0,0,0.07);"><td style="padding:12px 14px;vertical-align:top;">帳號狀態、到期日、帳戶與信用卡及負債設定</td><td style="padding:12px 14px;vertical-align:top;">Firebase（本服務之後端資料庫）</td><td style="padding:12px 14px;vertical-align:top;">用於驗證您訂閱之有效性，並儲存您的個人化功能設定</td></tr><tr style="border-bottom:1px solid rgba(0,0,0,0.07);"><td style="padding:12px 14px;vertical-align:top;">最近一次驗證之時間戳記</td><td style="padding:12px 14px;vertical-align:top;">您裝置之本機儲存空間（localStorage）</td><td style="padding:12px 14px;vertical-align:top;">僅用於判斷離線狀態下之暫時可用性，不含任何記帳內容</td></tr><tr style="border-bottom:1px solid rgba(0,0,0,0.07);"><td style="padding:12px 14px;vertical-align:top;">匿名瀏覽統計</td><td style="padding:12px 14px;vertical-align:top;">Vercel Web Analytics</td><td style="padding:12px 14px;vertical-align:top;">不可識別個人身分，24 小時後自動清除</td></tr></tbody></table><p>換言之，您的記帳流水帳實際上是存放於「您個人」之 Google 雲端硬碟內，而非本服務之伺服器。即便本服務有朝一日終止運作，該份試算表仍歸屬於您本人，您可隨時開啟、複製或刪除。</p><h2>五、資料之存取權限</h2><ul><li>您的記帳明細存放於您個人之 Google 試算表中，僅您本人得以查閱，本服務不具備、亦未申請主動讀取或瀏覽該試算表內容之權限</li><li>本服務所申請之 Google 授權範圍，僅限於「本應用程式所建立之檔案」（技術上稱為 drive.file），絕不涉及您 Google 雲端硬碟中既有之其他檔案</li><li>帳號狀態與設定資料存放於 Firebase，僅供系統驗證訂閱狀態之用，本服務不會將其提供、洩露或出售予任何第三方</li><li>金流相關資訊由綠界科技依其自身隱私規範處理，本服務全程不接觸您的付款資料</li></ul><p>本服務承諾，絕不將您的資料出售予廣告主，亦不會將您的記帳內容用於任何行銷分析或對外提供。</p><h2>六、資料之運用目的</h2><ul><li>呈現您的記帳記錄、預算對比分析、月度診斷報告等您主動使用之功能</li><li>驗證您的訂閱是否仍屬有效期間</li><li>於您與客服聯繫時，協助核對您的帳號狀況</li><li>透過匿名流量統計瞭解網站整體使用狀況，藉以優化服務內容</li></ul><p>凡未經您同意或非屬您主動使用之功能範疇，本服務絕不擅自運用您的資料，例如分析您的消費習慣以投放廣告。</p><h2>七、資料安全與外洩通知</h2><p>本服務已採取合理之技術與管理措施，保護您的資料免於未經授權之存取、使用或揭露。惟若不幸發生資料安全事件（例如後端系統遭未經授權存取），本服務將於知悉後之合理期限內，透過您註冊時所使用之電子郵件通知您，並說明事件性質、可能受影響之資料範圍，以及本服務已採取或將採取之應變措施。</p><h2>八、資料保留期限</h2><ul><li>訂閱使用期間，資料持續妥善保存</li><li>訂閱取消或到期後，依本服務之服務條款，資料將保留七日供您匯出（CSV 或 PDF 格式），逾期後系統可能予以清除</li><li>至於存放於您個人 Google 試算表內之資料，縱使本服務端之紀錄遭清除，惟若您未自行刪除，該份試算表仍將留存於您的 Google 雲端硬碟之中</li></ul><h2>九、您所享有之權利</h2><p>依個人資料保護法相關規定，您對於本服務所持有之個人資料，得行使下列權利：</p><ul><li>查詢或請求閱覽</li><li>請求製給複製本</li><li>請求補充或更正</li><li>請求停止蒐集、處理或利用</li><li>請求刪除</li></ul><p>您可隨時匯出您完整之記帳資料（CSV 或 PDF 格式），亦可隨時開啟您的 Google 試算表自行查閱、複製或備份原始資料。如欲行使上述權利或取消訂閱，敬請致信 everydollars17@gmail.com 提出申請，我們將於合理期限內處理回覆。</p><h2>十、政策之修改</h2><p>本政策內容如有修改，將於本網站公告並更新最後修改日期。重大變更將透過電子郵件另行通知您。</p><h2>十一、聯絡方式</h2><p>如有任何關於本隱私政策之疑問，敬請致信 everydollars17@gmail.com，我們將竭誠為您回覆。</p>`
   },
   disclaimerContent: {
     eyebrow: "DISCLAIMER",
     title: "88La財務導航\n免責聲明",
-    lastUpdated: "最後更新：2026 年 9 月",
+    lastUpdated: "最後更新：2026 年 7 月",
     body: `<h2>一、服務性質聲明</h2><p>88La財務導航（以下簡稱「本服務」）為個人記帳、支出追蹤與儲蓄習慣建立之輔助工具，其核心功能在於協助使用者記錄日常收支、設定個人預算目標，以及建立規律的儲蓄行為。</p><p>本服務所提供之收支診斷報告，係依據使用者自行輸入之數據，結合本服務創作者之個人實務理財經驗所設計之參考框架自動產生。本服務創作者並非持有任何金融相關執照之財務顧問，所有內容均屬個人實務經驗之分享，不構成專業財務顧問服務，亦不涉及任何有價證券、基金、期貨、外匯、加密貨幣或其他金融商品之投資策略建議、推介或勸誘行為。</p><h2>二、資訊僅供參考</h2><p>本服務所提供之預算建議、收支診斷分析、儲蓄目標試算及相關數字呈現，均係依據使用者自行輸入之個人資料，結合創作者個人實務理財經驗所設計之參考框架，由系統自動運算後呈現之參考資訊。</p><p>診斷報告中所呈現之支出比例建議、預算配置方向等內容，均源自創作者個人實務經驗之歸納，不同使用者之財務狀況、收入結構、家庭背景與生活條件各異，上述建議未必適用於每一位使用者的個別情況。</p><p>上述資訊：</p><ul><li>係創作者個人實務經驗之分享，不代表對您財務狀況之專業個人化評估</li><li>不構成任何具法律效力之財務建議或投資意見</li><li>不保證使用本服務後必然達成特定儲蓄金額或財務目標</li><li>如您的財務狀況較為複雜（如負債重組、保險規劃、稅務安排等），建議另行諮詢具有合法執照之專業人士</li></ul><h2>三、使用者自行負責原則</h2><p>使用者在參考本服務所提供之任何資訊、數據或分析結果後，所作出之一切財務決策，均應由使用者本人獨立評估、審慎判斷，並自行承擔相應之後果與責任。</p><p>如需專業之財務規劃建議，建議您諮詢具有合法執照之財務顧問或相關專業人士。</p><h2>四、系統資料準確性</h2><p>本服務之所有計算與分析結果，均以使用者自行輸入之資料為基礎。若輸入資料有誤、不完整或未即時更新，系統所呈現之結果可能與您的實際財務狀況有所落差，本服務對此不負任何責任。</p><h2>五、服務中斷與資料完整性</h2><p>本服務係透過網際網路提供，可能因伺服器維護、網路異常、第三方服務（包括 Google、Firebase、綠界科技等）故障，或其他不可抗力因素，導致服務暫時中斷或資料暫時無法存取。本服務對上述情形所造成之不便，不負任何賠償責任，但將盡合理努力維持服務之穩定運行。</p><h2>六、本聲明之修改</h2><p>本服務得隨時修訂本免責聲明，修訂後之內容將公告於本頁面並更新修改日期。繼續使用本服務，即視為接受修訂後之條款。</p><h2>七、聯絡方式</h2><p>如對本聲明有任何疑問，歡迎透過以下方式與我們聯繫：</p><p>Email：everydollars17@gmail.com<br>Instagram：@every_dollars</p>`,
     footerNote: "本服務為個人記帳與儲蓄習慣建立工具。診斷報告內容係創作者個人實務理財經驗之分享，僅供參考，不構成專業財務顧問服務或投資建議。使用者應依據自身狀況獨立判斷，並自行承擔相應責任。"
   },
@@ -1853,8 +1816,8 @@ const DEFAULTS = {
   subscriptionCopy: {
     heading: "選擇你的方案",
     intro: "用 88La財務導航，把記帳這件事變成每天兩分鐘的習慣。\n所有方案皆包含桌面快速記帳功能。",
-    notes: "所有金額均為新台幣計價，含稅\n綠界月訂閱採信用卡定期定額，綠界年方案採單筆付款\nPayPal 月訂閱與年訂閱均會依所選週期自動續訂\nPayPal 付款後需提供訂閱編號與登入 Email，由 88La 人工開通\n到期前三天將寄送提醒通知。到期後提供 7 天資料匯出緩衝期，期間可瀏覽歷史紀錄，續訂即可立即恢復完整功能",
-    foundingNote: `${FOUNDER_ELIGIBILITY_COPY} 創始價格永久保留：月訂閱 ${FOUNDER_MONTHLY_PRICE} ／ 年方案 ${FOUNDER_YEARLY_PRICE}。使用信用卡付款時，系統會依登入 Email 自動調整至創始優惠價。使用 PayPal 時，請從財務導航產品頁的創始會員專屬區塊訂閱，付款後由 88La 人工核對開通。`
+    notes: "所有金額均為新台幣計價，含稅\n月訂閱採信用卡定期定額，可於下次扣款日前取消\n年方案採單筆付款，不會自動續約\n到期前三天將寄送提醒通知。到期後提供 7 天資料匯出緩衝期，期間可瀏覽歷史紀錄，續訂即可立即恢復完整功能",
+    foundingNote: `感謝最早支持 88La 的創始成員，你們的定價永久保留：月訂閱 ${FOUNDER_MONTHLY_PRICE} ／ 年方案 ${FOUNDER_YEARLY_PRICE}。請直接選擇方案並以你當時購買的 Email 登入，系統會自動調整至創始優惠價。此優惠僅適用於已取得創始會員資格之用戶，不開放新申請。`
   },
   trustStats: [
     { num: "90+", label: "8友社群成員" },
@@ -2630,22 +2593,14 @@ const normalizePrivacyContent = value => {
   let body = String(normalized.body || "")
     .replace(oldAnalytics, newAnalytics)
     .replace(analyticsStorageRow, updatedAnalyticsStorageRow)
-    .replace("<li>透過匿名流量統計瞭解網站整體使用狀況，藉以優化服務內容</li>", "<li>透過流量統計瞭解網站整體使用狀況，藉以優化服務內容</li><li>依您的訂閱選擇寄送電子報，並處理退訂需求</li>")
-    .replace(
-      "訂閱費用係由綠界科技股份有限公司代為收取，您的信用卡卡號、有效期限等付款資訊將直接於綠界之付款頁面輸入，88La 不會接觸、亦不會儲存任何與您的付款工具相關之資訊。本服務僅會收到付款是否成功之通知，以憑此開通您的訂閱權限。",
-      "訂閱費用可由綠界科技股份有限公司或 PayPal 代為收取，付款工具資訊會直接在所選服務的付款頁面輸入，88La 不會接觸或儲存您的卡號等付款工具資料。使用 PayPal 付款時，您需將訂閱編號與 88La 財務導航登入 Email 提供給 88La，以便人工核對並開通訂閱權限。"
-    )
-    .replace(
-      "金流相關資訊由綠界科技依其自身隱私規範處理，本服務全程不接觸您的付款資料",
-      "金流相關資訊由綠界科技或 PayPal 依其自身隱私規範處理，本服務不接觸您的付款工具資料"
-    );
+    .replace("<li>透過匿名流量統計瞭解網站整體使用狀況，藉以優化服務內容</li>", "<li>透過流量統計瞭解網站整體使用狀況，藉以優化服務內容</li><li>依您的訂閱選擇寄送電子報，並處理退訂需求</li>");
   if (!body.includes("【訂閱電子報時】")) {
     body = body.replace("<h2>三、未成年使用者</h2>", `${newsletterDisclosure}<h2>三、未成年使用者</h2>`);
   }
   if (!body.includes("電子報訂閱 Email 與狀態")) {
     body = body.replace("</tbody></table>", `${newsletterStorageRow}</tbody></table>`);
   }
-  return { ...normalized, lastUpdated: "最後更新：2026 年 9 月", body };
+  return { ...normalized, lastUpdated: "最後更新：2026 年 8 月", body };
 };
 const normalizeValueForKey = (key, value) => key === "privacyContent"
   ? normalizePrivacyContent(value)
@@ -2766,61 +2721,28 @@ const normalizeLegalContent = content => Object.fromEntries(
 const normalizeTermsContent = content => {
   const next = normalizeLegalContent(content);
   if (typeof next.body !== "string") return next;
-  const paymentCopy = "所有金額均為新台幣計價。信用卡付款由綠界科技股份有限公司代為處理，月訂閱採定期定額，年方案採單筆付款。PayPal 月訂閱與年訂閱均採自動續訂，付款後由 88La 人工核對訂閱編號與登入 Email，再開通會員權限。";
-  const renewalCopy = "<h2>三、續約方式</h2><p>綠界月訂閱會依原方案金額定期扣款，可於下次扣款日前至帳戶設定頁面取消。PayPal 月訂閱與年訂閱會依所選週期自動續訂，可於下一次扣款前至 PayPal 帳戶的自動付款設定取消。綠界年方案為單筆付款，不會自動續約。取消後，服務仍可使用至當期訂閱到期日為止。</p>";
   next.body = next.body
     .replace(/<li>兩年方案：NT\$[^<]+<\/li>/g, "")
     .replace(/月訂閱：NT\$[\d,]+ \/ 月/g, `月訂閱：${APP_MONTHLY_PRICE} / 月`)
     .replace(/年方案：NT\$[\d,]+ \/ 年/g, `年方案：${APP_YEARLY_PRICE} / 年`)
     .replace(
       "所有金額均為新台幣計價。付款由綠界科技股份有限公司代為處理，採信用卡定期定額方式進行。",
-      paymentCopy
-    )
-    .replace(
-      "所有金額均為新台幣計價。付款由綠界科技股份有限公司代為處理，月訂閱採信用卡定期定額，年方案採單筆付款。",
-      paymentCopy
+      "所有金額均為新台幣計價。付款由綠界科技股份有限公司代為處理，月訂閱採信用卡定期定額，年方案採單筆付款。"
     )
     .replace(
       "<h2>三、自動續約</h2><p>訂閱方案將於到期日自動續約，並依原方案金額扣款。如不希望續約，請於訂閱到期日前至帳戶設定頁面取消。取消後，服務仍可使用至當期訂閱到期日為止。</p>",
-      renewalCopy
-    )
-    .replace(
-      "<h2>三、續約方式</h2><p>月訂閱將依原方案金額定期扣款，如不希望續約，請於下次扣款日前至帳戶設定頁面取消。年方案不會自動續約，到期前將另行提醒。方案到期前仍可使用當期服務。</p>",
-      renewalCopy
+      "<h2>三、續約方式</h2><p>月訂閱將依原方案金額定期扣款，如不希望續約，請於下次扣款日前至帳戶設定頁面取消。年方案不會自動續約，到期前將另行提醒。方案到期前仍可使用當期服務。</p>"
     );
-  next.lastUpdated = "最後更新：2026 年 9 月";
-  return next;
-};
-const normalizeDisclaimerContent = content => {
-  const next = normalizeLegalContent(content);
-  if (typeof next.body !== "string") return next;
-  next.body = next.body.replace(
-    "第三方服務（包括 Google、Firebase、綠界科技等）",
-    "第三方服務（包括 Google、Firebase、綠界科技、PayPal 等）"
-  );
-  next.lastUpdated = "最後更新：2026 年 9 月";
   return next;
 };
 const normalizeSubscriptionCopy = raw => {
   const copy = { ...DEFAULTS.subscriptionCopy, ...(raw || {}) };
-  const notes = normalizeProductText(copy.notes)
-    .replace(
-      "訂閱將於到期日自動續約，可於到期前至帳戶設定取消\n付款方式：信用卡定期定額（由綠界科技處理）",
-      "綠界月訂閱採信用卡定期定額，綠界年方案採單筆付款\nPayPal 月訂閱與年訂閱均會依所選週期自動續訂\nPayPal 付款後需提供訂閱編號與登入 Email，由 88La 人工開通"
-    )
-    .replace(
-      "月訂閱採信用卡定期定額，可於下次扣款日前取消\n年方案採單筆付款，不會自動續約",
-      "綠界月訂閱採信用卡定期定額，綠界年方案採單筆付款\nPayPal 月訂閱與年訂閱均會依所選週期自動續訂\nPayPal 付款後需提供訂閱編號與登入 Email，由 88La 人工開通"
-    );
-  const foundingNote = normalizeProductText(copy.foundingNote);
   return {
     ...copy,
     heading: normalizeProductText(copy.heading),
     intro: normalizeProductText(copy.intro),
-    notes,
-    foundingNote: foundingNote.includes("曾購買模板 2.0") && foundingNote.includes("當時購買 Email")
-      ? foundingNote
-      : DEFAULTS.subscriptionCopy.foundingNote,
+    notes: normalizeProductText(copy.notes)
+      .replace("訂閱將於到期日自動續約，可於到期前至帳戶設定取消\n付款方式：信用卡定期定額（由綠界科技處理）", "月訂閱採信用卡定期定額，可於下次扣款日前取消\n年方案採單筆付款，不會自動續約"),
   };
 };
 
@@ -5794,8 +5716,7 @@ const AP_DEVICES = [
 ];
 // 退費與續約的說法必須跟 /terms 的服務條款一致，改這裡前先看 DEFAULTS.termsContent 第三、四節
 const AP_FAQ = [
-  ["可以退費嗎？", "數位商品恕無試用期。定期訂閱在下次扣款前取消即可，當期還能用到結束。綠界月訂閱請在 App 帳戶設定取消，PayPal 訂閱請在 PayPal 帳戶的自動付款設定取消。"],
-  ["PayPal 付款後怎麼開通？", `付款完成後，頁面會顯示訂閱編號。請把訂閱編號與 88La 財務導航登入 Email 寄到 ${PUBLIC_CONTACT_EMAIL}，由 88La 人工核對開通。`],
+  ["可以退費嗎？", "數位商品恕無試用期，月訂閱在下次扣款日前取消即可，不會再扣款，當期還能用到結束。"],
   ["我完全沒記過帳，適合用嗎？", "可以，而且可能比記過帳的人更順，因為你沒有舊習慣要改，建議照上面的「第一個月只用兩個功能」開始。"],
   ["手機記的帳，電腦看得到嗎？", "看得到。財務導航 Web App 支援跨裝置使用，手機、平板、電腦只要登入同一組帳號，看到的就是同一份資料，不用匯入匯出。在外面用手機 5 秒記一筆，回到電腦前排預算或看診斷，都是接得上的。"],
   ["需要連接我的銀行帳戶嗎？", "不用。88La 不介接任何金融機構，所有數字都是你自己輸入的，這是刻意的選擇，手動記那 5 秒，本身就是讓你意識到花費的一部分。"],
@@ -6023,64 +5944,16 @@ function AppPage({ appContent, setAppContent, isAdmin, setPage, demoStory, setDe
               <p className="ap-plan-price"><Price>{NT_MONTHLY}</Price><span> /月</span></p>
               <p className="ap-plan-sub">隨時可取消</p>
               <ul><li>完整功能</li><li>桌面快速記帳</li><li>下次扣款前可取消</li></ul>
-              <p className="ap-payment-label">使用信用卡付款</p>
-              <a className="nx-btn nx-btn-sec nx-btn-sec-strong nx-btn-block nx-btn-md" {...appCtaProps("app-plan-monthly")}>登入後付款</a>
-              <p className="ap-paypal-divider">或用 PayPal 訂閱</p>
-              <PayPalSubscriptionButton
-                planId={PAYPAL_PLAN_IDS.monthly}
-                planName={`一般月訂閱 ${NT_MONTHLY}`}
-                style={PAYPAL_BUTTON_STYLES.monthly}
-                supportEmail={PUBLIC_CONTACT_EMAIL}
-              />
+              <a className="nx-btn nx-btn-sec nx-btn-sec-strong nx-btn-block nx-btn-md" {...appCtaProps("app-plan-monthly")}>選這個方案</a>
             </div>
             <div className="ap-plan ap-plan-dark">
               <span className="ap-plan-badge">最多人選擇</span>
               <p className="ap-plan-name">年方案</p>
               <p className="ap-plan-price"><Price>{NT_YEARLY}</Price><span> /年</span></p>
               <p className="ap-plan-sub"><Price>{`相當於 NT$ ${APP_YEARLY_MONTHLY_EQUIVALENT} / 月，省下約 ${APP_YEARLY_DISCOUNT}%`}</Price></p>
-              <ul><li>完整功能</li><li>桌面快速記帳</li><li>綠界單筆付款，PayPal 每年自動續訂</li></ul>
-              <p className="ap-payment-label">使用信用卡付款</p>
-              <a className="nx-btn nx-btn-pri nx-btn-block nx-btn-md" {...appCtaProps("app-plan-yearly")}>登入後付款</a>
-              <p className="ap-paypal-divider">或用 PayPal 訂閱</p>
-              <PayPalSubscriptionButton
-                planId={PAYPAL_PLAN_IDS.yearly}
-                planName={`一般年訂閱 ${NT_YEARLY}`}
-                style={PAYPAL_BUTTON_STYLES.yearly}
-                supportEmail={PUBLIC_CONTACT_EMAIL}
-              />
+              <ul><li>完整功能</li><li>桌面快速記帳</li><li>單筆付款，不自動續約</li></ul>
+              <a className="nx-btn nx-btn-pri nx-btn-block nx-btn-md" {...appCtaProps("app-plan-yearly")}>開始使用 →</a>
             </div>
-          </div>
-          <div className="paypal-founder">
-            <div className="paypal-founder-head">
-              <div>
-                <p className="paypal-founder-tag">創始會員專屬</p>
-                <h3>使用 PayPal 續訂</h3>
-              </div>
-              <p>{FOUNDER_ELIGIBILITY_COPY} PayPal 付款後需提供訂閱編號與登入 Email，由 88La 人工開通。</p>
-            </div>
-            <div className="paypal-founder-grid">
-              <div className="paypal-founder-plan">
-                <strong>創始會員月訂閱</strong>
-                <span>{FOUNDER_MONTHLY_PRICE} / 月，每月續訂直到取消</span>
-                <PayPalSubscriptionButton
-                  planId={PAYPAL_PLAN_IDS.founderMonthly}
-                  planName={`創始會員月訂閱 ${FOUNDER_MONTHLY_PRICE}`}
-                  style={PAYPAL_BUTTON_STYLES.founder}
-                  supportEmail={PUBLIC_CONTACT_EMAIL}
-                />
-              </div>
-              <div className="paypal-founder-plan">
-                <strong>創始會員年訂閱</strong>
-                <span>{FOUNDER_YEARLY_PRICE} / 年，每年自動續訂</span>
-                <PayPalSubscriptionButton
-                  planId={PAYPAL_PLAN_IDS.founderYearly}
-                  planName={`創始會員年訂閱 ${FOUNDER_YEARLY_PRICE}`}
-                  style={PAYPAL_BUTTON_STYLES.founder}
-                  supportEmail={PUBLIC_CONTACT_EMAIL}
-                />
-              </div>
-            </div>
-            <p className="paypal-founder-note">訂閱前請再次確認登入 Email 與模板 2.0 購買 Email 相同。PayPal 自動續訂可至 PayPal 帳戶的自動付款設定取消。</p>
           </div>
         </div>
       </section>
@@ -7248,12 +7121,12 @@ function TermsPage({ isAdmin, termsContent, setTermsContent }) {
 
 //  隱私政策
 function PrivacyPage({ isAdmin, privacyContent, setPrivacyContent }) {
-  return <LegalPage isAdmin={isAdmin} content={normalizePrivacyContent(privacyContent)} setContent={setPrivacyContent} defaults={DEFAULTS.privacyContent} hasIntro />;
+  return <LegalPage isAdmin={isAdmin} content={privacyContent} setContent={setPrivacyContent} defaults={DEFAULTS.privacyContent} hasIntro />;
 }
 
 //  免責聲明
 function DisclaimerPage({ isAdmin, disclaimerContent, setDisclaimerContent }) {
-  return <LegalPage isAdmin={isAdmin} content={normalizeDisclaimerContent(disclaimerContent)} setContent={setDisclaimerContent} defaults={DEFAULTS.disclaimerContent} />;
+  return <LegalPage isAdmin={isAdmin} content={disclaimerContent} setContent={setDisclaimerContent} defaults={DEFAULTS.disclaimerContent} />;
 }
 
 //  訂閱方案
