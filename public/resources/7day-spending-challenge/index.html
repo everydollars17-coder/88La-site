@@ -1,0 +1,1304 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>消費行為觀察練習｜88La</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700;900&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --c1:#a8501f;
+    --c2:#c96b2f;
+    --c3:#dd8a52;
+    --c4:#eeab7c;
+    --bg:#faf6f2;
+    --card:#ffffff;
+    --text:#2e2520;
+    --text-light:#8a7d72;
+    --border:#ece3da;
+    --danger:#b84040;
+    --ok:#4a8c5c;
+  }
+  *{box-sizing:border-box;}
+  body{
+    margin:0;
+    background:var(--bg);
+    color:var(--text);
+    font-family:'Noto Sans TC',-apple-system,sans-serif;
+    -webkit-font-smoothing:antialiased;
+  }
+
+  .topbar{
+    position:sticky; top:0; z-index:10;
+    background:rgba(250,246,242,0.96);
+    backdrop-filter:blur(6px);
+    border-bottom:1px solid var(--border);
+    padding:12px 20px;
+    display:flex; align-items:center; justify-content:space-between; gap:12px;
+  }
+  .topbar .brand{ font-weight:900; font-size:14px; letter-spacing:0.5px; color:var(--c1); }
+  .topbar .tb-note{ font-size:11px; color:var(--text-light); }
+  .la-brand-link{ color:inherit; text-decoration:none; }
+
+  .page{ max-width:480px; margin:0 auto; padding:20px 18px 40px; }
+
+  /* 說明與開始 */
+  .intro h1{ font-size:22px; line-height:1.4; margin:0 0 12px; font-weight:900; }
+  .intro p{ font-size:14px; line-height:1.85; color:var(--text-light); margin:0 0 14px; }
+  .intro .why{ color:var(--text); font-weight:500; }
+
+  /* 七天目次 */
+  .head{ margin:4px 0 20px; }
+  .head .title{ font-size:21px; font-weight:900; margin:0 0 9px; line-height:1.4; }
+  .head .lead{ font-size:13px; line-height:1.9; color:var(--text-light); margin:0 0 22px; }
+  .head .d{ font-size:27px; font-weight:900; letter-spacing:-.01em; line-height:1.2; }
+  .head .d .of{ font-size:15px; font-weight:700; color:var(--text-light); margin-left:1px; }
+  .head .sub{ font-size:13px; color:var(--text-light); margin-top:6px; }
+
+  .days{ background:var(--card); border-radius:16px; overflow:hidden; box-shadow:0 1px 3px rgba(46,37,32,.05); }
+  .day-row{
+    display:flex; align-items:center; gap:13px; width:100%;
+    padding:15px 16px; background:none; border:none; border-top:1px solid var(--border);
+    font-family:inherit; color:inherit; text-align:left;
+  }
+  .day-row:first-child{ border-top:none; }
+  button.day-row{ cursor:pointer; }
+  button.day-row:active{ background:#faf6f2; }
+  .day-row .nn{ flex:0 0 auto; width:26px; font-size:20px; font-weight:900; color:#e3d6cb; line-height:1; font-variant-numeric:tabular-nums; }
+  .day-row.has .nn{ color:var(--c3); }
+  .day-row .mid{ flex:1 1 auto; min-width:0; }
+  .day-row .dt{ display:block; font-size:15px; font-weight:700; }
+  .day-row .today{ font-size:10px; font-weight:700; color:#fff; background:var(--c2); border-radius:999px; padding:2px 7px; margin-left:7px; vertical-align:2px; letter-spacing:.04em; }
+  .day-row .meta{ display:block; font-size:12px; color:var(--text-light); margin-top:3px; }
+  .day-row.empty .dt{ color:var(--text-light); font-weight:500; }
+  .day-row.future{ opacity:.5; }
+  .day-row.future .mid{ padding:8px 0; }
+  .day-row .amt{ flex:0 0 auto; font-size:14px; font-weight:700; color:var(--text-light); font-variant-numeric:tabular-nums; }
+  .day-row .go{ flex:0 0 auto; color:#d9c7b8; font-size:18px; line-height:1; }
+
+  .total{ font-size:13px; color:var(--text-light); margin:15px 2px 22px; line-height:1.8; }
+
+  /* 小小的加號 */
+  .fab{
+    position:fixed; right:calc(50% - 240px + 18px); bottom:22px; z-index:40;
+    width:52px; height:52px; border-radius:50%;
+    background:var(--c2); color:#fff; border:none;
+    font-size:27px; line-height:1; font-family:inherit; cursor:pointer;
+    box-shadow:0 4px 14px rgba(168,80,31,.28);
+    display:flex; align-items:center; justify-content:center; padding:0 0 3px;
+  }
+  @media (max-width:520px){ .fab{ right:18px; } }
+  .fab:active{ background:var(--c1); }
+
+  /* 單日 */
+  .back{
+    background:none; border:none; font-family:inherit; font-size:14px; font-weight:700;
+    color:var(--c2); padding:6px 0; margin:0 0 10px; cursor:pointer;
+  }
+  .dayhead{ margin-bottom:22px; }
+  .dayhead h2{ font-size:25px; font-weight:900; margin:0; line-height:1.25; }
+  .dayhead .s{ font-size:13px; color:var(--text-light); margin-top:6px; }
+  .daysum{ font-size:13px; color:var(--text-light); margin:22px 2px 0; line-height:1.8; }
+  .day-empty{ font-size:14px; color:var(--text-light); padding:34px 0 10px; text-align:center; line-height:2; }
+
+  /* 時間軸 */
+  .line{ position:relative; padding-left:28px; }
+  .line::before{ content:""; position:absolute; left:4px; top:12px; bottom:12px; width:2px; background:var(--border); }
+  .tl-item{ position:relative; margin-bottom:12px; }
+  .tl-item:last-child{ margin-bottom:0; }
+  .dot{
+    position:absolute; left:-28px; top:18px;
+    width:9px; height:9px; border-radius:50%;
+    background:var(--c2); border:3px solid var(--bg); box-sizing:content-box;
+  }
+  .dot.hollow{ background:var(--bg); border:2px solid var(--c3); box-shadow:0 0 0 3px var(--bg); }
+  .tl-card{
+    background:var(--card); border:none; border-radius:12px;
+    box-shadow:0 1px 3px rgba(46,37,32,.05);
+    padding:13px 15px; cursor:pointer; width:100%; text-align:left;
+    font-family:inherit; color:inherit; display:block;
+  }
+  .tl-r1{ display:flex; align-items:baseline; gap:9px; }
+  .tl-time{ font-size:12px; color:var(--text-light); font-variant-numeric:tabular-nums; flex:0 0 auto; min-width:38px; }
+  .tl-time.none{ min-width:auto; font-size:11px; }
+  .tl-item-name{ font-size:15px; font-weight:700; flex:1 1 auto; word-break:break-all; }
+  .tl-amt{ font-size:15px; font-weight:900; flex:0 0 auto; }
+  .tl-amt.nb{ font-size:13px; font-weight:700; color:var(--text-light); }
+  .tl-r2{ font-size:12px; color:var(--text-light); margin-top:5px; line-height:1.6; }
+  .tl-detail{ margin-top:11px; padding-top:11px; border-top:1px solid var(--border); font-size:13px; line-height:1.9; }
+  .tl-detail .k{ color:var(--text-light); }
+  .tl-acts{ display:flex; gap:8px; margin-top:11px; }
+  .mini{
+    border:1px solid var(--border); background:var(--bg); color:var(--text);
+    border-radius:8px; padding:8px 14px; font-family:inherit; font-size:13px; font-weight:700; cursor:pointer;
+  }
+  .mini.warn{ color:var(--danger); border-color:#e8cfcf; }
+
+  /* 兩行觀察 */
+  .notes{ margin:0 0 20px; }
+  .note-line{
+    background:var(--card); border-radius:12px; box-shadow:0 1px 3px rgba(46,37,32,.05);
+    padding:13px 15px; font-size:13px; line-height:1.8; margin-bottom:10px;
+  }
+  .note-line .sub{ display:block; color:var(--text-light); font-size:12px; margin-top:3px; }
+  .note-line.key{ background:#fff3ea; box-shadow:none; }
+
+  /* 動作區 */
+  .acts{ display:flex; gap:10px; margin-bottom:16px; }
+  .act{
+    flex:1; background:none; color:var(--c1);
+    border:1px solid #e3cdb9; border-radius:999px; padding:12px 6px;
+    font-family:inherit; font-size:14px; font-weight:700; cursor:pointer;
+  }
+  .act:active{ background:#f7ede5; }
+  .tiny{ font-size:12px; color:var(--text-light); line-height:1.8; }
+  .tiny a{ color:var(--c2); }
+  .remind{
+    background:#fff3ea; border-radius:12px;
+    padding:12px 14px; font-size:12px; line-height:1.8; color:#79513a; margin-bottom:16px;
+  }
+  .survey{ text-align:center; margin:18px 0 6px; }
+  .survey a{ font-size:14px; font-weight:700; color:var(--c2); text-decoration:none; }
+
+  /* 說明頁的開始按鈕 */
+  .add-btn{
+    width:100%; display:block; margin:0 0 24px;
+    background:var(--c2); color:#fff; border:none;
+    padding:16px; border-radius:12px;
+    font-family:inherit; font-size:17px; font-weight:700; cursor:pointer;
+  }
+  .add-btn:active{ background:var(--c1); }
+
+  /* 表單視窗 */
+  .sheet-bg{
+    position:fixed; inset:0; z-index:50; background:rgba(46,37,32,.42);
+    display:none; align-items:flex-end; justify-content:center;
+  }
+  .sheet-bg.open{ display:flex; }
+  .sheet{
+    background:var(--bg); width:100%; max-width:480px;
+    max-height:92vh; overflow-y:auto;
+    border-radius:16px 16px 0 0; padding:18px 18px 28px;
+  }
+  .sheet-head{ display:flex; align-items:center; justify-content:space-between; margin-bottom:16px; }
+  .sheet-head h2{ font-size:17px; margin:0; font-weight:900; }
+  .sheet-head .sh-sub{ font-size:12px; color:var(--text-light); margin-top:3px; }
+  .x{ border:none; background:none; font-size:22px; line-height:1; color:var(--text-light); cursor:pointer; padding:4px 8px; font-family:inherit; }
+
+  .fld{ margin-bottom:16px; }
+  .fld > label, .fld .lbl{ display:block; font-size:13px; font-weight:700; margin-bottom:7px; }
+  .fld .hint{ font-size:11px; color:var(--text-light); font-weight:400; margin-left:4px; }
+  input[type="text"], input[type="number"], input[type="date"], input[type="time"], textarea{
+    width:100%; font-family:inherit; font-size:16px;
+    padding:11px 12px; border:1px solid var(--border); border-radius:9px;
+    background:var(--card); color:var(--text);
+  }
+  textarea{ min-height:64px; resize:vertical; }
+  input:focus, textarea:focus{ outline:2px solid var(--c4); outline-offset:-1px; }
+  .row2{ display:flex; gap:10px; }
+  .row2 > *{ flex:1; }
+
+  .chips{ display:flex; flex-wrap:wrap; gap:7px; }
+  .chip{
+    border:1px solid var(--border); background:var(--card); color:var(--text);
+    border-radius:999px; padding:9px 14px;
+    font-family:inherit; font-size:14px; font-weight:500; cursor:pointer;
+    min-height:40px;
+  }
+  .chip.on{ background:var(--c2); border-color:var(--c2); color:#fff; font-weight:700; }
+  .chip.sat{ min-width:46px; text-align:center; }
+
+  .layer2-toggle{
+    width:100%; background:none; border:1px dashed var(--border);
+    border-radius:10px; padding:13px; margin-bottom:16px;
+    font-family:inherit; font-size:14px; font-weight:700; color:var(--c1); cursor:pointer;
+  }
+  .layer2{ display:none; }
+  .layer2.open{ display:block; }
+  .layer2-lead{ font-size:12px; color:var(--text-light); line-height:1.8; margin:0 0 16px; }
+
+  .save-btn{
+    width:100%; background:var(--c2); color:#fff; border:none;
+    padding:16px; border-radius:12px; font-family:inherit; font-size:17px; font-weight:700; cursor:pointer;
+  }
+  .save-btn:active{ background:var(--c1); }
+  .form-msg{ font-size:13px; font-weight:700; line-height:1.7; margin:0 0 12px; display:none; }
+  .form-msg.show{ display:block; }
+  .form-msg.err{ color:var(--danger); }
+  .toast{
+    position:fixed; left:50%; transform:translateX(-50%); bottom:26px; z-index:70;
+    background:var(--text); color:#fff; padding:11px 18px; border-radius:999px;
+    font-size:14px; font-weight:700; display:none; max-width:90vw; text-align:center;
+  }
+  .toast.show{ display:block; }
+  .toast.err{ background:var(--danger); }
+
+  .copybox{ display:none; margin-top:10px; }
+  .copybox.show{ display:block; }
+  .copybox textarea{ min-height:160px; font-size:13px; }
+
+  .la-foot{width:100%;box-sizing:border-box;margin:36px 0 0;padding:30px 20px 96px;background:#fff3ea;border-top:1px solid #ead5c0;font-family:'Noto Sans TC',sans-serif;}
+  .la-foot-inner{max-width:520px;margin:0 auto;text-align:center;}
+  .la-foot-brand{margin:0 0 8px;font-size:12px;font-weight:700;letter-spacing:.12em;color:#c96b2f;}
+  .la-foot-text{margin:0 0 18px;font-size:13px;line-height:1.8;color:#79513a;}
+  .la-foot-btns{display:flex;flex-wrap:wrap;justify-content:center;gap:10px;}
+  .la-btn{display:inline-block;padding:11px 20px;border-radius:999px;border:1px solid #c96b2f;font-size:14px;font-weight:700;line-height:1.4;text-decoration:none;transition:opacity .18s;}
+  .la-btn:hover{opacity:.85;}
+  .la-btn-main{background:#c96b2f;color:#fff3ea;}
+  .la-btn-ghost{background:transparent;color:#c96b2f;border-color:#ead5c0;}
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <span class="brand"><a class="la-brand-link" data-la-cta="home" href="https://site.88lamoney.com/?utm_source=resource&amp;utm_medium=brand&amp;utm_campaign=7day-spending-challenge">88La</a></span>
+  <span class="tb-note">消費行為觀察練習</span>
+</div>
+
+<div class="page" id="page"></div>
+
+<div class="sheet-bg" id="sheetBg">
+  <div class="sheet" id="sheet"></div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<footer class="la-foot">
+  <div class="la-foot-inner">
+    <p class="la-foot-brand">88La 犒賞系存錢</p>
+    <p class="la-foot-text">官網還有更多免費工具和文章，都可以直接使用。</p>
+    <div class="la-foot-btns">
+      <a class="la-btn la-btn-main" data-la-cta="resources" href="https://site.88lamoney.com/resources?utm_source=resource&utm_medium=footer&utm_campaign=7day-spending-challenge">看更多免費資源</a>
+      <a class="la-btn la-btn-ghost" data-la-cta="home" href="https://site.88lamoney.com/?utm_source=resource&utm_medium=footer&utm_campaign=7day-spending-challenge">回 88La 官網</a>
+    </div>
+  </div>
+</footer>
+
+<script>
+(function(){
+  'use strict';
+
+  /* ============================================================
+     設定
+     ============================================================ */
+  var STORE_KEY = 'la7day_v1';
+  var CHALLENGE_DAYS = 7;
+  // 問卷網址設定後才會顯示那個連結，空字串就整段不顯示
+  var GOOGLE_FORM_URL = '';
+
+  var BACKUP_REMINDER = '你的紀錄保存在目前使用的瀏覽器，建議定期下載備份。更換裝置或清除瀏覽器資料可能導致紀錄遺失。';
+
+  /* ============================================================
+     選項對照表。畫面與 CSV 都讀這裡，只有一份
+     ============================================================ */
+  var DECISION = { bought:'買了', not_bought:'沒買', postponed:'延後', substitute:'改用替代品' };
+  var DECIDED  = { planned:'事先決定', at_moment:'當下決定', unsure:'不確定' };
+  var NEEDWANT = { need:'需要', want:'想要', unsure:'不確定' };
+  var MOTIVES  = { physical:'生理需求', habit:'習慣', emotion:'情緒', social:'社交', external:'外部誘惑', unsure:'不確定', other:'其他' };
+  var IFNOT    = { affects_life:'影響生活', inconvenient:'有點不便', disappointed:'有點失落', no_effect:'沒影響', unsure:'不確定' };
+  var HABITUAL = { yes:'有', no:'沒有', unsure:'不確定' };
+  var BUDGET   = { within:'預算內', over:'超出預算', none:'沒安排', unsure:'不確定' };
+
+  function keysOf(map){ return Object.keys(map); }
+
+  /* ============================================================
+     日期。全部用當地日期字串運算，不用 toISOString
+     ============================================================ */
+  function pad(n){ return String(n).length < 2 ? '0' + n : String(n); }
+
+  function nowParts(){
+    var inj = window.__LA7_NOW;
+    if (typeof inj === 'string' && /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}$/.test(inj)) {
+      return { date: inj.slice(0,10), time: inj.slice(11,16) };
+    }
+    var d = new Date();
+    return {
+      date: d.getFullYear() + '-' + pad(d.getMonth()+1) + '-' + pad(d.getDate()),
+      time: pad(d.getHours()) + ':' + pad(d.getMinutes())
+    };
+  }
+  function toLocalDate(s){
+    var p = s.split('-');
+    return new Date(Number(p[0]), Number(p[1]) - 1, Number(p[2]));
+  }
+  function dayDiff(from, to){
+    return Math.round((toLocalDate(to) - toLocalDate(from)) / 86400000);
+  }
+  function addDays(s, n){
+    var d = toLocalDate(s);
+    d.setDate(d.getDate() + n);
+    return d.getFullYear() + '-' + pad(d.getMonth()+1) + '-' + pad(d.getDate());
+  }
+  function shortDate(s){
+    var p = s.split('-');
+    return Number(p[1]) + '/' + Number(p[2]);
+  }
+  function longDate(s){
+    var p = s.split('-');
+    return Number(p[1]) + ' 月 ' + Number(p[2]) + ' 日';
+  }
+
+  /* ============================================================
+     儲存。寫入後讀回核對，沒核對過不算成功
+     ============================================================ */
+  function loadState(){
+    try {
+      var raw = localStorage.getItem(STORE_KEY);
+      if (!raw) return null;
+      var o = JSON.parse(raw);
+      if (!o || typeof o !== 'object' || !Array.isArray(o.entries) || !o.startDate) return null;
+      return o;
+    } catch (e) { return null; }
+  }
+  function saveState(state){
+    try {
+      var json = JSON.stringify(state);
+      localStorage.setItem(STORE_KEY, json);
+      return localStorage.getItem(STORE_KEY) === json;
+    } catch (e) { return false; }
+  }
+  function storageUsable(){
+    try {
+      localStorage.setItem('la7day_probe', '1');
+      var ok = localStorage.getItem('la7day_probe') === '1';
+      localStorage.removeItem('la7day_probe');
+      return ok;
+    } catch (e) { return false; }
+  }
+
+  var S = null;
+
+  /* ============================================================
+     統計。畫面上每個數字只從這裡來
+     ============================================================ */
+  function computeStats(entries){
+    var spent = 0, notBoughtCount = 0, notBoughtPlanned = 0;
+    var habAnswered = 0, habYes = 0, layer2Empty = 0;
+    for (var i = 0; i < entries.length; i++) {
+      var e = entries[i];
+      if (e.decision === 'bought' || e.decision === 'substitute') {
+        spent += Number(e.amount) || 0;
+      }
+      if (e.decision === 'not_bought' || e.decision === 'postponed') {
+        notBoughtCount += 1;
+        notBoughtPlanned += Number(e.plannedAmount) || 0;
+      }
+      if (e.habitual === 'yes' || e.habitual === 'no' || e.habitual === 'unsure') {
+        habAnswered += 1;
+        if (e.habitual === 'yes') habYes += 1;
+      }
+      if (isLayer2Empty(e)) layer2Empty += 1;
+    }
+    return {
+      count: entries.length,
+      spent: spent,
+      notBoughtCount: notBoughtCount,
+      notBoughtPlanned: notBoughtPlanned,
+      habAnswered: habAnswered,
+      habYes: habYes,
+      layer2Empty: layer2Empty
+    };
+  }
+  // habitual 2026-10-29 起改成必填，移到第一層，所以不算在「有沒有填詳細記錄」裡
+  function isLayer2Empty(e){
+    return !e.needWant && (!e.motives || !e.motives.length) && !e.ifNotBuy &&
+           !e.alternative && e.satisfaction == null &&
+           !e.budgetStatus && !e.note;
+  }
+  function money(n){ return '$' + Number(n || 0).toLocaleString('en-US'); }
+
+  /* ============================================================
+     畫面
+     ============================================================ */
+  var page = document.getElementById('page');
+
+  function render(){
+    if (!S) { renderIntro(); return; }
+    var d = hashDate();
+    if (d) renderDay(d); else renderOverview();
+  }
+
+  // 網址用 #d/YYYY-MM-DD 記住現在看的是哪一天，手機返回鍵才回得去七天
+  function hashDate(){
+    var m = /^#d\/(\d{4}-\d{2}-\d{2})$/.exec(location.hash || '');
+    if (!m) return null;
+    var d = m[1];
+    var n = dayDiff(S.startDate, d) + 1;
+    if (n >= 1 && n <= CHALLENGE_DAYS) return d;
+    return null;
+  }
+  window.addEventListener('hashchange', function(){ openedId = null; render(); });
+
+  function esc(s){
+    return String(s == null ? '' : s)
+      .replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')
+      .replace(/"/g,'&quot;').replace(/'/g,'&#39;');
+  }
+
+  function renderIntro(){
+    var blocked = !storageUsable();
+    page.innerHTML =
+      '<div class="intro">' +
+        '<h1>消費行為觀察練習</h1>' +
+        '<p>這七天，記下你的消費和想買的念頭。可以買之前記，也可以買完再補記。</p>' +
+        '<p class="why">七天後，你會看得出哪些消費是你自己決定的，哪些只是照習慣。</p>' +
+        '<p>最少只要填四個欄位，想多想一點的時候再展開下面那幾題。</p>' +
+        (blocked
+          ? '<div class="remind" style="border-color:#e8cfcf;background:#fdf3f3;color:#8a3b3b;">這個瀏覽器現在沒辦法保存資料，可能是在私密瀏覽模式，或是封鎖了網站儲存。你可以先試填，但關掉頁面就會不見。建議改用一般瀏覽模式。</div>'
+          : '<div class="remind">' + esc(BACKUP_REMINDER) + '</div>') +
+        '<button class="add-btn" id="startBtn">開始七天練習</button>' +
+      '</div>';
+    document.getElementById('startBtn').addEventListener('click', startChallenge);
+  }
+
+  function startChallenge(){
+    var n = nowParts();
+    var state = { v:1, startDate:n.date, entries:[] };
+    if (!saveState(state)) {
+      showToast('沒有存成功，這個瀏覽器可能不允許保存資料', true);
+      return;
+    }
+    S = state;
+    if (window.laTrackOnce) window.laTrackOnce('challenge_start');
+    render();
+  }
+
+  function dayIndexNow(){
+    return dayDiff(S.startDate, nowParts().date) + 1;
+  }
+
+  function isSpend(e){ return e.decision === 'bought' || e.decision === 'substitute'; }
+  function spentOf(list){
+    var t = 0;
+    for (var i = 0; i < list.length; i++) if (isSpend(list[i])) t += Number(list[i].amount) || 0;
+    return t;
+  }
+
+  /* ---------- 第一層：七天目次 ---------- */
+  function renderOverview(){
+    var n = nowParts();
+    var di = dayIndexNow();
+    var ended = di > CHALLENGE_DAYS;
+    var st = computeStats(S.entries);
+
+    var html = '';
+    html += '<div class="head">' +
+      '<h1 class="title">消費行為觀察練習</h1>' +
+      '<p class="lead">有花錢的念頭就記下來，不用太細，想到再記，只需要 7 天，幫你分析消費行為，練習判斷是需要還是想要。</p>' +
+      '<div class="d" id="dayBadge">' +
+        (ended ? '練習已結束' : ('DAY ' + di + '<span class="of"> / ' + CHALLENGE_DAYS + '</span>')) +
+      '</div>' +
+      '<div class="sub">' + longDate(n.date) + '</div>' +
+    '</div>';
+
+    html += '<div class="days" id="days">' + dayRowsHtml(n.date) + '</div>';
+
+    html += '<div class="total">' + (st.count
+      ? ('七天到目前花了 ' + money(st.spent) + '，記了 ' + st.count + ' 筆。')
+      : '還沒有紀錄。按右下角的加號記第一筆。') + '</div>';
+
+    html += '<div class="notes" id="notes">' + notesHtml(st) + '</div>';
+
+    if (ended) {
+      html += '<div class="remind">這一輪的七天已經結束，紀錄都還在，可以繼續查看或下載。想重新開始的話，先下載 CSV 備份，之後我們會開放再做一次。</div>';
+    }
+
+    html += '<div class="acts">' +
+      '<button class="act" id="csvBtn">下載 CSV</button>' +
+      '<button class="act" id="aiBtn">讓 AI 幫我回顧這七天</button>' +
+    '</div>';
+    // 按鈕看起來像按了就會分析，所以直接寫清楚它只是複製指令
+    html += '<p class="tiny" id="aiHint">按下去會複製一段指令，貼到任何一個 AI，它就會照你的紀錄幫你寫回顧。</p>';
+    html += '<div class="copybox" id="copybox"><p class="tiny">自動複製沒成功的話，長按下面的文字全選後複製。</p><textarea id="copyText" readonly></textarea></div>';
+    html += '<p class="tiny" id="csvFallbackWrap" style="display:none">檔案沒有下載的話，<a href="#" id="csvOpen">點這裡用新視窗開啟</a>，再自己存起來。</p>';
+    html += '<p class="tiny">上傳 CSV 給 AI 之前，先看一下備註欄有沒有你不想分享的內容。</p>';
+    html += '<div class="remind" style="margin-top:16px">' + esc(BACKUP_REMINDER) + '</div>';
+    if (GOOGLE_FORM_URL) {
+      html += '<div class="survey"><a href="' + esc(GOOGLE_FORM_URL) + '" target="_blank" rel="noopener">💚 願意和我分享你的發現嗎？（2 分鐘）</a></div>';
+    }
+    if (!ended) html += fabHtml();
+
+    page.innerHTML = html;
+    document.getElementById('csvBtn').addEventListener('click', downloadCsv);
+    document.getElementById('aiBtn').addEventListener('click', copyPrompt);
+    bindFab(null);
+    document.getElementById('days').addEventListener('click', function(ev){
+      var row = ev.target.closest('button.day-row');
+      if (row) location.hash = '#d/' + row.getAttribute('data-day');
+    });
+  }
+
+  function dayRowsHtml(today){
+    var out = '';
+    for (var i = 0; i < CHALLENGE_DAYS; i++) {
+      var d = addDays(S.startDate, i);
+      var future = dayDiff(today, d) > 0;
+      var list = entriesOf(d);
+      var isToday = (d === today);
+
+      var cls = 'day-row' + (list.length ? ' has' : ' empty') + (future ? ' future' : '');
+      var tag = future ? 'div' : 'button';
+      var meta, amt;
+      if (future) { meta = ''; amt = ''; }   // 淡掉就看得出來還沒到，不用每列都寫
+      else if (!list.length) { meta = '還沒記'; amt = ''; }
+      else { meta = list.length + ' 筆'; amt = money(spentOf(list)); }
+
+      out += '<' + tag + ' class="' + cls + '"' + (future ? '' : ' data-day="' + d + '"') + ' type="button">' +
+        '<span class="nn">' + (i + 1) + '</span>' +
+        '<span class="mid">' +
+          '<span class="dt">' + shortDate(d) + (isToday ? '<span class="today">今天</span>' : '') + '</span>' +
+          '<span class="meta">' + meta + '</span>' +
+        '</span>' +
+        '<span class="amt">' + amt + '</span>' +
+        '<span class="go">' + (future ? '' : '\u203A') + '</span>' +
+      '</' + tag + '>';
+    }
+    return out;
+  }
+
+  /* ---------- 第二層：某一天的時間線 ---------- */
+  function renderDay(date){
+    var n = nowParts();
+    var di = dayIndexNow();
+    var ended = di > CHALLENGE_DAYS;
+    var dn = dayDiff(S.startDate, date) + 1;
+    var list = entriesOf(date);
+
+    var html = '';
+    html += '<button class="back" id="backBtn">\u2039\u3000七天</button>';
+    html += '<div class="dayhead">' +
+      '<h2>' + longDate(date) + '</h2>' +
+      '<div class="s">DAY ' + dn + (date === n.date ? '\u3000・\u3000今天' : '') + '</div>' +
+    '</div>';
+
+    html += '<div id="timeline">' + dayLineHtml(list) + '</div>';
+    html += '<div class="daysum" id="daysum">' + daySummaryHtml(list) + '</div>';
+    if (!ended) html += fabHtml();
+
+    page.innerHTML = html;
+    document.getElementById('backBtn').addEventListener('click', function(){ location.hash = ''; });
+    bindFab(date);
+    bindTimeline();
+  }
+
+  function dayLineHtml(list){
+    if (!list.length) return '<div class="day-empty">這天還沒有紀錄。<br>按右下角的加號記一筆。</div>';
+    var out = '<div class="line">';
+    for (var i = 0; i < list.length; i++) out += cardHtml(list[i]);
+    return out + '</div>';
+  }
+
+  function daySummaryHtml(list){
+    if (!list.length) return '';
+    var spent = spentOf(list);
+    var nb = list.filter(function(e){ return e.decision === 'not_bought' || e.decision === 'postponed'; });
+    var txt = '這天記了 ' + list.length + ' 筆，花了 ' + money(spent) + '。';
+    if (nb.length) {
+      var planned = nb.reduce(function(t, e){ return t + (Number(e.plannedAmount) || 0); }, 0);
+      txt += '另外有 ' + nb.length + ' 筆想買但沒買，當時想花 ' + money(planned) + '。';
+    }
+    return txt;
+  }
+
+  function fabHtml(){
+    return '<button class="fab" id="addBtn" aria-label="記一筆">\uFF0B</button>';
+  }
+  function bindFab(presetDate){
+    var fab = document.getElementById('addBtn');
+    if (fab) fab.addEventListener('click', function(){ openSheet(null, presetDate); });
+  }
+
+  function entriesOf(date){
+    var list = S.entries.filter(function(e){ return e.date === date; });
+    list.sort(function(a, b){
+      if (!a.time && !b.time) return a.createdAt - b.createdAt;
+      if (!a.time) return 1;
+      if (!b.time) return -1;
+      if (a.time === b.time) return a.createdAt - b.createdAt;
+      return a.time < b.time ? -1 : 1;
+    });
+    return list;
+  }
+
+  function cardHtml(e){
+    var open = e.id === openedId;
+    var amtHtml;
+    if (e.decision === 'bought' || e.decision === 'substitute') {
+      amtHtml = '<span class="tl-amt">' + money(e.amount) + '</span>';
+    } else {
+      amtHtml = '<span class="tl-amt nb">' + DECISION[e.decision] + '</span>';
+    }
+
+    var meta = [];
+    if (e.decision === 'not_bought' || e.decision === 'postponed') {
+      if (e.plannedAmount != null) meta.push('原本想花 ' + money(e.plannedAmount));
+    }
+    if (e.decision === 'substitute') {
+      if (e.plannedAmount != null) meta.push('原本想花 ' + money(e.plannedAmount));
+    }
+    if (e.decidedAhead) meta.push(DECIDED[e.decidedAhead]);
+    if (e.habitual === 'yes') meta.push('照習慣');
+
+    var r2 = meta.length ? '<div class="tl-r2">' + esc(meta.join('　・　')) + '</div>' : '';
+
+    var detail = '';
+    if (open) {
+      var rows = [];
+      rows.push(['最後決定', DECISION[e.decision]]);
+      if (e.decision === 'bought' || e.decision === 'substitute') rows.push(['實際花費', money(e.amount)]);
+      if (e.plannedAmount != null) rows.push(['原本想花', money(e.plannedAmount)]);
+      rows.push(['時間', e.time ? e.time : '沒記時間']);
+      rows.push(['事先還是當下', e.decidedAhead ? DECIDED[e.decidedAhead] : '沒填']);
+      if (e.needWant) rows.push(['需要還是想要', NEEDWANT[e.needWant]]);
+      if (e.motives && e.motives.length) {
+        rows.push(['為什麼買', e.motives.map(function(m){ return MOTIVES[m]; }).join('、')]);
+      }
+      if (e.ifNotBuy) rows.push(['如果不買會怎樣', IFNOT[e.ifNotBuy]]);
+      if (e.habitual) rows.push(['照習慣在做', HABITUAL[e.habitual]]);
+      if (e.alternative) rows.push(['別的選擇', e.alternative]);
+      if (e.satisfaction != null) rows.push(['滿足感', e.satisfaction + ' / 5']);
+      if (e.budgetStatus) rows.push(['符合預算', BUDGET[e.budgetStatus]]);
+      if (e.note) rows.push(['備註', e.note]);
+
+      var inner = '';
+      for (var i = 0; i < rows.length; i++) {
+        inner += '<div><span class="k">' + esc(rows[i][0]) + '　</span>' + esc(rows[i][1]) + '</div>';
+      }
+      detail = '<div class="tl-detail">' + inner +
+        '<div class="tl-acts">' +
+          '<button class="mini" data-edit="' + esc(e.id) + '">修改</button>' +
+          '<button class="mini warn" data-del="' + esc(e.id) + '">刪除</button>' +
+        '</div>' +
+      '</div>';
+    }
+
+    return '<div class="tl-item">' +
+      '<span class="dot' + (e.time ? '' : ' hollow') + '"></span>' +
+      '<div class="tl-card" data-open="' + esc(e.id) + '" role="button" tabindex="0">' +
+        '<div class="tl-r1">' +
+          '<span class="tl-time' + (e.time ? '' : ' none') + '">' + (e.time ? esc(e.time) : '沒記時間') + '</span>' +
+          '<span class="tl-item-name">' + esc(e.item) + '</span>' +
+          amtHtml +
+        '</div>' +
+        r2 + detail +
+      '</div>' +
+    '</div>';
+  }
+
+  function notesHtml(st){
+    var out = '';
+    if (st.notBoughtCount > 0) {
+      out += '<div class="note-line">這七天有 ' + st.notBoughtCount + ' 筆想買但沒買（含延後），當時想花 ' + money(st.notBoughtPlanned) + '。' +
+             '<span class="sub">這不等於省下來的錢，可能只是還沒買。</span></div>';
+    }
+    if (st.habAnswered > 0) {
+      // 分母只算有回答的。必填之後兩者通常相等，相等就不用多那四個字
+      var denom = (st.habAnswered === st.count)
+        ? (st.count + ' 筆裡')
+        : ('有回答的 ' + st.habAnswered + ' 筆裡');
+      out += '<div class="note-line key">' + denom + '，' + st.habYes + ' 筆你覺得是照習慣在做。</div>';
+    }
+    if (st.count > 0 && st.layer2Empty > 0) {
+      out += '<div class="note-line"><span class="sub">有 ' + st.layer2Empty + ' 筆沒有填詳細記錄。想補的話點那張卡就可以。</span></div>';
+    }
+    return out;
+  }
+
+  var openedId = null;
+
+  function bindTimeline(){
+    var tl = document.getElementById('timeline');
+    if (!tl) return;
+    tl.addEventListener('click', function(ev){
+      var del = ev.target.closest('[data-del]');
+      if (del) { ev.stopPropagation(); askDelete(del.getAttribute('data-del')); return; }
+      var ed = ev.target.closest('[data-edit]');
+      if (ed) { ev.stopPropagation(); openSheet(ed.getAttribute('data-edit')); return; }
+      var card = ev.target.closest('[data-open]');
+      if (card) {
+        var id = card.getAttribute('data-open');
+        openedId = (openedId === id) ? null : id;
+        refreshList();
+      }
+    });
+  }
+
+  // 展開或收起一張卡只重畫那一天的線，整頁重畫會讓捲動位置跳掉
+  function refreshList(){
+    var d = hashDate();
+    if (!d) { render(); return; }
+    var list = entriesOf(d);
+    var tl = document.getElementById('timeline');
+    if (tl) tl.innerHTML = dayLineHtml(list);
+    var ds = document.getElementById('daysum');
+    if (ds) ds.innerHTML = daySummaryHtml(list);
+  }
+
+  function askDelete(id){
+    var e = S.entries.filter(function(x){ return x.id === id; })[0];
+    if (!e) return;
+    if (!window.confirm('要刪掉「' + e.item + '」這一筆嗎？刪了就回不來。')) return;
+    var backup = S.entries.slice();
+    S.entries = S.entries.filter(function(x){ return x.id !== id; });
+    if (!saveState(S)) {
+      S.entries = backup;
+      showToast('沒有刪除成功，資料沒有變動', true);
+      return;
+    }
+    openedId = null;
+    render();
+    showToast('已刪除');
+  }
+
+  /* ============================================================
+     表單
+     ============================================================ */
+  var sheetBg = document.getElementById('sheetBg');
+  var sheet = document.getElementById('sheet');
+  var F = null;
+  var layer2Open = false;
+
+  function blankForm(){
+    var n = nowParts();
+    return {
+      id:null, date:n.date, time:n.time, item:'',
+      decision:'', amountInput:'', subAmountInput:'',
+      decidedAhead:'',
+      needWant:'', motives:[], ifNotBuy:'', habitual:'',
+      alternative:'', satisfaction:null, budgetStatus:'', note:''
+    };
+  }
+
+  function formFromEntry(e){
+    var f = blankForm();
+    f.id = e.id; f.date = e.date; f.time = e.time || ''; f.item = e.item;
+    f.decision = e.decision;
+    f.decidedAhead = e.decidedAhead || '';
+    if (e.decision === 'bought') {
+      f.amountInput = String(e.amount);
+    } else if (e.decision === 'substitute') {
+      f.amountInput = e.plannedAmount == null ? '' : String(e.plannedAmount);
+      f.subAmountInput = String(e.amount);
+    } else {
+      f.amountInput = e.plannedAmount == null ? '' : String(e.plannedAmount);
+    }
+    f.needWant = e.needWant || '';
+    f.motives = (e.motives || []).slice();
+    f.ifNotBuy = e.ifNotBuy || '';
+    f.habitual = e.habitual || '';
+    f.alternative = e.alternative || '';
+    f.satisfaction = e.satisfaction == null ? null : e.satisfaction;
+    f.budgetStatus = e.budgetStatus || '';
+    f.note = e.note || '';
+    return f;
+  }
+
+  function openSheet(id, presetDate){
+    if (id) {
+      var e = S.entries.filter(function(x){ return x.id === id; })[0];
+      if (!e) return;
+      F = formFromEntry(e);
+      layer2Open = !isLayer2Empty(e);
+    } else {
+      F = blankForm();
+      if (presetDate) F.date = presetDate;
+      layer2Open = false;
+    }
+    renderSheet();
+    sheetBg.classList.add('open');
+    document.body.style.overflow = 'hidden';
+  }
+
+  function closeSheet(){
+    sheetBg.classList.remove('open');
+    document.body.style.overflow = '';
+    F = null;
+  }
+
+  function amountLabel(){
+    if (F.decision === 'bought') return '花了多少';
+    if (F.decision === 'substitute') return '原本想花多少';
+    if (F.decision === 'not_bought' || F.decision === 'postponed') return '原本想花多少';
+    return '多少錢';
+  }
+
+  function chipsHtml(field, map, current, multi){
+    var ks = keysOf(map), out = '<div class="chips">';
+    for (var i = 0; i < ks.length; i++) {
+      var k = ks[i];
+      var on = multi ? (current.indexOf(k) !== -1) : (current === k);
+      out += '<button type="button" class="chip' + (on ? ' on' : '') + '" data-field="' + field + '" data-value="' + k + '"' +
+             (multi ? ' data-multi="1"' : '') + '>' + esc(map[k]) + '</button>';
+    }
+    return out + '</div>';
+  }
+
+  function renderSheet(keepScroll){
+    // 重畫會把捲動位置歸零，所以只有真的需要重畫結構的時候才傳 false
+    var keepY = keepScroll ? sheet.scrollTop : 0;
+    var showSat = (F.decision === 'bought' || F.decision === 'substitute');
+
+    var h = '';
+    h += '<div class="sheet-head">' +
+         '<div><h2>' + (F.id ? '修改這一筆' : '記一筆') + '</h2>' +
+         '<div class="sh-sub">' + longDate(F.date) + '</div></div>' +
+         '<button class="x" id="closeX" aria-label="關閉">×</button></div>';
+
+    h += '<p class="form-msg err" id="formMsg"></p>';
+
+    /* ---- 必填區 ---- */
+    // 日期固定成進來的那一天，不給改；時間必填，放第一欄
+    h += '<div class="fld"><label for="fTime">幾點</label>' +
+         '<input type="time" id="fTime" value="' + esc(F.time) + '"></div>';
+
+    h += '<div class="fld"><label for="fItem">買了什麼</label>' +
+         '<input type="text" id="fItem" value="' + esc(F.item) + '" placeholder="手搖飲、午餐、衣服" autocomplete="off"></div>';
+
+    h += '<div class="fld"><span class="lbl">最後決定</span>' + chipsHtml('decision', DECISION, F.decision, false) + '</div>';
+
+    h += '<div class="fld"><label for="fAmount">' + amountLabel() + '</label>' +
+         '<input type="number" id="fAmount" inputmode="numeric" min="0" step="1" value="' + esc(F.amountInput) + '" placeholder="0"></div>';
+
+    if (F.decision === 'substitute') {
+      h += '<div class="fld"><label for="fSubAmount">替代品花了多少</label>' +
+           '<input type="number" id="fSubAmount" inputmode="numeric" min="0" step="1" value="' + esc(F.subAmountInput) + '" placeholder="0"></div>';
+    }
+
+    h += '<div class="fld"><span class="lbl">這筆是事先決定還是當下決定</span>' +
+         chipsHtml('decidedAhead', DECIDED, F.decidedAhead, false) + '</div>';
+
+    h += '<div class="fld"><span class="lbl">有沒有讓你覺得只是照習慣在做</span>' +
+         chipsHtml('habitual', HABITUAL, F.habitual, false) + '</div>';
+
+    /* ---- 選填區 ---- */
+    h += '<button type="button" class="layer2-toggle" id="l2Toggle">' +
+         (layer2Open ? '收起詳細記錄' : '詳細記錄（選填）') + '</button>';
+
+    h += '<div class="layer2' + (layer2Open ? ' open' : '') + '" id="layer2">';
+    h += '<p class="layer2-lead">這幾題是幫你之後看出消費的理由和感受。想跳過就跳過，之後點那張卡還是可以補。</p>';
+    h += '<div class="fld"><span class="lbl">需要還是想要</span>' + chipsHtml('needWant', NEEDWANT, F.needWant, false) + '</div>';
+    h += '<div class="fld"><span class="lbl">為什麼買<span class="hint">可以多選</span></span>' + chipsHtml('motives', MOTIVES, F.motives, true) + '</div>';
+    h += '<div class="fld"><span class="lbl">如果不買會怎樣</span>' + chipsHtml('ifNotBuy', IFNOT, F.ifNotBuy, false) + '</div>';
+    h += '<div class="fld"><label for="fAlt">有沒有別的選擇</label>' +
+         '<input type="text" id="fAlt" value="' + esc(F.alternative) + '" placeholder="自己帶水、改天再買" autocomplete="off"></div>';
+    if (showSat) {
+      var cur = F.satisfaction == null ? '' : String(F.satisfaction);
+      var satOut = '<div class="chips">';
+      for (var i = 1; i <= 5; i++) {
+        satOut += '<button type="button" class="chip sat' + (cur === String(i) ? ' on' : '') + '" data-field="satisfaction" data-value="' + i + '">' + i + '</button>';
+      }
+      satOut += '</div>';
+      h += '<div class="fld"><span class="lbl">滿足感<span class="hint">1 是後悔，5 是值得</span></span>' + satOut + '</div>';
+    }
+    h += '<div class="fld"><span class="lbl">符合預算嗎</span>' + chipsHtml('budgetStatus', BUDGET, F.budgetStatus, false) + '</div>';
+    h += '<div class="fld"><label for="fNote">備註</label><textarea id="fNote" placeholder="當時在哪裡、跟誰、心情怎麼樣">' + esc(F.note) + '</textarea></div>';
+    h += '</div>';
+
+    h += '<button class="save-btn" id="saveBtn">' + (F.id ? '儲存修改' : '存這一筆') + '</button>';
+
+    sheet.innerHTML = h;
+    sheet.scrollTop = keepY;
+
+    document.getElementById('closeX').addEventListener('click', closeSheet);
+    document.getElementById('saveBtn').addEventListener('click', submitForm);
+    document.getElementById('l2Toggle').addEventListener('click', function(){
+      layer2Open = !layer2Open;
+      syncInputs();
+      renderSheet(true);
+      if (layer2Open && window.laTrackOnce) window.laTrackOnce('layer2_opened');
+    });
+  }
+
+  // 選項的 on 樣式就地換掉。不重畫整張表單，捲動位置才不會跳回最上面
+  function updateChipGroup(field){
+    var nodes = sheet.querySelectorAll('.chip[data-field="' + field + '"]');
+    for (var i = 0; i < nodes.length; i++) {
+      var v = nodes[i].getAttribute('data-value');
+      var on;
+      if (field === 'motives') on = F.motives.indexOf(v) !== -1;
+      else if (field === 'satisfaction') on = (F.satisfaction === Number(v));
+      else on = (F[field] === v);
+      if (on) nodes[i].classList.add('on'); else nodes[i].classList.remove('on');
+    }
+  }
+
+  // 只掛一次。掛在 renderSheet 裡會每次重繪都多一個，點一下被觸發兩次等於沒反應
+  sheet.addEventListener('click', onChipClick);
+
+  function onChipClick(ev){
+    if (!F) return;
+    var chip = ev.target.closest('.chip');
+    if (!chip) return;
+    var field = chip.getAttribute('data-field');
+    var value = chip.getAttribute('data-value');
+    if (!field) return;
+    syncInputs();
+
+    if (chip.getAttribute('data-multi')) {
+      var i = F[field].indexOf(value);
+      if (i === -1) F[field].push(value); else F[field].splice(i, 1);
+    } else if (field === 'satisfaction') {
+      F.satisfaction = (F.satisfaction === Number(value)) ? null : Number(value);
+    } else {
+      F[field] = (F[field] === value) ? '' : value;
+    }
+
+    // 只有「最後決定」會改動表單結構：金額的標籤、替代品欄位、滿足感要不要出現。
+    // 其他選項按了只是換樣式，重畫整張表單會讓捲動位置跳回最上面。
+    if (field === 'decision') {
+      if (F.decision !== 'bought' && F.decision !== 'substitute') F.satisfaction = null;
+      renderSheet(true);
+    } else {
+      updateChipGroup(field);
+    }
+  }
+
+  function syncInputs(){
+    var g = function(id){ var el = document.getElementById(id); return el ? el.value : null; };
+    var v;
+    v = g('fItem');      if (v !== null) F.item = v;
+    v = g('fAmount');    if (v !== null) F.amountInput = v;
+    v = g('fSubAmount'); if (v !== null) F.subAmountInput = v;
+    v = g('fDate');      if (v !== null) F.date = v;
+    v = g('fTime');      if (v !== null) F.time = v;
+    v = g('fAlt');       if (v !== null) F.alternative = v;
+    v = g('fNote');      if (v !== null) F.note = v;
+  }
+
+  function formError(msg){
+    var el = document.getElementById('formMsg');
+    el.textContent = msg;
+    el.classList.add('show');
+    sheet.scrollTop = 0;
+  }
+
+  function parseAmount(s){
+    if (s === '' || s == null) return null;
+    var n = Number(s);
+    if (!isFinite(n) || n < 0) return null;
+    return Math.round(n);
+  }
+
+  function submitForm(){
+    syncInputs();
+    var msgEl = document.getElementById('formMsg');
+    msgEl.classList.remove('show');
+
+    if (!F.item.trim()) { formError('「買了什麼」還沒填。'); return; }
+    if (!F.decision) { formError('「最後決定」還沒選。'); return; }
+
+    var amt = parseAmount(F.amountInput);
+    if (amt === null) { formError('「' + amountLabel() + '」要填一個 0 或以上的數字。'); return; }
+
+    var subAmt = null;
+    if (F.decision === 'substitute') {
+      subAmt = parseAmount(F.subAmountInput);
+      if (subAmt === null) { formError('「替代品花了多少」要填一個 0 或以上的數字。'); return; }
+    }
+
+    if (!F.decidedAhead) { formError('「這筆是事先決定還是當下決定」還沒選。'); return; }
+    if (!F.habitual) { formError('「有沒有讓你覺得只是照習慣在做」還沒選。'); return; }
+    if (!F.time) { formError('「幾點」還沒填。'); return; }
+
+    if (!/^\d{4}-\d{2}-\d{2}$/.test(F.date)) { formError('日期格式不對。'); return; }
+    var dn = dayDiff(S.startDate, F.date) + 1;
+    if (dn < 1 || dn > CHALLENGE_DAYS) {
+      formError('日期要在這七天之內（' + shortDate(S.startDate) + ' 到 ' + shortDate(addDays(S.startDate, CHALLENGE_DAYS - 1)) + '）。');
+      return;
+    }
+    if (!/^\d{2}:\d{2}$/.test(F.time)) { formError('時間格式不對。'); return; }
+
+    var nowMs = Date.now();
+    var e = {
+      id: F.id || (String(nowMs) + '-' + Math.random().toString(36).slice(2, 6)),
+      date: F.date,
+      time: F.time || '',
+      item: F.item.trim(),
+      decision: F.decision,
+      amount: 0,
+      plannedAmount: null,
+      decidedAhead: F.decidedAhead,
+      needWant: F.needWant || null,
+      motives: F.motives.slice(),
+      ifNotBuy: F.ifNotBuy || null,
+      habitual: F.habitual || null,
+      alternative: F.alternative.trim(),
+      satisfaction: null,
+      budgetStatus: F.budgetStatus || null,
+      note: F.note.trim(),
+      createdAt: nowMs,
+      updatedAt: nowMs
+    };
+
+    // 金額：寫入時就定案，顯示端不再判斷
+    if (F.decision === 'bought') {
+      e.amount = amt;
+      e.plannedAmount = null;
+    } else if (F.decision === 'substitute') {
+      e.plannedAmount = amt;
+      e.amount = subAmt;
+    } else {
+      e.amount = 0;
+      e.plannedAmount = amt;
+    }
+
+    // 滿足感只有買了或改買替代品才留值
+    if (F.decision === 'bought' || F.decision === 'substitute') {
+      e.satisfaction = (F.satisfaction == null) ? null : F.satisfaction;
+    } else {
+      e.satisfaction = null;
+    }
+
+    var backup = S.entries.slice();
+    if (F.id) {
+      for (var i = 0; i < S.entries.length; i++) {
+        if (S.entries[i].id === F.id) {
+          e.createdAt = S.entries[i].createdAt;
+          S.entries[i] = e;
+          break;
+        }
+      }
+    } else {
+      S.entries.push(e);
+    }
+
+    if (!saveState(S)) {
+      S.entries = backup;
+      formError('這一筆沒有存成功，你填的內容還在。可以再按一次儲存，或先下載 CSV 備份。');
+      return;
+    }
+
+    if (window.laTrack) window.laTrack(F.id ? 'entry_edit' : 'entry_add', { decision: F.decision });
+    closeSheet();
+    openedId = null;
+    var onDay = hashDate();
+    if (onDay && onDay !== e.date) {
+      location.hash = '#d/' + e.date;   // 會觸發 hashchange 重畫
+    } else {
+      render();
+    }
+    showToast('已儲存');
+  }
+
+  sheetBg.addEventListener('click', function(ev){
+    if (ev.target === sheetBg) closeSheet();
+  });
+
+  /* ============================================================
+     提示
+     ============================================================ */
+  var toastEl = document.getElementById('toast');
+  var toastTimer = null;
+  function showToast(msg, isErr){
+    toastEl.textContent = msg;
+    toastEl.className = 'toast show' + (isErr ? ' err' : '');
+    if (toastTimer) clearTimeout(toastTimer);
+    toastTimer = setTimeout(function(){ toastEl.className = 'toast'; }, isErr ? 4200 : 1800);
+  }
+
+  /* ============================================================
+     CSV
+     ============================================================ */
+  var CSV_HEADERS = ['id','日期','時間','項目','最後決定','實際花費','原本想花',
+    '事先還是當下','需要還是想要','為什麼買','如果不買會怎樣',
+    '照習慣在做','別的選擇','滿足感','符合預算','備註'];
+
+  // 防 Excel 公式注入：以這些字元開頭的字串值前面加一個單引號
+  function guard(s){
+    if (/^[=+\-@\t\r]/.test(s)) return "'" + s;
+    return s;
+  }
+  function csvCell(v){
+    if (v == null || v === '') return '';
+    var s = guard(String(v));
+    if (/[",\r\n]/.test(s)) return '"' + s.replace(/"/g, '""') + '"';
+    return s;
+  }
+  function entryRow(e){
+    return [
+      e.id,
+      e.date,
+      e.time || '',
+      e.item,
+      DECISION[e.decision] || '',
+      (e.decision === 'bought' || e.decision === 'substitute') ? e.amount : (e.decision ? 0 : ''),
+      e.plannedAmount == null ? '' : e.plannedAmount,
+      e.decidedAhead ? DECIDED[e.decidedAhead] : '',
+      e.needWant ? NEEDWANT[e.needWant] : '',
+      (e.motives && e.motives.length) ? e.motives.map(function(m){ return MOTIVES[m]; }).join('|') : '',
+      e.ifNotBuy ? IFNOT[e.ifNotBuy] : '',
+      e.habitual ? HABITUAL[e.habitual] : '',
+      e.alternative || '',
+      e.satisfaction == null ? '' : e.satisfaction,
+      e.budgetStatus ? BUDGET[e.budgetStatus] : '',
+      e.note || ''
+    ];
+  }
+  function buildCsv(){
+    var all = S.entries.slice().sort(function(a, b){
+      if (a.date !== b.date) return a.date < b.date ? -1 : 1;
+      if ((a.time || '') !== (b.time || '')) return (a.time || '99:99') < (b.time || '99:99') ? -1 : 1;
+      return a.createdAt - b.createdAt;
+    });
+    var lines = [CSV_HEADERS.map(csvCell).join(',')];
+    for (var i = 0; i < all.length; i++) {
+      lines.push(entryRow(all[i]).map(csvCell).join(','));
+    }
+    return '﻿' + lines.join('\r\n') + '\r\n';
+  }
+
+  var lastCsvUrl = null;
+  function downloadCsv(){
+    if (!S.entries.length) { showToast('還沒有紀錄可以下載'); return; }
+    var csv = buildCsv();
+    var blob = new Blob([csv], { type: 'text/csv;charset=utf-8' });
+    if (lastCsvUrl) URL.revokeObjectURL(lastCsvUrl);
+    lastCsvUrl = URL.createObjectURL(blob);
+    var name = '88la-7day-challenge_' + S.startDate + '_' + nowParts().date + '.csv';
+    var a = document.createElement('a');
+    a.href = lastCsvUrl;
+    a.download = name;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+
+    var wrap = document.getElementById('csvFallbackWrap');
+    if (wrap) {
+      wrap.style.display = 'block';
+      var link = document.getElementById('csvOpen');
+      link.onclick = function(ev){ ev.preventDefault(); window.open(lastCsvUrl, '_blank'); };
+    }
+    if (window.laTrackOnce) window.laTrackOnce('csv_download');
+    showToast('已下載');
+  }
+
+  /* ============================================================
+     AI 指令
+     ============================================================ */
+  var AI_PROMPT = [
+'🌱 我的 7 天消費觀察回顧',
+'',
+'我剛完成一項「消費行為觀察練習」。',
+'這個練習不是要我極端省錢，而是透過記錄消費念頭與實際消費，',
+'找出適合自己的花錢方式。',
+'',
+'我已經附上這七天的消費紀錄 CSV。',
+'請根據我的真實紀錄，寫一份我讀得懂、而且讀完知道可以怎麼做的七天回顧。',
+'不要寫成財務報表、數據統計或制式的消費分析。',
+'',
+'請用下面三個部分，不要增加段落。',
+'',
+'第一部分｜這七天值得注意的消費觀察',
+'',
+'用一個簡短的表格，列出最多五項有資料支持的發現。',
+'欄位是：觀察項目｜這七天的發現。',
+'',
+'挑資料真的撐得住的寫，不需要固定分析哪些面向。',
+'也不需要湊滿三項，撐得住兩項就寫兩項，一項就寫一項。',
+'',
+'需要提到次數的時候，要能對回我的紀錄，',
+'並說明你是怎麼歸類的，是同一樣東西，還是同一類東西。',
+'不要大量列金額、百分比或逐筆明細。',
+'',
+'第二部分｜這些發現，對我有什麼意義',
+'',
+'從第一部分挑最值得深入講的二到三項，資料只撐得住一項就講一項。',
+'每一項都要寫完三件事，少一件就不要列進來：',
+'',
+'1. 我觀察到什麼',
+'   引用少量真實紀錄，讓我知道這個發現從哪裡來。',
+'2. 這可能代表什麼',
+'   分清楚哪些是我紀錄裡寫的，哪些是你的推測，不要替我認定心理動機。',
+'3. 下一次我可以怎麼做',
+'   一個具體、簡單、下次遇到同樣情況就能試的小方法，',
+'   還有我怎麼看出這個改變適不適合我。',
+'',
+'寫每一項之前，請先自己問一次「所以呢？」',
+'如果你說不出這個發現能幫我做出什麼不同的選擇，就不要寫進來。',
+'不要停在「這可能是習慣」「這可能跟情緒有關」。',
+'方法要低壓力，不要要求我忍耐或克制，也不要叫我戒掉什麼。',
+'',
+'第三部分｜這七天我最值得帶走的收穫',
+'',
+'用一段大約 150 到 250 字的自然文字收尾，這一段不要表格。',
+'呼應我最重要的那個消費模式，指出我已經做出的有意識選擇，',
+'最後只提出一個最值得我下週先試的小改變，不要變成省錢建議清單。',
+'不要再列一次前面的統計，也不要用任何人都適用的勵志文字。',
+'',
+'怎麼讀我的紀錄',
+'',
+'欄位有日期、時間、項目、最後決定、實際花費、原本想花、',
+'事先還是當下決定、需要還是想要、為什麼買、如果不買會怎樣、',
+'照習慣在做、別的選擇、滿足感、符合預算、備註。',
+'後面那幾個反思欄位我可以跳過，所以有些會是空白。',
+'',
+'- 生活情境只能用我自己寫下來的。',
+'  我在備註裡寫了「飯後」「通勤」「睡前」，你才能這樣說。',
+'  不要用時間或商品名稱自己推斷：22:30 不等於睡前，19:30 不等於飯後。',
+'- 項目名稱是我隨手寫的，你可以辨認意思相近的，',
+'  但要分清楚「同一樣東西」和「同一類東西」，不要把同類直接當成同一樣。',
+'- 要用「最常」「最容易」「固定習慣」這種說法之前，',
+'  先看這是幾筆、分布在幾天、相關的欄位我填了多少。',
+'  筆數少就只描述你看到什麼，不要講成我長期的行為。',
+'- 空白欄位代表我沒填，不要當成 0 或「沒有」。',
+'- 建議要連到我的紀錄，不要給任何人都適用的通用省錢建議。',
+'- 想買但沒買的金額不等於我省下的錢，不要算成節省。',
+'- 不要把所有「想要」都當成浪費。',
+'- 不要編造我沒記下的消費、金額或情境。',
+'- 七天只是一小段觀察，而且記錄這件事本身',
+'  可能已經改變了我這七天的消費行為，請把這點放進理解裡。',
+'- 紀錄不完整的時候，寧可少寫幾項，也不要編。',
+'',
+'最重要的目標',
+'',
+'我希望讀完之後知道三件事：',
+'原來我有這些消費習慣。',
+'原來有些錢我可以不用委屈自己就省下來。',
+'原來有些消費對我來說真的值得。',
+'',
+'請幫我找到更適合自己的花錢方式，不是單純教我少花錢。'
+  ].join('\n');
+
+  function copyPrompt(){
+    var done = function(){
+      if (window.laTrackOnce) window.laTrackOnce('prompt_copy');
+      showToast('已複製');
+    };
+    var fallback = function(){
+      var box = document.getElementById('copybox');
+      var ta = document.getElementById('copyText');
+      ta.value = AI_PROMPT;
+      box.classList.add('show');
+      try { ta.select(); } catch (e) {}
+      showToast('自動複製沒成功，請手動選取');
+    };
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(AI_PROMPT).then(done, fallback);
+    } else {
+      fallback();
+    }
+  }
+
+  /* ============================================================
+     測試用掛鉤。只讀不寫，不影響資料
+     ============================================================ */
+  window.__LA7 = {
+    stats: function(){ return S ? computeStats(S.entries) : null; },
+    entries: function(){ return S ? S.entries.slice() : null; },
+    csv: function(){ return S ? buildCsv() : null; },
+    prompt: function(){ return AI_PROMPT; },
+    dayIndex: function(){ return S ? dayIndexNow() : null; }
+  };
+
+  /* ============================================================
+     起動
+     ============================================================ */
+  S = loadState();
+  render();
+})();
+</script>
+<script src="/resources/_shared/la-kit.js" data-resource="7day-spending-challenge"></script>
+</body>
+</html>

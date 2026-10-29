@@ -26,6 +26,7 @@ const STATIC_PAGES = [
   { loc: "/resources/declutter-check/index.html", changefreq: "monthly", priority: "0.7" },
   { loc: "/resources/insurance-safety-fund/index.html", changefreq: "monthly", priority: "0.7" },
   { loc: "/resources/survival-line/index.html", changefreq: "monthly", priority: "0.7" },
+  { loc: "/resources/7day-spending-challenge/index.html", changefreq: "monthly", priority: "0.7" },
 ];
 
 function escapeXml(s) {

@@ -27,3 +27,6 @@ dist-ssr
 
 # impeccable hook 快取，不該進 public 或跟著發布
 .impeccable/
+
+# 7 天消費紀錄表的驗收截圖，不進版控
+.challenge7-shots/
