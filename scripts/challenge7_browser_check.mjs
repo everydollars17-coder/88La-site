@@ -313,6 +313,16 @@ async function run(browser, label, base){
   check(`${label} 裁決10 想要不等於浪費`, true, prompt.includes('不要把所有「想要」都當成浪費'), prompt.includes('不要把所有「想要」都當成浪費'));
   check(`${label} 裁決10 不得編造`, true, prompt.includes('不要編造我沒記下的消費、金額或情境'), prompt.includes('不要編造我沒記下的消費、金額或情境'));
   check(`${label} 裁決10 納入記錄本身的影響`, true, prompt.includes('可能已經改變了我這七天的消費行為'), prompt.includes('可能已經改變了我這七天的消費行為'));
+  /* 2026-10-30 時段分析：只講鐘點、不翻譯情境 */
+  check(`${label} 時段 鐘點本身可以講`, true, prompt.includes('鐘點本身可以講'), prompt.includes('鐘點本身可以講'));
+  check(`${label} 時段 解讀留給會員`, true, prompt.includes('怎麼解讀那個時段我自己會判斷'), prompt.includes('怎麼解讀那個時段我自己會判斷'));
+  check(`${label} 時段 說明時間是會員自己填的`, true, prompt.includes('表單預設帶入我記錄當下的時間'), prompt.includes('表單預設帶入我記錄當下的時間'));
+  check(`${label} 時段 不得給到分鐘的結論`, true, prompt.includes('不要給精確到分鐘的結論'), prompt.includes('不要給精確到分鐘的結論'));
+  check(`${label} 時段 念頭不分買沒買`, true, prompt.includes('不管最後有沒有買'), prompt.includes('不管最後有沒有買'));
+  check(`${label} 時段 全部紀錄都算`, true, prompt.includes('全部的紀錄都算，不是只算沒買的那幾筆'), prompt.includes('全部的紀錄都算，不是只算沒買的那幾筆'));
+  check(`${label} 交叉 兩欄分開看`, true, prompt.includes('不要合成一個衝動指數或分數'), prompt.includes('不要合成一個衝動指數或分數'));
+  check(`${label} 交叉 當下加照習慣的意義`, true, prompt.includes('其實是照平常在做'), prompt.includes('其實是照平常在做'));
+  check(`${label} 交叉 事先加照習慣的意義`, true, prompt.includes('可能是我從來沒想過要不要改的固定支出'), prompt.includes('可能是我從來沒想過要不要改的固定支出'));
   await p.ctx.close();
 
   /* 21. 漏記一天：顯示沒有紀錄，不顯示 $0 */

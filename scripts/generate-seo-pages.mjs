@@ -36,6 +36,7 @@ const resources = {
   "spending-check": "檢視日常花錢情境，找出最容易忽略的支出漏洞。",
   "survival-line": "試算每月最低生活需求，建立收入不固定時的分配起點。",
   "7day-spending-challenge": "七天記下自己的消費和想買的念頭，看出哪些是自己決定的，哪些只是照習慣。",
+  "payday-reserve": "依照領薪次數，算出每次領薪房租、伙食、娛樂各要留多少，扣掉之後還剩多少可以存。",
 };
 
 const escapeAttribute = value => String(value)

@@ -1,0 +1,1196 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>每次領薪要預留多少｜88La</title>
+<meta name="description" content="依照領薪次數，算出每次領薪房租、伙食、娛樂各要留多少，扣掉之後還剩多少可以存。">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@700;900&family=Noto+Sans+TC:wght@400;500;700;900&family=IBM+Plex+Mono:wght@500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#fff3ea;
+    --card:#ffffff;
+    --line:#ead5c0;
+    --ink:#2d1a0e;
+    --muted:#79513a;
+    --orange:#c96b2f;
+    --orange-deep:#a9521f;
+    --red:#b84040;
+    --green:#4a8c5c;
+    --sand:#f7e9dc;
+    --radius:14px;
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{
+    background:var(--bg);
+    color:var(--ink);
+    font-family:'Noto Sans TC',-apple-system,sans-serif;
+    line-height:1.75;
+    -webkit-text-size-adjust:100%;
+  }
+  .wrap{max-width:520px;margin:0 auto;padding:0 18px;}
+
+  /* 頁首 */
+  .top{max-width:520px;margin:0 auto;padding:22px 18px 6px;}
+  .brand{font-family:'Noto Serif TC',serif;font-weight:900;font-size:22px;letter-spacing:.02em;}
+  .brand a{color:var(--ink);text-decoration:none;}
+  .brand span{color:var(--orange);}
+  h1{
+    font-family:'Noto Serif TC',serif;
+    font-size:30px;line-height:1.35;margin:18px 0 10px;font-weight:900;
+  }
+  .lead{margin:0 0 4px;font-size:15px;color:var(--muted);}
+
+  /* 卡片 */
+  .card{
+    background:var(--card);border:1px solid var(--line);border-radius:var(--radius);
+    padding:20px 18px;margin:16px 0;
+  }
+  .step{
+    display:inline-block;background:var(--sand);color:var(--orange-deep);
+    font-size:12px;font-weight:700;letter-spacing:.14em;
+    padding:4px 10px;border-radius:999px;
+  }
+  .card h2{font-family:'Noto Serif TC',serif;font-size:21px;margin:12px 0 6px;font-weight:700;}
+  .note{margin:0 0 16px;font-size:13px;color:var(--muted);}
+
+  /* 輸入列 */
+  .row{display:flex;align-items:center;gap:10px;padding:9px 0;border-bottom:1px dashed var(--line);}
+  .row:last-of-type{border-bottom:none;}
+  .row label{flex:1;font-size:15px;font-weight:500;}
+  .row .unit{color:var(--muted);font-size:14px;font-weight:500;}
+  input[type=text]{
+    width:112px;text-align:right;
+    font-family:'IBM Plex Mono',monospace;font-size:17px;font-weight:600;
+    color:var(--ink);background:#fffdfb;
+    border:1px solid var(--line);border-radius:9px;padding:9px 11px;
+  }
+  input[type=text]:focus{outline:none;border-color:var(--orange);background:#fff;}
+  .hint{margin:10px 0 0;font-size:12.5px;color:var(--muted);}
+
+  /* 可新增、改名、刪除的項目列 */
+  .item{display:flex;flex-wrap:wrap;align-items:center;gap:8px;padding:7px 0;border-bottom:1px dashed var(--line);}
+  /* 每一列填好金額，當下就看到這次要留多少 */
+  .item .per{
+    width:100%;margin:-4px 0 1px;text-align:right;
+    font-family:'IBM Plex Mono',monospace;font-size:12.5px;font-weight:700;color:var(--orange-deep);
+  }
+  .item .per.off{color:#bda490;font-weight:400;}
+  .item input.nm{
+    flex:1;min-width:0;width:auto;text-align:left;
+    font-family:inherit;font-size:15px;font-weight:500;
+    background:none;border:none;border-bottom:1px solid var(--line);border-radius:0;
+    padding:9px 2px;
+  }
+  .item input.nm::placeholder{color:#c0a894;font-weight:400;}
+  .item input.nm:focus{background:none;border-color:var(--orange);}
+  .item input.am{width:96px;}
+  .del{
+    flex:0 0 auto;width:30px;height:30px;padding:0;
+    border:none;background:none;color:#c6ae99;
+    font-family:inherit;font-size:21px;line-height:1;cursor:pointer;
+  }
+  .del:hover{color:var(--red);}
+  .addbtn{
+    display:block;width:100%;margin-top:12px;padding:11px;
+    background:#fffdfb;border:1px dashed var(--orange);border-radius:10px;
+    color:var(--orange-deep);font-family:inherit;font-size:14px;font-weight:700;cursor:pointer;
+  }
+  .emptyhint{padding:14px 2px;font-size:13.5px;color:var(--muted);}
+  .listlabel{margin:18px 0 2px;font-size:15px;font-weight:700;}
+
+  /* 小計 */
+  .sub{
+    display:flex;align-items:baseline;justify-content:space-between;gap:10px;
+    margin-top:16px;padding:13px 15px;background:var(--sand);border-radius:11px;
+  }
+  .sub .k{font-size:14px;font-weight:700;}
+  .sub .v{font-family:'IBM Plex Mono',monospace;font-size:24px;font-weight:700;color:var(--orange-deep);}
+  .sub.main{background:var(--orange);}
+  .sub.main .k{color:#fff6ef;}
+  .sub.main .v{color:#fff;font-size:30px;}
+  .formula{
+    margin:8px 2px 0;font-size:12.5px;color:var(--muted);
+    font-family:'IBM Plex Mono',monospace;
+  }
+
+  /* 領薪方式 */
+  .chips{display:flex;flex-wrap:wrap;gap:8px;margin:4px 0 16px;}
+  .chip{
+    border:1px solid var(--line);background:#fffdfb;color:var(--muted);
+    border-radius:999px;padding:8px 14px;font-family:inherit;font-size:14px;font-weight:500;
+    cursor:pointer;
+  }
+  .chip[aria-pressed=true]{background:var(--orange);border-color:var(--orange);color:#fff;font-weight:700;}
+
+  /* 次數加減 */
+  .stepper{display:flex;align-items:center;gap:0;border:1px solid var(--line);border-radius:9px;overflow:hidden;background:#fffdfb;}
+  .stepper button{
+    width:40px;height:40px;border:none;background:none;color:var(--orange-deep);
+    font-family:inherit;font-size:21px;font-weight:700;cursor:pointer;line-height:1;
+  }
+  .stepper button:disabled{color:#d8c6b6;cursor:default;}
+  .stepper .n{
+    width:46px;text-align:center;font-family:'IBM Plex Mono',monospace;
+    font-size:18px;font-weight:700;
+  }
+
+  /* 備用金目標 */
+  .goals{display:flex;gap:8px;margin:4px 0 14px;}
+  .goal{
+    flex:1;border:1px solid var(--line);background:#fffdfb;border-radius:11px;
+    padding:11px 6px;text-align:center;font-family:inherit;color:var(--muted);cursor:pointer;
+  }
+  .goal b{display:block;font-size:14px;font-weight:700;color:var(--ink);}
+  .goal i{
+    display:block;font-style:normal;margin-top:3px;
+    font-family:'IBM Plex Mono',monospace;font-size:14px;font-weight:600;
+  }
+  .goal[aria-pressed=true]{border-color:var(--orange);background:#fff6ef;}
+  .goal[aria-pressed=true] b,.goal[aria-pressed=true] i{color:var(--orange-deep);}
+
+  .bar{height:12px;background:var(--sand);border-radius:999px;overflow:hidden;margin:16px 0 10px;}
+  .bar i{display:block;height:100%;background:var(--orange);border-radius:999px;transition:width .25s;}
+  .facts{display:flex;gap:10px;}
+  .fact{flex:1;background:var(--sand);border-radius:11px;padding:11px 10px;text-align:center;}
+  .fact span{display:block;font-size:12px;color:var(--muted);font-weight:500;}
+  .fact b{
+    display:block;margin-top:2px;
+    /* 窄螢幕上「0.9 個月」不可以斷行，字級跟著寬度縮 */
+    white-space:nowrap;
+    font-family:'IBM Plex Mono',monospace;font-size:clamp(15px,4.4vw,19px);font-weight:700;color:var(--orange-deep);
+  }
+
+  /* 提醒 */
+  .warn{
+    margin-top:14px;padding:13px 15px;border-radius:11px;
+    background:#fdeeee;border:1px solid #f0cfcf;color:#8f2f2f;font-size:14px;
+  }
+  .warn b{font-family:'IBM Plex Mono',monospace;font-size:16px;}
+  .okline{
+    margin-top:14px;padding:13px 15px;border-radius:11px;
+    background:#eef6f0;border:1px solid #cfe4d6;color:#2f6b41;font-size:14px;
+  }
+  .okline b{font-family:'IBM Plex Mono',monospace;font-size:16px;}
+  .blocked{margin-top:14px;padding:13px 15px;border-radius:11px;background:var(--sand);color:var(--muted);font-size:14px;}
+
+  .next{
+    display:block;width:100%;margin-top:16px;padding:13px;
+    background:#fff;border:1px solid var(--orange);border-radius:11px;
+    color:var(--orange-deep);font-family:inherit;font-size:15px;font-weight:700;cursor:pointer;
+  }
+
+  /* 結果卡 */
+  .result{
+    background:var(--card);border:2px solid var(--orange);border-radius:var(--radius);
+    padding:20px 18px;margin:22px 0 16px;
+  }
+  .result h2{font-family:'Noto Serif TC',serif;font-size:21px;margin:0 0 4px;font-weight:900;}
+  .rlist{margin:14px 0 0;}
+  .ritem{display:flex;align-items:center;gap:11px;padding:11px 0;border-bottom:1px dashed var(--line);}
+  .ritem:last-child{border-bottom:none;}
+  .ritem .em{font-size:21px;line-height:1;}
+  .ritem .t{flex:1;font-size:14.5px;font-weight:500;}
+  .ritem .t small{display:block;font-size:12px;color:var(--muted);font-weight:400;}
+  .ritem .v{font-family:'IBM Plex Mono',monospace;font-size:21px;font-weight:700;color:var(--orange-deep);}
+  .ritem.hero{background:#fff6ef;margin:0 -8px;padding:13px 8px;border-radius:11px;border-bottom:none;}
+  .ritem.hero .v{font-size:27px;}
+  .acts{display:flex;gap:10px;margin-top:18px;}
+  .acts button{
+    flex:1;padding:14px 10px;border-radius:11px;font-family:inherit;font-size:15px;font-weight:700;cursor:pointer;
+  }
+  #shotBtn{background:var(--orange);border:1px solid var(--orange);color:#fff;}
+  #resetBtn{background:#fff;border:1px solid var(--line);color:var(--muted);}
+  .tiny{margin:12px 0 0;font-size:12px;color:var(--muted);line-height:1.7;}
+  .tiny a{color:var(--orange-deep);}
+  #shotPreview{display:none;margin-top:14px;}
+  #shotPreview img{width:100%;border:1px solid var(--line);border-radius:11px;display:block;}
+
+  /* CTA */
+  .cta{
+    background:var(--ink);border-radius:var(--radius);padding:24px 20px;margin:16px 0;text-align:center;color:#f7e9dc;
+  }
+  .cta h3{font-family:'Noto Serif TC',serif;font-size:19px;margin:0 0 8px;color:#fff;font-weight:700;}
+  .cta p{margin:0 0 16px;font-size:14px;line-height:1.8;color:#e6d2c0;}
+  .cta-btn{
+    display:block;background:var(--orange);color:#fff;text-decoration:none;
+    padding:14px;border-radius:11px;font-size:16px;font-weight:700;
+  }
+  .ig-link{display:inline-block;margin-top:14px;color:#e6d2c0;font-size:13px;text-decoration:none;border-bottom:1px solid #6b503c;}
+
+  /* 共用頁尾 */
+  .la-foot{width:100%;box-sizing:border-box;margin:30px 0 0;padding:30px 20px 34px;background:#fff3ea;border-top:1px solid #ead5c0;font-family:'Noto Sans TC',sans-serif;}
+  .la-foot-inner{max-width:520px;margin:0 auto;text-align:center;}
+  .la-foot-brand{margin:0 0 8px;font-size:12px;font-weight:700;letter-spacing:.12em;color:#c96b2f;}
+  .la-foot-text{margin:0 0 18px;font-size:13px;line-height:1.8;color:#79513a;}
+  .la-foot-btns{display:flex;flex-wrap:wrap;justify-content:center;gap:10px;}
+  .la-btn{display:inline-block;padding:11px 18px;border-radius:10px;font-size:14px;font-weight:700;text-decoration:none;}
+  .la-btn-main{background:#c96b2f;color:#fff;}
+  .la-btn-ghost{background:#fff;color:#c96b2f;border:1px solid #ead5c0;}
+
+  /* 逐項分配表 */
+  .flowbox{margin-top:16px;padding:14px 15px;background:var(--sand);border-radius:11px;}
+  .flowline{display:flex;align-items:baseline;justify-content:space-between;gap:10px;padding:5px 0;font-size:14px;}
+  .flowline .v{font-family:'IBM Plex Mono',monospace;font-size:17px;font-weight:700;color:var(--orange-deep);}
+  .flowline.bad .v{color:#8f2f2f;}
+  .flowline.last{margin-top:6px;padding-top:10px;border-top:1px solid var(--line);font-weight:700;}
+  .rgroup{margin-top:15px;}
+  .rgroup > p{margin:0 0 2px;font-size:12px;font-weight:700;letter-spacing:.1em;color:var(--orange-deep);}
+  .rline{display:flex;align-items:baseline;gap:10px;padding:9px 0;border-bottom:1px dashed var(--line);}
+  .rline:last-child{border-bottom:none;}
+  .rline .t{flex:1;min-width:0;font-size:14.5px;font-weight:500;overflow-wrap:anywhere;}
+  .rline .t small{
+    display:block;margin-top:1px;font-size:11.5px;color:var(--muted);font-weight:400;
+    font-family:'IBM Plex Mono',monospace;
+  }
+  .rline .v{
+    font-family:'IBM Plex Mono',monospace;font-size:19px;font-weight:700;
+    color:var(--orange-deep);white-space:nowrap;
+  }
+
+  @media (max-width:360px){
+    h1{font-size:26px;}
+    input[type=text]{width:96px;}
+    .ritem .v{font-size:19px;}
+  }
+</style>
+</head>
+<body>
+
+<div class="top">
+  <div class="brand"><a data-la-cta="home" href="https://site.88lamoney.com/?utm_source=resource&amp;utm_medium=brand&amp;utm_campaign=payday-reserve">88<span>La</span></a></div>
+  <h1>每次領薪，<br>要先留多少？</h1>
+  <p class="lead">問題不在存幾趴，是這個月的最低生存線達到了嗎。照著填，算出每一次領薪每一項要留多少。</p>
+</div>
+
+<main class="wrap">
+
+  <!-- STEP 1 領薪方式 -->
+  <section class="card" id="s1">
+    <div class="step">STEP 1</div>
+    <h2>先設定領薪方式</h2>
+    <p class="note">後面每一項都會照這個次數分配，所以先決定這個。</p>
+
+    <div class="row" style="border-bottom:none;padding-bottom:2px"><label>領薪方式</label></div>
+    <div class="chips" id="freq">
+      <button class="chip" type="button" data-freq="weekly" data-times="4" aria-pressed="false">每週領薪</button>
+      <button class="chip" type="button" data-freq="biweekly" data-times="2" aria-pressed="false">每兩週領薪</button>
+      <button class="chip" type="button" data-freq="monthly" data-times="1" aria-pressed="true">每月領薪</button>
+      <button class="chip" type="button" data-freq="irregular" data-times="4" aria-pressed="false">不固定時間</button>
+    </div>
+
+    <div class="row">
+      <label for="i-times">本月預計分配幾次</label>
+      <div class="stepper">
+        <button type="button" id="tMinus" aria-label="減少次數">－</button>
+        <span class="n" id="i-times">1</span>
+        <button type="button" id="tPlus" aria-label="增加次數">＋</button>
+      </div>
+    </div>
+    <p class="hint" id="timesHint">每月領薪的月份只分配 1 次。</p>
+
+    <button class="next" data-next="s2">下一步，填最低生活費</button>
+  </section>
+
+  <!-- STEP 2 最低生活費 -->
+  <section class="card" id="s2">
+    <div class="step">STEP 2</div>
+    <h2>填最低生活費</h2>
+    <p class="note">只填非付不可的項目。填好金額，那一列下面就會出現每次要留多少。</p>
+    <div id="list-need"></div>
+    <div class="emptyhint" id="empty-need" style="display:none">目前沒有項目，按下面的按鈕加一個。</div>
+    <button class="addbtn" type="button" data-add="need">＋ 新增必要支出</button>
+    <div class="sub"><span class="k">每月最低生活費</span><span class="v" id="o-min">$0</span></div>
+    <div class="sub main"><span class="k">這些項目每次要留</span><span class="v" id="o-need-pp">$0</span></div>
+    <p class="formula" id="f-need">每一項各自除以分配次數後相加</p>
+    <p class="hint">保險、房貸以外的固定還款，也算必要支出。</p>
+    <button class="next" data-next="s3">下一步，填變動支出</button>
+  </section>
+
+  <!-- STEP 3 變動支出 -->
+  <section class="card" id="s3">
+    <div class="step">STEP 3</div>
+    <h2>填變動支出</h2>
+    <p class="note">娛樂、購物、社交這類可以調整的支出。</p>
+    <div id="list-flex"></div>
+    <div class="emptyhint" id="empty-flex" style="display:none">目前沒有項目，按下面的按鈕加一個。</div>
+    <button class="addbtn" type="button" data-add="flex">＋ 新增變動支出</button>
+    <div class="sub"><span class="k">每月變動支出</span><span class="v" id="o-flex">$0</span></div>
+    <div class="sub main"><span class="k">這些項目每次要留</span><span class="v" id="o-flex-pp">$0</span></div>
+    <p class="formula" id="f-flex">每一項各自除以分配次數後相加</p>
+    <button class="next" data-next="s4">下一步，算備用金</button>
+  </section>
+
+  <!-- STEP 4 備用金 -->
+  <section class="card" id="s4">
+    <div class="step">STEP 4</div>
+    <h2>備用金進度</h2>
+    <p class="note">用最低生活費算目標，看看目前存到哪裡。這一區只看進度，不進下一步要留的金額。</p>
+
+    <div class="goals" id="goals">
+      <button class="goal" type="button" data-months="2" aria-pressed="true"><b>2 個月</b><i id="g2">$0</i></button>
+      <button class="goal" type="button" data-months="3" aria-pressed="false"><b>3 個月</b><i id="g3">$0</i></button>
+      <button class="goal" type="button" data-months="6" aria-pressed="false"><b>6 個月</b><i id="g6">$0</i></button>
+    </div>
+
+    <div class="sub"><span class="k">備用金目標</span><span class="v" id="o-buftarget">$0</span></div>
+    <p class="formula" id="f-buftarget">最低生活費 × 月數</p>
+
+    <div class="row" style="border-top:1px dashed var(--line);margin-top:18px;padding-top:14px"><label for="i-have">目前已有的備用金</label><input type="text" id="i-have" inputmode="numeric" data-money placeholder="0"><span class="unit">元</span></div>
+
+    <div id="fundBox"></div>
+    <button class="next" data-next="s5">下一步，看總共要留多少</button>
+  </section>
+
+  <!-- STEP 5 總共 -->
+  <section class="card" id="s5">
+    <div class="step">STEP 5</div>
+    <h2>每次分配總共要留</h2>
+    <p class="note">必要支出和變動支出加起來，備用金不算在裡面。</p>
+    <div class="rline"><span class="t">必要支出</span><span class="v" id="t-need">$0</span></div>
+    <div class="rline"><span class="t">變動支出</span><span class="v" id="t-flex">$0</span></div>
+    <div class="sub main"><span class="k">每次分配總共要留</span><span class="v" id="o-reserve">$0</span></div>
+    <button class="next" data-next="s6">下一步，填這次的預估收入</button>
+  </section>
+
+  <!-- STEP 6 這次的預估收入 -->
+  <section class="card" id="s6">
+    <div class="step">STEP 6</div>
+    <h2>這次分配的預估收入</h2>
+    <p class="note">這一次領薪預計領到多少，不是整個月的收入。收入不固定就填最少的那次。</p>
+    <div class="row"><label for="i-income">這次預估收入</label><input type="text" id="i-income" inputmode="numeric" data-money placeholder="0"><span class="unit">元</span></div>
+    <div id="incomeBox"></div>
+    <button class="next" data-next="s7">下一步，安排儲蓄</button>
+  </section>
+
+  <!-- STEP 7 儲蓄 -->
+  <section class="card" id="s7">
+    <div class="step">STEP 7</div>
+    <h2>剩下的才拿來存</h2>
+    <p class="note">填這一次要存多少，直接填每次的金額，不用再除以次數。</p>
+    <div id="list-save"></div>
+    <div class="emptyhint" id="empty-save" style="display:none">目前沒有項目，按下面的按鈕加一個。</div>
+    <button class="addbtn" type="button" data-add="save">＋ 新增儲蓄項目</button>
+    <div class="sub"><span class="k">這次安排儲蓄</span><span class="v" id="o-save-pp">$0</span></div>
+    <div id="saveBox"></div>
+  </section>
+
+  <!-- 結果卡 -->
+  <section class="result" id="rcard">
+    <h2>每次領薪要留的錢</h2>
+    <p class="note" id="r-sub">依照每月領薪、分配 1 次計算。</p>
+    <div id="r-warn"></div>
+    <div class="ritem hero"><span class="em">💰</span><span class="t">每次分配總共要留</span><span class="v" id="r-reserve">$0</span></div>
+    <div id="r-groups"></div>
+    <div id="r-flow"></div>
+    <div id="r-fund"></div>
+    <div class="acts">
+      <button id="shotBtn" type="button">下載圖片</button>
+      <button id="resetBtn" type="button">重新計算</button>
+    </div>
+    <p class="tiny" id="shotFallback" style="display:none">圖片沒有下載的話，<a href="#" id="shotOpen">點這裡用新視窗開啟</a>，手機可以長按圖片儲存。</p>
+    <div id="shotPreview"><img id="shotImg" alt="分配結果卡"></div>
+    <p class="tiny">本工具只協助你整理每月必要支出與分配，不構成個人化財務建議，實際金額請依自己的狀況調整。</p>
+  </section>
+
+  <!-- CTA -->
+  <section class="cta">
+    <h3>每個月都要重算一次，很花時間</h3>
+    <p>88La財務導航會記住你的必要支出和分配，每次記帳後自動更新還能動用多少。</p>
+    <a class="cta-btn" data-la-cta="app" href="https://site.88lamoney.com/app">看看 88La財務導航 →</a>
+    <a class="ig-link" href="https://www.instagram.com/every_dollars/" target="_blank" rel="noopener">追蹤 @every_dollars</a>
+  </section>
+
+</main>
+
+<footer class="la-foot">
+  <div class="la-foot-inner">
+    <p class="la-foot-brand">88La 犒賞系存錢</p>
+    <p class="la-foot-text">官網還有更多免費工具和文章，都可以直接使用。</p>
+    <div class="la-foot-btns">
+      <a class="la-btn la-btn-main" data-la-cta="resources" href="https://site.88lamoney.com/resources?utm_source=resource&amp;utm_medium=footer&amp;utm_campaign=payday-reserve">看更多免費資源</a>
+      <a class="la-btn la-btn-ghost" data-la-cta="home" href="https://site.88lamoney.com/?utm_source=resource&amp;utm_medium=footer&amp;utm_campaign=payday-reserve">回 88La 官網</a>
+    </div>
+  </div>
+</footer>
+
+<canvas id="shot" width="1080" height="1350" style="display:none"></canvas>
+
+<script>
+/* ===== 計算核心開始（唯一資料來源，驗算 script 會抽出這整段執行，勿在此區外重算任何金額） ===== */
+
+// 金額只收整數元，非數字一律當 0，避免小數讓「每次預留 × 次數」對不上合計。
+// 貼上來的金額可能帶全形數字、小數點或負號，先正規化再取數字，
+// 否則「１２０００」會變成 0、「12000.75」會變成 1,200,075。
+function toAmount(v){
+  var s = String(v == null ? '' : v).replace(/[０-９]/g, function(c){
+    return String.fromCharCode(c.charCodeAt(0) - 65248);
+  });
+  if (s.indexOf('-') >= 0 || s.indexOf('－') >= 0) return 0;  // 負數不是有效金額
+  s = s.split(/[.．]/)[0];                                     // 小數點後面無條件捨去
+  var digits = s.replace(/[^0-9]/g, '');
+  if (!digits) return 0;
+  var n = parseInt(digits, 10);
+  return (isFinite(n) && n > 0) ? n : 0;
+}
+
+// 名稱可以改，沒填就給一個固定代稱，名稱不影響任何金額
+function itemName(v){
+  var s = String(v == null ? '' : v).trim();
+  return s || '未命名項目';
+}
+
+// 清單的項目數量都由使用者決定，合計一律以陣列加總為準
+function sumItems(list){
+  return (list || []).reduce(function(s, it){ return s + toAmount(it && it.amount); }, 0);
+}
+
+var FREQ_LABEL = {
+  weekly: '每週領薪',
+  biweekly: '每兩週領薪',
+  monthly: '每月領薪',
+  irregular: '不固定時間領薪'
+};
+
+// 常見分配次數。每週領薪的月份有 4 次也有 5 次，不固定收入統一以週為單位估算，
+// 所以次數一律由使用者自己填，這裡只提供預設值與提示。
+var FREQ_TIMES = { weekly: 4, biweekly: 2, monthly: 1, irregular: 4 };
+
+function timesHintFor(freq){
+  if (freq === 'weekly') return '每週領薪的月份有時 4 次，有時 5 次，照這個月實際次數填。';
+  if (freq === 'biweekly') return '每兩週領薪的月份多半是 2 次，偶爾 3 次。';
+  if (freq === 'monthly') return '每月領薪的月份只分配 1 次。';
+  return '收入不固定就以週為單位，這個月預計領幾次就填幾次。';
+}
+
+// 2026-10-30 Barbara 裁決：備用金總額 ＝ 最低生活費 × 月數（預設 2 個月），
+// 備用金每次要留 ＝ 總額 ÷ 分配次數。這是備用金目標的唯一算式，所有出口共用。
+var BUFFER_MONTHS_DEFAULT = 2;
+function bufferTargetFor(minLiving, months){
+  return minLiving * months;
+}
+
+// 月額型項目：填的是每月金額，每一項各自除以分配次數，向上取整到整數元。
+// 回傳全部的列（含沒填金額的），include 標記哪些要進分配表，
+// 這樣畫面上每一列都對得回來，不必在別處再算一次。
+function allocateItems(list, times){
+  return (list || []).map(function(it){
+    var monthly = toAmount(it && it.amount);
+    return {
+      name: itemName(it && it.name),
+      basis: '',
+      monthly: monthly,
+      perPay: times >= 1 ? Math.ceil(monthly / times) : null,
+      include: monthly > 0
+    };
+  });
+}
+
+// 每次型項目：填的就是這一次要存多少，不再除以次數（儲蓄用）
+function directItems(list){
+  return (list || []).map(function(it){
+    var perPay = toAmount(it && it.amount);
+    return {
+      name: itemName(it && it.name),
+      basis: '',
+      monthly: null,
+      perPay: perPay,
+      include: perPay > 0
+    };
+  });
+}
+
+function sumPerPay(rows){
+  return (rows || []).reduce(function(s, it){
+    return s + (it.include && it.perPay ? it.perPay : 0);
+  }, 0);
+}
+
+function computeAllocation(input){
+  var times = Math.round(toAmount(input.times));
+  var months = Math.round(toAmount(input.months)) || BUFFER_MONTHS_DEFAULT;
+
+  var needRows = allocateItems(input.needs, times);
+  var flexRows = allocateItems(input.flex, times);
+  var saveRows = directItems(input.savings);
+
+  var minLiving = sumItems(input.needs);
+  var flexTotal = sumItems(input.flex);
+  var bufferTarget = bufferTargetFor(minLiving, months);
+
+  var needPerPay = sumPerPay(needRows);
+  var flexPerPay = sumPerPay(flexRows);
+  var savingPerPay = sumPerPay(saveRows);
+
+  // 2026-10-31 Barbara 裁決：備用金只看目標與進度，不攤到每次要留的金額，
+  // 所以 bufferTarget 只拿來顯示，不進 reservePerPay。
+  // 每次分配總共要留 ＝ 必要支出 ＋ 變動支出（儲蓄是剩下的錢才安排，也不在裡面）
+  var reservePerPay = needPerPay + flexPerPay;
+
+  var groups = [
+    { key: 'need', label: '必要支出', items: needRows.filter(function(r){ return r.include; }), perPay: needPerPay },
+    { key: 'flex', label: '變動支出', items: flexRows.filter(function(r){ return r.include; }), perPay: flexPerPay },
+    { key: 'save', label: '儲蓄', items: saveRows.filter(function(r){ return r.include; }), perPay: savingPerPay }
+  ];
+
+  var reserveLines = [];
+  groups.forEach(function(gp){
+    if (gp.key === 'save') return;
+    gp.items.forEach(function(it){ reserveLines.push(it); });
+  });
+
+  // 收入填的是「這一次」會領到多少，不是整個月
+  var income = toAmount(input.income);
+  var incomeKnown = income > 0;
+  var afterReserve = incomeKnown ? income - reservePerPay : null;
+  var shortfall = (incomeKnown && afterReserve < 0) ? -afterReserve : 0;
+  var canSave = incomeKnown ? Math.max(0, afterReserve) : null;
+  var savingOver = incomeKnown && savingPerPay > canSave;
+  var savingOverAmount = savingOver ? savingPerPay - canSave : 0;
+  var freeLeft = incomeKnown ? income - reservePerPay - savingPerPay : null;
+
+  return {
+    times: times,
+    months: months,
+    minLiving: minLiving,
+    flexTotal: flexTotal,
+    bufferTarget: bufferTarget,
+    rows: { need: needRows, flex: flexRows, save: saveRows },
+    groups: groups,
+    reserveLines: reserveLines,
+    hasReserveItems: reserveLines.length > 0,
+    needPerPay: needPerPay,
+    flexPerPay: flexPerPay,
+    savingPerPay: savingPerPay,
+    reservePerPay: reservePerPay,
+    income: income,
+    incomeKnown: incomeKnown,
+    afterReserve: afterReserve,
+    shortfall: shortfall,
+    canSave: canSave,
+    savingOver: savingOver,
+    savingOverAmount: savingOverAmount,
+    freeLeft: freeLeft
+  };
+}
+
+function computeBuffer(input){
+  var minLiving = sumItems(input.needs);
+  var have = toAmount(input.have);
+  var months = Math.round(toAmount(input.months)) || BUFFER_MONTHS_DEFAULT;
+
+  // 沒有最低生活費就算不出備用金目標，不能顯示 0% 或 0 個月
+  if (minLiving <= 0){
+    return {
+      ready: false, minLiving: 0, months: months, have: have,
+      targets: { 2: 0, 3: 0, 6: 0 },
+      target: 0, pct: null, covered: null, gap: null, reached: false
+    };
+  }
+
+  var target = bufferTargetFor(minLiving, months);
+
+  return {
+    ready: true,
+    minLiving: minLiving,
+    months: months,
+    have: have,
+    targets: {
+      2: bufferTargetFor(minLiving, 2),
+      3: bufferTargetFor(minLiving, 3),
+      6: bufferTargetFor(minLiving, 6)
+    },
+    target: target,
+    pct: have / target * 100,
+    covered: have / minLiving,
+    gap: Math.max(0, target - have),
+    reached: have >= target
+  };
+}
+
+function money(n){
+  if (n === null || n === undefined) return '';
+  return '$' + Math.round(n).toLocaleString('en-US');
+}
+
+function pctText(pct){
+  if (pct === null || pct === undefined) return '';
+  if (pct >= 100) return '100%';
+  return Math.round(pct) + '%';
+}
+
+function monthsText(covered){
+  if (covered === null || covered === undefined) return '';
+  return (Math.floor(covered * 10) / 10).toFixed(1) + ' 個月';
+}
+
+// 逐項的說明文字，畫面與圖片共用，兩邊才不會寫出不一樣的算式。
+// 每次型項目（儲蓄）沒有月額，不寫除法。
+function basisTextFor(item, times){
+  if (!item || item.monthly === null || item.monthly === undefined) return '';
+  return (item.basis ? item.basis + ' ＝ ' : '') + money(item.monthly) + ' ÷ ' + times + ' 次';
+}
+
+if (typeof module !== 'undefined' && module.exports){
+  module.exports = { toAmount: toAmount, itemName: itemName, sumItems: sumItems,
+    bufferTargetFor: bufferTargetFor, allocateItems: allocateItems, directItems: directItems,
+    sumPerPay: sumPerPay, computeAllocation: computeAllocation, computeBuffer: computeBuffer,
+    money: money, pctText: pctText, monthsText: monthsText, basisTextFor: basisTextFor,
+    BUFFER_MONTHS_DEFAULT: BUFFER_MONTHS_DEFAULT,
+    FREQ_TIMES: FREQ_TIMES, FREQ_LABEL: FREQ_LABEL, timesHintFor: timesHintFor };
+}
+/* ===== 計算核心結束 ===== */
+
+(function(){
+  var $ = function(id){ return document.getElementById(id); };
+  var state = { freq: 'monthly', times: 1, months: 2 };
+
+  // 三個清單都可以新增、改名、刪除，預設項目只是起手式。
+  // perPay 為 true 的清單，每一列會顯示「每次要留多少」。
+  var LISTS = {
+    need: { box: 'list-need', empty: 'empty-need', perLine: true,
+            defaults: ['房租或房貸', '伙食', '水電瓦斯', '電話與網路', '交通'] },
+    flex: { box: 'list-flex', empty: 'empty-flex', perLine: true,
+            defaults: ['娛樂', '購物', '社交'] },
+    save: { box: 'list-save', empty: 'empty-save', perLine: false,
+            defaults: ['儲蓄'] }
+  };
+
+  function makeRow(key, name){
+    var row = document.createElement('div');
+    row.className = 'item';
+
+    var nm = document.createElement('input');
+    nm.type = 'text'; nm.className = 'nm';
+    nm.value = name || ''; nm.placeholder = '項目名稱';
+    nm.setAttribute('aria-label', '項目名稱');
+
+    var am = document.createElement('input');
+    am.type = 'text'; am.className = 'am';
+    am.inputMode = 'numeric'; am.placeholder = '0';
+    am.setAttribute('data-money', '');
+    am.setAttribute('aria-label', key === 'save' ? '這次要存多少' : '每月金額');
+
+    var unit = document.createElement('span');
+    unit.className = 'unit'; unit.textContent = '元';
+
+    var del = document.createElement('button');
+    del.type = 'button'; del.className = 'del'; del.textContent = '×';
+    del.setAttribute('aria-label', '刪除這個項目');
+
+    row.appendChild(nm); row.appendChild(am); row.appendChild(unit); row.appendChild(del);
+
+    if (LISTS[key].perLine){
+      var per = document.createElement('span');
+      per.className = 'per off';
+      per.textContent = '每次要留 $0';
+      row.appendChild(per);
+    }
+    return row;
+  }
+
+  function addRow(key, name, focus){
+    var row = makeRow(key, name);
+    $(LISTS[key].box).appendChild(row);
+    if (focus) row.querySelector('.nm').focus();
+  }
+
+  function buildList(key){
+    $(LISTS[key].box).innerHTML = '';
+    LISTS[key].defaults.forEach(function(n){ addRow(key, n, false); });
+  }
+
+  function buildAll(){
+    Object.keys(LISTS).forEach(buildList);
+    syncEmpty();
+  }
+
+  function syncEmpty(){
+    Object.keys(LISTS).forEach(function(key){
+      var has = !!$(LISTS[key].box).querySelector('.item');
+      $(LISTS[key].empty).style.display = has ? 'none' : 'block';
+    });
+  }
+
+  // 每一列的名稱與金額都要讀，分配表才列得出「房租要留多少」
+  function itemsOf(key){
+    return Array.prototype.map.call(
+      $(LISTS[key].box).querySelectorAll('.item'),
+      function(row){
+        return {
+          name: row.querySelector('.nm').value,
+          amount: row.querySelector('.am').value
+        };
+      }
+    );
+  }
+
+  function readInputs(){
+    return {
+      needs: itemsOf('need'),
+      flex: itemsOf('flex'),
+      savings: itemsOf('save'),
+      income: $('i-income').value,
+      times: state.times,
+      have: $('i-have').value,
+      months: state.months
+    };
+  }
+
+  // 名稱是使用者自己打的，進 innerHTML 前一律轉義
+  function esc(v){
+    return String(v == null ? '' : v)
+      .replace(/&/g, '&amp;').replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+  }
+
+  var last = null;
+
+  // 把計算結果寫回每一列，數字直接取自核心算出來的 rows，不在這裡重算
+  function paintPerLines(key, rows){
+    if (!LISTS[key].perLine) return;
+    var els = $(LISTS[key].box).querySelectorAll('.item');
+    Array.prototype.forEach.call(els, function(row, i){
+      var per = row.querySelector('.per');
+      if (!per) return;
+      var r = rows[i];
+      if (!r || !r.include){
+        per.className = 'per off';
+        per.textContent = '每次要留 $0';
+      } else {
+        per.className = 'per';
+        per.textContent = '每次要留 ' + money(r.perPay);
+      }
+    });
+  }
+
+  function render(){
+    var input = readInputs();
+    var a = computeAllocation(input);
+    var b = computeBuffer(input);
+    last = { alloc: a, buffer: b };
+
+    paintPerLines('need', a.rows.need);
+    paintPerLines('flex', a.rows.flex);
+
+    // STEP 2
+    $('o-min').textContent = money(a.minLiving);
+    $('o-need-pp').textContent = money(a.needPerPay);
+    $('f-need').textContent = '每一項各自除以 ' + a.times + ' 次後相加';
+
+    // STEP 3
+    $('o-flex').textContent = money(a.flexTotal);
+    $('o-flex-pp').textContent = money(a.flexPerPay);
+    $('f-flex').textContent = '每一項各自除以 ' + a.times + ' 次後相加';
+
+    // STEP 4
+    $('g2').textContent = money(b.targets[2]);
+    $('g3').textContent = money(b.targets[3]);
+    $('g6').textContent = money(b.targets[6]);
+    $('o-buftarget').textContent = money(a.bufferTarget);
+    $('f-buftarget').textContent = a.bufferTarget > 0
+      ? (money(a.minLiving) + ' × ' + a.months + ' 個月')
+      : '填完 STEP 2 才算得出';
+
+    var fb = $('fundBox');
+    if (!b.ready){
+      fb.innerHTML = '<div class="blocked">填完 STEP 2 的必要支出，這裡才算得出備用金目標。</div>';
+    } else {
+      var w = Math.min(100, b.pct);
+      fb.innerHTML =
+        '<div class="bar"><i style="width:' + w.toFixed(1) + '%"></i></div>' +
+        '<div class="facts">' +
+          '<div class="fact"><span>完成度</span><b>' + pctText(b.pct) + '</b></div>' +
+          '<div class="fact"><span>目前能支撐</span><b>' + monthsText(b.covered) + '</b></div>' +
+          '<div class="fact"><span>還差</span><b>' + money(b.gap) + '</b></div>' +
+        '</div>' +
+        (b.reached
+          ? '<div class="okline">' + b.months + ' 個月的目標 ' + money(b.target) + ' 已經達成。</div>'
+          : '<div class="blocked">' + b.months + ' 個月的目標是 ' + money(b.target) + '，目前已有 ' + money(b.have) + '。</div>');
+    }
+
+    // STEP 5
+    $('t-need').textContent = money(a.needPerPay);
+    $('t-flex').textContent = money(a.flexPerPay);
+    $('o-reserve').textContent = money(a.reservePerPay);
+
+    // STEP 6
+    var box = $('incomeBox');
+    if (!a.incomeKnown){
+      box.innerHTML = '<div class="blocked">填了這次的預估收入，才看得出扣掉要留的之後還剩多少。</div>';
+    } else if (a.shortfall > 0){
+      box.innerHTML = '<div class="warn">這次要留的 <b>' + money(a.reservePerPay) +
+        '</b> 比這次的收入多 <b>' + money(a.shortfall) +
+        '</b>。可以調整變動支出，或把備用金月數改小。</div>';
+    } else {
+      box.innerHTML = '<div class="okline">扣掉要留的 ' + money(a.reservePerPay) +
+        '，這次還剩 <b>' + money(a.afterReserve) + '</b> 可以安排。</div>';
+    }
+
+    // STEP 7
+    $('o-save-pp').textContent = money(a.savingPerPay);
+    var sb = $('saveBox');
+    if (!a.incomeKnown){
+      sb.innerHTML = '<div class="blocked">填了 STEP 6 的預估收入，這裡才看得出可以存多少。</div>';
+    } else if (a.savingOver){
+      sb.innerHTML = '<div class="warn">這次可以存的是 <b>' + money(a.canSave) +
+        '</b>，目前填的多了 <b>' + money(a.savingOverAmount) + '</b>。</div>';
+    } else {
+      sb.innerHTML = '<div class="okline">存完之後，這次還剩 <b>' + money(a.freeLeft) +
+        '</b> 可以自由運用。</div>';
+    }
+
+    // 結果卡
+    $('r-sub').textContent = FREQ_LABEL[state.freq] + '，本月分配 ' + a.times + ' 次。';
+    var warn = '';
+    if (a.shortfall > 0){
+      warn = '<div class="warn">這次要留的比收入多 <b>' + money(a.shortfall) + '</b>，金額還需要調整。</div>';
+    } else if (a.savingOver){
+      warn = '<div class="warn">儲蓄比可以存的多 <b>' + money(a.savingOverAmount) + '</b>。</div>';
+    }
+    $('r-warn').innerHTML = warn;
+    $('r-reserve').textContent = money(a.reservePerPay);
+
+    var html = '';
+    a.groups.forEach(function(gp){
+      if (!gp.items.length) return;
+      html += '<div class="rgroup"><p>' + gp.label + '</p>';
+      gp.items.forEach(function(it){
+        var sub = basisTextFor(it, a.times);
+        html += '<div class="rline"><span class="t">' + esc(it.name) +
+          (sub ? '<small>' + esc(sub) + '</small>' : '') + '</span>' +
+          '<span class="v">' + money(it.perPay) + '</span></div>';
+      });
+      html += '</div>';
+    });
+    $('r-groups').innerHTML = html ||
+      '<div class="blocked">填好上面的項目，這裡會列出每一項每次要留多少。</div>';
+
+    $('r-flow').innerHTML = a.incomeKnown ? flowHtml(a) : '';
+    $('r-fund').innerHTML = b.ready ? fundHtml(b) : '';
+  }
+
+  // 備用金進度，畫面與圖片共用同一份列
+  function fundRows(b){
+    if (!b.ready) return [];
+    return [
+      ['備用金目標（' + b.months + ' 個月）', money(b.target), ''],
+      ['目前已有', money(b.have) + '　' + pctText(b.pct), ''],
+      b.reached ? ['已經達成', monthsText(b.covered), ''] : ['還差', money(b.gap), '']
+    ];
+  }
+
+  function fundHtml(b){
+    return '<div class="flowbox">' + fundRows(b).map(function(r, i, all){
+      var cls = r[2] || (i === all.length - 1 ? 'last' : '');
+      return '<div class="flowline ' + cls + '"><span>' + r[0] +
+        '</span><span class="v">' + r[1] + '</span></div>';
+    }).join('') + '</div>';
+  }
+
+  // 畫面的收支區塊，列的內容跟圖片共用 flowRows，兩邊不會不一樣
+  function flowHtml(a){
+    return '<div class="flowbox">' + flowRows(a).map(function(r, i, all){
+      var cls = r[2] || (i === all.length - 1 ? 'last' : '');
+      return '<div class="flowline ' + cls + '"><span>' + r[0] +
+        '</span><span class="v">' + r[1] + '</span></div>';
+    }).join('') + '</div>';
+  }
+
+  // 金額欄只收整數元，項目名稱照使用者輸入
+  document.addEventListener('input', function(e){
+    var el = e.target;
+    if (el.tagName !== 'INPUT') return;
+    if (el.hasAttribute('data-money')){
+      var clean = el.value
+        .replace(/[０-９]/g, function(c){ return String.fromCharCode(c.charCodeAt(0) - 65248); })
+        .replace(/[^0-9]/g, '').replace(/^0+(?=\d)/, '');
+      if (clean !== el.value) el.value = clean;
+    }
+    render();
+  });
+
+  // 新增與刪除項目
+  document.addEventListener('click', function(e){
+    var add = e.target.closest('[data-add]');
+    if (add){
+      addRow(add.getAttribute('data-add'), '', true);
+      syncEmpty();
+      render();
+      if (window.laTrackOnce) window.laTrackOnce('tool_add_item');
+      return;
+    }
+    var del = e.target.closest('.del');
+    if (del){
+      var row = del.closest('.item');
+      if (row) row.remove();
+      syncEmpty();
+      render();
+    }
+  });
+
+  // 領薪方式
+  $('freq').addEventListener('click', function(e){
+    var btn = e.target.closest('.chip');
+    if (!btn) return;
+    state.freq = btn.getAttribute('data-freq');
+    state.times = FREQ_TIMES[state.freq];
+    Array.prototype.forEach.call(this.querySelectorAll('.chip'), function(c){
+      c.setAttribute('aria-pressed', String(c === btn));
+    });
+    syncTimes();
+    render();
+  });
+
+  function syncTimes(){
+    $('i-times').textContent = state.times;
+    $('tMinus').disabled = state.times <= 1;
+    $('tPlus').disabled = state.times >= 6;
+    $('timesHint').textContent = timesHintFor(state.freq);
+  }
+  $('tMinus').addEventListener('click', function(){
+    if (state.times > 1){ state.times--; syncTimes(); render(); }
+  });
+  $('tPlus').addEventListener('click', function(){
+    if (state.times < 6){ state.times++; syncTimes(); render(); }
+  });
+
+  // 備用金月數
+  $('goals').addEventListener('click', function(e){
+    var btn = e.target.closest('.goal');
+    if (!btn) return;
+    state.months = parseInt(btn.getAttribute('data-months'), 10);
+    Array.prototype.forEach.call(this.querySelectorAll('.goal'), function(c){
+      c.setAttribute('aria-pressed', String(c === btn));
+    });
+    render();
+  });
+
+  // 下一步
+  document.addEventListener('click', function(e){
+    var btn = e.target.closest('[data-next]');
+    if (!btn) return;
+    var target = document.getElementById(btn.getAttribute('data-next'));
+    if (target) target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  });
+
+  // 重新計算
+  $('resetBtn').addEventListener('click', function(){
+    buildAll();
+    $('i-income').value = '';
+    $('i-have').value = '';
+    state.freq = 'monthly'; state.times = 1; state.months = 2;
+    Array.prototype.forEach.call(document.querySelectorAll('#freq .chip'), function(c){
+      c.setAttribute('aria-pressed', String(c.getAttribute('data-freq') === 'monthly'));
+    });
+    Array.prototype.forEach.call(document.querySelectorAll('#goals .goal'), function(c){
+      c.setAttribute('aria-pressed', String(c.getAttribute('data-months') === '2'));
+    });
+    $('shotPreview').style.display = 'none';
+    $('shotFallback').style.display = 'none';
+    syncTimes();
+    render();
+    document.getElementById('s1').scrollIntoView({ behavior: 'smooth', block: 'start' });
+    if (window.laTrack) window.laTrack('tool_reset');
+  });
+
+  /* 結果卡圖片。數字全部來自 last，不在這裡重算任何金額 */
+  function clipText(g, text, maxW){
+    if (g.measureText(text).width <= maxW) return text;
+    var t = text;
+    while (t.length > 1 && g.measureText(t + '…').width > maxW) t = t.slice(0, -1);
+    return t + '…';
+  }
+
+  function drawCard(){
+    var c = $('shot');
+    var a = last.alloc, bf = last.buffer;
+    var shown = a.groups.filter(function(gp){ return gp.items.length > 0; });
+    var flow = a.incomeKnown ? flowRows(a) : [];
+    var fund = fundRows(bf);
+
+    // 先算高度再設 canvas：項目有幾列卡片就有多長，不能寫死
+    var warnH = (a.shortfall > 0 || a.savingOver) ? 128 : 0;
+    var listH = 0;
+    shown.forEach(function(gp){ listH += 56 + gp.items.length * 104 + 24; });
+    var flowH = flow.length ? (56 + flow.length * 64 + 24) : 0;
+    var fundH = fund.length ? (56 + fund.length * 64 + 24) : 0;
+    var contentEnd = 310 + warnH + 252 + listH + flowH + fundH;
+    var W = 1080, H = Math.max(1350, contentEnd + 150);
+    c.width = W; c.height = H;
+
+    var g = c.getContext('2d');
+    g.fillStyle = '#fff3ea'; g.fillRect(0, 0, W, H);
+    g.fillStyle = '#c96b2f'; g.fillRect(0, 0, W, 18);
+
+    g.textBaseline = 'alphabetic';
+    g.fillStyle = '#c96b2f';
+    g.font = '700 30px "Noto Sans TC", sans-serif';
+    g.fillText('88La 犒賞系存錢', 72, 110);
+
+    g.fillStyle = '#2d1a0e';
+    g.font = '900 72px "Noto Serif TC", "Noto Sans TC", serif';
+    g.fillText('每次領薪要留的錢', 72, 206);
+
+    g.fillStyle = '#79513a';
+    g.font = '400 30px "Noto Sans TC", sans-serif';
+    g.fillText(FREQ_LABEL[state.freq] + '，本月分配 ' + a.times + ' 次', 72, 258);
+
+    var y = 310;
+
+    if (warnH){
+      g.fillStyle = '#fdeeee'; roundRect(g, 72, y, W - 144, 96, 18); g.fill();
+      g.fillStyle = '#8f2f2f';
+      g.font = '700 32px "Noto Sans TC", sans-serif';
+      g.fillText(a.shortfall > 0
+        ? ('這次要留的比收入多 ' + money(a.shortfall))
+        : ('儲蓄比可以存的多 ' + money(a.savingOverAmount)), 104, y + 60);
+      y += 128;
+    }
+
+    // 總共
+    g.fillStyle = '#c96b2f'; roundRect(g, 72, y, W - 144, 210, 22); g.fill();
+    g.fillStyle = '#ffe9d8';
+    g.font = '500 34px "Noto Sans TC", sans-serif';
+    g.fillText('💰 每次分配總共要留', 112, y + 72);
+    g.fillStyle = '#ffffff';
+    g.font = '700 108px "IBM Plex Mono", "Noto Sans TC", monospace';
+    g.fillText(money(a.reservePerPay), 112, y + 176);
+    y += 252;
+
+    // 逐項
+    shown.forEach(function(gp){
+      g.fillStyle = '#a9521f';
+      g.font = '700 26px "Noto Sans TC", sans-serif';
+      g.fillText(gp.label, 76, y + 34);
+      y += 56;
+
+      var h = gp.items.length * 104;
+      g.fillStyle = '#ffffff'; roundRect(g, 72, y, W - 144, h, 18); g.fill();
+
+      gp.items.forEach(function(it, i){
+        var ly = y + i * 104;
+        if (i > 0){
+          g.strokeStyle = '#ead5c0'; g.lineWidth = 1;
+          g.beginPath(); g.moveTo(108, ly); g.lineTo(W - 108, ly); g.stroke();
+        }
+        var sub = basisTextFor(it, a.times);
+        g.fillStyle = '#2d1a0e';
+        g.font = '500 34px "Noto Sans TC", sans-serif';
+        g.fillText(clipText(g, it.name, 520), 108, sub ? ly + 46 : ly + 62);
+        if (sub){
+          g.fillStyle = '#79513a';
+          g.font = '400 24px "Noto Sans TC", sans-serif';
+          g.fillText(clipText(g, sub, 520), 108, ly + 80);
+        }
+        g.fillStyle = '#a9521f';
+        g.font = '700 46px "IBM Plex Mono", "Noto Sans TC", monospace';
+        g.textAlign = 'right';
+        g.fillText(money(it.perPay), W - 108, ly + 66);
+        g.textAlign = 'left';
+      });
+
+      y += h + 24;
+    });
+
+    // 這次的收支、備用金進度，兩塊用同一種畫法
+    var drawBlock = function(title, rows){
+      if (!rows.length) return;
+      g.fillStyle = '#a9521f';
+      g.font = '700 26px "Noto Sans TC", sans-serif';
+      g.fillText(title, 76, y + 34);
+      y += 56;
+
+      var bh = rows.length * 64;
+      g.fillStyle = '#f7e9dc'; roundRect(g, 72, y, W - 144, bh, 18); g.fill();
+      rows.forEach(function(r, i){
+        var ly = y + i * 64;
+        g.fillStyle = '#2d1a0e';
+        g.font = '500 30px "Noto Sans TC", sans-serif';
+        g.fillText(r[0], 108, ly + 42);
+        g.fillStyle = r[2] === 'bad' ? '#8f2f2f' : '#a9521f';
+        g.font = '700 34px "IBM Plex Mono", "Noto Sans TC", monospace';
+        g.textAlign = 'right';
+        g.fillText(r[1], W - 108, ly + 42);
+        g.textAlign = 'left';
+      });
+      y += bh + 24;
+    };
+    drawBlock('這次的收支', flow);
+    drawBlock('備用金進度', fund);
+
+    g.fillStyle = '#79513a';
+    g.font = '400 26px "Noto Sans TC", sans-serif';
+    g.fillText('site.88lamoney.com　｜　@every_dollars', 72, H - 96);
+    g.font = '400 22px "Noto Sans TC", sans-serif';
+    g.fillText('本卡片只整理你填入的金額，不構成個人化財務建議。', 72, H - 56);
+
+    return c;
+  }
+
+  // 畫面與圖片共用同一份收支列，兩邊不會寫出不一樣的數字
+  function flowRows(a){
+    var rows = [
+      ['這次預估收入', money(a.income), ''],
+      ['扣掉總共要留的', money(a.reservePerPay), '']
+    ];
+    rows.push(a.shortfall > 0
+      ? ['不夠的金額', money(a.shortfall), 'bad']
+      : ['扣完還剩', money(a.afterReserve), '']);
+    if (a.savingPerPay > 0) rows.push(['這次安排儲蓄', money(a.savingPerPay), '']);
+    if (a.shortfall === 0){
+      rows.push(['存完後可自由運用', money(Math.max(0, a.freeLeft)), a.savingOver ? 'bad' : '']);
+    }
+    return rows;
+  }
+
+  function roundRect(g, x, y, w, h, r){
+    g.beginPath();
+    g.moveTo(x + r, y);
+    g.arcTo(x + w, y, x + w, y + h, r);
+    g.arcTo(x + w, y + h, x, y + h, r);
+    g.arcTo(x, y + h, x, y, r);
+    g.arcTo(x, y, x + w, y, r);
+    g.closePath();
+  }
+
+  $('shotBtn').addEventListener('click', function(){
+    var go = function(){
+      try {
+        var c = drawCard();
+        var url = c.toDataURL('image/png');
+        var a = document.createElement('a');
+        a.href = url;
+        a.download = '88La-每次領薪預留.png';
+        document.body.appendChild(a);
+        a.click();
+        a.remove();
+        $('shotImg').src = url;
+        $('shotPreview').style.display = 'block';
+        $('shotOpen').onclick = function(e){
+          e.preventDefault();
+          var w = window.open();
+          if (w) w.document.write('<img src="' + url + '" style="width:100%">');
+        };
+        $('shotFallback').style.display = 'block';
+        if (window.laTrackOnce) window.laTrackOnce('tool_image');
+      } catch (err){
+        $('shotFallback').style.display = 'block';
+        $('shotFallback').textContent = '這台裝置沒辦法產生圖片，可以直接截圖上面的結果卡。';
+      }
+    };
+    if (document.fonts && document.fonts.ready) document.fonts.ready.then(go, go);
+    else go();
+  });
+
+  buildAll();
+  syncTimes();
+  render();
+})();
+</script>
+<script src="/resources/_shared/la-kit.js" data-resource="payday-reserve"></script>
+</body>
+</html>
