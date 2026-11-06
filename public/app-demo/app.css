@@ -24,8 +24,91 @@ input,select,textarea,button{font-family:inherit}
 /* Focus ring for custom inputs outside the .inp class (sidebar payday field, legacy import, quick-record panel) */
 #sb-pay-day:focus,#legacy-import-url:focus,#qt-amt:focus,#qt-acct:focus,#qt-inst-months:focus,#qt-inst-fee:focus,#qt-inst-first:focus,#qt-note:focus,#qt-mood-note:focus,#qt-date:focus{outline:none;box-shadow:0 0 0 3px rgba(249,115,22,0.35)}
 #qt-amt{height:62px;line-height:1.2;font-variant-numeric:tabular-nums}
+/* 快速記帳計算鍵盤（2026-10-28；2026-10-29 改暖米亮色、C ⌫ % ÷ 排列、完成放上方）：只在會員選了計算鍵盤時出現。
+   按鍵 touch-action:manipulation：iPhone 連點按鍵不能觸發雙擊放大。 */
+#qt-calc{position:fixed;left:0;right:0;bottom:0;margin:0 auto;width:100%;max-width:480px;z-index:8100;background:#F5F0EB;border-top:1px solid #E8E0D8;border-radius:14px 14px 0 0;padding:8px 12px calc(12px + env(safe-area-inset-bottom));box-sizing:border-box;box-shadow:0 -6px 20px rgba(61,48,48,0.12);font-family:var(--font-ui)}
+#qt-calc[hidden]{display:none}
+.qt-calc-bar{display:flex;align-items:flex-end;gap:12px;padding:0 2px 4px}
+.qt-calc-display{flex:1;min-width:0;text-align:left;min-height:62px;display:flex;flex-direction:column;justify-content:flex-end}
+.qt-calc-expr{font-size:15px;line-height:1.5;color:#7A6A68;word-break:break-all;min-height:22px;font-variant-numeric:tabular-nums}
+.qt-calc-result{font-size:30px;line-height:1.25;font-weight:700;color:#111111;font-variant-numeric:tabular-nums;min-height:38px}
+.qt-calc-done{align-self:center;flex-shrink:0;border:none;background:transparent;color:#C85A14;font-size:17px;font-weight:700;font-family:inherit;padding:8px 6px;cursor:pointer;touch-action:manipulation;-webkit-tap-highlight-color:transparent}
+.qt-calc-note{font-size:12px;line-height:1.5;color:#7A6A68;min-height:18px;text-align:left;padding:0 2px 6px}
+.qt-calc-note.is-error{color:#B84040;font-weight:600}
+.qt-calc-keys{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
+.qt-calc-keys button{min-height:52px;border:1px solid #E8E0D8;border-radius:10px;background:#FFFFFF;color:#111111;font-size:22px;font-weight:600;font-family:inherit;cursor:pointer;touch-action:manipulation;-webkit-tap-highlight-color:transparent;-webkit-user-select:none;user-select:none;box-shadow:var(--qt-raise);transition:transform .08s,box-shadow .08s}
+.qt-calc-keys button:active{background:#F5EDE8;transform:translateY(1px);box-shadow:var(--qt-press)}
+.qt-calc-keys .qt-calc-op{color:#C85A14;background:#FFF5EE;border-color:#F5EDE8;font-size:24px}
+.qt-calc-keys .qt-calc-fn{color:#5A5050;background:#F5EDE8;border-color:#F5EDE8}
+.qt-calc-keys .qt-calc-eq{grid-column:span 2;background:#C85A14;border-color:#C85A14;color:#fff;font-size:24px;box-shadow:var(--qt-raise-primary)}
+.qt-calc-keys .qt-calc-eq:active{background:#A84810}
+/* 快速記帳立體感（2026-10-29 Barbara 要求）：卡片用 DESIGN.md Card Rest、按鈕加一層貼地陰影、主要按鈕用 FAB 同款橘色光暈；
+   按下時往下 1px、陰影變淺。選中的選項（橘底）一起浮起來，沒選的平貼在白色底槽裡。 */
+#quick-panel,#qt-calc,#qt-success,#quick-boot-draft{--qt-raise:0 1px 0 rgba(61,48,48,.06),0 3px 8px rgba(61,48,48,.12);--qt-press:0 1px 2px rgba(61,48,48,.10);--qt-raise-primary:0 4px 14px rgba(200,90,20,.35)}
+#quick-panel .qt-card,#quick-boot-draft .qt-card{box-shadow:0 4px 20px rgba(0,0,0,0.06),0 1px 3px rgba(61,48,48,.06)}
+#quick-panel .qt-seg,#quick-boot-draft .qt-seg{box-shadow:0 2px 12px rgba(0,0,0,0.06),0 1px 2px rgba(61,48,48,.06)}
+#quick-panel .qt-seg button{transition:box-shadow .15s}
+#quick-panel .qt-seg button:not([style*="transparent"]){box-shadow:var(--qt-raise)}
+#quick-panel .qt-chip{box-shadow:var(--qt-raise)}
+#quick-panel .qt-chip[data-sel]{box-shadow:0 3px 10px rgba(200,90,20,.28)}
+#quick-panel .qt-chip:active,#quick-panel .qt-seg button:active{transform:translateY(1px);box-shadow:var(--qt-press)}
+#quick-panel .qt-input,#qt-adv-btn{box-shadow:0 2px 12px rgba(0,0,0,0.06),0 1px 2px rgba(61,48,48,.06)}
+#quick-panel [data-action="submit-quick"],#qt-success [data-action="q-reset"]{box-shadow:var(--qt-raise-primary);transition:transform .08s,box-shadow .08s}
+#quick-panel [data-action="submit-quick"]:active,#qt-success [data-action="q-reset"]:active{transform:translateY(1px);box-shadow:0 2px 6px rgba(200,90,20,.3)}
 .inp::placeholder{color:#BBA89E}
 select.inp option{background:#FFF}
+/* iOS 輸入欄位自動放大（2026-10-18）：iPhone／iPad 點到字級小於 16px 的輸入欄位會自動放大畫面，鍵盤收起後不會縮回。
+   7/10 曾逐欄改成 16px，之後新欄位又寫回 12～14px，所以改成全站一條規則，新欄位不用記得設定也會受保護。
+   - 判斷：@supports (-webkit-touch-callout:none)。只有 iOS／iPadOS 的瀏覽器核心支援（iPhone 上的 Chrome、主畫面 App 也是），
+     macOS Safari、Android、電腦版 Chrome 都不支援，不靠瀏覽器名稱判斷
+   - 放在 @layer：圖層裡的 !important 一定蓋過沒有圖層的 !important（例如快訊頁 #pg-dashboard [style*="font-size:13px"]），
+     不管選擇器權重多高，局部樣式蓋不掉這條規則。只有行內 style 的 !important 比它優先，所以守門禁止輸入欄位寫小於 16px 的行內 !important
+   - 比 16px 大的欄位要維持原本大小：行內樣式寫 font-size:XXpx!important（快速記帳金額、設定精靈），用 class 設定的列在下面
+   - 只管會跳出鍵盤或選單的欄位；核取方塊、單選、滑桿、檔案、按鈕類不動
+   - 不動 viewport，會員仍可自己雙指縮放
+   守門：npm run test:ios-input-zoom、test:ios-input-zoom:browser */
+@supports (-webkit-touch-callout:none){
+  @layer ios-input-zoom{
+    :where(input:not([type="checkbox" i],[type="radio" i],[type="range" i],[type="color" i],[type="file" i],[type="hidden" i],[type="button" i],[type="submit" i],[type="reset" i],[type="image" i]),textarea,select){font-size:16px!important}
+    .budget-goal-input.inp{font-size:20px!important}
+    .buddy-practice-amount input{font-size:42px!important}
+  }
+  /* iPhone 表單視覺（2026-10-18 Barbara 選定右邊版本，只先做現金存入、負債追蹤兩個畫面；Android 與電腦維持原樣）：
+     字放大到 16px 後三欄並排太擠，改成依重要性分列。只用 CSS 重排，欄位 id 與程式不變。
+     需要 !important 才蓋得過行內的 display:grid、padding；顯示／隱藏仍照程式寫的 display:block／none 判斷。 */
+  #cash-dep-modal .inp,#debt-add-form .inp,[id^="debt-bi-amt-"]{color:#3D3030;letter-spacing:.01em}
+  #cash-dep-modal .inp,#debt-add-form .inp{height:42px!important;padding:0 12px!important;box-sizing:border-box}
+  #cash-dep-modal .lbl,#debt-add-form .lbl{margin-bottom:6px}
+  /* 現金存入：存入金額獨立一列（主要操作），手續費＋日期並排，備註最後 */
+  #cash-dep-modal #cash-dep-amt{font-weight:600!important;color:#1A1A1A}
+  #cash-dep-modal div:has(> select#cash-dep-to){margin-bottom:14px!important}
+  #cash-dep-modal div:has(> div > #cash-dep-amt){grid-template-columns:1fr 1fr!important;gap:14px 12px!important;margin-bottom:14px!important}
+  #cash-dep-modal div:has(> #cash-dep-amt){grid-column:1/-1}
+  #cash-dep-desc{margin-bottom:16px!important}
+  /* 日期欄位上面蓋了一層自訂文字（_wrapDateInput 開機時複製當下的內距），內距改了要跟著改，否則日期文字會偏 */
+  #cash-dep-modal span:has(> #cash-dep-date) > span{padding:0 12px!important}
+  /* 負債卡片「尚未加入本月預算」：字變 16px 後在 375px 寬（iPhone SE、mini）會掉成兩行，收窄間距讓標題、金額、按鈕維持同一列 */
+  div:has(> span > [id^="debt-bi-amt-"]){padding:6px 8px!important;gap:6px!important}
+  div:has(> span > [id^="debt-bi-amt-"]) > span:first-child{white-space:nowrap}
+  span:has(> [id^="debt-bi-amt-"]){gap:4px!important}
+  [id^="debt-bi-amt-"]{width:64px!important}
+  span:has(> [id^="debt-bi-amt-"]) > button{padding:0 8px!important}
+  /* 負債追蹤：整張表單變成一個兩欄格線，原本的列容器攤平（display:contents），再用 order 排：
+     名稱｜類型＋每月還款日｜每月還款金額＋還款期數｜（還款總額預覽）｜（不定額：借款總金額）｜已還款金額｜按鈕 */
+  #debt-add-form[style*="display: block"]{display:grid!important;grid-template-columns:1fr 1fr;gap:14px 12px}
+  #debt-add-form > div[style*="grid"],#debt-fixed-section > div[style*="grid"]{display:contents!important}
+  #debt-fixed-section:not([style*="none"]),#debt-variable-section[style*="display: block"]{display:contents!important}
+  #debt-add-form > div:first-child{grid-column:1/-1;order:1;margin-bottom:2px!important}
+  #debt-add-form div:has(> #debt-name){grid-column:1/-1;order:2}
+  #debt-add-form div:has(> #debt-type){order:3}
+  #debt-add-form div:has(> #debt-day){order:4}
+  #debt-add-form div:has(> #debt-monthly-fixed){order:5}
+  #debt-add-form div:has(> #debt-months){order:6}
+  #debt-fixed-preview{grid-column:1/-1;order:7;margin-bottom:0!important}
+  #debt-add-form div:has(> #debt-total){grid-column:1/-1;order:8;margin-bottom:0!important}
+  #debt-add-form div:has(> #debt-paid){grid-column:1/-1;order:9}
+  #debt-add-form div:has(> #debt-confirm-btn){grid-column:1/-1;order:10}
+}
 textarea.inp{resize:vertical;min-height:90px;line-height:1.65;border-radius:8px}
 
 /* ── BUTTONS ── */
@@ -35,6 +118,8 @@ textarea.inp{resize:vertical;min-height:90px;line-height:1.65;border-radius:8px}
 .btn-d:hover{background:#222}
 .btn-g{background:transparent;color:#555;border:1px solid rgba(0,0,0,0.15);border-radius:8px;padding:8px 14px;cursor:pointer;transition:all .15s;font-family:inherit;font-size:12px}
 .btn-g:hover{border-color:#C85A14;color:#C85A14}
+#fin-reset-execute{background:#B84040;cursor:pointer}
+#fin-reset-execute:disabled{background:#CEC8C3;cursor:not-allowed}
 .btn-sm{background:#FFF;color:#888;border:1px solid rgba(0,0,0,0.1);border-radius:6px;padding:4px 9px;cursor:pointer;font-family:inherit;font-size:12px;transition:all .15s}
 .btn-sm:hover{border-color:#C85A14;color:#C85A14}
 
@@ -151,6 +236,7 @@ select.pill:hover{transform:none;box-shadow:none}
 .budget-row:last-child{border-bottom:none}
 .mono{font-family:var(--font-ui);font-variant-numeric:tabular-nums;letter-spacing:.01em}
 #toast-wrap{position:fixed;left:0;right:0;bottom:80px;z-index:9000;display:flex;justify-content:center;pointer-events:none}
+#toast-wrap.toast-payment-layer{z-index:10003}
 #toast{background:#111;color:#FFF;padding:9px 18px;border-radius:10px;font-size:12px;font-weight:600;text-transform:uppercase;letter-spacing:.05em;opacity:0;white-space:pre-wrap;max-width:min(92vw,420px);text-align:center;box-shadow:0 4px 20px rgba(0,0,0,0.2)}
 .collapsible-body{transition:max-height .25s ease,opacity .2s ease;overflow:hidden;max-height:0;opacity:0}
 .collapsible-body.open{max-height:4000px;opacity:1}
@@ -197,9 +283,30 @@ select.pill:hover{transform:none;box-shadow:none}
 .data-settings-list{padding:0 18px}
 .data-settings-row{display:flex;width:100%;min-height:68px;align-items:center;justify-content:space-between;gap:14px;padding:12px 0;border:0;background:transparent;color:#3D3030;font-family:inherit;text-align:left;text-decoration:none;cursor:pointer}
 .data-settings-row+.data-settings-row{border-top:1px solid #E8E4E0}
+/* 小精靈教學中心（2026-10-19）：沿用資料設定與既有彈窗的色票、圓角、間距 */
+.buddy-center-sheet{background:#FFF;width:100%;max-width:420px;max-height:calc(100vh - 32px);overflow-y:auto;border-radius:8px;padding:20px;position:relative;text-align:left}
+.buddy-center-course{padding:12px 0;border-top:1px solid #E8E4E0}
+.buddy-center-course-head{display:flex;align-items:flex-start;gap:10px}
+.buddy-center-course-icon{font-size:20px;line-height:1.4}
+.buddy-center-course-copy{display:flex;flex:1;min-width:0;flex-direction:column;gap:2px}
+.buddy-center-course-copy strong{font-size:14px;color:#3D3030}
+.buddy-center-course-copy small{font-size:12px;color:#767676;line-height:1.6}
+.buddy-center-soon{flex:none;font-size:11px;color:#767676;background:#F0EDE9;border-radius:4px;padding:2px 8px}
+.buddy-center-course.is-soon .buddy-center-course-copy strong{color:#767676}
+.buddy-center-course-actions{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:10px}
+.buddy-center-col{display:flex;flex-direction:column;gap:4px;min-width:0}
+.buddy-center-col-label{font-size:11px;color:#767676}
+.buddy-center-col small{font-size:11px;color:#767676;line-height:1.5}
+.buddy-center-btn{width:100%;font-size:12px;padding:8px 6px;white-space:normal;line-height:1.4}
 .data-settings-row-copy{display:flex;min-width:0;flex:1;flex-direction:column;gap:3px}
 .data-settings-row-copy strong{font-size:14px;line-height:1.45;color:#3D3030}
 .data-settings-row-copy small{font-size:12px;line-height:1.55;color:#767676}
+/* 使用指南 NEW（2026-10-02）：入口用文字標籤，側欄與「更多」用小圓點 */
+.guide-new-chip{display:inline-block;margin-left:6px;padding:1px 6px;border-radius:4px;background:#C85A14;color:#fff;font-size:10px;font-weight:700;line-height:1.5;vertical-align:2px;letter-spacing:.5px}
+.guide-new-dot{display:inline-block;width:7px;height:7px;margin-left:6px;border-radius:50%;background:#C85A14;vertical-align:middle}
+.guide-new-chip[hidden],.guide-new-dot[hidden]{display:none}
+.amount-keyboard-choice{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px}
+.amount-keyboard-choice button:disabled{opacity:.6;cursor:default}
 .data-settings-row-chevron{flex-shrink:0;color:#8B7E78;font-size:22px;font-weight:400;line-height:1}
 .data-settings-advanced{margin-bottom:16px}
 .data-settings-advanced>summary{display:flex;align-items:center;justify-content:space-between;min-height:52px;padding:0 18px;color:#3D3030;font-size:14px;font-weight:700;cursor:pointer;list-style:none}
@@ -287,6 +394,45 @@ select.inp{background:#F5EEE9 url("data:image/svg+xml,%3Csvg xmlns='http://www.w
    (2026-07-10: replaced border-left warning stripe with bg tint + badge-corner, per Barbara.) */
 .dash-balance{border-radius:8px;padding:34px 28px;position:relative;overflow:hidden;box-shadow:0 8px 32px rgba(0,0,0,0.08);margin-bottom:16px;background:#FFF5EE;transition:background-color .2s ease}
 .dash-balance.warn{background:#FCEEEC}
+#d-budget-conflict-banner:empty{display:none}
+#d-budget-conflict-banner:not(:empty){display:flex;flex-direction:column;gap:8px;margin-bottom:16px}
+#budget-conflict-settings:empty{display:none}
+#budget-conflict-settings:not(:empty){margin-top:8px;display:flex;flex-direction:column;gap:6px}
+.budget-conflict-settings-row{display:flex;align-items:center;justify-content:space-between;gap:10px;font-size:12px;line-height:1.5;color:#5A5050}
+.budget-conflict-settings-row.is-open{color:#9C4A16}
+.budget-conflict-settings-row>button{flex:0 0 auto;white-space:nowrap}
+.budget-conflict-note{font-size:12px;line-height:1.8;color:#5A4A44;margin-bottom:10px}
+.budget-conflict-same{font-size:12px;color:#767676;padding:6px 0}
+.budget-conflict-versions{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:10px}
+.budget-conflict-row{padding:8px 0;border-bottom:1px solid #EEE8E2}
+.budget-conflict-row-label{font-size:13px;color:#3D3030;display:flex;flex-wrap:wrap;gap:6px;align-items:center}
+.budget-conflict-side{font-size:11px;color:#767676}
+.budget-conflict-row-values{display:flex;justify-content:space-between;gap:10px;font-size:12px;color:#5A5050;margin-top:2px}
+#d-home-primary-action:empty{display:none}
+#d-home-primary-action:not(:empty){margin-bottom:16px}
+.home-primary-action{display:flex;align-items:flex-start;gap:12px;padding:15px 16px;border-radius:8px;background:#FFF;box-shadow:0 2px 12px rgba(0,0,0,.05);color:#3D3030}
+.home-primary-action.is-critical{background:#FEF2F2}
+.home-primary-action.is-warning{background:#FFF5EE}
+.home-primary-action.is-info{background:#F8F8F4}
+.home-primary-action.is-success{background:#F0FDF4}
+.home-primary-action-icon{width:34px;height:34px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;flex:0 0 34px;background:#F0EDE9;color:#5A5050}
+.home-primary-action.is-critical .home-primary-action-icon{background:#F8DEDE;color:#8F2E2E}
+.home-primary-action.is-warning .home-primary-action-icon{background:#F6E3D3;color:#9C4A16}
+.home-primary-action.is-info .home-primary-action-icon{background:#EEEAE6;color:#5A5050}
+.home-primary-action.is-success .home-primary-action-icon{background:#DDEEE2;color:#2A6040}
+.home-primary-action-copy{min-width:0;flex:1}
+.home-primary-action-kicker{margin-bottom:1px;color:#767676;font-size:9px;font-weight:600;letter-spacing:.06em}
+.home-primary-action-updating{display:inline-flex;align-items:center;margin-left:7px;color:#A84810;letter-spacing:0}
+.home-primary-action.is-updating{opacity:.82}
+.home-primary-action-copy>strong{display:block;color:#3D3030;font-size:15px;line-height:1.4;text-wrap:pretty}
+.home-primary-action-copy>p{margin:2px 0 0;color:#5A5050;font-size:12px;line-height:1.5;text-wrap:pretty}
+.home-primary-action-link{display:inline-flex;align-items:center;gap:3px;min-height:32px;margin:3px 0 -3px;padding:0;border:0;background:transparent;color:#A84810;font-family:inherit;font-size:12px;font-weight:700;cursor:pointer}
+.home-primary-action-link:hover{color:#7A3010;text-decoration:underline}
+.home-primary-action-link:focus-visible{outline:3px solid rgba(249,115,22,.25);outline-offset:2px;border-radius:4px}
+.home-primary-action-link:disabled{color:#8C817A;cursor:wait;text-decoration:none}
+.home-primary-action-spinner{width:15px;height:15px;border:2px solid #D8D1CB;border-top-color:#C85A14;border-radius:50%;animation:home-primary-action-spin .75s linear infinite}
+@keyframes home-primary-action-spin{to{transform:rotate(360deg)}}
+@media(prefers-reduced-motion:reduce){.home-primary-action-spinner{animation:none;border-top-color:#D8D1CB}}
 .dash-lbl{font-size:10px;font-weight:700;color:#7A6A68;text-transform:uppercase;letter-spacing:.1em;margin-bottom:5px}
 .dash-card-reserve-compact{width:100%;padding:13px 15px;border:0;border-radius:8px;background:#F4F6FF;box-shadow:0 3px 14px rgba(92,111,174,.10);color:#5C6FAE;font-family:inherit;text-align:left;cursor:pointer;display:flex;align-items:center;justify-content:space-between;gap:12px;transition:transform .18s ease,box-shadow .18s ease}
 .dash-card-reserve-compact:hover{transform:translateY(-2px);box-shadow:0 7px 22px rgba(92,111,174,.15)}
@@ -294,6 +440,21 @@ select.inp{background:#F5EEE9 url("data:image/svg+xml,%3Csvg xmlns='http://www.w
 .dash-card-reserve-compact strong{font-size:12px;line-height:1.45}
 .dash-card-reserve-compact small{font-size:10px;color:#716F80}
 .dash-card-reserve-link{font-size:10px;font-weight:700;white-space:nowrap}
+/* 待繳卡費（財務文案 D-B，2026-10-23）：沿用原本卡費預留提醒的藍紫色系與圓角，放在可用餘額正下方 */
+.dash-card-payable{margin-bottom:16px;padding:14px 16px;border-radius:8px;background:#F4F6FF;box-shadow:0 3px 14px rgba(92,111,174,.10);color:#5C6FAE}
+.dash-card-payable-head{display:flex;justify-content:space-between;align-items:baseline;gap:10px}
+.dash-card-payable-head>span{font-size:12px;font-weight:700}
+.dash-card-payable-head>strong{font-size:22px;font-weight:700;color:#5C6FAE;letter-spacing:-.2px}
+.dash-card-payable-lines{margin-top:6px;font-size:12px;color:#5E5A6E;line-height:1.75}
+.dash-card-payable-lines:empty{display:none}
+.dash-card-payable-lines .is-warn{color:#B87830}
+.dash-card-payable-lines .is-unavailable{color:#716F80}
+.dash-card-payable-link{margin-top:8px;padding:0;border:0;background:transparent;color:#5C6FAE;font-family:inherit;font-size:11px;font-weight:700;cursor:pointer}
+.dash-balance-card-notes{margin:-6px 0 14px;font-size:11px;line-height:1.7}
+.dash-balance-card-notes>div:empty{display:none}
+.dash-balance-card-expansion{margin-top:6px;padding:7px 10px;border-radius:8px;background:rgba(255,255,255,.6);color:#6F6360}
+.dash-balance-card-expansion>summary{cursor:pointer;font-weight:700}
+.dash-balance-card-expansion>div{margin-top:4px;padding-left:10px;border-left:2px solid #C8D0EE}
 .dash-overview{margin-bottom:16px;padding:0;overflow:hidden;border-radius:8px;background:#FFF;box-shadow:0 4px 20px rgba(0,0,0,.06)}
 .dash-overview-head{width:100%;display:flex;align-items:center;justify-content:space-between;gap:12px;padding:14px 16px;border:0;border-radius:0;background:transparent;color:#3D3030;font-family:inherit;text-align:left;cursor:pointer}
 .dash-overview-head>span:first-child{display:flex;flex-direction:column;gap:2px}
@@ -395,6 +556,11 @@ select.inp{background:#F5EEE9 url("data:image/svg+xml,%3Csvg xmlns='http://www.w
   #quick-panel,#qt-success,html.quick-entry-boot #auth-loading{max-width:none!important}
   .vm-tog{width:100%!important;max-width:none!important}
   .vm-tog-btn{font-size:12px;padding:5px 6px}
+  .home-primary-action{padding:12px 13px;gap:9px}
+  .home-primary-action-icon{width:30px;height:30px;flex-basis:30px}
+  .home-primary-action-copy>strong,.home-primary-action-copy>p{display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:2;overflow:hidden}
+  /* 帳戶餘額尚未同步的提示要完整顯示：後半句是會員下一步該怎麼做，截成「請…」就看不懂（2026-10-11 帳戶同步 P0） */
+  .home-primary-action[data-acct-sync] .home-primary-action-copy>p{display:block;-webkit-line-clamp:unset;overflow:visible}
   .dash-balance{padding:24px 20px}
   .dash-overview-head{padding:12px 14px}
   .dash-overview-body{padding:0 12px 12px}
@@ -472,6 +638,8 @@ select.inp{background:#F5EEE9 url("data:image/svg+xml,%3Csvg xmlns='http://www.w
 .jf-zone .bar-d{background:#F0F4F8;color:#4A6580;border-bottom:1px solid rgba(92,122,154,0.1)}
 .jf-zone .btn-o{background:#5C7A9A}
 .jf-zone .btn-o:hover{background:#4A6580}
+/* 公費完成分配按鈕不能按時，沿用個人預算完成分配按鈕的停用色（.budget-workflow-sticky button:disabled） */
+.jf-zone .btn-o:disabled,.jf-zone .btn-o:disabled:hover{background:#CEC8C3;color:#FFF;cursor:not-allowed;transform:none;box-shadow:none}
 
 /* ── SCROLL REVEAL ── */
 .scroll-reveal{opacity:0;transform:translateY(16px);transition:opacity .45s cubic-bezier(.25,.46,.45,.94),transform .45s cubic-bezier(.25,.46,.45,.94)}
@@ -501,6 +669,7 @@ select.inp{background:#F5EEE9 url("data:image/svg+xml,%3Csvg xmlns='http://www.w
 .diag-plan-budget-item .diag-plan-budget-row{border-bottom:none;padding-bottom:6px}
 .diag-plan-budget-reason{display:flex;flex-direction:column;gap:3px;padding:0 0 11px;font-size:11px;line-height:1.65;color:#6A6060}
 .diag-plan-budget-reason strong{color:#3D3030}
+.diag-plan-budget-reason strong.diag-plan-budget-conclusion{color:#c85a14;font-size:12px}
 .diag-plan-category{font-size:13px;font-weight:700;color:#1A1A1A;min-width:0;overflow-wrap:anywhere}
 .diag-plan-values{font-size:12px;color:#5A5050;white-space:nowrap}
 .diag-plan-delta{font-size:12px;font-weight:700;text-align:right;white-space:nowrap}
@@ -600,6 +769,39 @@ select.inp{background:#F5EEE9 url("data:image/svg+xml,%3Csvg xmlns='http://www.w
 .diag-plan-applied-row{display:flex;justify-content:space-between;gap:12px;padding:10px 0;border-bottom:1px solid #EEE8E2;font-size:12px}
 .diag-plan-applied-row>div{display:flex;flex-direction:column;gap:3px}.diag-plan-applied-row>div:last-child{text-align:right}
 .diag-plan-applied-row strong{color:#1A1A1A}.diag-plan-applied-row span{color:#6A6060}.diag-plan-applied-row small{font-size:10px;color:#4A8C5C}
+#diag-plan-apply-modal.history .diag-plan-apply-body{display:flex;flex-direction:column;max-height:min(72vh,680px);overflow:hidden}
+#diag-plan-apply-modal.history .diag-plan-apply-intro{margin-bottom:18px}
+#diag-plan-apply-modal.history .diag-plan-apply-changes{min-height:0;overflow-y:auto;border-top:0;gap:20px;padding:0 2px 8px}
+.diag-plan-history-intro{display:flex;flex-direction:column;align-items:flex-start;gap:9px}
+.diag-plan-history-intro>div{font-size:13px;line-height:1.7;color:#3D3030}
+.diag-plan-history-intro>div span{color:#A84810;font-weight:700;padding:0 3px}
+.diag-plan-history-intro>b{display:inline-flex;align-items:center;min-height:26px;padding:3px 9px;border-radius:999px;background:#F6FBF7;color:#2A6040;font-size:11px;line-height:1.4}
+.diag-plan-history-section{display:flex;flex-direction:column;gap:10px}
+.diag-plan-history-section h3{margin:0;font-size:14px;line-height:1.5;color:#3D3030}
+.diag-plan-history-cards{display:flex;flex-direction:column;gap:9px}
+.diag-plan-history-card{display:flex;flex-direction:column;gap:4px;padding:13px 14px;border-radius:8px;background:#FAFAF8;box-shadow:0 2px 12px rgba(0,0,0,.05)}
+.diag-plan-history-card>strong{font-size:13px;line-height:1.55;color:#1A1A1A}
+.diag-plan-history-card>span{font-size:12px;line-height:1.7;color:#5A5050}
+.diag-plan-history-card>small{font-size:11px;line-height:1.65;color:#A84810}
+.diag-plan-history-allocation{display:flex;flex-direction:column;gap:7px;margin-top:3px}
+.diag-plan-history-allocation>div{display:flex;align-items:center;justify-content:space-between;gap:12px;font-size:12px;color:#5A5050}
+.diag-plan-history-allocation>div.total{padding-top:7px;border-top:1px solid #E8E0D8;color:#3D3030;font-weight:700}
+.diag-plan-history-empty{padding:12px 13px;border-radius:8px;background:#F8F7F4;color:#767676;font-size:12px;line-height:1.7}
+.diag-plan-history-budget-list{display:flex;flex-direction:column;gap:9px}
+.diag-plan-history-budget-row{display:flex;justify-content:space-between;align-items:flex-start;gap:12px;padding:13px 14px;border-radius:8px;background:#FAFAF8;box-shadow:0 2px 12px rgba(0,0,0,.05)}
+.diag-plan-history-budget-row>div{display:flex;flex-direction:column;gap:3px}
+.diag-plan-history-budget-row>div:last-child{align-items:flex-end;text-align:right}
+.diag-plan-history-budget-row strong{font-size:13px;color:#1A1A1A}
+.diag-plan-history-budget-row span{font-size:12px;color:#3D3030}
+.diag-plan-history-budget-row small{font-size:10px;line-height:1.55;color:#767676}
+.diag-plan-history-budget-row small.up{color:#B84040}.diag-plan-history-budget-row small.down{color:#4A8C5C}
+.diag-plan-history-missing{display:flex;flex-direction:column;gap:4px;padding:14px;border-radius:8px;background:#F8F7F4;color:#5A5050;font-size:12px;line-height:1.7}
+.diag-plan-history-missing strong{font-size:13px;color:#3D3030}
+.diag-plan-history-subsection{display:flex;flex-direction:column;gap:8px}
+.diag-plan-history-subsection>strong{font-size:12px;line-height:1.6;color:#3D3030}
+.diag-plan-history-followup{display:flex;flex-direction:column;gap:4px;padding:13px 14px;border-radius:8px;background:#F8F7F4;color:#5A5050;font-size:12px;line-height:1.7}
+.diag-plan-history-followup strong{font-size:13px;color:#3D3030}
+#diag-plan-apply-modal.history .diag-plan-apply-actions{flex:0 0 auto;flex-direction:row}
 .diag-decision-provenance,.diag-action-provenance{display:flex;justify-content:space-between;align-items:center;gap:8px;margin-top:8px;padding:8px 9px;background:#FFF6E7;border:1px solid #E8C880;font-size:10px;line-height:1.6;color:#7A5010}
 .diag-decision-provenance button{border:0;background:transparent;color:#A84810;font:inherit;font-weight:700;cursor:pointer;white-space:nowrap;padding:0}
 .diag-prepaid-summary-row{padding:14px 0;border-bottom:1px solid #EEE8E2}
@@ -631,6 +833,8 @@ select.inp{background:#F5EEE9 url("data:image/svg+xml,%3Csvg xmlns='http://www.w
 .diag-month-focus-card{padding:18px 16px;margin-bottom:16px;background:#FFF8F2;border:1px solid #F4D4BE}
 .diag-month-focus-card.danger{border-color:#E6B8B0;background:#FFF8F6}
 .diag-month-focus-card.good{border-color:#CFE4D4;background:#F7FBF8}
+.diag-month-focus-card.preliminary{background:#FFFDFB;border-color:#E7D8CB}
+.diag-month-focus-complete{font-size:12px;font-weight:700;color:#2A7050;line-height:1.6;margin-bottom:9px}
 .diag-month-focus-kicker{font-size:11px;color:#A84810;font-weight:700;letter-spacing:.04em;margin-bottom:6px}
 .diag-month-focus-card.good .diag-month-focus-kicker{color:#2A7050}
 .diag-month-focus-title{font-size:19px;font-weight:700;color:#1A1A1A;line-height:1.55;letter-spacing:-.01em;text-wrap:pretty}
@@ -643,6 +847,116 @@ select.inp{background:#F5EEE9 url("data:image/svg+xml,%3Csvg xmlns='http://www.w
 .diag-month-focus-signal{display:flex;flex-direction:column;gap:2px;padding:8px 0;border-top:1px solid #F0EAE5}
 .diag-month-focus-signal:first-of-type{border-top:0;padding-top:0}
 .diag-month-focus-signal span{font-size:12px;color:#5A5050;line-height:1.7}
+.diag-month-focus-paragraphs{display:flex;flex-direction:column;gap:10px}
+.diag-month-focus-paragraphs p{margin:0;font-size:12px;color:#5A5050;line-height:1.7}
+.diag-focus-impact-head{display:flex;align-items:flex-start;justify-content:space-between;gap:10px}
+.diag-focus-impact-head strong{min-width:0;flex:1}
+.diag-month-focus-awaiting{display:flex;flex-direction:column;gap:4px;margin-top:15px;padding:12px;background:#FFF;border:1px solid #E7D8CB;border-radius:8px}
+.diag-month-focus-awaiting strong{font-size:13px;color:#A84810;line-height:1.6}
+.diag-month-focus-awaiting span{font-size:12px;color:#5A5050;line-height:1.75}
+.diag-month-focus-awaiting small{font-size:10px;color:#767676;line-height:1.6}
+.diag-month-focus-answer-impact{margin-top:15px;padding:12px;background:#F7FBF8;border:1px solid #D7E9DC;border-radius:8px}
+.diag-month-focus-answer-impact .diag-month-focus-label{color:#2A7050;margin-bottom:2px}
+.diag-month-focus-answer-row{padding:7px 0;border-top:1px solid #E1EDE4;font-size:12px;color:#3D3030;line-height:1.75}
+.diag-month-focus-answer-row .diag-month-focus-paragraphs p{color:#3D3030;line-height:1.75}
+.diag-month-focus-answer-row:first-of-type{border-top:0}
+.member-month-summary{padding:20px 18px}
+.member-month-conclusion>span,.member-month-section>h3{display:block;margin:0 0 6px;font-size:11px;font-weight:700;letter-spacing:.04em;color:#A84810}
+.member-month-summary.good .member-month-conclusion>span,.member-month-summary.good .member-month-section>h3{color:#2A7050}
+.member-month-conclusion h2{margin:0;font-size:20px;line-height:1.55;letter-spacing:-.01em;color:#1A1A1A;text-wrap:pretty}
+.member-month-summary.danger .member-month-conclusion h2{color:#B84040}
+.member-month-conclusion>p{margin:7px 0 0;font-size:13px;line-height:1.75;color:#5A5050}
+.member-month-section{margin-top:18px;padding-top:16px;border-top:1px solid #EEE4DC}
+.member-month-section-body{display:flex;flex-direction:column;gap:9px}
+.member-month-section-body>strong,.member-month-note strong{font-size:14px;line-height:1.65;color:#1A1A1A}
+.member-month-section-body>p,.member-month-note p,.member-month-funding p,.member-month-action-row p{margin:0;font-size:12px;line-height:1.75;color:#5A5050}
+.member-month-note{padding:10px 11px;border-radius:9px;background:#FFF;border:1px solid #EEE4DC}
+.member-month-read{display:flex;align-items:flex-start;gap:7px;padding:9px 10px;border-radius:8px;background:#F4F1EE;color:#5A5050;font-size:12px;line-height:1.7}
+.member-month-read::before{content:"";width:7px;height:7px;flex:0 0 7px;margin-top:7px;border-radius:50%;background:#C85A14}
+.member-month-funding{margin-top:2px;padding:11px 12px;border-radius:9px;background:#F7FBF8;border:1px solid #D7E9DC}
+.member-month-funding.warning{background:#FFF6E7;border-color:#E8C880}
+.member-month-funding strong{display:block;font-size:13px;line-height:1.65;color:#1A1A1A}
+.member-month-funding .btn-o,.member-month-section-body>.btn-o{align-self:flex-start;margin-top:8px}
+.member-month-metrics{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+.member-month-metrics>div{display:flex;flex-direction:column;gap:4px;padding:10px 11px;border-radius:9px;background:#FFF;border:1px solid #EEE4DC;min-width:0}
+.member-month-metrics span{font-size:10px;color:#767676;line-height:1.5}
+.member-month-metrics strong{font-size:16px;color:#1A1A1A;line-height:1.45;word-break:break-word}
+.member-month-money-list{display:flex;flex-direction:column;border-top:1px solid #EEE4DC}
+.member-month-money-row{display:flex;align-items:baseline;justify-content:space-between;gap:12px;padding:9px 0;border-bottom:1px solid #EEE4DC;font-size:12px;line-height:1.6;color:#5A5050}
+.member-month-money-row span{min-width:0}
+.member-month-money-row strong{flex:0 0 auto;color:#1A1A1A;text-align:right}
+.member-month-money-row.pending strong{color:#B87830}
+.member-month-free{display:flex;align-items:center;justify-content:space-between;gap:14px;padding:12px;border-radius:10px;background:#EAF6EE;color:#2A7050}
+.member-month-free span{font-size:12px;font-weight:700;line-height:1.55}
+.member-month-free strong{font-size:19px;line-height:1.4}
+.member-month-closing-note{padding:10px 11px;border-radius:9px;background:#F4F1EE;color:#5A5050}
+.member-month-disposition{display:flex;flex-direction:column;align-items:flex-start;gap:9px;margin-top:2px;padding:12px;border-radius:10px;background:#FFF;border:1px solid #E8E0D8;width:100%;min-width:0}
+.member-month-disposition>strong{font-size:14px;line-height:1.65;color:#1A1A1A}
+.member-month-disposition .member-month-money-list{width:100%}
+.member-month-disposition small{font-size:10px;line-height:1.65;color:#767676}
+.member-month-action-row{padding:9px 0;border-bottom:1px solid #EEE4DC}
+.member-month-action-row:first-child{padding-top:0}
+.member-month-action-row:last-child{padding-bottom:0;border-bottom:0}
+.member-month-action-row strong{display:block;font-size:14px;line-height:1.65;color:#1A1A1A}
+.member-month-evidence{margin-top:17px;border-top:1px solid #EEE4DC}
+.member-month-evidence>summary{display:flex;align-items:center;justify-content:space-between;min-height:44px;cursor:pointer;list-style:none;font-size:12px;font-weight:700;color:#A84810}
+.member-month-evidence>summary::-webkit-details-marker{display:none}
+.member-month-evidence>summary::after{content:"⌄";font-size:15px;line-height:1;transition:transform .18s ease}
+.member-month-evidence[open]>summary::after{transform:rotate(180deg)}
+.member-month-evidence-body{padding-top:4px;border-top:1px solid #EEE4DC}
+.member-month-evidence-row{padding:11px 0;border-bottom:1px solid #EEE4DC}
+.member-month-evidence-row>strong{display:block;font-size:13px;line-height:1.65;color:#1A1A1A}
+.member-month-evidence .diag-focus-overall-feedback{margin-top:12px}
+.diag-answer-review{padding:16px;margin-bottom:16px;border:1px solid #E8E0D8;background:#FFF}
+.diag-answer-review>summary{display:flex;align-items:center;justify-content:space-between;gap:12px;min-height:32px;cursor:pointer;list-style:none;color:#3D3030}
+.diag-answer-review>summary::-webkit-details-marker{display:none}
+.diag-answer-review>summary span{font-size:13px;font-weight:700;line-height:1.55}
+.diag-answer-review>summary strong{font-size:11px;color:#A84810;white-space:nowrap}
+.diag-answer-review:not([open]) .diag-answer-review-list{display:none}
+.diag-answer-review[open] .diag-answer-review-list{margin-top:11px}
+.diag-answer-review-title{display:flex;justify-content:space-between;align-items:flex-start;gap:12px}
+.diag-answer-review-title>div{display:flex;flex-direction:column;gap:3px}
+.diag-answer-review-title span{font-size:10px;color:#C85A14;font-weight:700;letter-spacing:.06em}
+.diag-answer-review-title strong{font-size:16px;color:#3D3030;line-height:1.55}
+.diag-answer-review-title b{padding:4px 7px;border-radius:999px;background:#FFF6E7;color:#7A5010;font-size:10px;white-space:nowrap}
+.diag-answer-review-title b.valid{background:#EAF6EE;color:#2A7050}
+.diag-answer-review>p{margin:6px 0 12px;font-size:11px;line-height:1.75;color:#6A6060}
+.diag-answer-review-list{display:flex;flex-direction:column;border-top:1px solid #EEE8E2}
+.diag-answer-review-row{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:12px 0;border-bottom:1px solid #EEE8E2}
+.diag-answer-review-row:last-child{border-bottom:0;padding-bottom:0}
+.diag-answer-review-main{min-width:0;flex:1}
+.diag-answer-review-head{display:flex;align-items:center;gap:7px;flex-wrap:wrap}
+.diag-answer-review-head strong{font-size:13px;color:#1A1A1A;line-height:1.55}
+.diag-answer-review-head span{padding:2px 6px;border-radius:999px;background:#EAF6EE;color:#2A7050;font-size:9px;font-weight:700}
+.diag-answer-review-row.needs_reconfirmation .diag-answer-review-head span,.diag-answer-review-row.invalid .diag-answer-review-head span{background:#FFF6E7;color:#7A5010}
+.diag-answer-review-value{margin-top:3px;font-size:12px;line-height:1.65;color:#5A5050}
+.diag-answer-review-impacts{display:flex;flex-wrap:wrap;gap:5px;margin-top:6px}
+.diag-answer-review-impacts span{padding:3px 6px;border-radius:6px;background:#F4F1EE;color:#6A6060;font-size:9px;font-weight:700}
+.diag-answer-review-row p{margin:6px 0 0;font-size:10px;line-height:1.65;color:#7A5010}
+.diag-answer-review-row>button{min-height:36px;border:0;background:transparent;color:#A84810;font:inherit;font-size:11px;font-weight:700;cursor:pointer;white-space:nowrap;padding:6px 0}
+.diag-answer-edit-body{padding:18px}
+.diag-answer-edit-body p{margin:0;font-size:13px;line-height:1.8;color:#3D3030}
+.diag-answer-edit-actions{display:flex;gap:8px;margin-top:18px}
+.diag-answer-edit-actions button{flex:1;min-height:44px}
+.diag-focus-correction{margin-top:5px}
+.diag-focus-correction-toggle{border:0;background:transparent;color:#7A6A68;padding:3px 0;font:inherit;font-size:11px;text-decoration:underline;text-underline-offset:3px;cursor:pointer}
+.diag-focus-correction-panel{margin-top:7px;padding:10px;background:#FFF;border:1px solid #E8E0D8;border-radius:8px}
+.diag-focus-correction-panel[hidden]{display:none}
+.diag-focus-correction-question{font-size:11px;font-weight:700;color:#3D3030;margin-bottom:7px}
+.diag-focus-correction-options{display:flex;gap:6px;flex-wrap:wrap}
+.diag-focus-correction-option{border:1px solid #D8C8C0;background:#FFF;color:#5A5050;border-radius:999px;padding:6px 9px;font:inherit;font-size:11px;cursor:pointer}
+.diag-focus-correction-option.on{border-color:#C85A14;background:#FFF3E8;color:#A84810;font-weight:700}
+.diag-focus-correction-saved,.diag-focus-feedback-saved{margin-top:8px;font-size:11px;color:#2A7050;line-height:1.6}
+.diag-focus-correction-note{display:flex;flex-direction:column;gap:7px;margin-top:8px}
+.diag-focus-correction-note textarea{width:100%;min-height:72px;resize:vertical;border:1px solid #D8C8C0;border-radius:8px;background:#FFF;padding:9px 10px;font:inherit;font-size:12px;line-height:1.65;color:#1A1A1A}
+.diag-focus-correction-note button{align-self:flex-end;border:0;border-radius:8px;background:#C85A14;color:#FFF;padding:7px 11px;font:inherit;font-size:11px;font-weight:700;cursor:pointer}
+.diag-focus-overall-feedback{margin-top:16px;padding-top:14px;border-top:1px solid #EEE4DC}
+.diag-focus-overall-feedback>strong{display:block;font-size:12px;color:#3D3030;line-height:1.6}
+.diag-focus-feedback-buttons{display:flex;gap:8px;margin-top:8px}
+.diag-focus-feedback-buttons button,.diag-focus-feedback-targets button{border:1px solid #D8C8C0;border-radius:8px;background:#FFF;color:#5A5050;padding:7px 10px;font:inherit;font-size:11px;cursor:pointer}
+.diag-focus-feedback-buttons button.on,.diag-focus-feedback-targets button.on{border-color:#C85A14;background:#FFF3E8;color:#A84810;font-weight:700}
+.diag-focus-feedback-targets{display:flex;gap:7px;flex-wrap:wrap;margin-top:10px;padding:10px;background:#FFF;border:1px solid #E8E0D8;border-radius:8px}
+.diag-focus-feedback-targets>span{flex:1 0 100%;font-size:11px;font-weight:700;color:#3D3030}
 .diag-open-radar{padding:20px 18px;margin-bottom:16px;background:#FFFDFB;border:1px solid #E9DED5;box-shadow:0 2px 12px rgba(0,0,0,.05)}
 .diag-open-radar.danger{border-color:#E6B8B0;background:#FFF9F7}
 .diag-open-radar.needs-confirmation{border-color:#E7D5BF;background:#FFFBF5}
@@ -671,11 +985,68 @@ select.inp{background:#F5EEE9 url("data:image/svg+xml,%3Csvg xmlns='http://www.w
 .diag-open-deferred-note{padding:18px 16px;margin-bottom:14px;background:#FFFDFB;border:1px solid #E9DED5}
 .diag-open-deferred-note strong{display:block;font-size:16px;color:#3D3030;line-height:1.6}
 .diag-open-deferred-note p{font-size:12px;color:#5A5050;line-height:1.8;margin:5px 0 0}
+/* ── 本月重點・月中畫面（2026-09-30 改版）──
+   一區一張白卡，列之間用細線分隔；需要會員動手的只有「需要你決定」的按鈕，其他列是純資訊。
+   不用左側色條、不用整區底色警告，狀態只靠徽章與金額顏色表達。 */
+.mf-page{display:flex;flex-direction:column;gap:12px;margin-bottom:12px}
+.mf-hero,.mf-flow,.mf-section{background:#FFF;border-radius:8px;box-shadow:0 2px 12px rgba(0,0,0,.05)}
+.mf-hero{padding:18px 18px 16px}
+.mf-kicker{font-size:11px;color:#A84810;font-weight:700;letter-spacing:.05em;margin-bottom:6px}
+.mf-hero-balance{display:flex;align-items:baseline;flex-wrap:wrap;gap:4px 10px}
+.mf-hero-balance span{font-size:12px;color:#5A5050;font-weight:700}
+.mf-hero-balance strong{font-size:34px;font-weight:700;color:#1A1A1A;line-height:1.15;letter-spacing:-.03em}
+.mf-hero-balance strong.red{color:#B84040}
+.mf-hero-balance strong .mf-hero-suffix{font-size:14px;font-weight:700;color:#B87830;letter-spacing:0;margin-left:2px;white-space:nowrap}
+.mf-hero-balance small{font-size:12.5px;color:#767676}
+.mf-hero-title{font-size:20px;font-weight:700;color:#1A1A1A;line-height:1.5}
+.mf-hero-sub{font-size:12px;color:#5A5050;line-height:1.8;margin:4px 0 0}
+.mf-hero-warn{font-size:12px;font-weight:600;color:#B87830;line-height:1.6;margin:10px 0 0}
+.mf-flow{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:9px 16px;box-shadow:none;border:1px solid #EEE8E2;background:#FFFDFB}
+.mf-flow strong{font-size:13px;font-weight:600;color:#3D3030;line-height:1.5}
+.mf-strip-btn{flex-shrink:0;white-space:nowrap;border:none;background:none;padding:4px 0;font-family:inherit;font-size:12.5px;font-weight:700;color:#C85A14;cursor:pointer}
+.mf-strip-btn:focus-visible{outline:2px solid #C85A14;outline-offset:2px}
+.mf-row-actions .mf-btn{white-space:nowrap}
+.mf-section{padding:2px 18px 4px}
+.mf-section-head{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:15px 0 9px}
+/* 區塊標題 16px、列標題 14px、內文 12px：三層字級要一眼看得出主從（Barbara 2026-09-30） */
+.mf-section-head h3{display:flex;align-items:center;gap:8px;margin:0;font-size:16px;font-weight:700;color:#1A1A1A;letter-spacing:.01em}
+.mf-count{font-size:11.5px;font-weight:700;color:#5A5050;background:#F4F0EC;border-radius:999px;padding:0 8px;line-height:1.7;font-variant-numeric:tabular-nums}
+.mf-section-link{border:none;background:none;padding:4px 0;font-family:inherit;font-size:12px;font-weight:700;color:#C85A14;cursor:pointer}
+.mf-row{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:2px 12px;align-items:start;padding:12px 0;border-top:1px solid #F0EAE5}
+.mf-row-main{min-width:0}
+.mf-row-main strong{display:block;font-size:14px;font-weight:600;color:#1A1A1A;line-height:1.55;overflow-wrap:anywhere}
+.mf-row-main span{display:block;font-size:12px;color:#767676;line-height:1.7;margin-top:1px;overflow-wrap:anywhere}
+.mf-row>b{font-size:14px;font-weight:700;color:#1A1A1A;white-space:nowrap;line-height:1.55}
+.mf-row>b.red{color:#B84040}
+.mf-row-question{grid-column:1/-1;margin:6px 0 0;font-size:13px;color:#3D3030;line-height:1.6}
+.mf-row-note{grid-column:1/-1;margin:4px 0 0;font-size:11.5px;color:#B87830;line-height:1.6}
+.mf-row-actions{grid-column:1/-1;display:flex;flex-wrap:wrap;gap:8px;margin-top:8px}
+.mf-row-fine{grid-column:1/-1;margin:7px 0 0;font-size:10.5px;color:#767676;line-height:1.65}
+.mf-btn{border:1px solid #C85A14;background:#C85A14;color:#FFF;border-radius:8px;padding:7px 14px;font-family:inherit;font-size:12.5px;font-weight:700;cursor:pointer;line-height:1.4}
+.mf-btn.ghost{background:#FFF;color:#5A5050;border-color:rgba(0,0,0,.15)}
+.mf-btn:focus-visible,.mf-info-row.is-link:focus-visible,.mf-section-link:focus-visible{outline:2px solid #C85A14;outline-offset:2px}
+.mf-info-row.is-link{width:100%;text-align:left;background:none;border-left:0;border-right:0;border-bottom:0;font-family:inherit;cursor:pointer}
+.mf-badge{display:inline-block;margin-left:6px;font-style:normal;font-size:10.5px;font-weight:700;border-radius:999px;padding:0 8px;line-height:1.75;vertical-align:1px;white-space:nowrap}
+.mf-row-main span .mf-badge:first-child{margin-left:0}
+.mf-badge.neutral{background:#F4F0EC;color:#5A5050}
+.mf-badge.red{background:#F8E8E8;color:#B84040}
+.mf-badge.amber{background:#FBF1E4;color:#B87830}
+.mf-badge.green{background:#E8F2EA;color:#4A8C5C}
+.mf-badge.slate{background:#EEF0F8;color:#5C6FAE}
+/* 月中鎖住的分頁：位置不變，灰掉不能點 */
+.report-tab-btn.is-locked,.report-tab-btn.is-locked:hover{color:#B5ADA6;background:transparent;cursor:not-allowed}
+.report-tab-lock{display:block;font-size:9.5px;font-weight:400;line-height:1.3;letter-spacing:.02em}
+/* 上面的 display:block 會蓋掉瀏覽器預設的 [hidden]，解鎖後提示仍顯示；hidden 由 _setReportTabsLocked 控制 */
+.report-tab-lock[hidden]{display:none}
+/* 月底診斷「這期卡費」原本沒有樣式，文字貼齊卡片邊緣（2026-09-30 截圖）*/
+.diag-card-topup{padding:18px 16px;margin-bottom:16px}
+.diag-card-topup .diag-card-topup-row+.diag-card-topup-row{margin-top:12px;padding-top:12px;border-top:1px solid #F0EAE5}
 .diag-month-intro{border:1px solid #D8C8F8;border-radius:8px;color:#444;line-height:1.8}
-.diag-month-intro-open{display:flex;align-items:center;flex-wrap:wrap;gap:3px 10px;padding:8px 10px;margin:2px 0 14px;background:#FBFAFF;font-size:11px}
-.diag-month-intro-open strong{font-size:11px;color:#5A5050}
+.diag-month-intro-open{display:flex;align-items:center;flex-wrap:wrap;gap:3px 10px;padding:2px 4px;margin:2px 0 14px;background:none;border:none;font-size:11px;color:#767676}
+.diag-month-intro-open strong{font-size:11px;font-weight:400;color:#767676}
 .diag-month-intro-open span{color:#6B5A7A}
 .diag-month-intro-closed{padding:12px 13px;margin-bottom:12px;background:#F8F6FF;font-size:12px}
+.diag-month-intro-closed.preliminary{border-color:#E5DDD5;background:#FAF9F7;color:#5A5050}
 .diag-next-action small{font-size:11px;color:#6A6060;line-height:1.7;margin-top:2px}
 #diag-open-supporting-entry{padding:12px 14px}
 @media(max-width:480px){
@@ -706,8 +1077,23 @@ select.inp{background:#F5EEE9 url("data:image/svg+xml,%3Csvg xmlns='http://www.w
 .diag-month-status-closed .diag-month-status-badges span{padding:2px 6px;font-size:9px;line-height:1.5}
 .diag-month-status-closed p{margin:4px 0 0;font-size:10px;line-height:1.6}
 .diag-confirm-flow{padding:18px 16px;margin-bottom:16px}
+.diag-cash-shortfall-editor{padding:18px 16px;margin-bottom:16px;border:1px solid #E7C9B4;background:#FFF8F2}
+.diag-cash-shortfall-head{display:flex;align-items:flex-start;justify-content:space-between;gap:12px}
+.diag-cash-shortfall-head>div{display:flex;flex-direction:column;gap:3px}
+.diag-cash-shortfall-head span{font-size:10px;color:#A84810;font-weight:700;letter-spacing:.06em}
+.diag-cash-shortfall-head h2{margin:0;font-size:17px;line-height:1.55;color:#1A1A1A}
+.diag-cash-shortfall-head b{padding:4px 7px;border-radius:999px;background:#FFF6E7;color:#7A5010;font-size:10px;white-space:nowrap}
+.diag-cash-shortfall-editor>p{margin:7px 0 0;font-size:11px;line-height:1.75;color:#6A6060}
+.diag-cash-shortfall-metrics{display:grid;grid-template-columns:repeat(3,1fr);gap:7px;margin-top:13px}
+.diag-cash-shortfall-metrics>div{display:flex;flex-direction:column;gap:3px;padding:10px;border:1px solid #E8E0D8;border-radius:8px;background:#FFF}
+.diag-cash-shortfall-metrics span{font-size:9px;color:#767676}
+.diag-cash-shortfall-metrics strong{font-size:14px;color:#3D3030}
 .diag-confirm-flow-head h2{font-size:16px;line-height:1.55;color:#1A1A1A;margin:0}
 .diag-confirm-flow-head p{font-size:11px;line-height:1.75;color:#6A6060;margin:4px 0 0}
+.diag-confirm-flow-head.complete{padding:14px;border:1px solid #CFE1D3;border-radius:8px;background:#F6FBF7}
+.diag-confirm-flow-head.complete h2{color:#2A7050}
+.diag-confirm-actions{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:12px}
+.diag-confirm-actions button{width:100%;font-size:11px;padding:10px 12px}
 .diag-stage-progress{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:16px 0}
 .diag-stage-progress>div{display:flex;align-items:center;gap:7px;padding:9px 8px;border:1px solid #E4DCD4;border-radius:8px;background:#F8F6F4;color:#8A7A78}
 .diag-stage-progress span{display:grid;place-items:center;width:22px;height:22px;border-radius:50%;background:#E6E0DA;font-size:11px;font-weight:700;flex-shrink:0}
@@ -747,6 +1133,19 @@ select.inp{background:#F5EEE9 url("data:image/svg+xml,%3Csvg xmlns='http://www.w
 .diag-stage-route{text-align:right;margin-top:8px}
 .diag-stage-route a{font-size:10px;color:#A84810;cursor:pointer;font-weight:700}
 .diag-stage-skip-warning{margin-top:8px;padding:8px 9px;background:#FFF6E7;border-left:3px solid #B87830;border-radius:0 8px 8px 0;font-size:10px;line-height:1.65;color:#7A5010}
+.diag-stage-reconfirm{display:flex;flex-direction:column;gap:3px;margin-top:9px;padding:9px 10px;background:#FFF6E7;border-left:3px solid #B87830;border-radius:0 8px 8px 0;color:#6E4810}
+.diag-stage-reconfirm strong{font-size:11px}
+.diag-stage-reconfirm span{font-size:10px;line-height:1.65}
+.diag-blocking-list{display:flex;flex-direction:column;gap:10px;margin-top:12px}
+.diag-blocking-item{padding:13px;border:1px solid #E7C9B4;border-radius:8px;background:#FFF8F2}
+.diag-blocking-item-head{display:flex;align-items:flex-start;justify-content:space-between;gap:12px}
+.diag-blocking-item-head>div{display:flex;flex-direction:column;gap:3px;min-width:0}
+.diag-blocking-item-head strong{font-size:13px;line-height:1.6;color:#1A1A1A}
+.diag-blocking-item-head span{font-size:9px;font-weight:700;color:#A84810}
+.diag-blocking-item-head>b{font-size:15px;color:#3D3030;white-space:nowrap}
+.diag-blocking-item-period{margin-top:7px;font-size:10px;font-weight:700;color:#6A6060}
+.diag-blocking-item p{margin:7px 0 0;font-size:11px;line-height:1.75;color:#5A5050}
+.diag-blocking-item .btn-o{width:100%;margin-top:11px;font-size:11px;padding:9px 12px}
 .diag-stage-answer{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:11px 12px;border:1px solid #CFE1D3;border-radius:8px;background:#F6FBF7}
 .diag-stage-answer>div{display:flex;flex-direction:column;gap:3px}
 .diag-stage-answer strong{font-size:12px;color:#2A6040}
@@ -756,7 +1155,8 @@ select.inp{background:#F5EEE9 url("data:image/svg+xml,%3Csvg xmlns='http://www.w
 .diag-stage-collapse{width:100%;margin-top:11px;font-size:11px;padding:8px}
 .diag-stage-result>div{display:flex;gap:8px;margin-top:12px}
 .diag-stage-result button{flex:1;font-size:11px;padding:9px}
-@media(max-width:640px){.diag-stage-progress{grid-template-columns:1fr}.diag-stage-progress>div{padding:7px 8px}.diag-prepaid-heading{align-items:flex-start}.diag-stage-result>div{flex-direction:column}}
+@media(max-width:640px){.diag-stage-progress{grid-template-columns:1fr}.diag-stage-progress>div{padding:7px 8px}.diag-prepaid-heading{align-items:flex-start}.diag-stage-result>div{flex-direction:column}.diag-confirm-actions{grid-template-columns:1fr}}
+@media(max-width:640px){.member-month-summary{padding:18px 15px}.member-month-conclusion h2{font-size:18px}.member-month-money-row{align-items:flex-start}.member-month-money-row strong{max-width:52%}.diag-answer-review-row{align-items:flex-start}.diag-answer-review>summary{align-items:flex-start}.diag-answer-review-title{flex-direction:column}.diag-cash-shortfall-metrics{grid-template-columns:1fr}.diag-cash-shortfall-metrics>div{flex-direction:row;align-items:center;justify-content:space-between}}
 @media(max-width:640px){.diag-month-status-head{flex-direction:column}.diag-month-status-badges{justify-content:flex-start}.diag-month-status-closed .diag-month-status-head{flex-direction:row;align-items:center}.diag-month-status-closed .diag-month-status-badges{justify-content:flex-start}.diag-prepaid-summary-metrics{grid-template-columns:1fr}}
 .diag-action-provenance{display:flex;flex-direction:column;align-items:flex-start}
 [data-card-payment-arrangement]{scroll-margin-top:90px}
@@ -770,6 +1170,28 @@ select.inp{background:#F5EEE9 url("data:image/svg+xml,%3Csvg xmlns='http://www.w
 .unfinished-mission-choice span{display:flex;align-items:center;justify-content:center;min-height:44px;padding:9px 10px;border:1px solid #DED6CF;border-radius:9px;background:#FFF;color:#3D3030;font-size:11px;font-weight:700;line-height:1.45;text-align:center;transition:background-color .16s ease,border-color .16s ease,color .16s ease,box-shadow .16s ease}
 .unfinished-mission-choice input:checked+span{border-color:#C85A14;background:#FFF1E7;color:#A84810;box-shadow:inset 0 0 0 1px #C85A14}
 .unfinished-mission-choice input:focus-visible+span{outline:2px solid #C85A14;outline-offset:2px}
+/* 月方案取消問卷：輕量對話，一列一個原因；選了才在該列下方展開追問 */
+.cancel-survey-body{padding:16px 18px 14px}
+.cancel-survey-q{font-size:14px;font-weight:700;color:#3D3030;line-height:1.5}
+.cancel-survey-sub{font-size:12px;color:#767676;margin-top:2px}
+.cancel-survey-list{display:flex;flex-direction:column;margin-top:8px}
+.cancel-survey-option{display:flex;align-items:center;gap:10px;min-height:40px;padding:4px 2px;cursor:pointer;font-size:13px;color:#3D3030;line-height:1.45}
+.cancel-survey-option input{flex:0 0 auto;width:16px;height:16px;margin:0;accent-color:#C85A14;appearance:auto;-webkit-appearance:radio}
+.cancel-survey-option input:checked+span{color:#8A3D12;font-weight:700}
+.cancel-survey-option input:focus-visible{outline:2px solid #C85A14;outline-offset:2px}
+.cancel-survey-detail{margin:0 0 6px 26px}
+.cancel-survey-detail-q{display:block;font-size:12px;color:#5A5050;line-height:1.5;margin-top:2px}
+.cancel-survey-list.is-nested{margin-top:2px}
+.cancel-survey-list.is-nested .cancel-survey-option{min-height:32px;padding:2px 2px;gap:8px;font-size:12px;color:#5A5050}
+.cancel-survey-list.is-nested .cancel-survey-option input{width:14px;height:14px}
+textarea.inp.cancel-survey-text{display:block;width:100%;margin-top:6px;height:60px;min-height:60px;resize:vertical;font-size:13px;line-height:1.5}
+.cancel-survey-notice{margin-top:12px;padding:10px 12px;border-radius:8px;background:#F8F4F0;display:flex;flex-direction:column;gap:2px}
+.cancel-survey-notice strong{font-size:13px;color:#3D3030}
+.cancel-survey-notice span{font-size:12px;color:#5A5050}
+.cancel-survey-actions{display:flex;flex-direction:column;align-items:stretch;gap:2px;margin-top:14px}
+.cancel-survey-actions .btn-d{min-height:44px}
+.cancel-survey-later{background:none;border:none;min-height:40px;padding:8px;font-family:inherit;font-size:13px;color:#5A5050;cursor:pointer}
+.cancel-survey-later:focus-visible{outline:2px solid #C85A14;outline-offset:2px;border-radius:8px}
 .unfinished-mission-fields{margin-top:10px}
 .unfinished-mission-field{display:none;gap:6px;color:#6A6060;font-size:10px;font-weight:700}
 .unfinished-mission-field .inp{font-size:12px;background:#FFF}
@@ -838,11 +1260,12 @@ select.inp{background:#F5EEE9 url("data:image/svg+xml,%3Csvg xmlns='http://www.w
 .budget-workflow-nav-item.is-current .budget-workflow-dot{background:#C85A14;color:#FFF}
 .budget-workflow-nav-item.is-current strong,.budget-workflow-nav-item.is-current em{color:#A84810}
 .budget-workflow-section{margin-bottom:14px;border-radius:8px;background:#FFF;box-shadow:0 2px 12px rgba(0,0,0,.05);overflow:hidden;scroll-margin-top:82px}
+.dash-overview-budget{scroll-margin-top:82px}
 .budget-workflow-section-head{display:flex;align-items:center;min-height:50px;padding:0 12px;background:#FFF;border-bottom:1px solid #EEE7E0}
 .budget-workflow-section.is-collapsed .budget-workflow-section-head{border-bottom:0}
 .budget-workflow-section-main{display:flex;align-items:center;justify-content:space-between;gap:12px;flex:1;min-width:0;padding:13px 2px;border:0;background:transparent;color:#3D3030;font-family:inherit;text-align:left;cursor:pointer}
-.budget-workflow-section-main span{font-size:14px;font-weight:700;color:#C85A14}
-.budget-workflow-section-main small{font-size:12px;font-weight:700;color:#5A5050;white-space:nowrap}
+.budget-workflow-section-main span{font-size:16px;font-weight:600;color:#C85A14}
+.budget-workflow-section-main small{font-size:13px;font-weight:700;color:#5A5050;white-space:nowrap}
 .budget-workflow-chevron{width:28px;height:28px;padding:0;border:0;background:transparent;color:#6A6060;font-family:inherit;font-size:17px;cursor:pointer;transition:transform .18s ease}
 .budget-workflow-section:not(.is-collapsed) .budget-workflow-chevron{transform:rotate(180deg)}
 .budget-workflow-section-body{padding:0;background:#FFF}
@@ -850,6 +1273,74 @@ select.inp{background:#F5EEE9 url("data:image/svg+xml,%3Csvg xmlns='http://www.w
 .budget-workflow-section-body>#b-alloc-wrap,.budget-workflow-section-body>#b-alloc-callout{margin-left:14px;margin-right:14px}
 .budget-workflow-section-body>#b-status-wrap,.budget-workflow-section-body>#bi-unbudgeted-hints{margin-left:14px;margin-right:14px}
 .budget-workflow-section-body>div:last-child:not(.card){margin-left:14px;margin-right:14px;margin-bottom:14px}
+.budget-income-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:3px}
+.budget-inline-label,.budget-goal-label-row{display:flex;align-items:center;min-width:0}
+.budget-income-title{color:#3D3030;font-size:13px;font-weight:700}
+.budget-info{position:relative;display:inline-flex;flex:0 0 auto}
+.budget-info[open]{z-index:30}
+.budget-info>summary{list-style:none}
+.budget-info>summary::-webkit-details-marker{display:none}
+.budget-info-trigger{display:flex;width:44px;height:44px;margin:-12px -11px -12px -9px;padding:0;align-items:center;justify-content:center;border:0;background:transparent;color:#A89890;cursor:pointer;transition:color .18s ease}
+.budget-info-trigger svg{width:16px;height:16px}
+.budget-info[open]>.budget-info-trigger,.budget-info-trigger:hover{color:#C85A14}
+.budget-info-trigger:focus-visible{outline:2px solid #C85A14;outline-offset:-8px;border-radius:50%}
+.budget-info-popover{position:absolute;top:calc(100% + 6px);left:-102px;z-index:30;width:min(300px,calc(100vw - 52px));padding:12px 14px;border:1px solid #E8E0D8;border-radius:8px;background:#FFF;color:#5A5050;box-shadow:0 8px 24px rgba(61,48,48,.16)}
+.budget-info--goal .budget-info-popover,.budget-info--suggestion .budget-info-popover{right:-104px;left:auto}
+.budget-info-popover>strong{display:block;color:#3D3030;font-size:13px;font-weight:700;line-height:1.5}
+.budget-info-popover p{margin:5px 0 0;font-size:12px;line-height:1.65}
+.budget-info-popover b{color:#3D3030;font-weight:600}
+.budget-goal-card{padding:14px 18px;margin-bottom:0;border:0;border-bottom:1px solid #EEE7E0}
+.budget-goal-label-row{margin-bottom:8px}
+.budget-goal-label{display:block;color:#3D3030;font-size:14px;font-weight:600;line-height:1.5}
+.budget-goal-field{display:flex;align-items:center;border:1px solid #DED6CF;border-radius:8px;background:#FFF;transition:border-color .15s,box-shadow .15s}
+.budget-goal-field:focus-within{border-color:#C85A14;box-shadow:0 0 0 3px rgba(200,90,20,.10)}
+.budget-goal-prefix{padding-left:14px;color:#7A6A68;font-size:16px;font-weight:700}
+.budget-goal-input.inp{min-width:0;padding:10px 14px 10px 8px;border:0;background:transparent;color:#111;font-size:20px;font-weight:700;box-shadow:none}
+.budget-goal-input.inp:focus{box-shadow:none}
+.budget-goal-input::-webkit-inner-spin-button,.budget-goal-input::-webkit-outer-spin-button{-webkit-appearance:none;margin:0}
+.budget-goal-input{-moz-appearance:textfield}
+.budget-goal-feedback{display:none;margin-top:7px;padding:8px 10px;border-radius:8px;font-size:13px;line-height:1.6}
+.budget-goal-feedback.is-error{display:block;background:#FFF0EE;color:#9C3030}
+.budget-allocation-wrap{margin-bottom:10px}
+.budget-suggestion-heading{padding:10px 3px 7px;border:0;border-radius:0;font-size:16px;font-weight:700;letter-spacing:0}
+.budget-suggestion-card{padding:12px 14px 13px}
+.budget-suggestion-mode{display:block;padding-bottom:10px;border-bottom:1px solid #EEE7E0}
+.budget-suggestion-mode-head{display:flex;align-items:center;gap:8px}
+.budget-suggestion-mode-title{color:#C85A14;font-size:15px;font-weight:700;line-height:1.5}
+.budget-suggestion-mode-lead{display:flex;align-items:center;margin-top:3px;color:#5A5050;font-size:12px;font-weight:400;line-height:1.55}
+.budget-suggestion-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:7px;margin-top:10px}
+.budget-suggestion-metric{min-width:0;padding:9px 5px;border:1px solid #E8E0D8;border-radius:8px;background:#FAF8F6;text-align:center}
+.budget-suggestion-metric-label{color:#5A5050;font-size:11px;font-weight:600;line-height:1.4}
+.budget-suggestion-metric-amount{margin-top:5px;color:#3D3030;font-size:clamp(14px,4.2vw,16px);font-weight:700;line-height:1.25;white-space:nowrap}
+.budget-suggestion-metric-pct{margin-top:3px;color:#767676;font-size:11px;font-weight:500;line-height:1.4}
+.budget-actual-allocation{margin-top:12px;padding-top:12px;border-top:1px solid #EEE7E0}
+.budget-actual-title{margin-bottom:7px;color:#3D3030;font-size:14px;font-weight:700;line-height:1.5}
+.budget-actual-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:7px}
+.budget-actual-metric{min-width:0;padding:9px 5px;border:1px solid #E5DED6;border-radius:8px;background:#FFF;text-align:center}
+.budget-actual-amount{font-size:clamp(14px,4.2vw,16px);font-weight:700;line-height:1.3;white-space:nowrap}
+.budget-actual-amount.is-fixed{color:#C85A14}
+.budget-actual-amount.is-variable{color:#B87830}
+.budget-actual-amount.is-savings{color:#4A8C5C}
+.budget-actual-meta{margin-top:3px;color:#555;font-size:11px;line-height:1.4}
+.budget-actual-note{margin-top:1px;color:#767676;font-size:10px;line-height:1.35}
+.budget-actual-unallocated{margin-top:8px;color:#5A5050;font-size:12px;font-weight:500;line-height:1.5;text-align:center}
+.budget-actual-joint{justify-content:space-between;align-items:center;margin-top:8px;padding:7px 10px;border:1px solid #D8B8E8;background:#F9F2FF;color:#7F4D8E;font-size:12px;font-weight:700}
+.budget-actual-joint .mono{font-size:12px;font-weight:700}
+.budget-actual-joint #ac-joint-pct{color:#767676;font-size:11px;font-weight:400}
+.budget-gap-toggle{display:flex;flex-direction:column;align-items:center;width:100%;min-height:44px;margin-top:10px;padding:9px 4px;border:0;border-top:1px solid #EEE7E0;border-radius:0;background:#FAF8F6;color:#3D3030;font-family:inherit;text-align:center;cursor:pointer}
+.budget-gap-toggle:focus-visible{outline:2px solid #C85A14;outline-offset:2px}
+.budget-gap-title{font-size:13px;font-weight:600;line-height:1.45}
+.budget-gap-title strong{color:#C85A14;font-weight:700}
+.budget-gap-bottom{display:flex;align-items:center;justify-content:center;gap:9px;margin-top:3px}
+.budget-gap-meta{color:#5A5050;font-size:11px;font-weight:400;line-height:1.45}
+.budget-gap-cta{color:#C85A14;font-size:11px;font-weight:600;line-height:1.4;white-space:nowrap}
+.budget-gap-reached{margin-top:12px;padding:10px 12px;border:1px solid #C0E0C8;border-radius:8px;background:#EAF7EE;color:#3C7E4E;font-size:12px;font-weight:600;line-height:1.5;text-align:center}
+.budget-gap-callout{display:none}
+.budget-gap-detail{margin-bottom:0;padding:14px 16px;border:1px solid #F0D8C0;border-left:3px solid #C85A14;background:#FFF8F4;box-shadow:none}
+.budget-gap-detail-title{color:#3D3030;font-size:14px;font-weight:700;line-height:1.5}
+.budget-gap-detail-copy{margin:5px 0 0;color:#5A5050;font-size:12px;line-height:1.7}
+.budget-gap-detail-action{width:100%;min-height:44px;margin-top:10px;padding:9px 12px;border:0;border-radius:8px;background:#C85A14;color:#FFF;font-family:inherit;font-size:12px;font-weight:700;cursor:pointer}
+.budget-gap-detail-action:focus-visible{outline:2px solid #A84810;outline-offset:2px}
 .budget-step-actions{display:flex;align-items:center;justify-content:space-between;padding:10px 14px 0}
 .budget-copy-last{display:inline-flex;align-items:center;gap:5px;font-size:11px;padding:5px 10px;white-space:nowrap}
 .budget-step-add{position:relative;width:44px;height:44px;background:transparent;color:#5A5A5A;box-shadow:none}
@@ -868,13 +1359,88 @@ select.inp{background:#F5EEE9 url("data:image/svg+xml,%3Csvg xmlns='http://www.w
   .budget-workflow-dot{width:26px;height:26px}
   .budget-workflow-nav::before{top:13px}
   .budget-workflow-section-head{padding:0 10px}
-  .budget-workflow-section-main span{font-size:13px}
-  .budget-workflow-section-main small{font-size:11px}
+  .budget-workflow-section-main span{font-size:16px}
+  .budget-workflow-section-main small{font-size:12px}
+  .budget-goal-card{padding:12px 14px}
+  .budget-goal-input.inp{font-size:20px}
+  .budget-suggestion-card{padding:11px 9px 12px}
+  .budget-suggestion-grid,.budget-actual-grid{gap:6px}
+  .budget-suggestion-metric,.budget-actual-metric{padding-left:4px;padding-right:4px}
   .budget-copy-last{font-size:10px;padding:5px 8px}
   .budget-workflow-sticky{left:20px;right:20px}
 }
 @media(min-width:768px){
+  .budget-info--income .budget-info-popover,.budget-info--goal .budget-info-popover,.budget-info--suggestion .budget-info-popover{top:-14px;right:auto;left:calc(100% + 9px)}
   .budget-workflow-sticky{left:234px;right:24px;bottom:18px;max-width:812px}
+}
+
+#report-tab-charts.is-empty > :not(#report-charts-empty-state){display:none!important}
+
+/* 月度檢視月曆 */
+.monthly-calendar-card{margin-bottom:16px;padding:16px 18px;overflow:hidden}
+.monthly-calendar-title{margin-bottom:10px;color:#767676;font-size:11px;font-weight:700;letter-spacing:.06em}
+.monthly-calendar-grid{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:6px 4px;width:100%}
+.monthly-calendar-weekday{padding:3px 0 5px;color:#767676;font-size:10px;font-weight:600;text-align:center}
+.monthly-calendar-spacer{min-width:0}
+.monthly-calendar-day{position:relative;display:flex;min-width:0;min-height:64px;appearance:none;flex-direction:column;align-items:center;padding:7px 2px;border:0;border-radius:10px;background:transparent;color:#3D3030;font-family:inherit;text-align:center;cursor:pointer;transition:background-color .16s ease,box-shadow .16s ease,transform .12s ease}
+.monthly-calendar-day:hover{background:#F8F4F1}
+.monthly-calendar-day:active{transform:scale(.97)}
+.monthly-calendar-day:focus-visible{z-index:1;outline:2px solid #C85A14;outline-offset:1px}
+.monthly-calendar-day.is-selected{background:#FFF3EA;box-shadow:inset 0 0 0 1px #E9C9B2}
+.monthly-calendar-day.is-today .monthly-calendar-date{color:#C85A14;font-weight:800}
+.monthly-calendar-date{position:relative;display:inline-flex;align-items:center;justify-content:center;min-height:20px;font-size:14px;font-weight:600;line-height:1}
+.monthly-calendar-day.is-today .monthly-calendar-date::after{position:absolute;bottom:-2px;left:50%;width:3px;height:3px;border-radius:50%;background:#C85A14;content:"";transform:translateX(-50%)}
+.monthly-calendar-month{position:absolute;top:4px;left:4px;color:#A84810;font-size:8px;font-weight:700;line-height:1}
+.monthly-calendar-amounts{display:flex;min-width:0;max-width:100%;flex-direction:column;gap:1px;margin-top:5px;font-size:9px;font-weight:700;line-height:1.25;font-variant-numeric:tabular-nums}
+.monthly-calendar-amounts>span{display:block;max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.monthly-calendar-expense,.monthly-day-detail-expense,.monthly-calendar-total-expense{color:#886868}
+.monthly-calendar-income,.monthly-day-detail-income,.monthly-calendar-total-income{color:#52705A}
+.monthly-calendar-totals{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin-top:12px;padding-top:11px;border-top:1px solid #EEE7E0;font-size:12px;font-weight:700;font-variant-numeric:tabular-nums}
+.monthly-calendar-totals>span:nth-child(2){text-align:center}
+.monthly-calendar-totals>span:last-child{text-align:right}
+.monthly-calendar-total-balance{color:#3D3030}
+.monthly-calendar-total-balance.is-negative{color:#B84040}
+.monthly-calendar-total-note{margin:6px 0 0;color:#8A7F76;font-size:11px;font-weight:600;line-height:1.5;text-align:right}
+.monthly-day-sheet-open{overflow:hidden}
+.monthly-day-sheet-layer{position:fixed;inset:0;z-index:300;display:grid;align-items:end;justify-items:center;overflow:hidden}
+.monthly-day-sheet-layer[hidden]{display:none}
+.monthly-day-sheet-backdrop{position:absolute;inset:0;background:rgba(38,29,27,.32);opacity:0;transition:opacity .22s ease}
+.monthly-day-sheet-layer.is-open .monthly-day-sheet-backdrop{opacity:1}
+.monthly-day-detail{--monthly-sheet-drag-y:0px;position:relative;z-index:1;width:100%;max-width:100%;max-height:min(78dvh,620px);box-sizing:border-box;overflow-x:hidden;overflow-y:auto;overscroll-behavior:contain;padding:0 18px calc(18px + env(safe-area-inset-bottom));border-radius:20px 20px 0 0;background:#FFF;box-shadow:0 -10px 34px rgba(61,48,48,.14);transform:translateY(calc(100% + 24px));transition:transform .26s cubic-bezier(.32,1,.23,1)}
+.monthly-day-sheet-layer.is-open .monthly-day-detail{transform:translateY(var(--monthly-sheet-drag-y))}
+.monthly-day-detail.is-dragging{transition:none}
+.monthly-day-sheet-grab{display:flex;align-items:center;justify-content:center;width:100%;height:30px;touch-action:none;cursor:grab}
+.monthly-day-sheet-grab span{width:34px;height:4px;border-radius:999px;background:#D8CEC7}
+.monthly-day-detail-heading{display:flex;align-items:flex-start;justify-content:space-between;gap:14px;padding:1px 0 12px;touch-action:none}
+.monthly-day-detail-copy{display:flex;min-width:0;flex-direction:column;gap:4px}
+.monthly-day-detail-heading strong{color:#3D3030;font-size:16px;line-height:1.4}
+.monthly-day-detail-heading span{color:#6A6060;font-size:12px;font-weight:600;line-height:1.5;font-variant-numeric:tabular-nums}
+.monthly-day-detail-close{display:inline-flex;width:44px;height:44px;flex:0 0 44px;align-items:center;justify-content:center;margin:-7px -8px 0 0;padding:0;border:0;border-radius:50%;background:transparent;color:#6A6060;cursor:pointer;transition:background-color .16s ease,color .16s ease}
+.monthly-day-detail-close:hover{background:#F8F4F1;color:#3D3030}
+.monthly-day-detail-close:focus-visible{outline:2px solid #C85A14;outline-offset:1px}
+.monthly-day-detail-close svg{width:20px;height:20px}
+.monthly-day-detail-list{border-top:1px solid #F4EFEA}
+.monthly-day-detail-row{display:flex;align-items:center;justify-content:space-between;gap:12px;min-height:44px;padding:7px 2px;border-bottom:1px solid #F4EFEA;color:#5A5050;font-size:12px}
+.monthly-day-detail-row>span{min-width:0;overflow-wrap:anywhere}
+.monthly-day-detail-row>strong{flex:0 0 auto;font-size:12px;font-variant-numeric:tabular-nums}
+@media(max-width:520px){
+  .monthly-calendar-card{padding:14px 10px}
+  .monthly-calendar-grid{gap:4px 2px}
+  .monthly-calendar-day{min-height:60px;padding:6px 1px;border-radius:8px}
+  .monthly-calendar-date{font-size:13px}
+  .monthly-calendar-month{top:3px;left:2px;font-size:7px}
+  .monthly-calendar-amounts{font-size:8px;letter-spacing:-.02em}
+  .monthly-calendar-totals{gap:4px;font-size:10px}
+}
+@media(min-width:600px){
+  .monthly-day-sheet-layer{place-items:center;padding:24px}
+  .monthly-day-detail{width:min(480px,calc(100vw - 48px));max-height:min(70vh,620px);padding:18px 20px;border-radius:20px;box-shadow:0 14px 44px rgba(61,48,48,.18);opacity:0;transform:translateY(14px) scale(.985);transition:opacity .2s ease,transform .22s cubic-bezier(.32,1,.23,1)}
+  .monthly-day-sheet-layer.is-open .monthly-day-detail{opacity:1;transform:translateY(0) scale(1)}
+  .monthly-day-sheet-grab{display:none}
+  .monthly-day-detail-heading{align-items:center;padding:0 0 13px;touch-action:auto}
+}
+@media(prefers-reduced-motion:reduce){
+  .monthly-calendar-day,.monthly-day-sheet-backdrop,.monthly-day-detail,.monthly-day-detail-close{transition:none}
 }
 
 .diag-loading-float{position:fixed;left:50%;bottom:calc(82px + env(safe-area-inset-bottom));z-index:9100;display:flex;align-items:center;gap:9px;max-width:min(88vw,360px);padding:10px 14px;border-radius:12px;background:#3D3030;color:#FFF;box-shadow:0 4px 20px rgba(0,0,0,.2);font-size:12px;font-weight:600;line-height:1.5;opacity:0;visibility:hidden;transform:translate(-50%,12px);transition:opacity .18s ease,transform .18s ease,visibility .18s ease;pointer-events:none}
@@ -922,15 +1488,64 @@ select.inp{background:#F5EEE9 url("data:image/svg+xml,%3Csvg xmlns='http://www.w
 .ia-task-row>div:last-child strong{font-size:15px}
 .ia-task-kind{font-size:9px;font-weight:700;letter-spacing:.04em}
 .ia-empty-state{padding:18px 4px 4px;text-align:center;font-size:12px;color:#8A7F76}
-.ia-subsection{border-bottom:1px solid #EEE7E0}
-.ia-subsection:last-child{border-bottom:0}
-.ia-subsection-toggle{display:flex;align-items:center;justify-content:space-between;gap:8px;min-height:54px}
-.ia-subsection-main{display:flex;align-items:center;min-height:44px;flex:1;padding:0;border:0;background:transparent;color:#3D3030;font-family:inherit;font-size:14px;font-weight:700;text-align:left;cursor:pointer}
-.ia-subsection-main span span{display:inline-block;width:18px;color:#8A7F76;font-size:11px}
+/* 存錢計畫：分類列的補充說明與期限儲蓄提醒（2026-11-04 第二包） */
+.ia-task-row small.ia-plan-note{color:#6B5F57}
+.ia-plan-reminders{display:flex;flex-direction:column;gap:2px;padding:13px 0}
+.ia-plan-reminders.has-divider{border-top:1px solid #EEE7E0}
+.ia-plan-reminders small{font-size:10px;color:#6B5F57;line-height:1.5}
+.ia-plan-reminders small.ia-plan-note{color:#8A7F76}
+/* 三個分類：沿用預算頁分組框（card-gray 底色＋分類色標題），一個分類一個框（2026-11-06 預覽） */
+.ia-subsection{padding:4px 14px 6px;border-radius:8px;background:#F8F8F4}
+.ia-subsection+.ia-subsection{margin-top:12px}
+/* 分類框：分類圓點色的極淡底＋同色細框（2026-11-06 Barbara 要求再淡、加細框） */
+.ia-subsection-sav{margin-top:12px;background:#F8FBF9;border:1px solid #DCEBE0}
+.ia-subsection-pre{background:#F7F8FC;border:1px solid #DFE3F2}
+.ia-subsection-sprint{background:#F7FCFC;border:1px solid #D8EDEF}
+.ia-subsection-toggle{display:flex;align-items:center;justify-content:space-between;gap:8px;min-height:48px;background:transparent}
+.ia-subsection-toggle:has([aria-expanded="true"]){border-bottom:1px solid #EAE3DA}
+.ia-subsection-main[data-sav-mgr-section="sav"]{color:#4A8C5C}
+.ia-subsection-main[data-sav-mgr-section="pre"]{color:#5C6FAE}
+.ia-subsection-main[data-sav-mgr-section="sprint"]{color:#20909A}
+.ia-subsection-main{display:flex;align-items:center;min-height:44px;flex:1;padding:0;border:0;background:transparent;color:#3D3030;font-family:inherit;font-size:16px;font-weight:700;text-align:left;cursor:pointer}
+.ia-subsection-main span span{display:inline-block;width:24px;color:#6B5F57;font-size:22px;line-height:1;vertical-align:-2px}
 .ia-info-button{display:flex;align-items:center;justify-content:center;width:44px;height:44px;padding:0;border:0;background:transparent;color:#8A7F76;font-family:inherit;font-size:13px;cursor:pointer}
 .ia-goal-row{padding:13px 2px}
-.ia-add-goal-button{display:inline-flex;align-items:center;justify-content:center;gap:5px;min-height:44px;padding:8px 12px;border:1px solid #C85A14;border-radius:8px;background:#FFF;color:#C85A14;font-family:inherit;font-size:12px;font-weight:700;cursor:pointer;transition:background .2s ease,color .2s ease}
+/* 存錢計畫項目（2026-11-05 視覺改版）：名稱→大字金額→進度條→完成度，補充資訊依項目需要才出現，不固定高度 */
+.ia-subsection-main span .ia-subsection-dot{width:8px;height:8px;margin-right:8px;border-radius:50%;vertical-align:middle}
+.ia-subsection-count{margin-left:8px;font-size:12px;font-weight:400;color:#8A7F76;white-space:nowrap}
+.sp-goal{display:flex;flex-direction:column;gap:4px;min-width:0}
+.sp-goal-head{display:flex;align-items:center;gap:10px;min-width:0}
+.sp-goal-icon{display:flex;align-items:center;justify-content:center;flex-shrink:0;width:28px;height:28px;padding:0;border:0;border-radius:50%;background:#FDE9DB;color:#C85A14;cursor:pointer}
+.sp-goal-name{display:flex;flex:1;flex-wrap:wrap;align-items:center;gap:6px;min-width:0;font-size:14px;font-weight:600;color:#1A1A1A;overflow-wrap:anywhere}
+.sp-goal-tag{padding:0 6px;border:1px solid #E8E0D8;border-radius:3px;font-size:11px;font-weight:400;color:#8A7F76;white-space:nowrap}
+.sp-goal-amount{display:flex;flex-wrap:wrap;align-items:baseline;gap:2px 6px;min-width:0}
+.sp-goal-amount-main{font-size:20px;font-weight:700;line-height:1.2;color:#3D3030}
+.sp-goal-amount-sub{font-size:12px;color:#767676;overflow-wrap:anywhere}
+.sp-goal-amount-hint{margin-left:auto;font-size:11px;color:#767676}
+.sp-goal-bar{height:6px;border-radius:3px;background:#F0EDE9;overflow:hidden}
+.sp-goal-bar-fill{height:100%;border-radius:3px}
+.sp-goal-progress{display:flex;flex-wrap:wrap;align-items:baseline;justify-content:space-between;gap:2px 12px;font-size:12px;line-height:1.4;color:#767676}
+.sp-goal-pct{font-weight:700}
+.sp-goal-status{margin-left:auto;text-align:right}
+.sp-goal-month{font-size:11px;line-height:1.5;color:#767676}
+.sp-goal-suggestion{color:#1A7080}
+.sp-goal-link{display:inline-flex;flex-wrap:wrap;align-items:center;gap:4px;max-width:100%;font-size:11px;color:#767676;overflow-wrap:anywhere}
+.sp-goal-link.is-empty{display:flex;justify-content:space-between;gap:8px;color:#999}
+.sp-goal-link-action{flex-shrink:0;padding:0;border:0;background:none;color:#C85A14;font-family:inherit;font-size:11px;font-weight:600;cursor:pointer}
+.sp-goal-setup{margin-top:2px}
+.ia-task-row.sp-plan-row{padding:10px 0}
+.sp-plan-name{display:flex;flex-wrap:wrap;align-items:center;gap:4px 6px;min-width:0;overflow-wrap:anywhere}
+.ia-task-row.sp-plan-link{cursor:pointer}
+.ia-section-desc{margin:2px 0 0;font-size:12px;line-height:1.5;color:#8A7F76}
+.ia-task-row.sp-plan-row[hidden]{display:none}
+.sp-plan-more{display:block;width:100%;min-height:44px;padding:0;border:0;border-top:1px solid #EEE7E0;background:transparent;color:#C85A14;font-family:inherit;font-size:13px;font-weight:600;cursor:pointer}
+.sp-plan-more:focus-visible{outline:2px solid #C85A14;outline-offset:2px}
+.ia-task-row.sp-plan-link:focus-visible{outline:2px solid #C85A14;outline-offset:2px}
+.ia-task-row small.sp-goal-suggestion{color:#1A7080}
+.ia-add-goal-button{position:relative;display:inline-flex;align-items:center;justify-content:center;gap:4px;min-height:32px;padding:5px 10px;border:1px solid #C85A14;border-radius:8px;background:#FFF;color:#C85A14;font-family:inherit;font-size:12px;font-weight:700;cursor:pointer;transition:background .2s ease,color .2s ease}
 .ia-add-goal-button:hover{background:#FFF5EE}
+/* 外框縮小後，手機可點範圍仍維持至少 44×44px（透明點擊區，不占版面） */
+.ia-add-goal-button::after{content:'';position:absolute;left:50%;top:50%;width:max(100%,44px);height:max(100%,44px);transform:translate(-50%,-50%)}
 
 /* 帳戶頁標題與操作區 */
 .account-page-heading{margin-bottom:12px;padding:14px 20px 6px;background:#FFF;border-radius:8px;box-shadow:0 2px 12px rgba(0,0,0,.05)}
@@ -991,17 +1606,75 @@ select.inp{background:#F5EEE9 url("data:image/svg+xml,%3Csvg xmlns='http://www.w
 .credit-core-grid{display:grid;grid-template-columns:1fr 1fr;padding:13px 0}
 .credit-core-grid>div{display:flex;flex-direction:column;gap:2px}
 .credit-core-grid>div+div{padding-left:15px;border-left:1px solid #EEE7E0}
+/* 尚待繳費自己一列：底下要放「原為 $X｜已繳 $Y」，擠在半欄會斷行成兩段。 */
+.credit-core-grid-single{grid-template-columns:1fr}
+.credit-core-split{width:100%;padding:0}
+/* 本期預留入口（2026-09-24 Barbara UI 瘦身）：單行，不是滿版大框。
+   字級刻意小於「本期應還」與「本月需預留」，讓數字維持第一、第二視覺焦點。
+   色票沿用同頁既有的 #8A7F76／#3D3030／#C85A14，沒有新 token。 */
+.credit-core-reserve-row{display:flex;align-items:center;gap:8px;width:100%;margin:0;padding:10px 0 2px;border:0;border-top:1px solid #EEE7E0;background:transparent;font-family:inherit;cursor:pointer;text-align:left}
+.credit-core-reserve-row-label{font-size:11px;color:#8A7F76}
+.credit-core-reserve-row-value{flex:1;font-size:12px;font-weight:700;color:#3D3030}
+.credit-core-reserve-row-cta{font-size:11px;font-weight:700;color:#C85A14;white-space:nowrap}
+.cc-period-reserve-row{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:11px 0;border-bottom:1px solid #F5F0EC}
+.cc-period-reserve-row b{display:block;font-size:13px;color:#3D3030}
+.cc-period-reserve-row span{display:block;margin-top:2px;font-size:11px;color:#767676}
+/* 第二張卡：待確認帳單。沿用既有卡片與 composition entry 的值，不新增色票。 */
+.credit-pending-statements-card{margin-bottom:14px;padding:15px 16px}
+.credit-pending-statements-heading{font-size:12px;color:#8A7F76;font-weight:700;letter-spacing:.04em;margin-bottom:6px}
+/* 全部確認完之後標題變成可點開的摘要行（原生 details），沿用同一組字級與顏色。 */
+.credit-pending-statements-summary{cursor:pointer;margin-bottom:0;list-style:none}
+.credit-pending-statements-summary::-webkit-details-marker{display:none}
+.credit-pending-statements-summary::after{content:"▾";margin-left:6px;font-weight:400}
+details.credit-pending-statements-card[open] .credit-pending-statements-summary{margin-bottom:6px}
+details.credit-pending-statements-card[open] .credit-pending-statements-summary::after{content:"▴"}
+.card-bill-composition-entry-row{display:flex;justify-content:space-between;align-items:flex-start;gap:10px}
+.card-bill-sheet-reserve{padding:2px 0 10px}
+.card-bill-sheet-reserve>span{display:block;font-size:12px;color:#B87830;font-weight:600}
+.card-bill-sheet-reserve-actions{display:flex;flex-wrap:wrap;gap:6px;margin-top:7px}
+.cc-payable-statement-edit{background:#FFF6F3;border:1px solid #FFCCA0;color:#B87830;font-size:11px;font-weight:600;padding:4px 9px;border-radius:6px;cursor:pointer}
+/* 已經做過的決定：是狀態不是動作，所以不給邊框、不給游標，視覺上明確不可按。 */
+.cc-funding-carry-state{display:block;padding:7px 10px;border-radius:6px;background:#F8F7F5;color:#6A6060;font-size:11px;line-height:1.6}
+.card-bill-sheet-reserve-actions .cc-payable-statement-edit{margin:0}
 .credit-core-grid span{font-size:10px;color:#8A7F76}
 .credit-core-grid strong{font-size:18px;color:#3D3030}
+/* 視覺層級（2026-09-24 Barbara）：本期應還第一、本月需預留第二，
+   上期未處理是既成事實不是這個月的新決定，所以降一階。用的是同頁既有的次級文字色。 */
+.credit-core-grid>div:first-child strong{color:#6A6060}
 #cr-net{color:#B84040}
 .credit-core-status{display:flex;align-items:center;gap:7px;padding:9px 10px;border-radius:7px;background:#FFF5E8;color:#8A551E;font-size:12px;font-weight:700}
 .credit-core-status::before{content:"";width:8px;height:8px;border-radius:50%;background:#B87830;flex:0 0 8px}
 .credit-core-status[data-tone="calm"]{background:#EEF7F1;color:#2A7050}
 .credit-core-status[data-tone="calm"]::before{background:#4A8C5C}
 .credit-core-note{margin-top:9px;padding:9px 10px;border-radius:7px;background:#F8F7F5;color:#6A6060;font-size:10px;line-height:1.7}
+/* 2026-09-23 裁決：「目前需保留」為什麼比「本月應還」多，第一眼就要說得出來。 */
+.credit-core-grid-note{display:block;margin-top:4px;font-size:10px;font-weight:400;color:#8A7F76;line-height:1.5}
+/* 主數字底下的補充：講「連同上期一共多少」，字級刻意遠小於主數字，不搶焦點。 */
+.credit-core-main-note{display:block;margin-top:4px;font-size:10px;color:#8A7F76;line-height:1.5}
+/* 已決定用下月薪水繳的那一段。是既成決定不是待辦，所以用中性底色，不用警示色。 */
+.credit-core-deferred{margin-top:2px;padding:7px 10px;border-radius:6px;background:#F8F7F5;color:#6A6060;font-size:11px;line-height:1.6}
+/* 2026-09-23 裁決：首頁的「有帳單需要你確認」。沿用既有待確認面板樣式，只加一顆行動按鈕。 */
+.card-bill-needs-confirmation-action{margin-top:10px}
+.card-bill-needs-confirmation-action button{width:100%;min-height:44px;border:0;border-radius:8px;background:#C85A14;color:#FFF;font-family:inherit;font-size:13px;font-weight:700;cursor:pointer}
+/* 2026-09-23 裁決 §7：主數字的逐筆來源。沿用 App 既有的淺灰說明區塊，不另開一套語言。 */
+.credit-core-lineage{margin-top:9px;border-radius:7px;background:#F8F7F5}
+.credit-core-lineage>summary{padding:9px 10px;font-size:11px;font-weight:700;color:#6A6060;cursor:pointer;list-style:none}
+.credit-core-lineage>summary::-webkit-details-marker{display:none}
+.credit-core-lineage>summary::after{content:"⌄";float:right;color:#C8B0A0}
+.credit-core-lineage[open]>summary::after{content:"⌃"}
+.credit-core-lineage-row{padding:8px 10px;border-top:1px solid #EFEBE7;font-size:11px;color:#6A6060;line-height:1.8}
+.credit-core-lineage-row b{display:block;color:#3D3030;font-weight:700}
+.credit-core-lineage-row span{display:block}
+.credit-core-lineage-key{color:#A89C92;font-size:10px;letter-spacing:.02em}
 .credit-core-action{width:100%;min-height:44px;margin-top:11px;border:0;border-radius:8px;background:#C85A14;color:#FFF;font-family:inherit;font-size:12px;font-weight:700;cursor:pointer}
+/* 2026-09-24 Barbara：查看卡費安排降為次要入口，不再是滿版實心主 CTA。
+   class 名稱保留，只加修飾子，既有點擊選擇器與行為完全不受影響。 */
+.credit-core-action.is-secondary{min-height:0;margin-top:9px;padding:6px 0;background:transparent;color:#C85A14;font-size:11px}
 .credit-advice-card .ia-section-heading{border-bottom:0}
-.credit-action-message{padding:11px 12px;border-left:3px solid #C85A14;background:#FFF7F0;color:#5A4035;font-size:12px;line-height:1.75}
+/* 2026-09-23 裁決七：拿掉左側橘色 accent bar。
+   那個樣式像 quote／callout，跟 App 其他卡片語言不一致。
+   改用既有卡片視覺：暖米底、既有 border 與 radius、既有間距。 */
+.credit-action-message{padding:12px 14px;border:1px solid #E8E0D8;border-radius:8px;background:#FFF8F2;color:#5A4035;font-size:12px;line-height:1.75}
 .credit-action-message p{margin:0}
 .credit-action-message p+p{margin-top:6px;padding-top:6px;border-top:1px solid #F0D8C4}
 .credit-secondary-section{box-shadow:none;border:1px solid #E8E0D8}
@@ -1020,6 +1693,170 @@ select.inp{background:#F5EEE9 url("data:image/svg+xml,%3Csvg xmlns='http://www.w
 .diag-supporting-block+.diag-supporting-block{border-top:1px solid #EEE7E0}
 
 .ia-group-toggle:focus-visible,.ia-subsection-main:focus-visible,.ia-info-button:focus-visible,.credit-core-action:focus-visible,.diag-next-action button:focus-visible,.diag-compare-extra-toggle:focus-visible{outline:2px solid #C85A14;outline-offset:2px}
+
+/* 交易尚未安全寫入時，只暫停依賴 cardBills 的頁面，導覽與其他資料功能仍可使用。 */
+/* 待確認帳期的面板必須一起放行：若確認入口也被暫停蓋掉，就會變成「要確認才能解鎖，
+   但確認入口本身被鎖住」的死結。 */
+/* 2026-09-26 整合：C3 的區塊降級樣式與 A 的 switch 提醒樣式互不衝突，兩組都保留。 */
+/* C3（2026-09-24）：卡費出問題不再整頁鎖住。頁首放一則提示，只有依賴卡費正確性的欄位與區塊換成「卡費確認中」。
+   區塊切換不改動區塊內的元素，只插入說明並暫時藏起其他子元素，卡費恢復後既有 render 照常寫回。 */
+.card-bill-region-unavailable>:not([data-card-bill-region-note]){display:none!important}
+.card-bill-unavailable-note{display:flex;flex-direction:column;gap:3px;padding:12px 14px;border:1px solid #E8E0D8;border-radius:8px;background:#F7F3EF;color:#6A6060;font-size:12px;line-height:1.7;box-sizing:border-box;text-align:left}
+.card-bill-unavailable-note strong{color:#5A4035;font-size:13px;font-weight:700}
+/* 數字欄位常帶負字距（例如可用餘額 -3px），文字會擠在一起，這裡一定要蓋過 inline 樣式 */
+.card-bill-unavailable-value{color:#8A7468!important;font-size:max(12px,.72em)!important;font-weight:700;letter-spacing:.02em!important;line-height:1.3!important}
+.card-bill-unavailable-inline{margin-top:6px;font-size:12px;color:#8A7468;font-weight:700}
+/* 2026-09-26 整合：origin/main 那條「整頁暫停就把頁面內容整片藏起來」的規則不再帶進來。
+   C3（2026-09-24）已經把它換成上面的區塊切換：只有依賴卡費正確性的區塊換成說明，
+   記帳、收入、一般預算照常顯示。整頁隱藏一旦回來，一筆卡費交易沒同步成功就會讓
+   快訊、預算、診斷、月度檢視整片消失，而且那條規則還需要一條例外去放行確認入口，
+   否則會形成「因為要確認所以鎖住，但確認入口也被鎖住」的死結。
+   所以連 #pg-diag-confirm 那條例外也一併移除：沒有整頁隱藏，就不需要例外。
+   三支守門（c3-consumer／sync-non-blocking／statement-decision）都會擋它回來。 */
+.card-bill-value-unavailable{color:#8A7F76;font-weight:600}
+/* 舊信用卡資料待確認：非阻擋，沿用既有暖色提醒樣式，不自創新 token。 */
+.card-bill-switch-confirmations{max-width:520px;margin:12px auto 16px;border:1px solid #E9C8AC;border-radius:10px;background:#FFF8F2;color:#5A4035;box-sizing:border-box;overflow:hidden}
+.card-bill-switch-head{display:flex;align-items:center;justify-content:space-between;gap:10px;width:100%;padding:14px 16px;border:0;background:transparent;color:inherit;font-family:inherit;text-align:left;cursor:pointer}
+.card-bill-switch-head strong{display:block;color:#3D3030;font-size:14px}
+.card-bill-switch-head em{display:block;margin-top:4px;color:#6A6060;font-size:12px;font-style:normal;line-height:1.7}
+.card-bill-switch-count{flex:0 0 auto;min-width:22px;height:22px;line-height:22px;border-radius:11px;background:#C85A14;color:#FFF;font-size:12px;font-weight:700;text-align:center}
+.card-bill-switch-count:empty{display:none}
+.card-bill-switch-body{padding:0 16px 8px}
+.card-bill-switch-row{border-top:1px solid #EEE0D2}
+.card-bill-switch-row-head{display:flex;align-items:flex-start;justify-content:space-between;gap:10px;width:100%;padding:12px 0;border:0;background:transparent;color:inherit;font-family:inherit;text-align:left;cursor:pointer}
+.card-bill-switch-row-head b{display:block;color:#3D3030;font-size:13px;font-weight:600}
+.card-bill-switch-row-head i{display:block;margin-top:3px;color:#6A6060;font-size:11px;font-style:normal}
+.card-bill-switch-amount{flex:0 0 auto;color:#C85A14;font-size:14px;font-weight:700}
+.card-bill-switch-choices{display:flex;gap:8px;flex-wrap:wrap;padding-bottom:10px}
+.card-bill-switch-choices button{min-height:42px;padding:8px 14px;border:0;border-radius:8px;background:#C85A14;color:#FFF;font-family:inherit;font-size:12px;font-weight:700;cursor:pointer}
+.card-bill-switch-choices input{flex:1;min-width:110px;padding:8px;border:1px solid #DDD;border-radius:8px;font-size:16px}
+.card-bill-switch-later{margin-bottom:12px;padding:6px 0;border:0;background:transparent;color:#767676;font-family:inherit;font-size:12px;text-decoration:underline;cursor:pointer}
+.card-bill-switch-choices button:focus-visible,.card-bill-switch-later:focus-visible,.card-bill-switch-head:focus-visible{outline:2px solid #C85A14;outline-offset:2px}
+.card-bill-pending-decisions{max-width:520px;margin:20px auto;padding:16px;border:1px solid #E9C8AC;border-radius:10px;background:#FFF8F2;color:#5A4035;box-sizing:border-box}
+.card-bill-pending-decisions>strong{display:block;margin-bottom:4px;color:#3D3030;font-size:14px}
+.card-bill-pending-row.pending-highlight{outline:2px solid #C85A14;outline-offset:3px;border-radius:6px;transition:outline-color .2s}
+.card-bill-pending-decisions>p{margin:0 0 12px;color:#6A6060;font-size:12px;line-height:1.75}
+/* 信用卡歸屬設定（方案 S）：沿用待確認帳單區塊的外框與色票，每張卡一列 */
+.card-owner-repair-row+.card-owner-repair-row{margin-top:14px;padding-top:14px;border-top:1px solid #F0DCCB}
+.card-owner-repair-row>strong{display:block;margin-bottom:4px;color:#3D3030;font-size:14px}
+.card-owner-repair-row>p{margin:0;color:#6A6060;font-size:12px;line-height:1.75}
+.card-owner-repair .card-bill-needs-confirmation-action{display:flex;gap:8px}
+.card-owner-repair .card-bill-needs-confirmation-action button.secondary{background:#FFF;color:#C85A14;border:1px solid #E9C8AC}
+/* 另案 B 帳單安排確認：沿用信用卡歸屬設定區塊的外框、字級與色票，每張帳單一列 */
+.statement-period-rescue-row+.statement-period-rescue-row{margin-top:14px;padding-top:14px;border-top:1px solid #F0DCCB}
+.statement-period-rescue-row>strong{display:block;margin-bottom:4px;color:#3D3030;font-size:14px}
+.statement-period-rescue-row>p{margin:0;color:#6A6060;font-size:12px;line-height:1.75}
+.statement-period-rescue-facts{margin:0 0 6px;color:#767676;font-size:11px;line-height:1.7}
+.statement-period-rescue .card-bill-needs-confirmation-action{display:flex;gap:8px;flex-wrap:wrap}
+.statement-period-rescue .card-bill-needs-confirmation-action button{flex:1 1 140px;width:auto}
+.statement-period-rescue .card-bill-needs-confirmation-action button.secondary{background:#FFF;color:#C85A14;border:1px solid #E9C8AC}
+.statement-period-rescue-row>p.statement-period-rescue-note{margin-top:8px;color:#767676;font-size:11px;line-height:1.7}
+.card-bill-pending-row{padding:12px 0;border-top:1px solid #EEE0D2}
+.card-bill-pending-row b{display:block;color:#3D3030;font-size:13px}
+.card-bill-pending-row span{display:block;margin:3px 0 9px;color:#6A6060;font-size:11px;line-height:1.7}
+.card-bill-pending-row div{display:flex;gap:8px;flex-wrap:wrap}
+.card-bill-pending-row button{min-height:42px;padding:8px 14px;border:0;border-radius:8px;background:#C85A14;color:#FFF;font-family:inherit;font-size:12px;font-weight:700;cursor:pointer}
+.card-bill-pending-row button.secondary{border:1px solid #DDD;background:transparent;color:#767676}
+.card-bill-pending-row button:focus-visible{outline:2px solid #C85A14;outline-offset:2px}
+/* 2026-09-30 D4-3「這期帳單繳清了嗎」：全站 input 有 appearance:none，單選鈕要照 .cancel-survey-option 的寫法補回原生外觀，否則看不到也點不到 */
+.card-bill-pending-row fieldset label{display:inline-flex;align-items:center;gap:6px;min-height:32px;color:#3D3030;cursor:pointer}
+.card-bill-pending-row input[type="radio"]{flex:0 0 auto;width:16px;height:16px;margin:0;accent-color:#C85A14;appearance:auto;-webkit-appearance:radio}
+.card-bill-payout-pending{margin-top:6px;padding:8px 10px;border-radius:8px;background:#FFF3EA;color:#8A6248;font-size:11px;line-height:1.7}
+.card-bill-payout-pending button{min-height:38px;margin-top:6px;padding:6px 12px;border:0;border-radius:6px;background:#C85A14;color:#FFF;font-family:inherit;font-size:11px;font-weight:700;cursor:pointer}
+/* 2026-09-26 整合：.card-bill-values-pause 兩邊只差 margin，採 C3 版；
+   A 側其餘的逐項對帳樣式全部保留。 */
+.card-bill-values-pause{display:flex;align-items:flex-start;gap:12px;max-width:520px;margin:0 auto 16px;padding:17px 16px;border:1px solid #E9C8AC;border-radius:10px;background:#FFF8F2;color:#5A4035;box-sizing:border-box}
+/* 銀行帳單逐項對帳（第三階段）。沿用暖米底與主橘 #C85A14，不自創色票。
+   第一層只是卡片裡的一行入口，對帳細節一律在 bottom sheet 裡。 */
+.card-bill-composition-entries{margin:12px 0 4px}
+/* 分組標題沿用對帳表單既有的 .card-bill-sheet-section 尺寸與顏色，不另外開一套。 */
+.card-bill-composition-entries-section{margin:14px 0 2px;color:#767676;font-size:11px;font-weight:700;letter-spacing:.04em}
+.card-bill-composition-entries-section:first-child{margin-top:2px}
+.card-bill-composition-entry{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;padding:9px 0;border-top:1px solid rgba(232,224,216,.7)}
+.card-bill-composition-entry-text b{color:#3D3030;font-size:11px;font-weight:700}
+.card-bill-composition-entry-text{display:flex;align-items:center;gap:6px;flex-wrap:wrap;flex:1;min-width:0;color:#767676;font-size:11px;line-height:1.7}
+.card-bill-composition-entry-tag{padding:1px 7px;border-radius:999px;background:#F3E4D6;color:#8A6248;font-size:10px;font-weight:700}
+.card-bill-composition-entry-tag.ok{background:#E7F0E9;color:#4A8C5C}
+.card-bill-composition-entry-tag.warn{background:#F8E1CF;color:#B84040}
+.card-bill-composition-entry-btn{flex-shrink:0;min-height:36px;padding:7px 12px;border:1px solid #E9C8AC;border-radius:8px;background:#FFF8F2;color:#C85A14;font-family:inherit;font-size:11px;font-weight:700;cursor:pointer}
+.card-bill-composition-entry-btn:focus-visible{outline:2px solid #C85A14;outline-offset:2px}
+/* 已確認的帳單改用綠色：橘色是「還要你處理」，綠色是「這件事完成了」。
+   色票沿用「記錄還款」那顆既有的綠（#527A5C／#B8D8C4），不新增 token。 */
+.card-bill-composition-entry-btn.is-confirmed{border-color:#B8D8C4;background:#F4FAF6;color:#527A5C}
+.card-bill-composition-entry-btn.is-confirmed:focus-visible{outline-color:#527A5C}
+
+.card-bill-sheet-head{margin-bottom:12px;color:#767676;font-size:11px}
+.card-bill-sheet-total{display:flex;flex-direction:column;gap:2px;padding:12px 14px;border-radius:10px;background:#FFF8F2;color:#5A4035}
+.card-bill-sheet-total span{font-size:11px;color:#8A6248}
+.card-bill-sheet-total b{font-size:24px;color:#3D3030;font-weight:800}
+.card-bill-sheet-total em{font-style:normal;font-size:10px;color:#8A6248}
+.card-bill-sheet-section{margin:16px 0 2px;color:#767676;font-size:11px;font-weight:700;letter-spacing:.04em}
+.card-bill-sheet-row{display:flex;align-items:flex-start;justify-content:space-between;gap:10px;padding:11px 0;border-bottom:1px solid #F5F0EC}
+.card-bill-sheet-row.editing{flex-direction:column;align-items:stretch;gap:8px}
+.card-bill-sheet-name{flex:1;min-width:0}
+.card-bill-sheet-name b{display:block;color:#3D3030;font-size:13px;font-weight:700}
+.card-bill-sheet-name span{display:block;margin-top:2px;color:#767676;font-size:11px;line-height:1.6}
+.card-bill-sheet-tag{display:inline-block;margin-top:4px;margin-right:5px;padding:1px 7px;border-radius:999px;background:#F3E4D6;color:#8A6248;font-size:10px;font-weight:700}
+.card-bill-sheet-tag.ok{background:#E7F0E9;color:#4A8C5C}
+.card-bill-sheet-tag.warn{background:#F8E1CF;color:#B84040}
+.card-bill-sheet-value{display:flex;align-items:center;gap:10px;flex-shrink:0}
+.card-bill-sheet-amount{color:#3D3030;font-size:14px;font-weight:700;white-space:nowrap}
+.card-bill-sheet-link{min-height:32px;padding:4px 8px;border:0;border-radius:6px;background:transparent;color:#C85A14;font-family:inherit;font-size:11px;font-weight:700;cursor:pointer;white-space:nowrap}
+.card-bill-sheet-link:focus-visible{outline:2px solid #C85A14;outline-offset:2px}
+.card-bill-sheet-edit{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+/* 2026-09-23 裁決四：列內操作不得另外發明一套尺寸。
+   直接沿用 App 既有的 .inp（padding 9px 12px／font-size 13px／radius 8px）
+   與 .btn-g／.btn-o（padding 8-9px／font-size 12px／radius 8px）。
+   「確認本期帳單」才是主要 CTA，加入／儲存／取消只是列內操作，尺寸要比它小。 */
+.card-bill-composition-input{width:96px;padding:9px 12px;border:1px solid rgba(0,0,0,0.1);border-radius:8px;
+  font-family:var(--font-ui);font-size:13px;box-sizing:border-box;background:#FFF;color:#111}
+.card-bill-composition-input:focus{border-color:#F97316;box-shadow:0 0 0 3px rgba(249,115,22,0.1);outline:none}
+.card-bill-sheet-edit select{padding:9px 12px;border:1px solid rgba(0,0,0,0.1);border-radius:8px;
+  font-family:var(--font-ui);font-size:13px;background:#FFF;color:#111}
+.card-bill-sheet-edit button{padding:8px 14px;border:0;border-radius:8px;background:#C85A14;color:#FFF;
+  font-family:inherit;font-size:12px;font-weight:700;cursor:pointer;white-space:nowrap}
+.card-bill-sheet-edit button.ghost{border:1px solid #DDD;background:transparent;color:#767676}
+.card-bill-sheet-edit button:disabled{cursor:wait;opacity:.72}
+.card-bill-sheet-add{width:100%;margin-top:10px;min-height:42px;padding:10px;border:1px dashed #E9C8AC;border-radius:8px;background:transparent;color:#C85A14;font-family:inherit;font-size:12px;font-weight:700;cursor:pointer}
+.card-bill-sheet-match{display:flex;align-items:baseline;gap:8px;flex-wrap:wrap;margin-top:16px;padding:11px 14px;border-radius:10px;background:#FAFAFA;color:#5A4035;font-size:11px}
+.card-bill-sheet-match b{color:#3D3030;font-size:14px}
+.card-bill-sheet-match em{font-style:normal;font-weight:700}
+.card-bill-sheet-match.ok{background:#E7F0E9}
+.card-bill-sheet-match.ok em{color:#4A8C5C}
+.card-bill-sheet-match.warn em{color:#B84040}
+.card-bill-sheet-match.notice{background:#FFF8E8}
+.card-bill-sheet-match.notice em{color:#B87830}
+.card-bill-sheet-confirm{margin-top:14px}
+.card-bill-sheet-confirm label{display:block;margin-bottom:6px;color:#767676;font-size:11px}
+.card-bill-sheet-confirm .card-bill-sheet-edit button{padding:10px 18px;font-size:13px}
+.card-bill-sheet-confirm .card-bill-composition-input{width:120px}
+.card-bill-sheet-hint{margin:0 0 8px;color:#767676;font-size:11px;line-height:1.5}
+.card-bill-sheet-match small{display:block;width:100%;margin-top:4px;color:#767676;font-size:11px;font-weight:400}
+.card-bill-sheet-note{margin:12px 0 0;color:#767676;font-size:10px;line-height:1.75}
+.card-bill-values-pause-icon{display:flex;align-items:center;justify-content:center;width:26px;height:26px;flex:0 0 26px;border-radius:50%;background:#F8E1CF;color:#B84040;font-size:14px;font-weight:800}
+.card-bill-values-pause strong{display:block;margin:1px 0 5px;color:#3D3030;font-size:14px}
+.card-bill-values-pause p{margin:0;color:#6A6060;font-size:12px;line-height:1.75;white-space:pre-line}
+.card-bill-values-pause-diagnostics{display:grid;grid-template-columns:max-content minmax(0,1fr);gap:4px 10px;margin-top:10px;padding-top:10px;border-top:1px solid #EEE0D2;font-size:10px;line-height:1.6}
+.card-bill-values-pause-diagnostics span{color:#8A7468}
+.card-bill-values-pause-diagnostics b{min-width:0;color:#5A4035;font-weight:700;overflow-wrap:anywhere}
+.card-bill-values-pause button{min-height:42px;margin-top:12px;padding:8px 14px;border:0;border-radius:8px;background:#C85A14;color:#FFF;font-family:inherit;font-size:12px;font-weight:700;cursor:pointer}
+.card-bill-values-pause button:disabled{cursor:wait;opacity:.72}
+.card-bill-values-pause button:focus-visible{outline:2px solid #C85A14;outline-offset:2px}
+/* 2026-10-04 卡費衝突救援：次要的聯絡說明與確認視窗。色票沿用本頁既有的暖米、主橘、灰字與功能紅。 */
+.card-bill-values-pause .card-bill-values-pause-secondary{margin-top:8px;color:#767676;font-size:11px}
+.card-conflict-rescue-body{padding:18px;color:#3D3030;font-size:13px;line-height:1.7}
+.card-conflict-rescue-q{margin:0 0 8px;font-weight:700;color:#3D3030}
+.card-conflict-rescue-hint{margin:0 0 14px;color:#767676;font-size:12px}
+.card-conflict-rescue-field{display:block;margin-bottom:14px}
+.card-conflict-rescue-field span{display:block;margin-bottom:6px;font-weight:700}
+.card-conflict-rescue-field input{width:100%;padding:9px;border:1px solid #E8E0D8;border-radius:8px;font-family:inherit;font-size:15px;box-sizing:border-box}
+.card-conflict-rescue-field em{display:block;margin-top:5px;color:#767676;font-size:11px;font-style:normal}
+.card-conflict-rescue-summary{margin:0 0 10px;padding-left:18px}
+.card-conflict-rescue-summary li{margin-bottom:4px}
+.card-conflict-rescue-error{margin:0 0 12px;color:#B84040;font-size:12px}
+.card-conflict-rescue-actions{display:flex;flex-direction:column;gap:8px}
+.card-conflict-rescue-actions button{padding:9px}
+
 @media(max-width:520px){
   .ia-section-card{padding:14px}
   .ia-group-toggle{padding:9px 12px}
@@ -1032,4 +1869,249 @@ select.inp{background:#F5EEE9 url("data:image/svg+xml,%3Csvg xmlns='http://www.w
   .credit-core-main strong{font-size:29px}
   .diag-next-action{align-items:flex-start;flex-direction:column}
   .diag-next-action button{width:100%}
+  .card-bill-values-pause{margin:0 0 14px}
+  .card-bill-values-pause button{width:100%}
 }
+
+/* 對帳入口每一列自己的帳期。同一張卡可能同時有上一期與本期，不寫帳期會看起來像同一期。 */
+.card-bill-composition-entry-period{font-size:11px;color:#767676;white-space:nowrap;margin-left:6px}
+
+/* 這一期卡費還沒決定怎麼付。沿用 App 既有的待辦列樣式，不做成大型警告卡。 */
+.card-funding-decision-pending{background:#fff;border:1px solid #E8E0D8;border-radius:8px;padding:0;margin:0 0 12px}
+.card-funding-decision-row{display:flex;align-items:center;gap:10px;padding:12px 14px}
+.card-funding-decision-row+.card-funding-decision-row{border-top:1px solid #F0EDE9}
+.card-funding-decision-main{flex:1;min-width:0;display:flex;flex-direction:column;gap:2px}
+.card-funding-decision-main b{font-size:13px;font-weight:600;color:#3D3030}
+.card-funding-decision-main span{font-size:12px;color:#767676}
+.card-funding-decision-main em{font-size:12px;color:#B87830;font-style:normal}
+.card-funding-decision-row button{flex-shrink:0;background:#FFF6F3;border:1px solid #FFCCA0;color:#B87830;font-size:12px;font-weight:600;padding:7px 12px;border-radius:6px;cursor:pointer}
+
+/* 預算頁步驟 4 中段：本月待處理／沿用上月預算／上月未編預算的支出 */
+/* 白底輕卡片，橘色只留給主要行動；清單勾選只在選擇介面出現 */
+.budget-mid{display:flex;flex-direction:column;gap:10px;margin-top:12px}
+.budget-mid-card{background:#FFF;border:1px solid #EEE7E0;border-radius:10px;padding:14px 16px 0;overflow:hidden}
+.budget-mid-card[data-budget-mid="tasks"]{padding-bottom:4px}
+.budget-mid-title{margin:0 0 6px;color:#3D3030;font-size:15px;font-weight:700;line-height:1.5}
+.budget-mid-line{margin:0;color:#5A5050;font-size:13px;line-height:1.7}
+.budget-mid-muted{color:#767676;font-size:12px}
+.budget-mid-names{overflow-wrap:anywhere}
+.budget-mid-task{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:10px 0;border-top:1px solid #F3EEE9}
+.budget-mid-task-text{flex:1;min-width:0}
+.budget-mid-task-title{color:#767676;font-size:11px;font-weight:600;line-height:1.5}
+.budget-mid-task-detail{color:#3D3030;font-size:13px;line-height:1.6;overflow-wrap:anywhere}
+.budget-mid-task-detail strong{font-weight:700;font-variant-numeric:tabular-nums}
+.budget-mid-task-cta{flex-shrink:0;min-height:36px;padding:0 12px;border:1px solid #E8D5C4;border-radius:8px;background:#FFF;color:#C85A14;font-family:inherit;font-size:12px;font-weight:700;white-space:nowrap;cursor:pointer}
+.budget-mid-task-cta:hover{background:#FFF8F4}
+.budget-mid-task-cta:focus-visible,.budget-mid-open:focus-visible{outline:2px solid #C85A14;outline-offset:2px}
+.budget-mid-open{display:flex;align-items:center;justify-content:space-between;width:calc(100% + 32px);min-height:44px;margin:12px -16px 0;padding:0 16px;border:0;border-top:1px solid #F3EEE9;background:#FAF8F6;color:#C85A14;font-family:inherit;font-size:13px;font-weight:700;cursor:pointer;text-align:left}
+.budget-mid-open span[aria-hidden]{font-size:18px;line-height:1}
+.budget-installment-plan{align-items:flex-start}
+.budget-installment-plan-select{width:100%;margin-top:8px;font-size:13px;padding:7px 10px}
+.budget-installment-plan-actions{display:flex;flex-wrap:wrap;gap:8px;margin-top:8px}
+.budget-installment-plan-actions .budget-mid-task-cta{white-space:normal;text-align:left}
+.budget-installment-plan-note{margin-top:6px;color:#767676;font-size:11px;line-height:1.6}
+.budget-installment-plan-tag{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-top:6px;padding:4px 10px;background:#FAF8F6;border:1px solid #EEE7E0;border-radius:4px;color:#5A5050;font-size:11px;line-height:1.6}
+.budget-installment-plan-tag span{min-width:0;overflow-wrap:anywhere}
+.budget-installment-plan-tag button{flex-shrink:0;background:transparent;border:0;padding:2px 4px;color:#767676;font-family:inherit;font-size:11px;cursor:pointer;text-decoration:underline}
+/* 選擇介面：置中彈窗，標頭與底部操作固定、只有清單捲動；safe area 由外層 overlay 的留白處理 */
+.budget-picker{display:flex;flex-direction:column;max-width:440px;max-height:80vh;max-height:min(80dvh,720px);overflow:hidden}
+/* 開著時鎖背景頁，只鎖 html／body，清單本身是獨立捲動容器不受影響 */
+html.budget-picker-open,html.budget-picker-open body{overflow:hidden}
+.budget-picker-overlay{overscroll-behavior:contain}
+.budget-picker .modal-bar span{text-transform:none;letter-spacing:.02em;font-size:14px}
+.budget-picker-body{flex:1;min-height:0;overflow-y:auto;overscroll-behavior:contain;-webkit-overflow-scrolling:touch;padding:4px 18px 8px}
+.budget-picker-intro{margin:10px 0 4px;color:#767676;font-size:12px;line-height:1.6}
+/* 分類標題：比項目名稱大一階、深色，快速滑動時能一眼分段；不加底色或橘色 */
+.budget-picker-group{margin:24px 0 2px;color:#3D3030;font-size:16px;font-weight:700;line-height:1.4;letter-spacing:.02em}
+.budget-picker-intro+.budget-picker-group{margin-top:14px}
+.budget-picker-row{display:flex;align-items:center;gap:12px;min-height:48px;padding:8px 0;border-bottom:1px solid #F5F0EC;cursor:pointer}
+.budget-picker-row.is-locked{cursor:default}
+.budget-picker-name{flex:1;min-width:0;color:#3D3030;font-size:14px;line-height:1.5;overflow-wrap:anywhere}
+.budget-picker-name small{display:block;color:#767676;font-size:11px;line-height:1.4}
+.budget-picker-amt{flex-shrink:0;color:#3D3030;font-size:14px;font-weight:700;white-space:nowrap}
+.budget-picker-row.is-locked .budget-picker-name,.budget-picker-row.is-locked .budget-picker-amt{color:#8A8078}
+.budget-picker-box{appearance:none;-webkit-appearance:none;flex-shrink:0;width:20px;height:20px;margin:0;border:1.5px solid #CFC6BE;border-radius:5px;background:#FFF center/14px 14px no-repeat;cursor:pointer}
+.budget-picker-box:checked{border-color:#C85A14;background-color:#C85A14;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23fff' stroke-width='3.2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M5 12.5l4.5 4.5L19 7.5'/%3E%3C/svg%3E")}
+.budget-picker-box:focus-visible{outline:2px solid #C85A14;outline-offset:2px}
+.budget-picker-row.is-locked .budget-picker-box{display:block;border-color:#E2DAD2;background-color:#EFEAE5;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23A89E95' stroke-width='3.2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M5 12.5l4.5 4.5L19 7.5'/%3E%3C/svg%3E");cursor:default}
+.budget-picker-foot{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:12px 18px;border-top:1px solid #EEE7E0;background:#FFF}
+.budget-picker-sum{min-width:0;color:#5A5050;font-size:13px;line-height:1.4}
+.budget-picker-sum b{color:#3D3030;font-size:15px}
+.budget-picker-apply{flex-shrink:0;min-height:44px;padding:0 20px;text-transform:none;letter-spacing:.02em;font-size:13px}
+.budget-picker-apply:disabled{background:#CEC8C3;cursor:not-allowed}
+/* 手機也是獨立浮起的彈窗（2026-09-28 Barbara 實機驗收）：四邊留白、四角圓角、不貼底，
+   沿用全站 .overlay 的置中略偏上；高度控制在可視範圍內，只有中間清單捲動 */
+.budget-picker-overlay{padding:max(16px,env(safe-area-inset-top)) 16px max(7vh,calc(16px + env(safe-area-inset-bottom)))}
+@media(max-width:599px){
+  .budget-picker{max-width:none;max-height:78vh;max-height:min(78dvh,calc(100dvh - 7vh - 32px));border-radius:16px}
+  .budget-picker .modal-bar{border-radius:16px 16px 0 0}
+}
+
+/* 這個月整理好了（MC-3）。沿用既有色票：主橘 #C85A14、底 #F5F0EB、次要文字 #5A5050／#7A6A68、線 #E8E0D8。 */
+.mc-cycle{display:block;font-size:11px;font-weight:400;color:#7A6A68;margin-top:2px;text-transform:none;letter-spacing:0}
+.mc-body{padding-bottom:12px}
+.mc-hero{padding:16px}
+.mc-hero strong{display:block;font-size:17px;color:#111}
+.mc-hero p,.mc-item p{font-size:13px;line-height:1.6;color:#5A5050;margin:4px 0 0}
+.mc-sec{font-size:12px;font-weight:700;color:#7A6A68;margin:16px 4px 8px}
+.mc-item{display:flex;gap:10px;align-items:flex-start;padding:14px}
+.mc-item strong{font-size:14px;color:#111;line-height:1.45}
+.mc-ico{width:24px;height:24px;border-radius:50%;flex:none;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700}
+.mc-ico.is-stop{background:#FEF0F0;color:#B84040}.mc-ico.is-warn{background:#FEF6E8;color:#B87830}
+.mc-cta{margin-top:10px;border:none;background:#FFF5EE;color:#C85A14;font-family:inherit;font-size:13px;font-weight:700;border-radius:999px;padding:7px 14px;cursor:pointer}
+.mc-collapsed{display:flex;justify-content:space-between;width:100%;border:none;font-family:inherit;font-size:13px;color:#3D3030;padding:12px 14px;cursor:pointer;text-align:left}
+.mc-collapsed span:last-child{color:#7A6A68}
+.mc-list{padding:12px 14px;font-size:13.5px;line-height:2;color:#3D3030}
+.mc-pill{font-size:11px;color:#4A8C5C;background:#F0F7F2;border-radius:999px;padding:2px 8px;margin-left:6px}
+.mc-note{background:#F8F8F4;border-radius:8px;padding:10px 12px;font-size:12.5px;line-height:1.6;color:#5A5050;margin:0 0 12px}
+.mc-foot{font-size:11.5px;color:#7A6A68;text-align:center;margin:10px 0 0}
+.mc-dock{position:sticky;bottom:calc(62px + env(safe-area-inset-bottom));background:#FFF;border-top:1px solid #E8E0D8;padding:10px 14px 14px;margin:0 -2px;z-index:5}
+.mc-dock:empty{display:none}
+.mc-hint{font-size:12px;color:#5A5050;text-align:center;margin:0 0 8px}
+.mc-primary{display:block;width:100%;font-size:15px;padding:13px;text-transform:none;letter-spacing:0}
+.mc-primary[disabled]{background:#CEC8C3;cursor:not-allowed}
+.mc-secondary{display:block;width:100%;margin-top:8px;font-size:14px;padding:12px}
+.mc-link{display:block;width:100%;background:none;border:none;font-family:inherit;font-size:13px;color:#7A6A68;text-align:center;margin-top:10px;cursor:pointer}
+.mc-overlay{position:fixed;inset:0;background:rgba(17,17,17,.45);display:flex;align-items:flex-end;justify-content:center;z-index:430}
+.mc-sheet{background:#FFF;border-radius:20px 20px 0 0;padding:18px 16px 22px;width:100%;max-width:560px}
+.mc-sheet strong{display:block;font-size:17px;color:#111;margin-bottom:8px}
+.mc-sheet ul{margin:0 0 10px;padding-left:18px;font-size:13.5px;line-height:1.8;color:#3D3030}
+.mc-sheet p{font-size:13px;line-height:1.6;color:#5A5050;margin:0 0 14px}
+.mc-done{text-align:center;padding:20px 14px}
+.mc-done strong{display:block;font-size:18px;color:#111}
+.mc-done span{display:block;font-size:12px;color:#7A6A68;margin-top:4px}
+.mc-done-mark{width:44px;height:44px;border-radius:50%;background:#F0F7F2;color:#4A8C5C;font-size:22px;display:flex;align-items:center;justify-content:center;margin:0 auto 8px}
+.mc-status{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:12px 14px;margin-bottom:12px;font-size:13.5px;color:#111}
+.mc-status small{display:block;font-size:11.5px;color:#7A6A68;margin-top:2px}
+.mc-status button{border:none;background:none;font-family:inherit;font-size:13px;font-weight:700;color:#C85A14;cursor:pointer;white-space:nowrap}
+.mc-status.is-due{background:#FFF5EE}
+.home-primary-action-snooze{border:none;background:none;font-family:inherit;font-size:13px;color:#7A6A68;cursor:pointer;margin-left:12px;padding:0}
+@media(min-width:768px){.mc-dock{bottom:0}}
+.mc-diff{background:#F8F8F4;border-radius:8px;padding:8px 10px;margin-top:8px;font-size:12.5px;line-height:1.6;color:#3D3030}
+/* 想存金額還沒安排進預算（P2-A）與儲蓄命名提示（P1-A），2026-10-13 */
+.budget-goal-arrange{margin-top:8px;padding:10px 12px;border-radius:8px;background:#FFF8F2;border:1px solid #EEE7E0;font-size:13px;line-height:1.6;color:#3D3030}
+.budget-goal-arrange[hidden],.budget-sav-name-hint[hidden]{display:none}
+.budget-goal-arrange-text{margin:0 0 8px}
+.budget-goal-arrange-actions{display:flex;gap:8px;flex-wrap:wrap}
+.budget-sav-name-hint{display:flex;align-items:center;gap:6px;flex-wrap:wrap;margin:0 0 10px;font-size:12px;color:#5A5050}
+.budget-add-cat-row.show{margin:0 0 10px}
+/* 小精靈 Stage 1（2026-10-15）：對話卡片、暫停小膠囊、目標外框。不擋會員操作，只蓋在預算頁上方（z-index 52：底部導覽 50 之上、更多面板 55 與彈窗 200 之下） */
+.buddy-guide{position:fixed;left:12px;right:12px;z-index:52;pointer-events:none}
+.buddy-guide>*{pointer-events:auto}
+.buddy-guide--card.buddy-guide--bottom{bottom:calc(132px + env(safe-area-inset-bottom))}
+.buddy-guide--card.buddy-guide--top{top:calc(64px + env(safe-area-inset-top))}
+.buddy-guide--pill{bottom:calc(132px + env(safe-area-inset-bottom));display:flex;justify-content:center;gap:6px}
+.buddy-card{max-width:420px;margin:0 auto;background:#FFFFFF;border:1px solid #EEE7E0;border-radius:8px;box-shadow:0 10px 28px rgba(45,36,32,.18);padding:12px 14px}
+.buddy-head{display:flex;justify-content:space-between;align-items:center;gap:8px;margin-bottom:6px}
+.buddy-progress{font-size:12px;font-weight:700;color:#C85A14}
+.buddy-head-actions{display:flex;gap:4px;flex-shrink:0}
+.buddy-link{background:none;border:none;color:#767676;font-size:12px;padding:4px 6px;cursor:pointer;font-family:inherit;white-space:nowrap}
+.buddy-body{display:flex;gap:10px;align-items:flex-start}
+.buddy-mascot{flex:none;width:40px;height:40px}
+.buddy-say p{margin:0 0 4px;font-size:14px;line-height:1.6;color:#3D3030}
+.buddy-actions{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px}
+.buddy-pill{display:flex;align-items:center;gap:6px;background:#FFFFFF;border:1px solid #EEE7E0;border-radius:999px;padding:4px 14px 4px 6px;box-shadow:0 6px 18px rgba(45,36,32,.16);font-size:13px;color:#3D3030;cursor:pointer;font-family:inherit}
+.buddy-pill .buddy-mascot{width:28px;height:28px}
+.buddy-pill-close{background:#FFFFFF;border:1px solid #EEE7E0;border-radius:999px;width:32px;height:32px;color:#767676;cursor:pointer}
+.buddy-target{outline:2px solid #F97316!important;outline-offset:3px;border-radius:8px}
+/* 信用卡設定小精靈把新增表單捲到畫面上方：留出外框高亮的空間 */
+#cc-add-form,#acct-add-form{scroll-margin-top:16px}
+/* 4A（2026-10-16）：小精靈開著時不遮內容。
+   手機：頁面底部多留白，被卡片擋住的內容可以往上捲出來（卡片蓋到目標時仍自動換到上方）。
+   電腦：右側留一欄給小精靈，主內容與底部待分配列往左讓出這欄，卡片固定在這欄裡，視窗縮放時跟著重算。 */
+:root{--buddy-dock:min(380px,30vw)}
+body.buddy-open .mc{padding-bottom:340px!important}
+@media (min-width:768px){
+  body.buddy-open .mc{margin-right:var(--buddy-dock);padding-bottom:60px!important}
+  body.buddy-open .budget-workflow-sticky{right:calc(var(--buddy-dock) + 24px)}
+  .buddy-guide,.buddy-guide--card.buddy-guide--bottom,.buddy-guide--card.buddy-guide--top,.buddy-guide--pill{left:auto;right:16px;top:72px;bottom:auto;width:calc(var(--buddy-dock) - 32px)}
+  .buddy-guide--pill{justify-content:flex-start}
+}
+/* 小精靈 Stage 2 練習記帳（2026-10-15）：版面與色票照快速記帳（#quick-panel；2026-10-29 跟著改暖米亮色＋立體感），上方多一條練習模式提示 */
+.buddy-practice{position:fixed;inset:0;z-index:8000;display:flex;justify-content:center;background:rgba(0,0,0,.35)}
+.buddy-practice-panel{width:100%;max-width:480px;height:100%;overflow-y:auto;background:#F5F0EB;color:#3D3030;font-family:var(--font-ui)}
+.buddy-practice-head{position:relative;display:flex;justify-content:center;align-items:center;padding:16px 20px;border-bottom:1px solid #E8E0D8;font-size:20px;font-weight:700;color:#3D3030}
+.buddy-practice-close{position:absolute;right:16px;top:50%;transform:translateY(-50%);background:transparent;border:none;color:#7A6A68;font-size:22px;cursor:pointer}
+.buddy-practice-band{background:#5C6FAE;color:#FFFFFF;text-align:center;font-size:13px;font-weight:700;padding:7px 12px}
+.buddy-practice-section{padding:14px 20px 0}
+.buddy-practice-toggle{display:flex;background:#FFFFFF;border-radius:8px;padding:3px;gap:3px}
+.buddy-practice-toggle span,.buddy-practice-toggle button{flex:1;text-align:center;padding:10px;border-radius:6px;font-size:14px;font-weight:600;color:#767676}
+.buddy-practice-toggle button{border:0;background:transparent;font-family:inherit;cursor:pointer}
+.buddy-practice-toggle span.is-on,.buddy-practice-toggle button.is-on{background:#C85A14;color:#FFFFFF}
+.buddy-practice-intro{color:#5A5050;font-size:13px;line-height:1.6}
+.buddy-practice-amount{background:#FFFFFF;border-radius:12px;padding:24px 16px;text-align:center}
+.buddy-practice-amount>div:last-child{display:flex;align-items:center;justify-content:center;gap:4px;color:#C85A14;font-size:30px;font-weight:600}
+.buddy-practice-amount input{background:transparent;border:none;font-size:42px;font-weight:700;color:#C85A14;width:180px;text-align:center;font-family:inherit;outline:none}
+.buddy-practice-label{font-size:12px;color:#7A6A68;letter-spacing:.06em;margin-bottom:8px}
+.buddy-practice-amount .buddy-practice-label{color:#7A6A68}
+.buddy-practice-chips{display:flex;gap:7px;flex-wrap:wrap}
+.buddy-practice-empty{font-size:12px;color:#7A6A68}
+.buddy-practice-error{margin:10px 20px 0;padding:7px 10px;background:#FEF2F2;border-radius:6px;font-size:12px;color:#B84040;font-weight:600}
+.buddy-practice-error[hidden]{display:none}
+.buddy-practice-submit{width:100%;background:#C85A14;color:#FFFFFF;border:none;padding:12px;border-radius:8px;font-size:15px;font-weight:700;cursor:pointer;letter-spacing:.04em;margin-bottom:20px;font-family:inherit}
+.buddy-practice-result{padding:24px 20px}
+.buddy-practice-result h3{margin:0 0 10px;font-size:19px;color:#111111}
+.buddy-practice-result p{margin:0 0 12px;font-size:14px;line-height:1.6;color:#3D3030}
+.buddy-practice-row{display:flex;justify-content:space-between;gap:10px;padding:10px 0;border-bottom:1px solid #E8E0D8;font-size:14px}
+.buddy-practice-row b{color:#C85A14;white-space:nowrap}
+.buddy-practice-note{font-size:12px!important;color:#7A6A68!important;margin-top:12px!important}
+/* 數字連動 A2 刷卡練習：沿用練習面板色票；數值較長，允許換行 */
+#buddy-card-practice .buddy-practice-row span{flex-shrink:0}
+#buddy-card-practice .buddy-practice-row b{white-space:normal;text-align:right}
+#buddy-card-practice .buddy-practice-row b small{display:block;margin-top:3px;font-size:12px;font-weight:400;color:#7A6A68}
+.buddy-practice-fixed{color:#111111;font-size:15px;font-weight:600;padding:4px 0}
+.buddy-card-bill{background:#FFFFFF;border-radius:10px;padding:6px 14px;margin:6px 0 12px}
+.buddy-card-bill-title{font-size:12px;color:#7A6A68;letter-spacing:.06em;padding-top:6px}
+.buddy-card-compare{margin-top:12px}
+.buddy-card-compare-row{display:grid;grid-template-columns:1.2fr 1fr 1fr;gap:8px;align-items:center;padding:10px 0;border-bottom:1px solid #E8E0D8;font-size:13px}
+.buddy-card-compare-row span{color:#3D3030}
+.buddy-card-compare-row b{color:#C85A14;text-align:right;font-weight:700}
+.buddy-card-compare-row.is-head b{color:#7A6A68;font-size:12px;font-weight:600}
+.buddy-practice-done{color:#111111!important;font-weight:700;font-size:15px!important;margin-top:16px!important}
+/* 帳戶設定小精靈：看懂帳戶和預算的示範面板（2026-10-18）。沿用 A2 練習面板，背景不透明，示範期間看不到真實帳戶列表 */
+#buddy-account-lesson{background:#F5F0EB}
+.buddy-acct-progress{font-size:12px;color:#7A6A68;margin-bottom:4px}
+.buddy-acct-card{background:#FFFFFF;border:1px solid #E8E0D8;border-radius:12px;padding:16px;margin:12px 0}
+.buddy-acct-card-name{display:flex;align-items:center;gap:6px;font-size:14px;font-weight:600;color:#111111}
+.buddy-acct-card-name small{margin-left:auto;font-size:11px;font-weight:600;color:#FFFFFF;background:#5C6FAE;border-radius:4px;padding:2px 6px}
+.buddy-acct-card-balance{font-size:30px;font-weight:700;color:#C85A14;margin:8px 0 10px;font-variant-numeric:tabular-nums}
+.buddy-acct-card-balance.is-changing{color:#111111}
+.buddy-acct-ledger-row{display:grid;grid-template-columns:1fr auto auto;gap:10px;align-items:center;padding:9px 8px;border-top:1px solid #E8E0D8;font-size:13px;border-radius:6px}
+.buddy-acct-ledger-row span{color:#3D3030;min-width:0}
+.buddy-acct-ledger-row em{font-style:normal;color:#7A6A68;white-space:nowrap}
+.buddy-acct-ledger-row b{color:#111111;white-space:nowrap;font-variant-numeric:tabular-nums}
+.buddy-acct-ledger-row.is-new{background:rgba(249,115,22,.16);animation:buddyAcctFlash .9s ease-out}
+.buddy-acct-ledger-row.is-new em{color:#C85A14;font-weight:700}
+@keyframes buddyAcctFlash{from{background:rgba(249,115,22,.45)}to{background:rgba(249,115,22,.16)}}
+.buddy-acct-budget{background:#FFFFFF;border-radius:12px;padding:12px 16px;margin-bottom:12px}
+.buddy-acct-budget-title{font-size:13px;color:#3D3030;margin-bottom:8px}
+.buddy-acct-budget-cells{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.buddy-acct-budget-cells small{display:block;font-size:11px;color:#7A6A68}
+.buddy-acct-budget-cells b{font-size:17px;color:#111111;font-variant-numeric:tabular-nums}
+.buddy-acct-budget-cells b.is-changed{color:#C85A14;animation:buddyAcctPulse .9s ease-out}
+@keyframes buddyAcctPulse{from{opacity:.3}to{opacity:1}}
+.buddy-acct-compare{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:12px}
+.buddy-acct-compare-col{background:#FFFFFF;border-radius:12px;padding:12px;min-width:0}
+.buddy-acct-compare-title{font-size:12px;font-weight:700;color:#C85A14;margin-bottom:8px}
+.buddy-acct-compare-line{padding:6px 0;border-top:1px solid #E8E0D8;font-size:13px}
+.buddy-acct-compare-line span{display:block;color:#3D3030}
+.buddy-acct-compare-line b{display:block;color:#111111;font-variant-numeric:tabular-nums}
+.buddy-acct-compare-line small{display:block;font-size:11px;color:#7A6A68;margin-top:2px}
+.buddy-acct-core{color:#111111!important;font-weight:700;font-size:15px!important}
+.buddy-acct-available{display:flex;flex-wrap:wrap;justify-content:space-between;gap:4px 10px;background:#FFFFFF;border-radius:12px;padding:12px 16px;margin-bottom:8px}
+.buddy-acct-available span{color:#3D3030;font-size:14px}
+.buddy-acct-available b{color:#C85A14;font-size:17px;font-variant-numeric:tabular-nums}
+.buddy-acct-available small{flex-basis:100%;font-size:12px;color:#7A6A68}
+.buddy-acct-nav{display:grid;grid-template-columns:1fr 2fr;gap:10px;margin-top:16px}
+.buddy-acct-nav .buddy-practice-submit{margin-bottom:0}
+.buddy-acct-prev{background:transparent;border:1px solid #D8C8C0;color:#3D3030;border-radius:8px;font-size:15px;font-weight:600;cursor:pointer;font-family:inherit}
+.buddy-acct-prev:disabled{opacity:.35;cursor:default}
+.buddy-acct-card-link{display:block;width:100%;margin:12px 0 20px;background:transparent;border:1px solid #C85A14;color:#C85A14;border-radius:8px;padding:12px;font-size:15px;font-weight:600;cursor:pointer;font-family:inherit}
+/* 小精靈練習面板立體感（2026-10-29，跟快速記帳同一套）：卡片 Card Rest、選中的選項浮起、主要按鈕橘色光暈 */
+.buddy-practice-amount,.buddy-practice-toggle,.buddy-card-bill,.buddy-acct-card,.buddy-acct-budget,.buddy-acct-compare-col,.buddy-acct-available{box-shadow:0 4px 20px rgba(0,0,0,0.06),0 1px 3px rgba(61,48,48,.06)}
+.buddy-practice-toggle .is-on{box-shadow:0 1px 0 rgba(61,48,48,.06),0 3px 8px rgba(61,48,48,.12)}
+.buddy-practice-chips button{box-shadow:0 1px 0 rgba(61,48,48,.06),0 3px 8px rgba(61,48,48,.12)}
+.buddy-practice-chips button[data-sel]{box-shadow:0 3px 10px rgba(200,90,20,.28)}
+.buddy-practice-submit{box-shadow:0 4px 14px rgba(200,90,20,.35);transition:transform .08s,box-shadow .08s}
+.buddy-practice-submit:active,.buddy-practice-chips button:active{transform:translateY(1px);box-shadow:0 1px 2px rgba(61,48,48,.10)}
+@media (prefers-reduced-motion: reduce){.buddy-acct-ledger-row.is-new,.buddy-acct-budget-cells b.is-changed{animation:none}}

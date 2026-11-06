@@ -8,7 +8,7 @@
  * 只看得到「待補充答案」和一整排 🔒，看不出系統要他改什麼；而且每次 App 改版都要
  * 重補鎖點。靜態頁沒有運算、不需鎖點，也不會被 App 改版打壞。
  *
- * 診斷頁的完成態：示範帳戶預設沒答補充問題，而且 8 月仍在進行中，正式 App 只會顯示
+ * 診斷頁的完成態：示範帳戶預設沒答補充問題，而且當月仍在進行中，正式 App 只會顯示
  * OPEN 財務雷達，不會先產生完整診斷與下月計畫。官網外層文案承諾展示「完整診斷」，
  * 所以這裡會同時注入小琳的答案，並把示範月份標成使用者已結束的 CLOSED 狀態，再交給
  * 診斷引擎重算。診斷內容全部由 App 自己畫，這裡不人工撰寫任何診斷文字或金額。
@@ -121,6 +121,9 @@ const DIAG_ANSWERS = {
   'var:交通': 'cut:0',                  // 同上
   'temporary-funding:120': 'fund:income', // 下午茶聚會 $280 由本月收入支付
   'temporary-funding:122': 'fund:income', // 衣服（網購）$1,450 由本月收入支付
+  // 月份結束後才會出現的固定支出付款題（帳上金額低於預算）。小琳兩筆都已付清，只是帳單比預算少：
+  'fixed-payment-question:6012:{month}': 'fixed:completed-lower', // 通訊預算 $600，實付 $599
+  'fixed-payment-question:6014:{month}': 'fixed:completed-lower', // 娛樂預算 $500，實付 $390
 };
 
 /* 抓取 */
@@ -129,6 +132,10 @@ const browser = await chromium.launch();
    page.route 就攔不到 demoReportPayload.js（診斷會停在未完成態）。示範頁不需要 SW。 */
 const context = await browser.newContext({ viewport: { width: 390, height: 800 }, serviceWorkers: 'block' });
 const page = await context.newPage();
+/* 假時鐘照真實時間走（install 不凍結時間）。示範資料在載入時依「今天」產生；只有抓診斷頁那一刻
+   才把時鐘調到月份結束隔天，因為 App 的月份狀態只看今天日期（main.js _monthStatusLocal，MC-5）。 */
+const realNow = new Date();
+await page.clock.install({ time: realNow });
 await page.goto(SRC_URL, { waitUntil: 'networkidle' });
 await page.waitForTimeout(6000);
 
@@ -140,27 +147,47 @@ if (!snapshot?.context) {
   throw new Error(`拿不到 window.__88laBuildDeepReportSnapshot()。請確認 FINANCE_ROOT 指向可啟動的 88la-finance。來源：${SRC_URL}`);
 }
 const enginePath = pathToFileURL(join(FINANCE, 'api', '_deep-report-app-response.js')).href;
-const { buildDeepReportEngineResponse } = await import(enginePath);
-const openResponse = buildDeepReportEngineResponse(snapshot);
-const unanswered = openResponse?.diagnosisModel?.questions || [];
-const questionKeys = unanswered.filter(question => !question.answer).map(question => question.key);
-const staleAnswerKeys = Object.keys(DIAG_ANSWERS).filter(key => !questionKeys.includes(key));
-const missingAnswerKeys = questionKeys.filter(key => !Object.hasOwn(DIAG_ANSWERS, key));
+const { buildDeepReportEngineResponse, projectDeepReportAppClientResponse } = await import(enginePath);
+const openSnapshot = structuredClone(snapshot);
+const openResponse = buildDeepReportEngineResponse(openSnapshot);
+/* 官網示範的是完整月底診斷，不能讓畫面一邊寫「進行中」，一邊又出現完整下月計畫。
+   2026-10 起（MC-5）月份狀態只看日期，舊的 userClosedMonth 不再讓月份結束，所以改成
+   「在月份結束後隔天看這份報告」：reportDate 設為財務月最後一天的下一天，讓引擎自己判成 CLOSED。 */
+const cycleEndDate = openResponse?.diagnosisModel?.monthState?.cycleEndDate;
+if (!/^\d{4}-\d{2}-\d{2}$/.test(cycleEndDate || '')) throw new Error(`拿不到示範月份的結束日：${cycleEndDate}`);
+const closedReportDate = (() => {
+  const d = new Date(`${cycleEndDate}T00:00:00Z`);
+  d.setUTCDate(d.getUTCDate() + 1);
+  return d.toISOString().slice(0, 10);
+})();
+snapshot.reportDate = closedReportDate;
+const answers = Object.fromEntries(Object.entries(DIAG_ANSWERS).map(([key, value]) => [key.replace('{month}', snapshot.month), value]));
+const closedQuestions = buildDeepReportEngineResponse(structuredClone(snapshot))?.diagnosisModel?.questions || [];
+const questionKeys = closedQuestions.filter(question => !question.answer).map(question => question.key);
+const staleAnswerKeys = Object.keys(answers).filter(key => !questionKeys.includes(key));
+const missingAnswerKeys = questionKeys.filter(key => !Object.hasOwn(answers, key));
 if (staleAnswerKeys.length || missingAnswerKeys.length) {
   throw new Error(`Demo 答案與目前診斷問題不一致。多餘：${staleAnswerKeys.join('、') || '無'}；缺少：${missingAnswerKeys.join('、') || '無'}`);
 }
-snapshot.context.diagAnswers = DIAG_ANSWERS;
-/* 官網示範的是完整月底診斷，不能讓畫面一邊寫「進行中」，一邊又出現完整下月計畫。
-   用 App 正式支援的 userClosedMonth 狀態結束示範月份，讓引擎自己決定 CLOSED 投影。 */
-snapshot.context.monthLifecycle = {
-  ...(snapshot.context.monthLifecycle || {}),
-  userClosedMonth: true,
-  closedAt: `${snapshot.reportDate}T00:00:00.000Z`,
-  closedBy: 'USER',
-  reopenedAt: '',
-  reopenReason: '',
-  diagnosisStaleAt: '',
-};
+/* 回答依據：固定支出付款題沒有依據不算數（ANSWER_BASIS_MISSING）。照 App setDiagAnswer 的寫法，
+   用題目本身帶的事實版本與指紋記下「小琳回答當時看到的資料」，不自己算指紋。 */
+snapshot.context.diagAnswers = answers;
+const answeringQuestions = buildDeepReportEngineResponse(structuredClone(snapshot))?.diagnosisModel?.questions || [];
+snapshot.context.decisionProvenance = Object.fromEntries(answeringQuestions
+  .filter(question => Object.hasOwn(answers, question.key))
+  .map(question => {
+    const option = (question.options || []).find(item => item.value === answers[question.key]);
+    return [question.key, {
+      origin: 'USER_ANSWER',
+      questionKey: question.key,
+      answeredAt: `${closedReportDate}T00:00:00.000Z`,
+      label: String(question.question || question.key),
+      rawValue: answers[question.key],
+      selectedValue: String(option?.label || answers[question.key]),
+      sourceFactsVersion: Math.max(0, Number(question.sourceFactsVersion) || 0),
+      sourceFactsFingerprint: String(question.sourceFactsFingerprint || ''),
+    }];
+  }));
 const answered = buildDeepReportEngineResponse(snapshot);
 const monthStatus = answered?.diagnosisModel?.monthState?.status;
 const diagnosisStatus = answered?.diagnosisModel?.diagnosisStatus;
@@ -237,7 +264,11 @@ writeFileSync(
   join(ROOT, 'src', 'demoPhonePreviewGenerated.js'),
   `// 自動產生，請勿手改。來源由 scripts/build_app_demo.mjs 鎖定。\nexport const DEMO_PHONE_PREVIEW_GENERATED = Object.freeze(${JSON.stringify(demoPhonePreview, null, 2)});\n`,
 );
-const frozen = { ...answered, snapshot: { month: answered.snapshot?.month, viewMode: answered.snapshot?.viewMode } };
+/* App 吃的是「給 App 的投影」（正式 API 與 88la-finance scripts/demo_report_payload_freeze.mjs 都用
+   projectDeepReportAppClientResponse），沒有 appClientState 時 App 會顯示「診斷暫時無法產生」。 */
+const appClientAnswered = projectDeepReportAppClientResponse(answered);
+if (!appClientAnswered?.appClientState) throw new Error('凍結的診斷沒有 appClientState，App 會判定成載入失敗');
+const frozen = { ...appClientAnswered, snapshot: { month: answered.snapshot?.month, viewMode: answered.snapshot?.viewMode } };
 await page.route('**/demoReportPayload.js*', route => route.fulfill({
   status: 200,
   contentType: 'application/javascript; charset=utf-8',
@@ -245,7 +276,7 @@ await page.route('**/demoReportPayload.js*', route => route.fulfill({
 }));
 await page.reload({ waitUntil: 'networkidle' });
 await page.waitForTimeout(6000);
-console.log('診斷完成態    答完 ' + Object.keys(DIAG_ANSWERS).length + ' 題，月份 ' + monthStatus + '，診斷 ' + diagnosisStatus);
+console.log('診斷完成態    答完 ' + Object.keys(answers).length + ' 題，月份 ' + monthStatus + '，診斷 ' + diagnosisStatus);
 
 /** 每次抓之前都要跑：拔掉 demo 鎖點、把圖表轉成圖片、讓延遲揭露的區塊固定可見。 */
 const prepare = () => page.evaluate(() => {
@@ -295,6 +326,9 @@ const prepare = () => page.evaluate(() => {
 
 const grabbed = {};
 for (const p of PAGES) {
+  // 診斷頁：時鐘調到月份結束隔天（跟 payload 的 reportDate 同一天），讓 App 自己判成月底回顧。
+  // 抓完立刻調回來，其他頁維持「本月進行中」。
+  if (p === 'report') await page.clock.setSystemTime(new Date(`${closedReportDate}T12:00:00`));
   await page.evaluate(pg => window.go(pg), p);
   await page.waitForTimeout(2200);
   if (p === 'ledger') {
@@ -318,6 +352,7 @@ for (const p of PAGES) {
   }
   await prepare();
   grabbed[p] = await page.evaluate(pg => document.getElementById('pg-' + pg)?.innerHTML || '', p);
+  if (p === 'report') await page.clock.setSystemTime(new Date());
   console.log(String(p).padEnd(14), String(grabbed[p].length).padStart(7), 'bytes');
 }
 
@@ -393,7 +428,8 @@ if (leftover.length) {
   throw new Error('診斷頁抓到的還是未完成態，出現這些字樣：' + leftover.join('、')
     + '\n可能是 demoReportPayload.js 的攔截沒生效（Vite 的模組路徑改了？），或 App 的診斷改版');
 }
-const CLOSED_MARKERS = ['本月最後結果', '已過完', '診斷 已完成', '下個月計畫'];
+// 2026-11 對齊 App 現行文案：本月最後結果→本月結論、診斷 已完成→本月診斷 已整理、下個月計畫→N 月預算調整
+const CLOSED_MARKERS = ['本月結論', '已過完', '本月診斷 已整理', '月預算調整'];
 const missingClosed = CLOSED_MARKERS.filter(m => !grabbed.report.includes(m));
 if (missingClosed.length) {
   throw new Error('診斷頁不是完整 CLOSED 畫面，缺少：' + missingClosed.join('、'));
@@ -742,6 +778,8 @@ const pagesHTML = PAGES.map(p =>
   `<div class="page${p === 'dashboard' ? ' on' : ''}" id="pg-${p}" data-page-label="${PAGE_LABEL[p]}">\n${grabbed[p]}\n</div>`
 ).join('\n\n');
 
+// 示範月份跟著產生日期浮動（demoData.js 以今天為基準），殼層文字不寫死月份
+const demoMonthLabel = `${Number(String(snapshot.month).slice(5, 7))} 月`;
 const html = `<!DOCTYPE html>
 <html lang="zh-Hant">
 <head>
@@ -761,14 +799,14 @@ const html = `<!DOCTYPE html>
 <!-- page-sizes: ${JSON.stringify(Object.fromEntries(PAGES.map(p => [p, grabbed[p].length])))} -->
 
 <div class="demo-top">
-  <span class="demo-dot"></span><b>示範帳戶</b><em>小琳的 8 月，資料為示範用途</em>
+  <span class="demo-dot"></span><b>示範帳戶</b><em>小琳的 ${demoMonthLabel}，資料為示範用途</em>
 </div>
 
 <div class="mc">
 ${pagesHTML}
 
 <div class="demo-cta">
-  <p>以上是示範帳戶「小琳」的 8 月資料。<br>你的畫面會依自己的記帳結果產生。</p>
+  <p>以上是示範帳戶「小琳」的 ${demoMonthLabel}資料。<br>你的畫面會依自己的記帳結果產生。</p>
   <a href="#app-launch" data-app-locked="true">開始使用 88La財務導航 →</a>
 </div>
 </div>

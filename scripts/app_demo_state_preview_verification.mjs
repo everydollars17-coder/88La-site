@@ -24,9 +24,11 @@ const check = (item, expected, actual) => {
 
 check('進行中狀態標題', '本月目前', progress.stateLabel);
 check('進行中可用餘額', 2876, progress.balance);
-check('進行中距月底天數', 4, progress.daysRemaining);
+// 天數依產生當天而定（示範資料日期是相對今天），只驗它跟產生日一致，不寫死。
+check('進行中距月底天數為正整數', true, Number.isInteger(progress.daysRemaining) && progress.daysRemaining >= 1 && progress.daysRemaining <= 31);
 check('進行中待處理數', 0, progress.activityItems.length);
-check('進行中預算提醒總數', 4, progress.budgetAlertCount);
+// 保險、購物、交通、飲食-食材超出，飲食-外食用了 90% 以上（App 快用完提醒）
+check('進行中預算提醒總數', 5, progress.budgetAlertCount);
 check('進行中預算提醒顯示數', 1, progress.budgetAlerts.length);
 check('保險超支算式', 3600, progress.budgetAlerts[0]?.actual - progress.budgetAlerts[0]?.budget);
 check('保險顯示超支', 3600, progress.budgetAlerts[0]?.over);
@@ -38,12 +40,12 @@ check('已結束狀態標題', '本月已結束', complete.stateLabel);
 check('已結束可用餘額', 2876, complete.balance);
 check('已結束里程碑', '完成第 6 個月的財務整理', complete.milestone);
 check('已結束下月卡費', 0, complete.nextMonthCardDue);
-check('整月結果不由局部超支取代', '本月沒有現金缺口，但原訂財務安排沒有全部完成。', complete.monthOutcome?.title);
+check('整月結果不由局部超支取代', '這個月的錢不夠把原本安排都完成。', complete.monthOutcome?.title);
 check('整月結果沒有現金缺口', false, complete.monthOutcome?.hasCashGap);
 check('整月結果有未完成安排', false, complete.monthOutcome?.arrangementsComplete);
-check('最值得注意項目', '「保險」有週期性支出，但每月準備不足。', complete.topDiagnosis?.title);
-check('最值得注意依據', '目前預算 $1,200，本月實際 $4,800。', complete.topDiagnosis?.body);
-check('最值得注意行動', '之後每月預存 $600 給「保險」', complete.topDiagnosis?.actionSummary);
+check('最值得注意項目', '固定與變動支出都超出原安排', complete.topDiagnosis?.title);
+check('最值得注意依據', '固定支出超出預算 $3,489，變動支出超出預算 $2,235。扣除臨時性支出與衝動消費 $3,680 後，日常支出沒有超出預算。', complete.topDiagnosis?.body);
+check('最值得注意行動（這個診斷沒有單一行動）', '', complete.topDiagnosis?.actionSummary);
 check('未完成目標名稱', '儲蓄', complete.goalGap?.label);
 check('未完成目標差額', 4000, complete.goalGap?.remaining);
 check('下月安排行動', '把本月重點帶進下月安排', complete.nextAction);
@@ -60,14 +62,14 @@ const requiredSourceMarkers = [
   'role="img"',
   '本月狀態',
   'demo-phone-closed-milestone',
-  '本月最後結果',
+  '本月結論',
   'data.monthOutcome.title',
   '最值得注意',
   'data.topDiagnosis.title',
   '未完成目標',
   'data.goalGap.remaining',
   'data.nextAction',
-  '查看下月計畫',
+  '看看下月怎麼調整',
   '已過完',
   '@media(prefers-reduced-motion:reduce)',
 ];

@@ -1736,12 +1736,14 @@ const DEFAULTS = {
     // scripts/demo_persona_verification.mjs）。2026-08-17 對照的版本：
     // 固定超支 3,489／購物 4,540 對預算 2,500／衝動 4 筆 1,950／
     // 卡費預留 13,794／可用餘額 2,876／儲蓄 4,000 對目標 8,000
+    // 2026-11-06 對照正式站 1622e44e 重新產生的示範頁：數字不變；整月結論、
+    // 食材與交通「先維持原預算再觀察」改成 App 現行說法（示範月份隨產生日期浮動，lockNote 不寫月份）
     personaFacts: "月薪 NT$42,000，台北租屋，每月房租 NT$13,000\n兩張信用卡加一張簽帳卡，結帳日都是 20 號\n目標：緊急備用金存到 NT$60,000，同時累積 NT$80,000 頭期款\n有記帳習慣但常常「記了，然後呢？」月初信心滿滿，月中容易失控，月底發現目標又落後",
     findingsLabel: "系統怎麼看",
-    findings: "本月沒有現金缺口，但原訂財務安排沒有全部完成\n固定支出超出原安排 NT$3,489，變動總支出超出 NT$2,235，但正常日常支出低於預算 NT$1,445\n最值得注意的是半年繳保險沒有提前準備，本月實際 NT$4,800\n扣除本期卡費 NT$13,794 與儲蓄 NT$4,000 後，可用餘額為 NT$2,876\n儲蓄目標 NT$8,000，本月完成 NT$4,000，還差 NT$4,000",
+    findings: "這個月的錢不夠把原本安排都完成，還有 NT$1,124 沒有補足\n固定支出超出原安排 NT$3,489，變動支出超出 NT$2,235，扣除臨時與衝動支出後，日常支出仍在預算內\n固定超支裡有 NT$3,600 是半年繳保險，沒有提前預存\n扣除本期卡費 NT$13,794 與儲蓄 NT$4,000 後，可用餘額為 NT$2,876\n儲蓄目標 NT$8,000，本月完成 NT$4,000，還差 NT$4,000",
     suggestionsLabel: "給小琳的建議",
-    suggestions: "半年繳保險 NT$3,600，之後每月預存 NT$600，不把整筆加進下月固定預算\n購物的 NT$1,450 已確認為臨時支出，下月先維持原本日常預算\n飲食食材調整為 NT$2,900，交通調整為 NT$2,000\n本月還差 NT$4,000 儲蓄，先決定是否帶到下月安排\n衝動消費 4 筆共 NT$1,950，下次先放進願望清單三天",
-    lockNote: "以上是示範帳戶「小琳」8 月的完整診斷。你的畫面會依自己的記帳結果產生。"
+    suggestions: "半年繳保險 NT$3,600，之後每月預存 NT$600，不把整筆加進下月固定預算\n購物的 NT$1,450 已確認為臨時支出，下月先維持原本日常預算\n飲食食材與交通這次選擇不減少次數，下月先維持原預算，再觀察看看\n本月還差 NT$4,000 儲蓄，先決定是否帶到下月安排\n衝動消費 4 筆共 NT$1,950，想買的東西先放進願望清單，過幾天再決定",
+    lockNote: "以上是示範帳戶「小琳」一個月的完整診斷。你的畫面會依自己的記帳結果產生。"
   },
   resourcesCopy: {
     filterAll: "全部", filterTools: "互動工具", filterFree: "免費文章", filterMember: "會員文章",
@@ -2616,10 +2618,10 @@ const normalizeValueForKey = (key, value) => key === "privacyContent"
 // 畫面上不再有任何鎖點，「登入後查看」與「跟實際 App 一樣的流程」兩句都對不上了。
 const STALE_DEMO_STORY_MARKERS = {
   personaFacts: ["NT$150,000 頭期款基金", "日常消費卡"],
-  findings: ["高出 62%", "出現負值缺口", "比預算高出 82%", "照這個速度緊急備用金要多花 5 個月"],
-  suggestions: ["網購類別預算下修", "聚餐類別出現 3 次", "先存後花", "出門前先想好當天的額度", "保險預算 NT$1,200 對不上實際的 NT$4,800", "下次先存一筆備用金"],
+  findings: ["本月沒有現金缺口，但原訂財務安排沒有全部完成", "高出 62%", "出現負值缺口", "比預算高出 82%", "照這個速度緊急備用金要多花 5 個月"],
+  suggestions: ["飲食食材調整為 NT$2,900", "下次先放進願望清單三天", "網購類別預算下修", "聚餐類別出現 3 次", "先存後花", "出門前先想好當天的額度", "保險預算 NT$1,200 對不上實際的 NT$4,800", "下次先存一筆備用金"],
   note: ["跟實際 App 一樣的流程"],
-  lockNote: ["登入後查看", "🔒"],
+  lockNote: ["登入後查看", "🔒", "8 月的完整診斷"],
 };
 const normalizeDemoStory = story => {
   const next = { ...DEFAULTS.demoStory, ...(story || {}) };
@@ -4992,13 +4994,13 @@ function DemoPhoneReport({ state }) {
             <strong>已過完</strong>
           </div>
           <div className="demo-phone-closed-badges">
-            <span>診斷 已完成</span>
-            <span>下月計畫 待安排</span>
+            <span>本月診斷 已整理</span>
+            <span>下個月 看調整方向</span>
           </div>
         </section>
         <div className="demo-phone-closed-milestone">🎉 {data.milestone}</div>
         <section className="demo-phone-closed-focus">
-          <p className="demo-phone-report-label">本月最後結果</p>
+          <p className="demo-phone-report-label">本月結論</p>
           <strong>{data.monthOutcome.title}</strong>
           <span>{data.balanceLabel} {demoMoney(data.balance)}，但原訂目標仍有差額。</span>
         </section>
@@ -5016,7 +5018,7 @@ function DemoPhoneReport({ state }) {
         <section className="demo-phone-closed-action">
           <span>下一步</span>
           <strong>{data.nextAction}</strong>
-          <span className="demo-phone-closed-primary">查看下月計畫</span>
+          <span className="demo-phone-closed-primary">看看下月怎麼調整</span>
         </section>
       </div>
     );

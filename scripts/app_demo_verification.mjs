@@ -34,14 +34,18 @@ const F = {
   groceryActual: 2910,
   transitBudget: 1800,
   transitActual: 2000,
-  pendingBefore: 4600,
+  // 11 月預算：房租 13,000＋保險 1,200＋通訊 600＋運動 1,500＋娛樂 500＋外食 2,500＋食材 2,800
+  // ＋交通 1,800＋購物 2,500＋頭期款 7,600＋緊急備用金 8,000＝42,000，等於收入，所以待分配 0。
+  budgetItemsTotal: 13000 + 1200 + 600 + 1500 + 500 + 2500 + 2800 + 1800 + 2500 + 7600 + 8000,
 };
 
+// 下月計畫（2026-11 對齊 App）：小琳對食材、交通都回答「不減少次數」，App 現在的規則是
+// 證據不足以判定常態時先維持原預算再觀察，不再自動調高；所以下月預算＝本月預算。
 const P = {
   periodicReserveMonthly: 600,
-  groceryNew: 2900,
-  transitNew: 2000,
-  pendingAfter: 4300,
+  groceryNew: 2800,
+  transitNew: 1800,
+  pendingAfter: 0,
 };
 
 const checks = [
@@ -51,34 +55,35 @@ const checks = [
   ['變動性質拆分', F.variableNormalActual + F.variableTemporaryActual + F.variableImpulseActual, F.variableGrossActual],
   ['正常日常低於預算', F.variableBudget - F.variableNormalActual, 1445],
   ['儲蓄缺口', F.savingTarget - F.savings, 4000],
-  ['食材新預算', Math.round(F.groceryActual / 100) * 100, P.groceryNew],
-  ['交通新預算', F.transitActual, P.transitNew],
-  ['調整後待分配', F.pendingBefore - (P.groceryNew - F.groceryBudget) - (P.transitNew - F.transitBudget), P.pendingAfter],
+  ['食材下月維持原預算', F.groceryBudget, P.groceryNew],
+  ['交通下月維持原預算', F.transitBudget, P.transitNew],
+  ['下月待分配', F.income - F.budgetItemsTotal - (P.groceryNew - F.groceryBudget) - (P.transitNew - F.transitBudget), P.pendingAfter],
+  ['週期性扣除後固定基準剩餘', F.fixedBudget - (F.fixedActual - 3600), 111],
   ['半年繳保險每月預存', 3600 / 6, P.periodicReserveMonthly],
 ];
 
 const mustAppear = [
   '<meta name="88la-finance-source"',
   '<!-- finance-source:',
-  '本月沒有現金缺口，但原訂財務安排沒有全部完成。',
-  '正常日常支出低於預算 $1,445',
-  '扣除臨時與衝動支出 $3,680 後，正常日常變動支出 $8,155 仍在預算內，剩餘 $1,445',
-  '最值得注意',
-  '「保險」有週期性支出，但每月準備不足。',
-  '儲蓄還差 $4,000',
+  // 2026-11 對齊 App 現行月底文案（本月結論、判斷依據、下月預算調整）
+  '<h2>這個月的錢不夠把原本安排都完成。</h2>',
+  '<strong>固定與變動支出都超出原安排</strong>',
+  '固定支出超出預算 $3,489，變動支出超出預算 $2,235。',
+  '扣除臨時性支出與衝動消費 $3,680 後，日常支出沒有超出預算。',
+  '扣除臨時性支出與衝動消費 $3,680 後，變動支出 $8,155 仍在預算內，剩餘 $1,445',
+  '<strong>半年繳保險沒有提前預存</strong>',
+  '儲蓄未達標，還差 $4,000',
   '之後每月預存 $600 給「保險」',
-  '這不代表下月應把整筆週期金額加進固定預算。',
+  '每月固定支出基準為 $16,689，仍在預算內，剩餘 $111。這不代表下月應把整筆週期金額加進固定預算。',
   '替週期性支出建立每月預存',
-  '$2,800 → $2,900',
-  '$1,800 → $2,000',
-  '安排剩餘 $4,300',
+  '「飲食-食材」下個月先維持原預算 $2,800',
+  '「交通」下個月先維持原預算 $1,800',
+  '預算已分配到 $0 ✓',
   '本月可用餘額',
-  '納入後可用餘額 <span id="d-card-compact-balance">$2,876</span>',
-  '還完後預計剩 $2,876',
+  '可用餘額 <span id="d-card-compact-balance">$2,876</span>',
   '還完後剩 $2,876',
-  '本期卡費 $13,794 已納入可用餘額計算',
-  '診斷 已完成',
-  '下月計畫 待分配未歸零',
+  '<small id="d-card-overview-status">已納入可用餘額計算</small>',
+  '<span>本月診斷 已整理</span>',
   'account-action-bar',
   'account-transaction-card',
 ];
@@ -98,6 +103,9 @@ const mustNotAppear = [
   '下個月先把保險預算調到 $4,800',
   '保險</div><div class="diag-plan-values mono">$1,200 → $4,800',
   '日常變動支出 $9,885',
+  '$2,800 → $2,900',
+  '$1,800 → $2,000',
+  '已逾期',
   '先重抓固定支出基準',
   String.fromCodePoint(0x2014),
   String.fromCodePoint(0x2013),

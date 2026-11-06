@@ -37,6 +37,8 @@ try {
     });
 
     await page.goto(`${BASE_URL}/app?dev_admin=true`, { waitUntil: 'networkidle', timeout: 60_000 });
+    // 2026-09-01 官網改版後，月中／月底手機示意圖收在 /app 頁底部的「後台編輯區」（訪客看不到），要先展開。
+    await page.getByRole('button', { name: /展開後台編輯區/ }).click();
     const preview = page.locator('.demo-state-preview');
     await preview.waitFor({ state: 'visible' });
 
@@ -58,7 +60,7 @@ try {
     assert.match(await image.innerText(), /本月目前/);
     assert.match(await image.innerText(), /可用餘額\s+\$2,876/);
     assert.match(await image.innerText(), /目前沒有待繳款項/);
-    assert.match(await image.innerText(), /4 項預算需要注意/);
+    assert.match(await image.innerText(), /5 項預算需要注意/);
     assert.match(await image.innerText(), /保險已超支 \$3,600/);
     assert.match(await image.innerText(), /儲蓄目標還差 \$4,000/);
     assert.doesNotMatch(await image.innerText(), /卡費會在下月付款/);
@@ -104,15 +106,15 @@ try {
     assert.equal(await completeButton.getAttribute('aria-pressed'), 'true');
     assert.match(await image.innerText(), /本月狀態/);
     assert.match(await image.innerText(), /完成第 6 個月的財務整理/);
-    assert.match(await image.innerText(), /本月最後結果/);
-    assert.match(await image.innerText(), /本月沒有現金缺口，但原訂財務安排沒有全部完成/);
+    assert.match(await image.innerText(), /本月結論/);
+    assert.match(await image.innerText(), /這個月的錢不夠把原本安排都完成/);
     assert.match(await image.innerText(), /最值得注意/);
-    assert.match(await image.innerText(), /「保險」有週期性支出，但每月準備不足/);
-    assert.match(await image.innerText(), /目前預算 \$1,200，本月實際 \$4,800/);
+    assert.match(await image.innerText(), /固定與變動支出都超出原安排/);
+    assert.match(await image.innerText(), /固定支出超出預算 \$3,489，變動支出超出預算 \$2,235/);
     assert.match(await image.innerText(), /未完成目標/);
     assert.match(await image.innerText(), /儲蓄還差 \$4,000/);
     assert.match(await image.innerText(), /把本月重點帶進下月安排/);
-    assert.match(await image.innerText(), /查看下月計畫/);
+    assert.match(await image.innerText(), /看看下月怎麼調整/);
     assert.match(await image.innerText(), /已過完/);
     const closedOrder = await page.evaluate(() => {
       const selectors = [
