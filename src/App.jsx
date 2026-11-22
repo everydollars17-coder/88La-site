@@ -30,8 +30,33 @@ const APP_URL = "https://app.88lamoney.com";
 const PUBLIC_CONTACT_EMAIL = "hello@88lamoney.com";
 // 進 App 的 CTA。上線日之前一律鎖住並顯示提示，當天起自動改成真的導過去，
 // 判斷在 siteLaunch.js（用台灣時間），到日期當天自動放行，不需要改程式或重新部署。
+// 會員從哪裡來（2026-11-22 88La財務導航 P4）：第一次帶 ?src=來源&c=活動 進官網時記在這台裝置，
+// 連到 App 的按鈕把同樣的參數帶過去，App 才知道這個人是從哪個連結來的。只記第一次。
+// 規則跟 88la-finance 的 src/memberAcquisition.js 相同，App 端收到後會再檢查一次。
+const SITE_ACQUISITION_KEY = "88la_site_acq_v1";
+const captureSiteAcquisition = () => {
+  try {
+    if (localStorage.getItem(SITE_ACQUISITION_KEY)) return;
+    const params = new URLSearchParams(window.location.search);
+    const src = (params.get("src") || "").trim().toLowerCase();
+    if (!/^[a-z0-9_-]{1,32}$/.test(src) || src === "direct" || src === "unknown") return;
+    const c = (params.get("c") || "").trim().replace(/\s+/g, " ");
+    const campaign = c && [...c].length <= 40 && /^[\p{L}\p{N} _-]+$/u.test(c) ? c : null;
+    localStorage.setItem(SITE_ACQUISITION_KEY, JSON.stringify({ src, c: campaign }));
+  } catch { /* 無痕或停用儲存：不記，連結照常 */ }
+};
+captureSiteAcquisition();
+const appHref = () => {
+  try {
+    const saved = JSON.parse(localStorage.getItem(SITE_ACQUISITION_KEY) || "null");
+    if (!saved?.src) return APP_URL;
+    const query = new URLSearchParams({ src: saved.src });
+    if (saved.c) query.set("c", saved.c);
+    return `${APP_URL}/?${query}`;
+  } catch { return APP_URL; }
+};
 const appCtaProps = from => (isAppLaunched()
-  ? { href: APP_URL, "data-app-source": from }
+  ? { href: appHref(), "data-app-source": from }
   : { href: "#app-launch", "data-app-locked": "true", "data-app-source": from });
 const QUIZ_URL = "/resources/savings-bag-quiz/index.html";
 
@@ -2809,7 +2834,7 @@ function Nav({ page, setPage, isAdmin, navLabels, setNavLabels }) {
                 <button onClick={() => signOut(auth)}>登出後台</button>
               </div>
             ) : (
-              <a className="nx-nav-text" href={APP_URL}>登入</a>
+              <a className="nx-nav-text" href={appHref()}>登入</a>
             )}
             <a className="nx-btn nx-btn-pri nx-btn-sm" {...appCtaProps("nav")}>開始使用</a>
           </div>
@@ -2832,7 +2857,7 @@ function Nav({ page, setPage, isAdmin, navLabels, setNavLabels }) {
               <button className="nx-mob-link" onClick={() => { signOut(auth); setMob(false); }}>登出後台</button>
             </>}
             <div className="nx-mob-foot">
-              {!isAdmin && <a className="nx-btn nx-btn-sec nx-btn-sm" href={APP_URL}>登入</a>}
+              {!isAdmin && <a className="nx-btn nx-btn-sec nx-btn-sm" href={appHref()}>登入</a>}
               <a className="nx-btn nx-btn-pri nx-btn-sm" {...appCtaProps("nav-mobile")}>開始使用</a>
             </div>
           </div>
